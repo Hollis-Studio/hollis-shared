@@ -1,0 +1,36 @@
+{
+  "name": "@hollis/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.ts",
+      "default": "./index.ts"
+    },
+    "./api": {
+      "types": "./api/index.ts",
+      "default": "./api/index.ts"
+    },
+    "./domain": {
+      "types": "./domain/index.ts",
+      "default": "./domain/index.ts"
+    },
+    "./schemas": {
+      "types": "./schemas/index.ts",
+      "default": "./schemas/index.ts"
+    },
+    "./constants": {
+      "types": "./constants/index.ts",
+      "default": "./constants/index.ts"
+    }
+  },
+  "peerDependencies": {
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}

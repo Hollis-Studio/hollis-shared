@@ -1,0 +1,137 @@
+/**
+ * @ai-context Appointment domain contracts | statuses, types, booking steps and their labels
+ *
+ * This module provides the canonical definitions for appointment-related constants:
+ * - Appointment statuses (SCHEDULED, COMPLETED, CANCELLED, NO_SHOW)
+ * - Appointment types (CHECK_IN, CONSULTATION, TRAINING_SESSION, etc.)
+ * - Booking workflow steps
+ *
+ * IMPORTANT: All appointment-related enum values MUST be imported from here.
+ *
+ * deps: zod | consumers: all codebases
+ */
+
+import { z } from 'zod';
+
+// ============================================================================
+// APPOINTMENT STATUS
+// ============================================================================
+
+export const APPOINTMENT_STATUSES = ['SCHEDULED', 'COMPLETED', 'CANCELLED', 'NO_SHOW'] as const;
+export type AppointmentStatus = (typeof APPOINTMENT_STATUSES)[number];
+
+export const AppointmentStatusSchema = z.enum(APPOINTMENT_STATUSES);
+
+/** Centralized appointment status constants for equality checks */
+export const APPOINTMENT_STATUS = {
+  SCHEDULED: 'SCHEDULED' as AppointmentStatus,
+  COMPLETED: 'COMPLETED' as AppointmentStatus,
+  CANCELLED: 'CANCELLED' as AppointmentStatus,
+  NO_SHOW: 'NO_SHOW' as AppointmentStatus,
+} as const;
+
+/** Human-readable labels for appointment statuses */
+export const APPOINTMENT_STATUS_LABELS: Record<AppointmentStatus, string> = {
+  SCHEDULED: 'Scheduled',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled',
+  NO_SHOW: 'No Show',
+};
+
+/**
+ * Check if a string is a valid appointment status
+ */
+export function isAppointmentStatus(value: string): value is AppointmentStatus {
+  return (APPOINTMENT_STATUSES as readonly string[]).includes(value);
+}
+
+// ============================================================================
+// APPOINTMENT TYPES
+// ============================================================================
+
+/**
+ * Appointment types for Hollis Health scheduling system.
+ * Maps to SessionType for session consumption tracking.
+ */
+export const APPOINTMENT_TYPES = [
+  'CHECK_IN',           // → CLINICIAN_FOLLOWUP
+  'CONSULTATION',       // → CLINICIAN_INITIAL  
+  'TRAINING_SESSION',   // → FITNESS_SESSION
+  'ONBOARDING',         // → No session consumed
+  'RECOVERY_SESSION',   // → RECOVERY_SESSION (unlimited)
+  'LABWORK',            // → LABWORK
+  'DXA_SCAN',           // → DXA_SCAN
+  'SLEEP_SCREENING',    // → SLEEP_SCREENING
+] as const;
+
+export type AppointmentType = (typeof APPOINTMENT_TYPES)[number];
+
+export const AppointmentTypeSchema = z.enum(APPOINTMENT_TYPES);
+
+/** Centralized appointment type constants for equality checks */
+export const APPOINTMENT_TYPE = {
+  CHECK_IN: 'CHECK_IN' as AppointmentType,
+  CONSULTATION: 'CONSULTATION' as AppointmentType,
+  TRAINING_SESSION: 'TRAINING_SESSION' as AppointmentType,
+  ONBOARDING: 'ONBOARDING' as AppointmentType,
+  RECOVERY_SESSION: 'RECOVERY_SESSION' as AppointmentType,
+  LABWORK: 'LABWORK' as AppointmentType,
+  DXA_SCAN: 'DXA_SCAN' as AppointmentType,
+  SLEEP_SCREENING: 'SLEEP_SCREENING' as AppointmentType,
+} as const;
+
+/** Human-readable labels for appointment types */
+export const APPOINTMENT_TYPE_LABELS: Record<AppointmentType, string> = {
+  CHECK_IN: 'Check-In',
+  CONSULTATION: 'Consultation',
+  TRAINING_SESSION: 'Training Session',
+  ONBOARDING: 'Onboarding',
+  RECOVERY_SESSION: 'Recovery Session',
+  LABWORK: 'Lab Work',
+  DXA_SCAN: 'DXA Scan',
+  SLEEP_SCREENING: 'Sleep Screening',
+};
+
+/**
+ * Check if a string is a valid appointment type
+ */
+export function isAppointmentType(value: string): value is AppointmentType {
+  return (APPOINTMENT_TYPES as readonly string[]).includes(value);
+}
+
+// ============================================================================
+// BOOKING STEPS
+// ============================================================================
+
+/**
+ * Steps in the appointment booking flow.
+ * Used by mobile app to track wizard progress.
+ */
+export const BOOKING_STEPS = ['provider', 'type', 'datetime', 'confirm'] as const;
+
+export type BookingStep = (typeof BOOKING_STEPS)[number];
+
+export const BookingStepSchema = z.enum(BOOKING_STEPS);
+
+/** Centralized booking step constants for equality checks */
+export const BOOKING_STEP = {
+  PROVIDER: 'provider' as BookingStep,
+  TYPE: 'type' as BookingStep,
+  DATETIME: 'datetime' as BookingStep,
+  CONFIRM: 'confirm' as BookingStep,
+} as const;
+
+/** Human-readable labels for booking steps */
+export const BOOKING_STEP_LABELS: Record<BookingStep, string> = {
+  provider: 'Select Provider',
+  type: 'Select Type',
+  datetime: 'Select Date & Time',
+  confirm: 'Confirm Booking',
+};
+
+/**
+ * Check if a string is a valid booking step
+ */
+export function isBookingStep(value: string): value is BookingStep {
+  return (BOOKING_STEPS as readonly string[]).includes(value);
+}
