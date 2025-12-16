@@ -366,3 +366,43 @@ export const MESSAGE_RECIPIENT_ROLE_LABELS: Record<MessagingRecipientRole, strin
   FITNESS_COORDINATOR: 'Fitness Coordinator',
   CLINICIAN: 'Clinician',
 };
+
+// ============================================================================
+// UNIT CONVERSION CONSTANTS
+// ============================================================================
+
+/**
+ * Centralized conversion factors for unit calculations.
+ * All conversions are defined relative to their base units:
+ * - Weight: kg
+ * - Length/Height: cm, m
+ * - Food weight: g
+ * - Food/water volume: ml
+ * - Temperature: celsius
+ */
+export const UNIT_CONVERSION = {
+  // Weight
+  LBS_PER_KG: 2.20462,
+  
+  // Length
+  CM_PER_INCH: 2.54,
+  INCHES_PER_FOOT: 12,
+  
+  // Food weight
+  OZ_PER_GRAM: 0.035274,
+  LBS_PER_GRAM: 0.00220462,
+  
+  // Food volume
+  FL_OZ_PER_ML: 0.033814,
+  CUPS_PER_ML: 0.00422675,
+  TBSP_PER_ML: 0.067628,
+  TSP_PER_ML: 0.202884,
+  
+  // Distance
+  KM_PER_M: 0.001,
+  MI_PER_M: 0.000621371,
+  FT_PER_M: 3.28084,
+  
+  // Water (same as food volume for overlapping units)
+  L_PER_ML: 0.001,
+} as const;

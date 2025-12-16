@@ -39,3 +39,8 @@ export * from './admin';
 
 // AI contracts (types, validation, prompts)
 export * from './ai';
+
+// Password contracts (validation, policies, reset)
+// NOTE: Explicitly re-export passwordSchema from password module to resolve ambiguity
+export { PASSWORD_POLICY, ZXCVBN_SCORE_LABELS, checkPasswordBreached, passwordLengthSchema, passwordSchema, validatePassword, validatePasswordStrength, type PasswordValidationResult } from './password';
+

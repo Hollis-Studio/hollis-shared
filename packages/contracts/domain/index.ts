@@ -41,3 +41,9 @@ export * from './registration';
 
 // Analytics domain - trends, statuses, chart types, time ranges
 export * from './analytics';
+
+// MFA domain - multi-factor auth types and clinician assignments
+export * from './mfa';
+
+// PHI Audit domain - audit trail types for HIPAA compliance
+export * from './phi-audit';

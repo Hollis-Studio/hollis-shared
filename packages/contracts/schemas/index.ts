@@ -219,7 +219,7 @@ export const signupBodySchema = z.object({
   /** Patient barcode to claim (HH-XXXXXX format). Becomes the userId after registration. */
   code: z.string().min(1, 'Patient barcode is required'),
   email: z.string().email('Invalid email'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  password: z.string().min(8, 'Password must be at least 8 characters'), // Using inline min(8) for backwards compatibility
   displayName: z.string().min(1, 'Display name is required'),
   // Optional fields that can override prefilled data
   profile: z.object({
@@ -241,9 +241,12 @@ export const signupBodySchema = z.object({
 export const emailSchema = z.string().email('Invalid email address');
 
 /**
- * Password validation schema with minimum requirements
+ * Password validation schema with minimum requirements (DEPRECATED - use passwordSchema from password module).
+ * This is kept for backwards compatibility with old signup flows.
+ * 
+ * @deprecated Use passwordSchema from password module instead (10 char minimum, PASSWORD_POLICY alignment)
  */
-export const passwordSchema = z
+export const legacyPasswordSchema = z
   .string()
   .min(8, 'Password must be at least 8 characters');
 
