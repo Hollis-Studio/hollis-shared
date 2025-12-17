@@ -23,8 +23,8 @@ import {
     StrategyTypeSchema,
     UserRoleSchema,
     UserTierSchema,
+    isoDateSchema,
 } from '../domain';
-import { isoDateSchema } from '../schemas';
 
 // ============================================================================
 // ADMIN-SPECIFIC ENUMS

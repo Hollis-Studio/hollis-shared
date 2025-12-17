@@ -27,8 +27,11 @@ import {
     savePermanentNoteArgsSchema,
     searchExerciseLibraryArgsSchema,
     strategyGenerationRequestSchema,
-    WORKOUT_SECTION_TYPES,
 } from '../ai-validation';
+
+import {
+    WORKOUT_SECTION_TYPES,
+} from '@hollis/contracts';
 
 // ============================================================================
 // GENERATED EXERCISE SCHEMA TESTS

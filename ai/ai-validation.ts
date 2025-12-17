@@ -14,17 +14,14 @@
 
 import { z } from 'zod';
 import { VOLUME_LEVELS } from '../admin/admin-types';
+import { aiPermanentNoteSchema } from '../domain/ai-notes';
 import { STRATEGY_STATUS, STRATEGY_STATUSES, STRATEGY_TYPES } from '../domain/training';
+import { WORKOUT_SECTION_TYPES } from '../domain/workouts';
 import { USER_ID_REGEX } from '../schemas';
 
 // ============================================================================
 // Constants for Validation
 // ============================================================================
-
-/**
- * Workout section types (warmup, working, cooldown)
- */
-export const WORKOUT_SECTION_TYPES = ['warmup', 'working', 'cooldown'] as const;
 
 /**
  * AI note categories for validation
@@ -103,6 +100,34 @@ export const generateWorkoutPlanArgsSchema = z.object({
 });
 
 export type GenerateWorkoutPlanArgs = z.infer<typeof generateWorkoutPlanArgsSchema>;
+
+/**
+ * Schema for validating generated workout plan structure
+ */
+export const generatedWorkoutPlanSchema = z.object({
+  days: z.array(generatedDaySchema),
+});
+
+/**
+ * Schema for workout plan generation result
+ */
+export const workoutPlanGenerationResultSchema = z.object({
+  plan: generatedWorkoutPlanSchema,
+  newNotes: z.array(aiPermanentNoteSchema),
+  reasoning: z.string().optional(),
+});
+
+/**
+ * Schema for nutrition plan generation result
+ */
+export const nutritionPlanGenerationResultSchema = z.object({
+  calories: z.number().int().positive(),
+  protein: z.number().min(0),
+  carbs: z.number().min(0),
+  fat: z.number().min(0),
+  reasoning: z.string(),
+  newNotes: z.array(aiPermanentNoteSchema),
+});
 
 // ============================================================================
 // Permanent Note Schemas

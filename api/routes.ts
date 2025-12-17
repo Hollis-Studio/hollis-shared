@@ -61,6 +61,10 @@ export const AUTH_ROUTES = {
   LINK: '/auth/link',
   /** POST - Sign out current session */
   LOGOUT: '/auth/logout',
+  /** POST - Request password reset email */
+  FORGOT_PASSWORD: '/auth/forgot-password',
+  /** POST - Reset password using token */
+  RESET_PASSWORD: '/auth/reset-password',
 } as const;
 
 /** Type for auth route values */
@@ -100,6 +104,24 @@ export const USER_ROUTES = {
    * @param userId - User's unique identifier
    */
   updateGoals: (userId: string) => `/users/${userId}/goals` as const,
+
+  /**
+   * GET /users/:userId/health-progress - Get health progress analytics
+   * @param userId - User's unique identifier
+   */
+  healthProgress: (userId: string) => `/users/${userId}/health-progress` as const,
+
+  /**
+   * GET /users/:userId/health-progress/history - Get historical health progress
+   * @param userId - User's unique identifier
+   */
+  healthProgressHistory: (userId: string) => `/users/${userId}/health-progress/history` as const,
+
+  /**
+   * GET /users/:userId/health-goals - Get health metric goals
+   * @param userId - User's unique identifier
+   */
+  healthGoals: (userId: string) => `/users/${userId}/health-goals` as const,
 
   /**
    * GET /users/:userId/compliance - Get compliance metrics
@@ -263,6 +285,12 @@ export const NUTRITION_ROUTES = {
    * @param date - ISO date string (YYYY-MM-DD)
    */
   upsert: (userId: string, date: string) => `/users/${userId}/nutrition/${date}` as const,
+
+  /**
+   * POST /users/:userId/nutrition/analyze - Analyze nutrition data
+   * @param userId - User's unique identifier
+   */
+  analyze: (userId: string) => `/users/${userId}/nutrition/analyze` as const,
 } as const;
 
 // ============================================================================
@@ -622,6 +650,18 @@ export const SESSIONS_ROUTES = {
   billingAnchor: (userId: string) => `/users/${userId}/sessions/billing-anchor` as const,
 
   /**
+   * GET /users/:userId/sessions - Get session data
+   * @param userId - User's unique identifier
+   */
+  get: (userId: string) => `/users/${userId}/sessions` as const,
+
+  /**
+   * GET /users/:userId/sessions/billing-date - Get next billing date
+   * @param userId - User's unique identifier
+   */
+  billingDate: (userId: string) => `/users/${userId}/sessions/billing-date` as const,
+
+  /**
    * POST /users/:userId/sessions/tier-change - Handle tier change
    * @param userId - User's unique identifier
    */
@@ -663,7 +703,11 @@ export const PROVIDERS_ROUTES = {
    * @param providerId - Provider's unique identifier
    */
   schedule: (providerId: string) => `/api/providers/${providerId}/schedule` as const,
-} as const;
+  /**
+   * GET /api/providers/:providerId/availability - Get provider availability
+   * @param providerId - Provider's unique identifier
+   */
+  availability: (providerId: string) => `/api/providers/${providerId}/availability` as const,} as const;
 
 /** Type for providers route values */
 export type ProvidersRoute =

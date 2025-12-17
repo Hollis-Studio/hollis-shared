@@ -20,6 +20,7 @@
  */
 
 import { z } from 'zod';
+import { baseDocumentSchema, isoDateSchema } from '../domain/common';
 
 // ============================================================================
 // JSON BLOB SCHEMAS (Prisma JSON fields)
@@ -30,37 +31,6 @@ export * from './json-blobs';
 // ============================================================================
 // COMMON PRIMITIVE SCHEMAS
 // ============================================================================
-
-/**
- * ISO 8601 timestamp schema with validation
- */
-export const isoTimestampSchema = z
-  .string()
-  .refine((value) => !Number.isNaN(Date.parse(value)), 'Must be ISO 8601 timestamp');
-
-/**
- * ISO date schema (YYYY-MM-DD) with full validation
- */
-export const isoDateSchema = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/u, 'Must be ISO date (YYYY-MM-DD)')
-  .refine((value) => {
-    // Additional validation: ensure date components are valid
-    const [year, month, day] = value.split('-').map(Number);
-    if (month < 1 || month > 12) return false;
-    if (day < 1 || day > 31) return false;
-    // Validate the date is real (handles Feb 30, etc.)
-    const date = new Date(year, month - 1, day);
-    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
-  }, 'Must be a valid date');
-
-/**
- * Base document metadata schema
- */
-export const baseDocumentSchema = z.object({
-  createdAt: isoTimestampSchema,
-  updatedAt: isoTimestampSchema,
-});
 
 export type BaseDocument = z.infer<typeof baseDocumentSchema>;
 

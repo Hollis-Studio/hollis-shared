@@ -27,6 +27,9 @@ export * from './nutrition';
 // Training domain - strategy types, goal categories
 export * from './training';
 
+// Workout domain - session, plan, and set schemas
+export * from './workouts';
+
 // Clinical domain - limitation severities, biometric sources
 export * from './clinical';
 
@@ -47,3 +50,9 @@ export * from './mfa';
 
 // PHI Audit domain - audit trail types for HIPAA compliance
 export * from './phi-audit';
+
+// AI Notes domain - workout session notes, permanent notes
+export * from './ai-notes';
+
+// Reference Ranges domain - metric limits and modifiers
+export * from './reference-ranges';

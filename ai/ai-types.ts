@@ -14,44 +14,12 @@
  */
 
 import type { VolumeLevel as AdminVolumeLevel } from '../admin/admin-types';
-
-// ============================================================================
-// AI Note Categories (defined here to avoid circular dependencies)
-// ============================================================================
-
-/**
- * Valid AI note category values for permanent user context.
- * These must match the values in src/contracts/aiNotes.ts
- */
-export const AI_NOTE_CATEGORIES = [
-  'INJURY',
-  'PREFERENCE',
-  'LIMITATION',
-  'MEDICAL',
-  'GOAL',
-  'OTHER',
-] as const;
-
-export type AINoteCategory = (typeof AI_NOTE_CATEGORIES)[number];
-
-/** Centralized AI note category constants for equality checks */
-export const AI_NOTE_CATEGORY = {
-  INJURY: 'INJURY' as AINoteCategory,
-  PREFERENCE: 'PREFERENCE' as AINoteCategory,
-  LIMITATION: 'LIMITATION' as AINoteCategory,
-  MEDICAL: 'MEDICAL' as AINoteCategory,
-  GOAL: 'GOAL' as AINoteCategory,
-  OTHER: 'OTHER' as AINoteCategory,
-} as const;
+import { type AINoteCategory } from '../domain/ai-notes';
+import { type WorkoutSectionType } from '../domain/workouts';
 
 // ============================================================================
 // Generated Workout Plan Types
 // ============================================================================
-
-/**
- * Generated workout section type
- */
-export type WorkoutSectionType = 'warmup' | 'working' | 'cooldown';
 
 /**
  * Generated exercise within a workout

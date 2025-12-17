@@ -39,7 +39,7 @@ import {
     type GeneratedWorkoutPlan,
     type GeneratedWorkoutSection,
     type WorkoutSectionType,
-} from '../index';
+} from '@hollis/contracts';
 
 // ============================================================================
 // IMPORT VERIFICATION TESTS
