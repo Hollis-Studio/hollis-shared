@@ -18,15 +18,27 @@ const WORKSPACE_ROOT = path.resolve(__dirname, '../../..');
 // Patterns that indicate hardcoded password requirements
 const HARDCODED_PATTERNS = [
   // Hardcoded min lengths (not using PASSWORD_POLICY)
-  /password.*\.min\(8\)/gi,
-  /password.*min.*8/gi,
+  // Matches .min(N) where N is not PASSWORD_POLICY.MIN_LENGTH and not 1 (common for non-empty check)
+  new RegExp(`password.*\\.min\\((?!(?:${PASSWORD_POLICY.MIN_LENGTH}|1)\\))\\d+\\)`, 'gi'),
+  new RegExp(`password.*min:\\s*(?!(?:${PASSWORD_POLICY.MIN_LENGTH}|1)\\b)\\d+`, 'gi'),
+  
+  // Hardcoded max lengths (not using PASSWORD_POLICY)
+  // Matches .max(N) where N is not PASSWORD_POLICY.MAX_LENGTH
+  new RegExp(`password.*\\.max\\((?!(?:${PASSWORD_POLICY.MAX_LENGTH})\\))\\d+\\)`, 'gi'),
+  new RegExp(`password.*max:\\s*(?!(?:${PASSWORD_POLICY.MAX_LENGTH})\\b)\\d+`, 'gi'),
+
   // Old-style complexity regex that we no longer enforce
   /password.*regex.*\[A-Z\]/gi,
   /password.*regex.*\[a-z\]/gi,
   /password.*regex.*\[0-9\]/gi,
+  /password.*regex.*[!@#$%^&*]/gi,
+  /password.*regex.*(?=.*[A-Z])/gi,
+  /password.*regex.*(?=.*[a-z])/gi,
+  /password.*regex.*(?=.*[0-9])/gi,
+  /password.*regex.*(?=.*[!@#$%^&*])/gi,
+  
   // Hardcoded length checks not using PASSWORD_POLICY
-  /password\.length\s*[<>]=?\s*8/gi,
-  /password\.length\s*[<>]=?\s*128/gi,
+  new RegExp(`password\\.length\\s*[<>!=]=?\\s*(?!(?:${PASSWORD_POLICY.MIN_LENGTH}|${PASSWORD_POLICY.MAX_LENGTH})\\b)\\d+`, 'gi'),
 ];
 
 // Files to skip (test files, node_modules, generated, etc.)
@@ -44,9 +56,12 @@ const SKIP_PATTERNS = [
 
 // Directories to scan
 const SCAN_DIRS = [
+  'app',
   'src/contracts',
+  'src/features',
   'server/src/validation',
   'server/src/lib',
+  'web-admin/app',
   'web-admin/contracts',
 ];
 
@@ -167,7 +182,7 @@ describe('Password Policy Drift Detection', () => {
         .map(v => `  ${v.file}:${v.line} - "${v.content}"`)
         .join('\n');
       
-      fail(
+      throw new Error(
         `Found ${violations.length} hardcoded password requirement(s):\n${message}\n\n` +
         `Fix by using PASSWORD_POLICY.MIN_LENGTH or PASSWORD_POLICY.MAX_LENGTH from @contracts.`
       );
