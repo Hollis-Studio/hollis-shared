@@ -14,7 +14,7 @@
 
 import { z } from 'zod';
 import { VOLUME_LEVELS } from '../admin/admin-types';
-import { aiPermanentNoteSchema } from '../domain/ai-notes';
+import { AI_NOTE_CATEGORIES, aiPermanentNoteSchema } from '../domain/ai-notes';
 import { STRATEGY_STATUS, STRATEGY_STATUSES, STRATEGY_TYPES } from '../domain/training';
 import { WORKOUT_SECTION_TYPES } from '../domain/workouts';
 import { USER_ID_REGEX } from '../schemas';
@@ -26,14 +26,7 @@ import { USER_ID_REGEX } from '../schemas';
 /**
  * AI note categories for validation
  */
-export const AI_NOTE_CATEGORIES_FOR_VALIDATION = [
-  'INJURY',
-  'PREFERENCE',
-  'LIMITATION',
-  'MEDICAL',
-  'GOAL',
-  'OTHER',
-] as const;
+export const AI_NOTE_CATEGORIES_FOR_VALIDATION = AI_NOTE_CATEGORIES;
 
 // ============================================================================
 // Exercise Schemas
