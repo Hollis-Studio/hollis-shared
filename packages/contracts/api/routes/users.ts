@@ -16,6 +16,11 @@
  */
 export const USER_ROUTES = {
   /**
+   * GET /users/me - Get current authenticated user's profile
+   */
+  ME: '/users/me' as const,
+
+  /**
    * GET /users/:userId - Get user account data
    * @param userId - User's unique identifier
    */
@@ -47,7 +52,11 @@ export const USER_ROUTES = {
 } as const;
 
 /** Type for user route values */
-export type UserRoute = ReturnType<(typeof USER_ROUTES)[keyof typeof USER_ROUTES]>;
+export type UserRoute = {
+  [K in keyof typeof USER_ROUTES]: (typeof USER_ROUTES)[K] extends (...args: any) => infer R
+    ? R
+    : (typeof USER_ROUTES)[K];
+}[keyof typeof USER_ROUTES];
 
 // ============================================================================
 // DAILY METRICS ROUTES

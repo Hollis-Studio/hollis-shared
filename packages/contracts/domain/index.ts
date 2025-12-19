@@ -45,6 +45,9 @@ export * from './registration';
 // Analytics domain - trends, statuses, chart types, time ranges
 export * from './analytics';
 
+// Business Analytics domain - CRM dashboard, compliance, trainer effectiveness
+export * from './businessAnalytics';
+
 // MFA domain - multi-factor auth types and clinician assignments
 export * from './mfa';
 
@@ -54,5 +57,5 @@ export * from './phi-audit';
 // AI Notes domain - workout session notes, permanent notes
 export * from './ai-notes';
 
-// Reference Ranges domain - metric limits and modifiers
-export * from './reference-ranges';
+// Clinical Registry domain - clinical metric definitions schema
+export * from './clinical-registry.schema';

@@ -336,6 +336,33 @@ export const ADMIN_ANALYTICS_ROUTES = {
 
   /** GET - Get health progress overview */
   HEALTH_PROGRESS_OVERVIEW: '/api/admin/health-progress/overview',
+
+  /** GET - Latest snapshot + trend data */
+  BUSINESS_SNAPSHOT: '/api/admin/analytics/business-snapshot',
+
+  /** GET - Population health improvements */
+  CLINICAL_IMPACT: '/api/admin/analytics/clinical-impact',
+
+  /** GET - All clients with compliance scores */
+  COMPLIANCE_HEATMAP: '/api/admin/analytics/compliance-heatmap',
+
+  /** GET - Trainers ranked by effectiveness */
+  TRAINER_LEADERBOARD: '/api/admin/analytics/trainer-leaderboard',
+
+  /** GET - Lab orders by status (Kanban data) */
+  LAB_PIPELINE: '/api/admin/analytics/lab-pipeline',
+
+  /** GET - Lead pipeline stages with counts */
+  SALES_FUNNEL: '/api/admin/analytics/sales-funnel',
+
+  /** GET - Red flag watchlist */
+  AT_RISK_CLIENTS: '/api/admin/analytics/at-risk-clients',
+
+  /** GET - Referral tree */
+  REFERRAL_TREE: '/api/admin/analytics/referral-tree',
+
+  /** POST - AI-powered natural language analytics query */
+  AI_QUERY: '/api/admin/analytics/ai-query',
 } as const;
 
 // ============================================================================
@@ -362,6 +389,28 @@ export const ADMIN_USERS_ROUTES = {
 export const ADMIN_LAB_ROUTES = {
   /** POST - Extract lab data from PDF */
   EXTRACT: '/api/admin/labs/extract',
+
+  /** PATCH - Update lab order status */
+  status: (labId: string) => `/api/admin/labs/${labId}/status` as const,
+} as const;
+
+// ============================================================================
+// ADMIN TRAINER ROUTES
+// ============================================================================
+
+/**
+ * Admin trainer assignment routes.
+ * Base path: /api/admin/trainer-assignments
+ */
+export const ADMIN_TRAINER_ROUTES = {
+  /** POST - Create trainer assignment */
+  ASSIGNMENTS: '/api/admin/trainer-assignments',
+
+  /** DELETE - Remove trainer assignment */
+  deleteAssignment: (id: string) => `/api/admin/trainer-assignments/${id}` as const,
+
+  /** GET - Get client's trainer assignments */
+  clientAssignments: (clientId: string) => `/api/admin/clients/${clientId}/trainer-assignments` as const,
 } as const;
 
 // ============================================================================
@@ -438,4 +487,5 @@ export const ADMIN_API_ROUTES = {
   NUTRITION: ADMIN_NUTRITION_ROUTES,
   AI: ADMIN_AI_ROUTES,
   UPLOAD: ADMIN_UPLOAD_ROUTES,
+  TRAINERS: ADMIN_TRAINER_ROUTES,
 } as const;
