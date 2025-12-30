@@ -20,11 +20,16 @@ import { z } from 'zod';
 
 /**
  * User roles in the Hollis Health system.
- * - ADMIN: Full system access, manages clinicians and all patients
+ * - ADMIN: Full system access, manages clinicians, trainers and all patients
  * - CLINICIAN: Health coaches, can manage assigned patients
+ * - TRAINER: Fitness trainers, can manage assigned clients for training
  * - CLIENT: Regular users/patients
+ * 
+ * NOTE: Users can have only one role. However, ADMIN role grants full access
+ * to all features (clinician + trainer capabilities). For staff who need both
+ * clinician and trainer access, assign ADMIN role or use assignment tables.
  */
-export const USER_ROLES = ['ADMIN', 'CLINICIAN', 'CLIENT'] as const;
+export const USER_ROLES = ['ADMIN', 'CLINICIAN', 'TRAINER', 'CLIENT'] as const;
 export type UserRole = (typeof USER_ROLES)[number];
 
 export const UserRoleSchema = z.enum(USER_ROLES);
@@ -33,17 +38,34 @@ export const UserRoleSchema = z.enum(USER_ROLES);
 export const USER_ROLE = {
   ADMIN: 'ADMIN' as UserRole,
   CLINICIAN: 'CLINICIAN' as UserRole,
+  TRAINER: 'TRAINER' as UserRole,
   CLIENT: 'CLIENT' as UserRole,
 } as const;
 
 export const DEFAULT_USER_ROLE: UserRole = USER_ROLE.CLIENT;
 
 /** Roles that can access admin features (web-admin, mobile admin panel) */
-export const ADMIN_ROLES: readonly UserRole[] = ['ADMIN', 'CLINICIAN'] as const;
+export const ADMIN_ROLES: readonly UserRole[] = ['ADMIN', 'CLINICIAN', 'TRAINER'] as const;
 
-/** Check if a role has admin privileges */
+/** Roles that can access clinical/PHI data (clinicians and admins, not trainers) */
+export const CLINICAL_ROLES: readonly UserRole[] = ['ADMIN', 'CLINICIAN'] as const;
+
+/** Roles that can access training data (trainers and admins, not clinicians unless admin) */
+export const TRAINING_ROLES: readonly UserRole[] = ['ADMIN', 'TRAINER'] as const;
+
+/** Check if a role has admin portal access (can log into web-admin) */
 export function isAdminRole(role: string | undefined | null): boolean {
+  return role === USER_ROLE.ADMIN || role === USER_ROLE.CLINICIAN || role === USER_ROLE.TRAINER;
+}
+
+/** Check if a role has clinical/PHI access (ADMIN or CLINICIAN) */
+export function isClinicalRole(role: string | undefined | null): boolean {
   return role === USER_ROLE.ADMIN || role === USER_ROLE.CLINICIAN;
+}
+
+/** Check if a role has training access (ADMIN or TRAINER) */
+export function isTrainerRole(role: string | undefined | null): boolean {
+  return role === USER_ROLE.ADMIN || role === USER_ROLE.TRAINER;
 }
 
 /** Check if a role is ADMIN (full system access) */
@@ -55,6 +77,7 @@ export function isSiteAdminRole(role: string | undefined | null): boolean {
 export const USER_ROLE_LABELS: Record<UserRole, string> = {
   ADMIN: 'Admin',
   CLINICIAN: 'Clinician',
+  TRAINER: 'Trainer',
   CLIENT: 'Client',
 };
 

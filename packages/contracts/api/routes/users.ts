@@ -53,6 +53,7 @@ export const USER_ROUTES = {
 
 /** Type for user route values */
 export type UserRoute = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic type extraction requires any for function signatures
   [K in keyof typeof USER_ROUTES]: (typeof USER_ROUTES)[K] extends (...args: any) => infer R
     ? R
     : (typeof USER_ROUTES)[K];

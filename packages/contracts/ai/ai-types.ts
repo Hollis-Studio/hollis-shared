@@ -110,7 +110,15 @@ export interface NutritionPlanGenerationResult {
   protein: number;
   carbs: number;
   fat: number;
+  dailyTargets: {
+    dayOfWeek: number;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }[];
   reasoning: string;
+  weeklyNotes: string;
   newNotes: AIGeneratedNote[];
 }
 
@@ -122,7 +130,15 @@ export interface NutritionTargetsArgs {
   protein: number;
   carbs: number;
   fat: number;
+  dailyTargets: {
+    dayOfWeek: number;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }[];
   reasoning: string;
+  weeklyNotes?: string;
 }
 
 // ============================================================================

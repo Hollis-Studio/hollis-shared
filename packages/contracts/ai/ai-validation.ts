@@ -24,9 +24,12 @@ import { USER_ID_REGEX } from '../schemas';
 // ============================================================================
 
 /**
- * AI note categories for validation
+ * AI note categories for validation (alias for backward compatibility)
+ * Note: AI_NOTE_CATEGORIES and AI_NOTE_CATEGORY are already exported via domain module
  */
 export const AI_NOTE_CATEGORIES_FOR_VALIDATION = AI_NOTE_CATEGORIES;
+
+// Note: WORKOUT_SECTION_TYPES is already exported via domain module
 
 // ============================================================================
 // Exercise Schemas
@@ -119,6 +122,7 @@ export const nutritionPlanGenerationResultSchema = z.object({
   carbs: z.number().min(0),
   fat: z.number().min(0),
   reasoning: z.string(),
+  weeklyNotes: z.string().optional(),
   newNotes: z.array(aiPermanentNoteSchema),
 });
 
@@ -148,7 +152,15 @@ export const generateNutritionTargetsArgsSchema = z.object({
   protein: z.number().min(0).max(500, 'Protein must be 0-500g'),
   carbs: z.number().min(0).max(1500, 'Carbs must be 0-1500g'),
   fat: z.number().min(0).max(500, 'Fat must be 0-500g'),
+  dailyTargets: z.array(z.object({
+    dayOfWeek: z.number().int().min(0).max(6),
+    calories: z.number().int().positive(),
+    protein: z.number().min(0),
+    carbs: z.number().min(0),
+    fat: z.number().min(0),
+  })).min(7, 'Must generate targets for all 7 days').max(7),
   reasoning: z.string().min(1, 'Reasoning is required'),
+  weeklyNotes: z.string().optional(),
 });
 
 export type GenerateNutritionTargetsArgs = z.infer<typeof generateNutritionTargetsArgsSchema>;

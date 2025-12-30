@@ -36,4 +36,11 @@ export const LABS_ROUTES = {
    * POST /api/labs/auto-ingest - Auto-ingest lab data
    */
   AUTO_INGEST: '/api/labs/auto-ingest',
+
+  /**
+   * GET /api/labs/metric-definitions - List canonical lab metric definitions
+   * Query params: search, category, page, limit
+   * Used for biomarker picker dropdown
+   */
+  METRIC_DEFINITIONS: '/api/labs/metric-definitions',
 } as const;

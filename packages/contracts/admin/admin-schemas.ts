@@ -25,6 +25,7 @@ import {
     UserTierSchema,
     isoDateSchema,
 } from '../domain';
+import { LabMappingStatusSchema, LabMetricCategorySchema, LabMetricDirectionalitySchema } from '../domain/labs';
 
 // ============================================================================
 // ADMIN-SPECIFIC ENUMS
@@ -125,6 +126,7 @@ export const patientAdminControlsPayloadSchema = z.object({
   tier: UserTierSchema.nullable().optional(),
   role: UserRoleSchema.nullable().optional(),
   assignedClinicianId: z.string().nullable().optional(),
+  assignedTrainerId: z.string().nullable().optional(),
   accountStatus: AccountStatusSchema.optional(),
   timezone: z.string().nullable().optional(),
 });
@@ -359,44 +361,107 @@ export const nutritionPlanGenerationRequestSchema = z.object({
 });
 
 // ============================================================================
-// LAB RESULT SCHEMAS
+// LAB RESULT SCHEMAS (Provenance-First)
 // ============================================================================
 
-/**
- * Lab panel entry schema.
- */
-export const labPanelEntrySchema = z.object({
-  key: z.string().min(1).max(100),
-  value: z.number(),
-  unit: z.string().min(1).max(50),
-  source: z.string().min(1).max(100),
+export const labMetricDefinitionSummarySchema = z.object({
+  id: z.string(),
+  code: z.string().min(1).max(100),
+  name: z.string().min(1).max(200),
+  category: LabMetricCategorySchema,
+  canonicalUnit: z.string().min(1).max(50),
+  directionality: LabMetricDirectionalitySchema,
 });
 
-/**
- * Create lab panel payload schema.
- */
-export const createLabPanelPayloadSchema = z.object({
-  panelType: z.string().min(1).max(100),
-  drawDate: isoDateSchema,
-  labName: z.string().max(200).optional(),
-  orderId: z.string().max(100).optional(),
-  entries: z.array(labPanelEntrySchema).min(1),
+/** Population qualifier for race/ethnicity/sex-specific lab results */
+export const LabPopulationQualifierSchema = z.enum(['african', 'non_african', 'male', 'female']).nullable();
+
+export const extractedLabObservationSchema = z.object({
+  // Core raw fields
+  rawAnalyteName: z.string().min(1).max(200),
+  rawValueText: z.string().nullable().optional(),
+  rawUnit: z.string().nullable().optional(),
+  rawReferenceIntervalText: z.string().nullable().optional(),
+  rawReferenceIntervalLow: z.number().nullable().optional(),
+  rawReferenceIntervalHigh: z.number().nullable().optional(),
+  rawFlag: z.string().nullable().optional(),
+  observedAt: z.string().nullable().optional(),
+  extractionConfidences: z.record(z.string(), z.number()).nullable().optional(),
+  extractionFragments: z.record(z.string(), z.string()).nullable().optional(),
+
+  // Extended extraction fields for complex results
+  populationQualifier: LabPopulationQualifierSchema.optional(),
+  parentAnalyte: z.string().max(200).nullable().optional(),
+  isCalculated: z.boolean().nullable().optional(),
+  calculationMethod: z.string().max(100).nullable().optional(),
+  qualityIndicator: z.string().max(100).nullable().optional(),
+  labComment: z.string().max(1000).nullable().optional(),
+
+  // Canonicalization fields
+  canonicalValue: z.number().nullable().optional(),
+  canonicalUnit: z.string().nullable().optional(),
+  metricDefinitionId: z.string().nullable().optional(),
+  metricDefinitionCode: z.string().nullable().optional(),
+  metricDefinitionName: z.string().nullable().optional(),
+  mappingStatus: LabMappingStatusSchema,
+  mappingConfidence: z.number().min(0).max(1).nullable().optional(),
 });
 
-/**
- * Extracted lab result schema.
- */
-export const extractedLabResultSchema = z.object({
-  key: z.string(),
-  value: z.union([z.number(), z.string()]).nullable(),
-  unit: z.string(),
+export const extractedLabReportSchema = z.object({
+  reportDate: z.string().nullable().optional(),
+  labName: z.string().nullable().optional(),
+  labLocation: z.string().nullable().optional(),
+  specimenType: z.string().nullable().optional(),
+  orderingProvider: z.string().nullable().optional(),
+  panelName: z.string().nullable().optional(),
+  panelCode: z.string().nullable().optional(),
+  collectionTime: z.string().nullable().optional(),
+  fastingStatus: z.string().nullable().optional(),
+  specimenQualityNotes: z.string().max(1000).nullable().optional(),
+  extractionConfidences: z.record(z.string(), z.number()).nullable().optional(),
+  extractionFragments: z.record(z.string(), z.string()).nullable().optional(),
 });
 
-/**
- * Lab data extraction result schema.
- */
 export const labDataExtractionResultSchema = z.object({
-  results: z.array(extractedLabResultSchema),
+  report: extractedLabReportSchema,
+  observations: z.array(extractedLabObservationSchema),
+});
+
+export const labObservationInputSchema = z.object({
+  rawAnalyteName: z.string().min(1).max(200),
+  rawValueText: z.string().nullable().optional(),
+  rawUnit: z.string().nullable().optional(),
+  rawReferenceIntervalText: z.string().nullable().optional(),
+  rawReferenceIntervalLow: z.number().nullable().optional(),
+  rawReferenceIntervalHigh: z.number().nullable().optional(),
+  rawFlag: z.string().nullable().optional(),
+  observedAt: z.string().nullable().optional(),
+  canonicalValue: z.number().nullable().optional(),
+  canonicalUnit: z.string().nullable().optional(),
+  labReferenceIntervalLow: z.number().nullable().optional(),
+  labReferenceIntervalHigh: z.number().nullable().optional(),
+  labReferenceIntervalText: z.string().nullable().optional(),
+  labFlag: z.string().nullable().optional(),
+  metricDefinitionId: z.string().nullable().optional(),
+  mappingStatus: LabMappingStatusSchema,
+  mappingConfidence: z.number().min(0).max(1).nullable().optional(),
+  notes: z.string().max(2000).nullable().optional(),
+  tags: z.array(z.string().max(100)).nullable().optional(),
+});
+
+export const createLabReportPayloadSchema = z.object({
+  reportDate: isoDateSchema,
+  labName: z.string().max(200).nullable().optional(),
+  labLocation: z.string().max(200).nullable().optional(),
+  specimenType: z.string().max(200).nullable().optional(),
+  orderingProvider: z.string().max(200).nullable().optional(),
+  panelName: z.string().max(200).nullable().optional(),
+  panelCode: z.string().max(100).nullable().optional(),
+  sourceDocumentId: z.string().nullable().optional(),
+  extractionConfidences: z.record(z.string(), z.number()).nullable().optional(),
+  extractionFragments: z.record(z.string(), z.string()).nullable().optional(),
+  notes: z.string().max(2000).nullable().optional(),
+  observations: z.array(labObservationInputSchema).min(1),
 });
 
 // ============================================================================

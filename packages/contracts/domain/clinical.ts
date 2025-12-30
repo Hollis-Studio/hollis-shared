@@ -40,6 +40,12 @@ export const LIMITATION_SEVERITY_LABELS: Record<LimitationSeverity, string> = {
 /**
  * Sources from which biometric data can be captured.
  * Used to track data provenance and enable source-specific filtering.
+ * 
+ * **VERIFICATION RULE**:
+ * - VERIFIED (isVerified: true): LAB_REPORT, CLINICIAN_ENTRY
+ *   → Manual input from admins/clinicians/trainers or parsed lab reports
+ * - UNVERIFIED (isVerified: false): All others (APPLE_HEALTH, USER_LOG, GOOGLE_FIT, OURA, WHOOP, DEVICE)
+ *   → Data from wearables or user self-entry - not vetted for accuracy
  */
 export const BIOMETRIC_SOURCES = [
   'LAB_REPORT',

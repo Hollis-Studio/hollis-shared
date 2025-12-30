@@ -92,11 +92,11 @@ export const ADMIN_PATIENT_ROUTES = {
   /** DELETE - Delete patient clinical note */
   deleteNote: (userId: string, noteId: string) => `/api/admin/patients/${userId}/notes/${noteId}` as const,
 
-  /** POST - Add lab result */
-  addLabResult: (userId: string) => `/api/admin/patients/${userId}/labs` as const,
+  /** POST - Create lab report */
+  createLabReport: (userId: string) => `/api/admin/patients/${userId}/labs/reports` as const,
 
-  /** DELETE - Delete lab panel */
-  deleteLabPanel: (userId: string, panelId: string) => `/api/admin/patients/${userId}/labs/${panelId}` as const,
+  /** DELETE - Delete lab report */
+  deleteLabReport: (userId: string, reportId: string) => `/api/admin/patients/${userId}/labs/reports/${reportId}` as const,
 
   /** GET - Get patient intake questionnaire */
   intakeQuestionnaire: (userId: string) => `/api/admin/patients/${userId}/intake-questionnaire` as const,
@@ -384,14 +384,44 @@ export const ADMIN_USERS_ROUTES = {
 
 /**
  * Admin lab data routes.
- * Base path: /api/admin/labs
+ * Base path: /api/admin/labs (non-patient) or /api/admin/patients/:userId/labs (patient-scoped)
  */
 export const ADMIN_LAB_ROUTES = {
   /** POST - Extract lab data from PDF */
   EXTRACT: '/api/admin/labs/extract',
 
+  /** POST - Create verified lab report for a patient */
+  reports: (userId: string) => `/api/admin/patients/${userId}/labs/reports` as const,
+
+  /** DELETE - Delete lab report for a patient */
+  deleteReport: (userId: string, reportId: string) =>
+    `/api/admin/patients/${userId}/labs/reports/${reportId}` as const,
+
+  /** GET - Search lab metric definitions */
+  METRIC_SEARCH: '/api/admin/labs/metrics/search',
+
+  /** POST - Create lab metric definition */
+  METRIC_CREATE: '/api/admin/labs/metrics',
+
   /** PATCH - Update lab order status */
   status: (labId: string) => `/api/admin/labs/${labId}/status` as const,
+
+  // Order-First Workflow Routes
+  /** GET - Get single lab order by ID (with observations) */
+  getOrder: (orderId: string) => `/api/admin/labs/orders/${orderId}` as const,
+
+  /** DELETE - Delete lab order by ID */
+  deleteOrder: (orderId: string) => `/api/admin/labs/orders/${orderId}` as const,
+
+  /** POST - Create lab order (without observations) */
+  createOrder: (userId: string) => `/api/admin/patients/${userId}/labs/orders` as const,
+
+  /** GET - Get pending orders for a patient */
+  pendingOrders: (userId: string) => `/api/admin/patients/${userId}/labs/orders/pending` as const,
+
+  /** PATCH - Attach observations to existing order */
+  attachObservations: (userId: string, orderId: string) =>
+    `/api/admin/patients/${userId}/labs/orders/${orderId}/observations` as const,
 } as const;
 
 // ============================================================================
@@ -400,9 +430,12 @@ export const ADMIN_LAB_ROUTES = {
 
 /**
  * Admin trainer assignment routes.
- * Base path: /api/admin/trainer-assignments
+ * Base path: /api/admin/trainers
  */
 export const ADMIN_TRAINER_ROUTES = {
+  /** GET - List all trainers (users with TRAINER or ADMIN role) */
+  LIST: '/api/admin/trainers',
+
   /** POST - Create trainer assignment */
   ASSIGNMENTS: '/api/admin/trainer-assignments',
 
@@ -411,6 +444,9 @@ export const ADMIN_TRAINER_ROUTES = {
 
   /** GET - Get client's trainer assignments */
   clientAssignments: (clientId: string) => `/api/admin/clients/${clientId}/trainer-assignments` as const,
+
+  /** GET - Get primary trainer for a client */
+  primaryTrainer: (clientId: string) => `/api/admin/clients/${clientId}/primary-trainer` as const,
 } as const;
 
 // ============================================================================

@@ -74,6 +74,7 @@ describe('Shared Contracts Compilation', () => {
       expect(Array.isArray(contracts.USER_ROLES)).toBe(true);
       expect(contracts.USER_ROLES).toContain('ADMIN');
       expect(contracts.USER_ROLES).toContain('CLINICIAN');
+      expect(contracts.USER_ROLES).toContain('TRAINER');
       expect(contracts.USER_ROLES).toContain('CLIENT');
     });
 
@@ -81,6 +82,7 @@ describe('Shared Contracts Compilation', () => {
       expect(contracts.USER_ROLE).toBeDefined();
       expect(contracts.USER_ROLE.ADMIN).toBe('ADMIN');
       expect(contracts.USER_ROLE.CLINICIAN).toBe('CLINICIAN');
+      expect(contracts.USER_ROLE.TRAINER).toBe('TRAINER');
       expect(contracts.USER_ROLE.CLIENT).toBe('CLIENT');
     });
 
@@ -88,6 +90,7 @@ describe('Shared Contracts Compilation', () => {
       expect(contracts.USER_ROLE_LABELS).toBeDefined();
       expect(contracts.USER_ROLE_LABELS.ADMIN).toBe('Admin');
       expect(contracts.USER_ROLE_LABELS.CLINICIAN).toBe('Clinician');
+      expect(contracts.USER_ROLE_LABELS.TRAINER).toBe('Trainer');
       expect(contracts.USER_ROLE_LABELS.CLIENT).toBe('Client');
     });
 
@@ -134,11 +137,21 @@ describe('Shared Contracts Compilation', () => {
     it('should export role helper functions', () => {
       expect(typeof contracts.isAdminRole).toBe('function');
       expect(typeof contracts.isSiteAdminRole).toBe('function');
+      expect(typeof contracts.isClinicalRole).toBe('function');
+      expect(typeof contracts.isTrainerRole).toBe('function');
       expect(contracts.isAdminRole('ADMIN')).toBe(true);
       expect(contracts.isAdminRole('CLINICIAN')).toBe(true);
+      expect(contracts.isAdminRole('TRAINER')).toBe(true);
       expect(contracts.isAdminRole('CLIENT')).toBe(false);
       expect(contracts.isSiteAdminRole('ADMIN')).toBe(true);
       expect(contracts.isSiteAdminRole('CLINICIAN')).toBe(false);
+      expect(contracts.isSiteAdminRole('TRAINER')).toBe(false);
+      expect(contracts.isClinicalRole('ADMIN')).toBe(true);
+      expect(contracts.isClinicalRole('CLINICIAN')).toBe(true);
+      expect(contracts.isClinicalRole('TRAINER')).toBe(false);
+      expect(contracts.isTrainerRole('ADMIN')).toBe(true);
+      expect(contracts.isTrainerRole('TRAINER')).toBe(true);
+      expect(contracts.isTrainerRole('CLINICIAN')).toBe(false);
     });
   });
 
@@ -219,6 +232,7 @@ describe('Shared Contracts Compilation', () => {
       it('should validate user roles', () => {
         expect(contracts.UserRoleSchema.safeParse('ADMIN').success).toBe(true);
         expect(contracts.UserRoleSchema.safeParse('CLINICIAN').success).toBe(true);
+        expect(contracts.UserRoleSchema.safeParse('TRAINER').success).toBe(true);
         expect(contracts.UserRoleSchema.safeParse('CLIENT').success).toBe(true);
         expect(contracts.UserRoleSchema.safeParse('INVALID').success).toBe(false);
       });

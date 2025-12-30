@@ -57,5 +57,8 @@ export * from './phi-audit';
 // AI Notes domain - workout session notes, permanent notes
 export * from './ai-notes';
 
+// Pagination types - for consistent list responses
+export * from './pagination';
+
 // Clinical Registry domain - clinical metric definitions schema
 export * from './clinical-registry.schema';

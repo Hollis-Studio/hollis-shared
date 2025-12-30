@@ -26,6 +26,9 @@ import type {
     BiologicalSex,
     FitnessExperience,
     GoalDataSource,
+    LabMappingStatus,
+    LabMetricCategory,
+    LabMetricDirectionality,
     PregnancyStatus,
     PrimaryGoal,
     StrategyStatus,
@@ -142,6 +145,7 @@ export interface PatientAdminControlsPayload {
   tier?: UserTier | null;
   role?: UserRole | null;
   assignedClinicianId?: string | null;
+  assignedTrainerId?: string | null;
   accountStatus?: AccountStatus;
   timezone?: string | null;
 }
@@ -158,6 +162,16 @@ export interface ClinicianSummary {
   name: string;
   role: UserRole;
   specialty: string;
+}
+
+/**
+ * Summary view of a trainer for list displays.
+ * Similar to ClinicianSummary but for fitness trainers.
+ */
+export interface TrainerSummary {
+  id: string;
+  name: string;
+  role: UserRole;
 }
 
 /**
@@ -267,6 +281,15 @@ export interface CreateGoalInput {
   baselineValue?: number;
   weight?: number;
   linkedExerciseId?: string;
+  /** For non-hardcoded metrics (lab:/bio: prefix), store definition for reconstruction */
+  dynamicMetricDefinition?: {
+    dataSource: 'lab' | 'biometric';
+    dataKey: string;
+    label: string;
+    unit: string;
+    direction: string;
+    category: string;
+  };
 }
 
 /**
@@ -375,44 +398,139 @@ export interface NutritionPlanGenerationRequest {
 }
 
 // ============================================================================
-// LAB RESULT TYPES
+// LAB RESULT TYPES (Provenance-First)
 // ============================================================================
 
 /**
- * Lab panel entry for creating lab results.
+ * Canonical lab metric summary for admin UI selection.
  */
-export interface LabPanelEntry {
-  key: string;
-  value: number;
-  unit: string;
-  source: string;
+export interface LabMetricDefinitionSummary {
+  id: string;
+  code: string;
+  name: string;
+  category: LabMetricCategory;
+  canonicalUnit: string;
+  directionality: LabMetricDirectionality;
 }
 
 /**
- * Lab panel creation payload.
+ * Population qualifiers for race/ethnicity/sex-specific lab results.
+ * Used for tests like eGFR that have population-specific reference equations.
  */
-export interface CreateLabPanelPayload {
-  panelType: string;
-  drawDate: string;
-  labName?: string;
-  orderId?: string;
-  entries: LabPanelEntry[];
+export type LabPopulationQualifier = 'african' | 'non_african' | 'male' | 'female' | null;
+
+/**
+ * Extracted lab observation from PDF/image parsing.
+ * Extended to support multi-population results, panel hierarchies, and quality indicators.
+ */
+export interface ExtractedLabObservation {
+  // Core raw fields (extracted exactly as printed)
+  rawAnalyteName: string;
+  rawValueText?: string | null;
+  rawUnit?: string | null;
+  rawReferenceIntervalText?: string | null;
+  rawReferenceIntervalLow?: number | null;
+  rawReferenceIntervalHigh?: number | null;
+  rawFlag?: string | null;
+  observedAt?: string | null;
+  extractionConfidences?: Record<string, number> | null;
+  extractionFragments?: Record<string, string> | null;
+
+  // Extended extraction fields for complex results
+  /** Population qualifier for race/ethnicity/sex-specific results (e.g., eGFR African/Non-African) */
+  populationQualifier?: LabPopulationQualifier;
+  /** Parent analyte for panel hierarchies (e.g., "Lipid Panel" for LDL Cholesterol) */
+  parentAnalyte?: string | null;
+  /** Whether this is a calculated/derived value vs direct measurement */
+  isCalculated?: boolean | null;
+  /** Calculation method if applicable (e.g., "CKD-EPI 2021", "Friedewald") */
+  calculationMethod?: string | null;
+  /** Quality indicators (hemolyzed, lipemic, icteric, diluted) */
+  qualityIndicator?: string | null;
+  /** Lab-specific comment for this result */
+  labComment?: string | null;
+
+  // Canonicalization fields (populated after AI matching)
+  canonicalValue?: number | null;
+  canonicalUnit?: string | null;
+  metricDefinitionId?: string | null;
+  metricDefinitionCode?: string | null;
+  metricDefinitionName?: string | null;
+  mappingStatus: LabMappingStatus;
+  mappingConfidence?: number | null;
 }
 
 /**
- * Extracted lab result from PDF/image parsing.
+ * Extracted lab report metadata.
+ * Extended to include collection context and specimen quality.
  */
-export interface ExtractedLabResult {
-  key: string;
-  value: number | string | null;
-  unit: string;
+export interface ExtractedLabReport {
+  reportDate?: string | null;
+  labName?: string | null;
+  labLocation?: string | null;
+  specimenType?: string | null;
+  orderingProvider?: string | null;
+  panelName?: string | null;
+  panelCode?: string | null;
+  /** Time specimen was collected */
+  collectionTime?: string | null;
+  /** Fasting status: "fasting", "non-fasting", or null */
+  fastingStatus?: string | null;
+  /** Notes about specimen quality, dilution, or processing issues */
+  specimenQualityNotes?: string | null;
+  extractionConfidences?: Record<string, number> | null;
+  extractionFragments?: Record<string, string> | null;
 }
 
 /**
  * Lab data extraction response.
  */
 export interface LabDataExtractionResult {
-  results: ExtractedLabResult[];
+  report: ExtractedLabReport;
+  observations: ExtractedLabObservation[];
+}
+
+/**
+ * Lab observation payload for verified ingestion.
+ */
+export interface LabObservationInput {
+  rawAnalyteName: string;
+  rawValueText?: string | null;
+  rawUnit?: string | null;
+  rawReferenceIntervalText?: string | null;
+  rawReferenceIntervalLow?: number | null;
+  rawReferenceIntervalHigh?: number | null;
+  rawFlag?: string | null;
+  observedAt?: string | null;
+  canonicalValue?: number | null;
+  canonicalUnit?: string | null;
+  labReferenceIntervalLow?: number | null;
+  labReferenceIntervalHigh?: number | null;
+  labReferenceIntervalText?: string | null;
+  labFlag?: string | null;
+  metricDefinitionId?: string | null;
+  mappingStatus: LabMappingStatus;
+  mappingConfidence?: number | null;
+  notes?: string | null;
+  tags?: string[] | null;
+}
+
+/**
+ * Lab report payload for verified ingestion.
+ */
+export interface CreateLabReportPayload {
+  reportDate: string;
+  labName?: string | null;
+  labLocation?: string | null;
+  specimenType?: string | null;
+  orderingProvider?: string | null;
+  panelName?: string | null;
+  panelCode?: string | null;
+  sourceDocumentId?: string | null;
+  extractionConfidences?: Record<string, number> | null;
+  extractionFragments?: Record<string, string> | null;
+  notes?: string | null;
+  observations: LabObservationInput[];
 }
 
 // ============================================================================

@@ -81,3 +81,209 @@ export const LAB_RESULT_FLAG_LABELS: Record<LabResultFlag, string> = {
 export function isLabResultFlag(value: string): value is LabResultFlag {
   return (LAB_RESULT_FLAGS as readonly string[]).includes(value);
 }
+
+// ============================================================================
+// LAB MAPPING STATUS (Canonicalization)
+// ============================================================================
+
+/** Tuple of valid lab mapping status values (source of truth) */
+export const LAB_MAPPING_STATUSES = ['matched', 'created', 'review_needed', 'manual_override'] as const;
+export type LabMappingStatus = (typeof LAB_MAPPING_STATUSES)[number];
+
+/** Zod schema for lab mapping status */
+export const LabMappingStatusSchema = z.enum(LAB_MAPPING_STATUSES);
+
+/** Constant object for lab mapping status comparisons */
+export const LAB_MAPPING_STATUS = {
+  MATCHED: 'matched' as LabMappingStatus,
+  CREATED: 'created' as LabMappingStatus,
+  REVIEW_NEEDED: 'review_needed' as LabMappingStatus,
+  MANUAL_OVERRIDE: 'manual_override' as LabMappingStatus,
+} as const;
+
+/** Human-readable labels for lab mapping statuses */
+export const LAB_MAPPING_STATUS_LABELS: Record<LabMappingStatus, string> = {
+  matched: 'Matched',
+  created: 'Created',
+  review_needed: 'Review Needed',
+  manual_override: 'Manual Override',
+};
+
+// ============================================================================
+// LAB METRIC DIRECTIONALITY
+// ============================================================================
+
+/** Tuple of valid lab metric directionality values (source of truth) */
+export const LAB_METRIC_DIRECTIONALITIES = ['lower_is_better', 'higher_is_better', 'optimal_zone', 'decision_limit'] as const;
+export type LabMetricDirectionality = (typeof LAB_METRIC_DIRECTIONALITIES)[number];
+
+/** Zod schema for lab metric directionality */
+export const LabMetricDirectionalitySchema = z.enum(LAB_METRIC_DIRECTIONALITIES);
+
+/** Constant object for lab metric directionality comparisons */
+export const LAB_METRIC_DIRECTIONALITY = {
+  LOWER_IS_BETTER: 'lower_is_better' as LabMetricDirectionality,
+  HIGHER_IS_BETTER: 'higher_is_better' as LabMetricDirectionality,
+  OPTIMAL_ZONE: 'optimal_zone' as LabMetricDirectionality,
+  DECISION_LIMIT: 'decision_limit' as LabMetricDirectionality,
+} as const;
+
+/** Human-readable labels for lab metric directionality */
+export const LAB_METRIC_DIRECTIONALITY_LABELS: Record<LabMetricDirectionality, string> = {
+  lower_is_better: 'Lower Is Better',
+  higher_is_better: 'Higher Is Better',
+  optimal_zone: 'Optimal Zone',
+  decision_limit: 'Decision Limit',
+};
+
+// ============================================================================
+// LAB CHANGE SIGNIFICANCE (Trend Gate)
+// ============================================================================
+
+/** Tuple of valid change significance values (source of truth) */
+export const LAB_CHANGE_SIGNIFICANCES = ['not_enough_data', 'no_meaningful_change', 'meaningful_change'] as const;
+export type LabChangeSignificance = (typeof LAB_CHANGE_SIGNIFICANCES)[number];
+
+/** Zod schema for change significance */
+export const LabChangeSignificanceSchema = z.enum(LAB_CHANGE_SIGNIFICANCES);
+
+/** Constant object for change significance comparisons */
+export const LAB_CHANGE_SIGNIFICANCE = {
+  NOT_ENOUGH_DATA: 'not_enough_data' as LabChangeSignificance,
+  NO_MEANINGFUL_CHANGE: 'no_meaningful_change' as LabChangeSignificance,
+  MEANINGFUL_CHANGE: 'meaningful_change' as LabChangeSignificance,
+} as const;
+
+/** Human-readable labels for change significance */
+export const LAB_CHANGE_SIGNIFICANCE_LABELS: Record<LabChangeSignificance, string> = {
+  not_enough_data: 'Not Enough Data',
+  no_meaningful_change: 'No Meaningful Change',
+  meaningful_change: 'Meaningful Change',
+};
+
+// ============================================================================
+// LAB CLINICAL DIRECTION (Post-Significance)
+// ============================================================================
+
+/** Tuple of valid clinical direction values (source of truth) */
+export const LAB_CLINICAL_DIRECTIONS = ['improving', 'worsening', 'stable', 'not_applicable'] as const;
+export type LabClinicalDirection = (typeof LAB_CLINICAL_DIRECTIONS)[number];
+
+/** Zod schema for clinical direction */
+export const LabClinicalDirectionSchema = z.enum(LAB_CLINICAL_DIRECTIONS);
+
+/** Constant object for clinical direction comparisons */
+export const LAB_CLINICAL_DIRECTION = {
+  IMPROVING: 'improving' as LabClinicalDirection,
+  WORSENING: 'worsening' as LabClinicalDirection,
+  STABLE: 'stable' as LabClinicalDirection,
+  NOT_APPLICABLE: 'not_applicable' as LabClinicalDirection,
+} as const;
+
+/** Human-readable labels for clinical direction */
+export const LAB_CLINICAL_DIRECTION_LABELS: Record<LabClinicalDirection, string> = {
+  improving: 'Improving',
+  worsening: 'Worsening',
+  stable: 'Stable',
+  not_applicable: 'Not Applicable',
+};
+
+// ============================================================================
+// LAB RANGE STATUS (Interpretation)
+// ============================================================================
+
+/** Tuple of valid lab range status values (source of truth) */
+export const LAB_RANGE_STATUSES = ['in_range', 'low', 'high', 'not_computable'] as const;
+export type LabRangeStatus = (typeof LAB_RANGE_STATUSES)[number];
+
+/** Zod schema for lab range status */
+export const LabRangeStatusSchema = z.enum(LAB_RANGE_STATUSES);
+
+/** Constant object for lab range status comparisons */
+export const LAB_RANGE_STATUS = {
+  IN_RANGE: 'in_range' as LabRangeStatus,
+  LOW: 'low' as LabRangeStatus,
+  HIGH: 'high' as LabRangeStatus,
+  NOT_COMPUTABLE: 'not_computable' as LabRangeStatus,
+} as const;
+
+/** Human-readable labels for lab range status */
+export const LAB_RANGE_STATUS_LABELS: Record<LabRangeStatus, string> = {
+  in_range: 'In Range',
+  low: 'Low',
+  high: 'High',
+  not_computable: 'Not Computable',
+};
+
+// ============================================================================
+// LAB METRIC CATEGORIES
+// ============================================================================
+
+/** Tuple of valid lab metric categories (source of truth) */
+export const LAB_METRIC_CATEGORIES = [
+  'body_composition',
+  'cardiovascular',
+  'metabolic',
+  'hormonal',
+  'performance',
+  'hematology',
+  'inflammatory',
+  'nutritional',
+  'uncategorized',
+] as const;
+export type LabMetricCategory = (typeof LAB_METRIC_CATEGORIES)[number];
+
+/** Zod schema for lab metric categories */
+export const LabMetricCategorySchema = z.enum(LAB_METRIC_CATEGORIES);
+
+/** Human-readable labels for lab metric categories */
+export const LAB_METRIC_CATEGORY_LABELS: Record<LabMetricCategory, string> = {
+  body_composition: 'Body Composition',
+  cardiovascular: 'Cardiovascular',
+  metabolic: 'Metabolic',
+  hormonal: 'Hormonal',
+  performance: 'Performance',
+  hematology: 'Hematology',
+  inflammatory: 'Inflammatory',
+  nutritional: 'Nutritional',
+  uncategorized: 'Uncategorized',
+};
+
+// ============================================================================
+// CLINICIAN GOAL STATUS (Goal Evaluation)
+// ============================================================================
+
+/** Tuple of valid clinician goal status values (source of truth) */
+export const CLINICIAN_GOAL_STATUSES = [
+  'at-goal',
+  'above-goal',
+  'below-goal',
+  'no-goal-set',
+] as const;
+export type ClinicianGoalStatus = (typeof CLINICIAN_GOAL_STATUSES)[number];
+
+/** Zod schema for clinician goal status */
+export const ClinicianGoalStatusSchema = z.enum(CLINICIAN_GOAL_STATUSES);
+
+/** Constant object for clinician goal status comparisons */
+export const CLINICIAN_GOAL_STATUS = {
+  AT_GOAL: 'at-goal' as ClinicianGoalStatus,
+  ABOVE_GOAL: 'above-goal' as ClinicianGoalStatus,
+  BELOW_GOAL: 'below-goal' as ClinicianGoalStatus,
+  NO_GOAL_SET: 'no-goal-set' as ClinicianGoalStatus,
+} as const;
+
+/** Human-readable labels for clinician goal status */
+export const CLINICIAN_GOAL_STATUS_LABELS: Record<ClinicianGoalStatus, string> = {
+  'at-goal': 'At Goal',
+  'above-goal': 'Above Goal',
+  'below-goal': 'Below Goal',
+  'no-goal-set': 'No Goal Set',
+};
+
+/** Target direction for clinician goals */
+export const GOAL_TARGET_DIRECTIONS = ['below', 'above', 'at', 'range'] as const;
+export type GoalTargetDirection = (typeof GOAL_TARGET_DIRECTIONS)[number];
+
+/** Zod schema for goal target direction */
+export const GoalTargetDirectionSchema = z.enum(GOAL_TARGET_DIRECTIONS);
