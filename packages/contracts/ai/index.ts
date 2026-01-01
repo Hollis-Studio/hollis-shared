@@ -26,3 +26,9 @@ export * from './ai-validation';
 
 // Prompt Templates - system prompts and prompt builders
 export * from './prompt-templates';
+
+// Note: Domain constants (AI_NOTE_CATEGORIES, WORKOUT_SECTION_TYPES, etc.) 
+// are already exported via shared/contracts/domain
+// No need to re-export them here to avoid duplicate exports
+
+
