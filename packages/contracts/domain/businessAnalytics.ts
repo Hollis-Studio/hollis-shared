@@ -344,6 +344,69 @@ export const RISK_FACTOR_LABELS: Record<RiskFactor, string> = {
   low_nutrition_logging: 'Low Nutrition Logging',
 };
 
+// ============================================================================
+// TIER-AWARE CHURN RISK THRESHOLDS
+// ============================================================================
+
+/**
+ * Churn risk levels
+ */
+export const CHURN_RISK_LEVELS = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as const;
+export type ChurnRiskLevel = (typeof CHURN_RISK_LEVELS)[number];
+
+export const ChurnRiskLevelSchema = z.enum(CHURN_RISK_LEVELS);
+
+export const CHURN_RISK_LEVEL = {
+  LOW: 'LOW' as ChurnRiskLevel,
+  MEDIUM: 'MEDIUM' as ChurnRiskLevel,
+  HIGH: 'HIGH' as ChurnRiskLevel,
+  CRITICAL: 'CRITICAL' as ChurnRiskLevel,
+} as const;
+
+/**
+ * Tier-specific thresholds for churn risk calculation (in days of inactivity)
+ *
+ * Concierge clients train 4x/week so gaps are more concerning
+ * Essentials clients train 1x/week so longer gaps are expected
+ */
+export const TIER_CHURN_THRESHOLDS = {
+  CONCIERGE: {
+    MEDIUM: 2, // >2 days = medium risk (missed 2 expected sessions)
+    HIGH: 4, // >4 days = high risk (missed a full week)
+    CRITICAL: 7, // >7 days = critical (gone for nearly 2 weeks)
+  },
+  CORE: {
+    MEDIUM: 4, // >4 days = medium risk
+    HIGH: 7, // >7 days = high risk (missed 2 expected sessions)
+    CRITICAL: 14, // >14 days = critical
+  },
+  ESSENTIALS: {
+    MEDIUM: 7, // >7 days = medium risk (missed expected weekly session)
+    HIGH: 14, // >14 days = high risk
+    CRITICAL: 21, // >21 days = critical (3 weeks without activity)
+  },
+} as const;
+
+export type TierChurnThresholds = typeof TIER_CHURN_THRESHOLDS;
+
+/**
+ * Calculate churn risk level based on tier and days of inactivity
+ * @param tier - User's membership tier
+ * @param daysInactive - Days since last activity
+ * @returns ChurnRiskLevel
+ */
+export function calculateChurnRiskLevel(
+  tier: 'ESSENTIALS' | 'CORE' | 'CONCIERGE',
+  daysInactive: number
+): ChurnRiskLevel {
+  const thresholds = TIER_CHURN_THRESHOLDS[tier];
+
+  if (daysInactive > thresholds.CRITICAL) return CHURN_RISK_LEVEL.CRITICAL;
+  if (daysInactive > thresholds.HIGH) return CHURN_RISK_LEVEL.HIGH;
+  if (daysInactive > thresholds.MEDIUM) return CHURN_RISK_LEVEL.MEDIUM;
+  return CHURN_RISK_LEVEL.LOW;
+}
+
 /**
  * Schema for at-risk client
  */
@@ -446,6 +509,112 @@ export const ClinicalImpactSchema = z.object({
 });
 
 export type ClinicalImpact = z.infer<typeof ClinicalImpactSchema>;
+
+// ============================================================================
+// TRAINING RELEVANT SUMMARY (Clinician → Trainer Data Handoff)
+// ============================================================================
+
+/**
+ * Training limitation types that trainers need to know about
+ * These are derived from clinical data but don't expose PHI
+ */
+export const TRAINING_LIMITATIONS = [
+  'cardiovascular', // Heart rate restrictions, BP concerns
+  'musculoskeletal', // Joint issues, injury recovery
+  'respiratory', // Breathing limitations, asthma
+  'metabolic', // Blood sugar management needs
+  'neurological', // Balance, coordination considerations
+  'recovery', // Post-surgery, post-illness restrictions
+  'medication', // Exercise timing around medications
+  'other', // Other considerations
+] as const;
+export type TrainingLimitation = (typeof TRAINING_LIMITATIONS)[number];
+
+export const TrainingLimitationSchema = z.enum(TRAINING_LIMITATIONS);
+
+/** Human-readable labels for training limitations */
+export const TRAINING_LIMITATION_LABELS: Record<TrainingLimitation, string> = {
+  cardiovascular: 'Cardiovascular',
+  musculoskeletal: 'Musculoskeletal',
+  respiratory: 'Respiratory',
+  metabolic: 'Metabolic',
+  neurological: 'Neurological',
+  recovery: 'Recovery Period',
+  medication: 'Medication Timing',
+  other: 'Other',
+};
+
+/**
+ * Schema for a single training limitation/recommendation
+ */
+export const TrainingLimitationDetailSchema = z.object({
+  category: TrainingLimitationSchema,
+  description: z.string(), // e.g., "Avoid overhead pressing - shoulder impingement"
+  severity: z.enum(['caution', 'avoid', 'monitor']),
+  expiresAt: z.string().nullable(), // ISO timestamp - null means ongoing
+  addedAt: z.string(), // ISO timestamp
+  addedBy: z.string(), // Clinician name (not ID - trainers don't need that)
+});
+
+export type TrainingLimitationDetail = z.infer<typeof TrainingLimitationDetailSchema>;
+
+/**
+ * Schema for training-relevant heart rate zones
+ * Derived from clinical assessment but safe for trainers to see
+ */
+export const HeartRateZonesSchema = z.object({
+  restingHR: z.number().int().optional(),
+  maxHR: z.number().int().optional(),
+  zone1: z.object({ min: z.number().int(), max: z.number().int() }).optional(),
+  zone2: z.object({ min: z.number().int(), max: z.number().int() }).optional(),
+  zone3: z.object({ min: z.number().int(), max: z.number().int() }).optional(),
+  zone4: z.object({ min: z.number().int(), max: z.number().int() }).optional(),
+  zone5: z.object({ min: z.number().int(), max: z.number().int() }).optional(),
+  notes: z.string().nullable(), // e.g., "Keep below zone 4 until cleared by cardiologist"
+  updatedAt: z.string().optional(), // ISO timestamp
+});
+
+export type HeartRateZones = z.infer<typeof HeartRateZonesSchema>;
+
+/**
+ * Schema for training-relevant summary (safe for trainers to access)
+ *
+ * This contract bridges clinical data to training needs without exposing PHI.
+ * Clinicians populate this; trainers consume it.
+ *
+ * DOES include: injury flags, movement limitations, HR zones, cleared activities
+ * DOES NOT include: diagnoses, lab values, medications, care team notes
+ */
+export const TrainingRelevantSummarySchema = z.object({
+  userId: z.string(),
+
+  // Current limitations and considerations
+  limitations: z.array(TrainingLimitationDetailSchema),
+
+  // Heart rate training zones (if assessed)
+  heartRateZones: HeartRateZonesSchema.nullable(),
+
+  // Movement patterns to avoid or modify
+  avoidMovements: z.array(z.string()), // e.g., ["overhead press", "running", "jumping"]
+
+  // Cleared activities (positive list of what's safe)
+  clearedActivities: z.array(z.string()), // e.g., ["walking", "swimming", "light resistance"]
+
+  // General notes from clinician (training-relevant only, no PHI)
+  clinicianNotes: z.string().nullable(),
+
+  // Flags for trainer awareness
+  requiresWarmupExtension: z.boolean().default(false),
+  requiresCooldownExtension: z.boolean().default(false),
+  requiresFrequentBreaks: z.boolean().default(false),
+  requiresHRMonitoring: z.boolean().default(false),
+
+  // Metadata
+  lastUpdatedAt: z.string(), // ISO timestamp
+  lastUpdatedBy: z.string(), // Clinician name
+});
+
+export type TrainingRelevantSummary = z.infer<typeof TrainingRelevantSummarySchema>;
 
 // ============================================================================
 // TIME TO FIRST VICTORY
