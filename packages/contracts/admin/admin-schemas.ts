@@ -301,37 +301,44 @@ export const fetchValueResponseSchema = z.object({
 });
 
 // ============================================================================
-// WORKOUT GENERATION SCHEMAS
+// SMART ASSIST PROGRESS SCHEMAS
 // ============================================================================
 
 /**
- * Agent activity entry schema.
+ * Smart Assist agent activity entry schema.
  */
-export const workoutGenerationActivitySchema = z.object({
+export const smartAssistActivitySchema = z.object({
   timestamp: z.string(),
-  type: z.enum(['search', 'create', 'select', 'plan', 'note', 'thinking', 'complete']),
+  type: z.enum(['search', 'create', 'select', 'plan', 'note', 'thinking', 'complete', 'analyze']),
   message: z.string(),
   data: z.record(z.unknown()).optional(),
 });
 
 /**
- * Workout generation progress schema with real-time agent activity.
+ * Smart Assist progress schema with real-time agent activity.
  */
-export const workoutGenerationProgressSchema = z.object({
+export const smartAssistProgressSchema = z.object({
   step: z.number().min(0),
   totalSteps: z.number().positive(),
   phase: z.string(),
   detail: z.string().optional(),
   turn: z.number().optional(),
   maxTurns: z.number().optional(),
-  activities: z.array(workoutGenerationActivitySchema).optional(),
+  activities: z.array(smartAssistActivitySchema).optional(),
   stats: z.object({
     exercisesSearched: z.number().optional(),
     exercisesCreated: z.number().optional(),
     exercisesSelected: z.number().optional(),
     notesCreated: z.number().optional(),
+    goalsIdentified: z.number().optional(),
+    phasesCreated: z.number().optional(),
   }).optional(),
 });
+
+/** @deprecated Use smartAssistActivitySchema instead */
+export const workoutGenerationActivitySchema = smartAssistActivitySchema;
+/** @deprecated Use smartAssistProgressSchema instead */
+export const workoutGenerationProgressSchema = smartAssistProgressSchema;
 
 /**
  * Workout plan generation params schema (excludes AbortSignal and callback).

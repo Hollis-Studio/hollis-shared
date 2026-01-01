@@ -336,14 +336,15 @@ export interface FetchValueResponse {
 }
 
 // ============================================================================
-// WORKOUT GENERATION TYPES
+// SMART ASSIST PROGRESS TYPES (used by workout, strategy, and other AI features)
 // ============================================================================
 
 /**
- * Workout generation progress update with real-time agent activity.
- * Sent via SSE during workout plan generation.
+ * Smart Assist progress update with real-time agent activity.
+ * Used by workout generation, strategy generation, and other AI-powered features.
+ * Sent via SSE during generation processes.
  */
-export interface WorkoutGenerationProgress {
+export interface SmartAssistProgress {
   /** Current step number (1-based) */
   step: number;
   /** Total number of high-level steps */
@@ -357,29 +358,36 @@ export interface WorkoutGenerationProgress {
   /** Maximum conversation turns allowed */
   maxTurns?: number;
   /** Agent activity log entries for real-time display */
-  activities?: WorkoutGenerationActivity[];
-  /** Running counts for progress summary */
+  activities?: SmartAssistActivity[];
+  /** Running counts for progress summary - optional fields for different feature types */
   stats?: {
     exercisesSearched?: number;
     exercisesCreated?: number;
     exercisesSelected?: number;
     notesCreated?: number;
+    goalsIdentified?: number;
+    phasesCreated?: number;
   };
 }
 
 /**
  * Individual agent activity entry for real-time progress display.
  */
-export interface WorkoutGenerationActivity {
+export interface SmartAssistActivity {
   /** Timestamp of the activity */
   timestamp: string;
   /** Type of activity */
-  type: 'search' | 'create' | 'select' | 'plan' | 'note' | 'thinking' | 'complete';
+  type: 'search' | 'create' | 'select' | 'plan' | 'note' | 'thinking' | 'complete' | 'analyze';
   /** Short description of the activity */
   message: string;
   /** Optional additional data (e.g., exercise names found) */
   data?: Record<string, unknown>;
 }
+
+/** @deprecated Use SmartAssistProgress instead */
+export type WorkoutGenerationProgress = SmartAssistProgress;
+/** @deprecated Use SmartAssistActivity instead */
+export type WorkoutGenerationActivity = SmartAssistActivity;
 
 /**
  * Workout plan SSE generation parameters.
@@ -390,7 +398,7 @@ export interface WorkoutPlanGenerationParams {
   customPrompt?: string;
   overwriteMode?: 'overwrite' | 'fillEmpty';
   signal?: AbortSignal;
-  onProgress?: (progress: WorkoutGenerationProgress) => void;
+  onProgress?: (progress: SmartAssistProgress) => void;
 }
 
 // ============================================================================
