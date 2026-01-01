@@ -12,18 +12,18 @@
 
 import { z } from 'zod';
 import {
-    AccountStatusSchema,
-    ActivityLevelSchema,
-    BiologicalSexSchema,
-    FitnessExperienceSchema,
-    GoalDataSourceSchema,
-    PregnancyStatusSchema,
-    PrimaryGoalSchema,
-    StrategyStatusSchema,
-    StrategyTypeSchema,
-    UserRoleSchema,
-    UserTierSchema,
-    isoDateSchema,
+  AccountStatusSchema,
+  ActivityLevelSchema,
+  BiologicalSexSchema,
+  FitnessExperienceSchema,
+  GoalDataSourceSchema,
+  PregnancyStatusSchema,
+  PrimaryGoalSchema,
+  StrategyStatusSchema,
+  StrategyTypeSchema,
+  UserRoleSchema,
+  UserTierSchema,
+  isoDateSchema,
 } from '../domain';
 import { LabMappingStatusSchema, LabMetricCategorySchema, LabMetricDirectionalitySchema } from '../domain/labs';
 
@@ -305,13 +305,32 @@ export const fetchValueResponseSchema = z.object({
 // ============================================================================
 
 /**
- * Workout generation progress schema.
+ * Agent activity entry schema.
+ */
+export const workoutGenerationActivitySchema = z.object({
+  timestamp: z.string(),
+  type: z.enum(['search', 'create', 'select', 'plan', 'note', 'thinking', 'complete']),
+  message: z.string(),
+  data: z.record(z.unknown()).optional(),
+});
+
+/**
+ * Workout generation progress schema with real-time agent activity.
  */
 export const workoutGenerationProgressSchema = z.object({
   step: z.number().min(0),
   totalSteps: z.number().positive(),
   phase: z.string(),
   detail: z.string().optional(),
+  turn: z.number().optional(),
+  maxTurns: z.number().optional(),
+  activities: z.array(workoutGenerationActivitySchema).optional(),
+  stats: z.object({
+    exercisesSearched: z.number().optional(),
+    exercisesCreated: z.number().optional(),
+    exercisesSelected: z.number().optional(),
+    notesCreated: z.number().optional(),
+  }).optional(),
 });
 
 /**

@@ -21,20 +21,20 @@
  */
 
 import type {
-    AccountStatus,
-    ActivityLevel,
-    BiologicalSex,
-    FitnessExperience,
-    GoalDataSource,
-    LabMappingStatus,
-    LabMetricCategory,
-    LabMetricDirectionality,
-    PregnancyStatus,
-    PrimaryGoal,
-    StrategyStatus,
-    StrategyType,
-    UserRole,
-    UserTier,
+  AccountStatus,
+  ActivityLevel,
+  BiologicalSex,
+  FitnessExperience,
+  GoalDataSource,
+  LabMappingStatus,
+  LabMetricCategory,
+  LabMetricDirectionality,
+  PregnancyStatus,
+  PrimaryGoal,
+  StrategyStatus,
+  StrategyType,
+  UserRole,
+  UserTier,
 } from '../domain';
 
 // ============================================================================
@@ -340,13 +340,45 @@ export interface FetchValueResponse {
 // ============================================================================
 
 /**
- * Workout generation progress update.
+ * Workout generation progress update with real-time agent activity.
+ * Sent via SSE during workout plan generation.
  */
 export interface WorkoutGenerationProgress {
+  /** Current step number (1-based) */
   step: number;
+  /** Total number of high-level steps */
   totalSteps: number;
+  /** Current phase name (e.g., 'Searching exercises', 'Building plan') */
   phase: string;
+  /** Human-readable detail about current activity */
   detail?: string;
+  /** Current AI conversation turn (for progress insight) */
+  turn?: number;
+  /** Maximum conversation turns allowed */
+  maxTurns?: number;
+  /** Agent activity log entries for real-time display */
+  activities?: WorkoutGenerationActivity[];
+  /** Running counts for progress summary */
+  stats?: {
+    exercisesSearched?: number;
+    exercisesCreated?: number;
+    exercisesSelected?: number;
+    notesCreated?: number;
+  };
+}
+
+/**
+ * Individual agent activity entry for real-time progress display.
+ */
+export interface WorkoutGenerationActivity {
+  /** Timestamp of the activity */
+  timestamp: string;
+  /** Type of activity */
+  type: 'search' | 'create' | 'select' | 'plan' | 'note' | 'thinking' | 'complete';
+  /** Short description of the activity */
+  message: string;
+  /** Optional additional data (e.g., exercise names found) */
+  data?: Record<string, unknown>;
 }
 
 /**
