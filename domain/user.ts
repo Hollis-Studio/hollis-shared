@@ -73,6 +73,52 @@ export function isSiteAdminRole(role: string | undefined | null): boolean {
   return role === USER_ROLE.ADMIN;
 }
 
+// ============================================================================
+// PERMISSION HELPERS - CRM Access Control
+// ============================================================================
+
+/**
+ * Permission: Can view financial data (MRR, revenue, sales funnel)
+ * Only ADMIN can see business financials - clinicians and trainers cannot
+ */
+export function canViewFinancials(role: string | undefined | null): boolean {
+  return role === USER_ROLE.ADMIN;
+}
+
+/**
+ * Permission: Can manage staff (trainer leaderboard, assignments to other staff)
+ * Only ADMIN can manage staff - clinicians and trainers see only their own data
+ */
+export function canManageStaff(role: string | undefined | null): boolean {
+  return role === USER_ROLE.ADMIN;
+}
+
+/**
+ * Permission: Can view sensitive clinical care team notes
+ * ADMIN and CLINICIAN can see care team coordination notes
+ * TRAINER cannot see clinical diagnoses or care team communications
+ */
+export function canViewCareTeamNotes(role: string | undefined | null): boolean {
+  return role === USER_ROLE.ADMIN || role === USER_ROLE.CLINICIAN;
+}
+
+/**
+ * Permission: Can view lab results and hormone panels
+ * ADMIN and CLINICIAN can see full lab data
+ * TRAINER should not see raw lab values (only training-relevant summaries)
+ */
+export function canViewLabResults(role: string | undefined | null): boolean {
+  return role === USER_ROLE.ADMIN || role === USER_ROLE.CLINICIAN;
+}
+
+/**
+ * Permission: Can manage registrations and lead pipeline
+ * Only ADMIN handles new member onboarding and sales funnel
+ */
+export function canManageRegistrations(role: string | undefined | null): boolean {
+  return role === USER_ROLE.ADMIN;
+}
+
 /** Human-readable labels for user roles */
 export const USER_ROLE_LABELS: Record<UserRole, string> = {
   ADMIN: 'Admin',
