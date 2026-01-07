@@ -21,20 +21,22 @@
  */
 
 import type {
-  AccountStatus,
-  ActivityLevel,
-  BiologicalSex,
-  FitnessExperience,
-  GoalDataSource,
-  LabMappingStatus,
-  LabMetricCategory,
-  LabMetricDirectionality,
-  PregnancyStatus,
-  PrimaryGoal,
-  StrategyStatus,
-  StrategyType,
-  UserRole,
-  UserTier,
+    AccountStatus,
+    ActivityLevel,
+    BiologicalSex,
+    FitnessExperience,
+    GoalDataSource,
+    GoalMetricKey,
+    LabMappingStatus,
+    LabMetricCategory,
+    LabMetricDirectionality,
+    MetricApprovalStatus,
+    PregnancyStatus,
+    PrimaryGoal,
+    StrategyStatus,
+    StrategyType,
+    UserRole,
+    UserTier
 } from '../domain';
 
 // ============================================================================
@@ -53,17 +55,6 @@ export type AdminComplianceStatus = (typeof ADMIN_COMPLIANCE_STATUSES)[number];
 
 export const VOLUME_LEVELS = ['low', 'moderate', 'high'] as const;
 export type VolumeLevel = (typeof VOLUME_LEVELS)[number];
-
-// ============================================================================
-// GOAL METRIC KEYS (string type for admin inputs)
-// ============================================================================
-
-/**
- * Goal metric key type for admin inputs.
- * Uses string to avoid circular dependency with goalMetrics definitions.
- * Consumers should validate against GOAL_METRIC_KEYS from their contracts.
- */
-export type GoalMetricKey = string;
 
 // ============================================================================
 // PATIENT MANAGEMENT TYPES
@@ -451,6 +442,10 @@ export interface LabMetricDefinitionSummary {
   category: LabMetricCategory;
   canonicalUnit: string;
   directionality: LabMetricDirectionality;
+  /** Whether this metric is part of the canonical library (vs. user-created) */
+  isCanonical?: boolean;
+  /** Approval status for governance workflow */
+  approvalStatus?: MetricApprovalStatus;
 }
 
 /**
@@ -595,6 +590,7 @@ export interface ClientIntakePayload {
   injuries?: string;
   preferences?: string;
   limitations?: string;
+  medications?: string;
   medicalConditions?: string;
 }
 
@@ -631,4 +627,98 @@ export interface AdminAnalyticsData {
   averageComplianceScore: number;
   appointmentsToday: number;
   pendingLabReviews: number;
+}
+
+// ============================================================================
+// METRIC GOVERNANCE TYPES
+// ============================================================================
+
+/**
+ * Pending metric review - represents a metric awaiting admin review.
+ */
+export interface PendingMetricReview {
+  id: string;
+  code: string;
+  name: string;
+  category: LabMetricCategory;
+  canonicalUnit: string;
+  directionality: LabMetricDirectionality;
+  aliases: string[];
+  approvalStatus: MetricApprovalStatus;
+  isCanonical: boolean;
+  createdBy: string | null;
+  createdAt: string;
+  /** Number of observations currently linked to this metric */
+  observationCount: number;
+  /** Suggested metrics to merge this into (based on similarity) */
+  suggestedMergeTargets?: {
+    id: string;
+    code: string;
+    name: string;
+    similarity: number;
+  }[];
+}
+
+/**
+ * Suggested new metric - proposed metric from AI extraction not yet persisted.
+ * Used in the self-review loop before admin approval.
+ */
+export interface SuggestedNewMetric {
+  suggestedCode: string;
+  suggestedName: string;
+  suggestedCategory: LabMetricCategory;
+  suggestedAliases: string[];
+  canonicalUnit: string;
+  directionality: LabMetricDirectionality;
+  confidence: number;
+  reasoning?: string;
+  rawAnalyteName: string;
+  isPopulationVariant?: boolean;
+  parentMetricCode?: string;
+}
+
+/**
+ * Metric governance action - approve or reject a pending metric.
+ */
+export interface MetricGovernanceAction {
+  action: 'approve' | 'reject';
+  reviewNotes?: string;
+  setAsCanonical?: boolean;
+}
+
+/**
+ * Merge metrics payload - merge source metrics into a target metric.
+ */
+export interface MergeMetricsPayload {
+  sourceMetricIds: string[];
+  targetMetricId: string;
+  /** Whether to update all observations to point to target metric */
+  migrateObservations: boolean;
+  reviewNotes?: string;
+}
+
+/**
+ * Metric governance result - response from governance actions.
+ */
+export interface MetricGovernanceResult {
+  success: boolean;
+  metricId: string;
+  action: 'approved' | 'rejected' | 'merged';
+  observationsMigrated?: number;
+  message?: string;
+}
+
+/**
+ * Extended extraction result with suggested new metrics for governance.
+ */
+export interface LabDataExtractionResultWithGovernance extends LabDataExtractionResult {
+  /** Metrics suggested for creation (pending admin approval) */
+  suggestedNewMetrics: SuggestedNewMetric[];
+  /** Self-review audit summary */
+  selfReviewSummary?: {
+    iterationsPerformed: number;
+    duplicatesDetected: number;
+    garbageFlagged: number;
+    verifiedCreations: number;
+  };
 }

@@ -44,6 +44,58 @@ export const AI_NOTE_CATEGORY_LABELS: Record<AINoteCategory, string> = {
   OTHER: 'Other',
 };
 
+// ============================================================================
+// AI NOTE SOURCE TYPES
+// ============================================================================
+
+/**
+ * Source type for AI permanent notes - distinguishes verified data from AI-generated.
+ * Used to indicate trust level and origin of the note.
+ */
+export const AI_NOTE_SOURCE_TYPES = [
+  'AI_GENERATED',
+  'COACH_OBSERVATION',
+  'INTAKE_SEEDED',
+  'CLINICIAN_VERIFIED',
+] as const;
+
+export type AINoteSourceType = (typeof AI_NOTE_SOURCE_TYPES)[number];
+
+export const AINoteSourceTypeSchema = z.enum(AI_NOTE_SOURCE_TYPES);
+
+/** Centralized AI note source type constants for equality checks */
+export const AI_NOTE_SOURCE_TYPE = {
+  AI_GENERATED: 'AI_GENERATED' as AINoteSourceType,
+  COACH_OBSERVATION: 'COACH_OBSERVATION' as AINoteSourceType,
+  INTAKE_SEEDED: 'INTAKE_SEEDED' as AINoteSourceType,
+  CLINICIAN_VERIFIED: 'CLINICIAN_VERIFIED' as AINoteSourceType,
+} as const;
+
+/** Human-readable labels for AI note source types */
+export const AI_NOTE_SOURCE_TYPE_LABELS: Record<AINoteSourceType, string> = {
+  AI_GENERATED: 'AI Generated',
+  COACH_OBSERVATION: 'Coach Observation',
+  INTAKE_SEEDED: 'Intake Form',
+  CLINICIAN_VERIFIED: 'Clinician Verified',
+};
+
+/**
+ * Check if a string is a valid AI note source type
+ */
+export function isAINoteSourceType(value: string): value is AINoteSourceType {
+  return (AI_NOTE_SOURCE_TYPES as readonly string[]).includes(value);
+}
+
+/**
+ * Get the label for an AI note source type, with fallback
+ */
+export function getAINoteSourceTypeLabel(sourceType: string): string {
+  if (isAINoteSourceType(sourceType)) {
+    return AI_NOTE_SOURCE_TYPE_LABELS[sourceType];
+  }
+  return sourceType;
+}
+
 /**
  * Check if a string is a valid AI note category
  */
@@ -101,6 +153,7 @@ export interface AIPermanentNoteContract {
   content: string;
   category: AINoteCategory;
   source?: string; // Which workout/date/event triggered this note
+  sourceType?: AINoteSourceType; // Origin classification for trust level
   createdAt: IsoTimestampString;
   updatedAt: IsoTimestampString;
 }
@@ -111,6 +164,7 @@ export const aiPermanentNoteSchema: z.ZodType<AIPermanentNoteContract> = baseDoc
   content: z.string().min(1),
   category: AINoteCategorySchema,
   source: z.string().optional(),
+  sourceType: AINoteSourceTypeSchema.optional(),
 });
 
 // ============================================================================

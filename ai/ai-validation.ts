@@ -15,6 +15,7 @@
 import { z } from 'zod';
 import { VOLUME_LEVELS } from '../admin/admin-types';
 import { AI_NOTE_CATEGORIES, aiPermanentNoteSchema } from '../domain/ai-notes';
+import { GoalMetricKeySchema } from '../domain/goal-metrics';
 import { STRATEGY_STATUS, STRATEGY_STATUSES, STRATEGY_TYPES } from '../domain/training';
 import { WORKOUT_SECTION_TYPES } from '../domain/workouts';
 import { USER_ID_REGEX } from '../schemas';
@@ -37,10 +38,14 @@ export const AI_NOTE_CATEGORIES_FOR_VALIDATION = AI_NOTE_CATEGORIES;
 
 /**
  * Schema for validating generated exercise from AI
+ * 
+ * CRITICAL: exerciseId is REQUIRED. The AI must use search_exercise_library or 
+ * create_exercise to get a valid UUID before generating workout plans. This 
+ * enforces canonical exercise references for progression tracking.
  */
 export const generatedExerciseSchema = z.object({
   name: z.string().min(1, 'Exercise name is required'),
-  exerciseId: z.string().optional(),
+  exerciseId: z.string().uuid('exerciseId must be a valid UUID from the exercise library'),
   sets: z.number().int().positive().optional(),
   reps: z.string().optional(),
   weight: z.string().optional(),
@@ -105,12 +110,27 @@ export const generatedWorkoutPlanSchema = z.object({
 });
 
 /**
+ * Schema for unresolved exercise requiring human review
+ */
+export const unresolvedExerciseSchema = z.object({
+  dayOfWeek: z.number().int().min(0).max(6),
+  dayName: z.string().min(1),
+  sectionIndex: z.number().int().min(0),
+  sectionTitle: z.string().min(1),
+  exerciseIndex: z.number().int().min(0),
+  exerciseName: z.string().min(1),
+  reason: z.enum(['missing_id', 'invalid_id', 'name_mismatch']),
+});
+
+/**
  * Schema for workout plan generation result
  */
 export const workoutPlanGenerationResultSchema = z.object({
   plan: generatedWorkoutPlanSchema,
   newNotes: z.array(aiPermanentNoteSchema),
   reasoning: z.string().optional(),
+  needsReview: z.boolean().optional(),
+  reviewReasons: z.array(unresolvedExerciseSchema).optional(),
 });
 
 /**
@@ -171,9 +191,12 @@ export type GenerateNutritionTargetsArgs = z.infer<typeof generateNutritionTarge
 
 /**
  * Schema for strategy goal input
+ * 
+ * IMPORTANT: goalMetric MUST be one of the canonical keys from GOAL_METRIC_KEYS.
+ * This prevents AI from inventing invalid metric keys.
  */
 export const createStrategyGoalArgsSchema = z.object({
-  goalMetric: z.string().min(1),
+  goalMetric: GoalMetricKeySchema,
   goalTarget: z.number(),
   linkedExerciseId: z.string().uuid().optional(),
   weight: z.number().min(0.1).max(10).default(1.0),
