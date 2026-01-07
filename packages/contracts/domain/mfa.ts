@@ -131,6 +131,14 @@ export const mfaCredentialResponseSchema = z.object({
 export type MfaCredentialResponseContract = z.infer<typeof mfaCredentialResponseSchema>;
 
 /**
+ * TOTP setup initiation request
+ */
+export const totpSetupRequestSchema = z.object({
+  deviceName: z.string().min(1).max(100).optional().default('Authenticator App'),
+});
+export type TotpSetupRequestContract = z.infer<typeof totpSetupRequestSchema>;
+
+/**
  * TOTP setup initiation response
  */
 export const totpSetupResponseSchema = z.object({
@@ -180,6 +188,14 @@ export const stepUpAuthResponseSchema = z.object({
   expiresAt: z.string().datetime().optional(),
 });
 export type StepUpAuthResponseContract = z.infer<typeof stepUpAuthResponseSchema>;
+
+/**
+ * Backup codes generation request
+ */
+export const backupCodesRequestSchema = z.object({
+  credentialId: z.string().uuid(),
+});
+export type BackupCodesRequestContract = z.infer<typeof backupCodesRequestSchema>;
 
 /**
  * MFA status for a user
@@ -233,6 +249,14 @@ export const revokeAssignmentRequestSchema = z.object({
   revocationReason: z.string().max(500).optional(),
 });
 export type RevokeAssignmentRequestContract = z.infer<typeof revokeAssignmentRequestSchema>;
+
+/**
+ * Request to update a clinician-patient assignment
+ */
+export const updateAssignmentRequestSchema = z.object({
+  isPrimary: z.boolean().optional(),
+});
+export type UpdateAssignmentRequestContract = z.infer<typeof updateAssignmentRequestSchema>;
 
 /**
  * Enriched assignment with user details

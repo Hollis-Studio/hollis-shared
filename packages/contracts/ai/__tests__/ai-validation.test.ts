@@ -27,9 +27,12 @@ import {
     savePermanentNoteArgsSchema,
     searchExerciseLibraryArgsSchema,
     strategyGenerationRequestSchema,
+    unresolvedExerciseSchema,
+    workoutPlanGenerationResultSchema,
 } from '../ai-validation';
 
 import {
+    GoalMetricKeySchema,
     WORKOUT_SECTION_TYPES,
 } from '@hollis/contracts';
 
@@ -1045,5 +1048,359 @@ describe('Error Message Format', () => {
       // Path should include days[0].name
       expect(error.issues[0].path).toEqual(['days', 0, 'name']);
     }
+  });
+});
+
+// ============================================================================
+// P0 FIXES: AI HALLUCINATION PREVENTION TESTS
+// ============================================================================
+
+describe('P0 Fixes: AI Hallucination Prevention', () => {
+  describe('generatedExerciseSchema - exerciseId validation', () => {
+    it('rejects exercises without exerciseId', () => {
+      const result = generatedExerciseSchema.safeParse({
+        name: 'Barbell Back Squat',
+        sets: 3,
+        reps: '8-10',
+      });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues.some(i => i.path.includes('exerciseId'))).toBe(true);
+      }
+    });
+
+    it('rejects exercises with non-UUID exerciseId', () => {
+      const result = generatedExerciseSchema.safeParse({
+        name: 'Barbell Back Squat',
+        exerciseId: 'not-a-valid-uuid',
+        sets: 3,
+        reps: '8-10',
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it('accepts exercises with valid UUID exerciseId', () => {
+      const result = generatedExerciseSchema.safeParse({
+        name: 'Barbell Back Squat',
+        exerciseId: '550e8400-e29b-41d4-a716-446655440000',
+        sets: 3,
+        reps: '8-10',
+      });
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('createStrategyGoalArgsSchema - goalMetric validation', () => {
+    it('rejects invalid goalMetric keys', () => {
+      const result = createStrategyGoalArgsSchema.safeParse({
+        goalMetric: 'invented_metric_by_ai',
+        goalTarget: 100,
+      });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues.some(i => i.path.includes('goalMetric'))).toBe(true);
+      }
+    });
+
+    it('rejects camelCase variants (must use canonical snake_case)', () => {
+      const result = createStrategyGoalArgsSchema.safeParse({
+        goalMetric: 'bodyFatPercent', // Should be body_fat_percent
+        goalTarget: 15,
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it('accepts valid canonical goalMetric keys', () => {
+      const validMetrics = ['weight', 'body_fat_percent', 'squat_1rm', 'hba1c'];
+      
+      for (const metric of validMetrics) {
+        const result = createStrategyGoalArgsSchema.safeParse({
+          goalMetric: metric,
+          goalTarget: 100,
+        });
+        expect(result.success).toBe(true);
+      }
+    });
+  });
+
+  describe('GoalMetricKeySchema - direct validation', () => {
+    it('rejects arbitrary strings', () => {
+      const result = GoalMetricKeySchema.safeParse('random_metric');
+      expect(result.success).toBe(false);
+    });
+
+    it('rejects camelCase versions of valid keys', () => {
+      const result = GoalMetricKeySchema.safeParse('bodyFatPercent');
+      expect(result.success).toBe(false);
+    });
+
+    it('accepts all canonical keys from GOAL_METRIC_KEYS', () => {
+      const canonicalKeys = [
+        'weight',
+        'body_fat_percent',
+        'lean_mass',
+        'resting_hr',
+        'blood_pressure_systolic',
+        'blood_pressure_diastolic',
+        'vo2_max',
+        'hba1c',
+        'fasting_glucose',
+        'total_cholesterol',
+        'ldl_cholesterol',
+        'hdl_cholesterol',
+        'triglycerides',
+        'vitamin_d',
+        'testosterone_total',
+        'grip_strength',
+        'squat_1rm',
+        'bench_1rm',
+        'deadlift_1rm',
+        'overhead_press_1rm',
+        'pull_up_max',
+        'mile_time',
+      ];
+
+      for (const key of canonicalKeys) {
+        const result = GoalMetricKeySchema.safeParse(key);
+        expect(result.success).toBe(true);
+      }
+    });
+
+    it('provides helpful error message on invalid key', () => {
+      const result = GoalMetricKeySchema.safeParse('invalid_key');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues[0].message).toContain('goalMetric must be one of');
+      }
+    });
+  });
+});
+
+// ============================================================================
+// UNRESOLVED EXERCISE SCHEMA TESTS
+// ============================================================================
+
+describe('unresolvedExerciseSchema', () => {
+  describe('valid data', () => {
+    it('should accept valid unresolved exercise with missing_id reason', () => {
+      const result = unresolvedExerciseSchema.safeParse({
+        dayOfWeek: 1,
+        dayName: 'Monday - Push',
+        sectionIndex: 0,
+        sectionTitle: 'Warmup',
+        exerciseIndex: 2,
+        exerciseName: 'Arm Circles',
+        reason: 'missing_id',
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept valid unresolved exercise with invalid_id reason', () => {
+      const result = unresolvedExerciseSchema.safeParse({
+        dayOfWeek: 0,
+        dayName: 'Sunday - Recovery',
+        sectionIndex: 1,
+        sectionTitle: 'Mobility',
+        exerciseIndex: 0,
+        exerciseName: 'Unknown Movement',
+        reason: 'invalid_id',
+      });
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('invalid data', () => {
+    it('should reject missing required fields', () => {
+      const result = unresolvedExerciseSchema.safeParse({
+        dayOfWeek: 1,
+        // missing other fields
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject invalid reason', () => {
+      const result = unresolvedExerciseSchema.safeParse({
+        dayOfWeek: 1,
+        dayName: 'Monday',
+        sectionIndex: 0,
+        sectionTitle: 'Warmup',
+        exerciseIndex: 0,
+        exerciseName: 'Push-ups',
+        reason: 'invalid_reason',
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject negative dayOfWeek', () => {
+      const result = unresolvedExerciseSchema.safeParse({
+        dayOfWeek: -1,
+        dayName: 'Monday',
+        sectionIndex: 0,
+        sectionTitle: 'Warmup',
+        exerciseIndex: 0,
+        exerciseName: 'Push-ups',
+        reason: 'missing_id',
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject negative sectionIndex', () => {
+      const result = unresolvedExerciseSchema.safeParse({
+        dayOfWeek: 1,
+        dayName: 'Monday',
+        sectionIndex: -1,
+        sectionTitle: 'Warmup',
+        exerciseIndex: 0,
+        exerciseName: 'Push-ups',
+        reason: 'missing_id',
+      });
+      expect(result.success).toBe(false);
+    });
+  });
+});
+
+// ============================================================================
+// WORKOUT PLAN GENERATION RESULT SCHEMA TESTS
+// ============================================================================
+
+describe('workoutPlanGenerationResultSchema', () => {
+  /** Valid UUID for exerciseId */
+  const validExerciseUuid = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
+  
+  /** Sample valid generated workout plan */
+  const validPlan = {
+    days: [
+      {
+        dayOfWeek: 1,
+        name: 'Monday - Push',
+        isRestDay: false,
+        sections: [
+          {
+            type: 'working',
+            title: 'Main Work',
+            exercises: [
+              { name: 'Bench Press', sets: 4, reps: '8-10', exerciseId: validExerciseUuid },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+
+  describe('successful generation (no review needed)', () => {
+    it('should accept result without needsReview field', () => {
+      const result = workoutPlanGenerationResultSchema.safeParse({
+        plan: validPlan,
+        newNotes: [],
+      });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.needsReview).toBeUndefined();
+        expect(result.data.reviewReasons).toBeUndefined();
+      }
+    });
+
+    it('should accept result with needsReview=false', () => {
+      const result = workoutPlanGenerationResultSchema.safeParse({
+        plan: validPlan,
+        newNotes: [],
+        needsReview: false,
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it('should accept result with reasoning', () => {
+      const result = workoutPlanGenerationResultSchema.safeParse({
+        plan: validPlan,
+        newNotes: [],
+        reasoning: 'Created a push-focused workout based on strength goals.',
+      });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.reasoning).toBe('Created a push-focused workout based on strength goals.');
+      }
+    });
+  });
+
+  describe('generation requiring review', () => {
+    it('should accept result with needsReview=true and reviewReasons', () => {
+      const unresolvedExercises = [
+        {
+          dayOfWeek: 1,
+          dayName: 'Monday - Push',
+          sectionIndex: 0,
+          sectionTitle: 'Warmup',
+          exerciseIndex: 0,
+          exerciseName: 'Arm Circles',
+          reason: 'missing_id' as const,
+        },
+      ];
+
+      const result = workoutPlanGenerationResultSchema.safeParse({
+        plan: validPlan,
+        newNotes: [],
+        needsReview: true,
+        reviewReasons: unresolvedExercises,
+      });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.needsReview).toBe(true);
+        expect(result.data.reviewReasons).toHaveLength(1);
+        expect(result.data.reviewReasons?.[0].exerciseName).toBe('Arm Circles');
+      }
+    });
+
+    it('should accept result with multiple unresolved exercises', () => {
+      const unresolvedExercises = [
+        {
+          dayOfWeek: 1,
+          dayName: 'Monday - Push',
+          sectionIndex: 0,
+          sectionTitle: 'Warmup',
+          exerciseIndex: 0,
+          exerciseName: 'Arm Circles',
+          reason: 'missing_id' as const,
+        },
+        {
+          dayOfWeek: 2,
+          dayName: 'Tuesday - Pull',
+          sectionIndex: 1,
+          sectionTitle: 'Cooldown',
+          exerciseIndex: 1,
+          exerciseName: 'Foam Rolling',
+          reason: 'invalid_id' as const,
+        },
+      ];
+
+      const result = workoutPlanGenerationResultSchema.safeParse({
+        plan: validPlan,
+        newNotes: [],
+        needsReview: true,
+        reviewReasons: unresolvedExercises,
+      });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.reviewReasons).toHaveLength(2);
+      }
+    });
+  });
+
+  describe('invalid data', () => {
+    it('should reject missing plan', () => {
+      const result = workoutPlanGenerationResultSchema.safeParse({
+        newNotes: [],
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject invalid reviewReasons structure', () => {
+      const result = workoutPlanGenerationResultSchema.safeParse({
+        plan: validPlan,
+        newNotes: [],
+        needsReview: true,
+        reviewReasons: [{ invalid: 'structure' }],
+      });
+      expect(result.success).toBe(false);
+    });
   });
 });

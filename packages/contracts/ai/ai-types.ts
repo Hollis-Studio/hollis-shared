@@ -79,12 +79,65 @@ export interface GeneratedWorkoutPlan {
 // ============================================================================
 
 /**
+ * Reason codes for unresolved exercises requiring human review
+ */
+export const UNRESOLVED_EXERCISE_REASONS = ['missing_id', 'invalid_id', 'name_mismatch'] as const;
+export type UnresolvedExerciseReason = (typeof UNRESOLVED_EXERCISE_REASONS)[number];
+
+/**
+ * Exercise that requires human review before workout can be saved
+ * @see WorkoutPlanGenerationResult.reviewReasons
+ */
+export interface UnresolvedExercise {
+  /** Day of week (0=Sunday, 6=Saturday) */
+  dayOfWeek: number;
+  /** Display name for the day (e.g., "Monday - Push Day") */
+  dayName: string;
+  /** Index of section within the day */
+  sectionIndex: number;
+  /** Section title (e.g., "Working Sets") */
+  sectionTitle: string;
+  /** Index of exercise within the section */
+  exerciseIndex: number;
+  /** Name of the unresolved exercise */
+  exerciseName: string;
+  /** Why this exercise requires review */
+  reason: UnresolvedExerciseReason;
+}
+
+/**
+ * SSE event types for workout plan generation
+ */
+export const WORKOUT_GENERATION_EVENTS = ['progress', 'complete', 'needs_review', 'error'] as const;
+export type WorkoutGenerationEventType = (typeof WORKOUT_GENERATION_EVENTS)[number];
+
+/**
+ * Workout generation event type constants
+ */
+export const WORKOUT_GENERATION_EVENT = {
+  PROGRESS: 'progress' as WorkoutGenerationEventType,
+  COMPLETE: 'complete' as WorkoutGenerationEventType,
+  NEEDS_REVIEW: 'needs_review' as WorkoutGenerationEventType,
+  ERROR: 'error' as WorkoutGenerationEventType,
+} as const;
+
+/**
  * Result from workout plan generation
  */
 export interface WorkoutPlanGenerationResult {
   plan: GeneratedWorkoutPlan;
   newNotes: AIGeneratedNote[];
   reasoning?: string;
+  /**
+   * True if exercises require human review before saving.
+   * When true, the plan MUST NOT be persisted until all reviewReasons are resolved.
+   */
+  needsReview?: boolean;
+  /**
+   * List of exercises requiring human intervention.
+   * Only populated when needsReview is true.
+   */
+  reviewReasons?: UnresolvedExercise[];
 }
 
 /**
