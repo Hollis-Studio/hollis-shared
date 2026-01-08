@@ -697,6 +697,146 @@ export const AIQueryResponseSchema = z.object({
 export type AIQueryResponse = z.infer<typeof AIQueryResponseSchema>;
 
 // ============================================================================
+// AI CHAT SESSION (for Smart Assist conversational interface)
+// ============================================================================
+
+/** Message role in AI chat */
+export const AI_CHAT_ROLES = ['user', 'assistant'] as const;
+export type AIChatRole = (typeof AI_CHAT_ROLES)[number];
+export const AIChatRoleSchema = z.enum(AI_CHAT_ROLES);
+
+/** Supported file types for AI chat attachments */
+export const AI_CHAT_FILE_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'application/pdf',
+  'text/plain',
+  'text/csv',
+  'text/markdown',
+  'application/json',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // xlsx
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
+] as const;
+export type AIChatFileType = (typeof AI_CHAT_FILE_TYPES)[number];
+
+/**
+ * Attachment in an AI chat message
+ */
+export const AIChatAttachmentSchema = z.object({
+  /** Unique ID for the attachment */
+  id: z.string(),
+  /** Original filename */
+  filename: z.string(),
+  /** MIME type of the file */
+  mimeType: z.string(),
+  /** File size in bytes */
+  size: z.number(),
+  /** Base64 encoded file content (for sending) or URL (for retrieval) */
+  data: z.string().optional(),
+  /** Preview URL for images */
+  previewUrl: z.string().optional(),
+});
+
+export type AIChatAttachment = z.infer<typeof AIChatAttachmentSchema>;
+
+/**
+ * Single message in an AI chat session
+ */
+export const AIChatMessageSchema = z.object({
+  /** Unique ID for the message */
+  id: z.string(),
+  /** Session this message belongs to */
+  sessionId: z.string(),
+  /** Role of the message sender */
+  role: AIChatRoleSchema,
+  /** Message content (markdown for assistant responses) */
+  content: z.string(),
+  /** File attachments */
+  attachments: z.array(AIChatAttachmentSchema).optional(),
+  /** Data points extracted from AI response */
+  dataPoints: z.array(AIQueryDataPointSchema).optional(),
+  /** ISO timestamp when message was created */
+  createdAt: z.string(),
+});
+
+export type AIChatMessage = z.infer<typeof AIChatMessageSchema>;
+
+/**
+ * AI chat session metadata
+ */
+export const AIChatSessionSchema = z.object({
+  /** Unique session ID */
+  id: z.string(),
+  /** User who owns this session */
+  userId: z.string(),
+  /** Session title (auto-generated from first message or user-provided) */
+  title: z.string(),
+  /** ISO timestamp when session was created */
+  createdAt: z.string(),
+  /** ISO timestamp when session was last updated */
+  updatedAt: z.string(),
+  /** Preview of the last message (truncated) */
+  lastMessagePreview: z.string().optional(),
+  /** Number of messages in the session */
+  messageCount: z.number(),
+});
+
+export type AIChatSession = z.infer<typeof AIChatSessionSchema>;
+
+/**
+ * Full session with messages
+ */
+export const AIChatSessionWithMessagesSchema = AIChatSessionSchema.extend({
+  messages: z.array(AIChatMessageSchema),
+});
+
+export type AIChatSessionWithMessages = z.infer<typeof AIChatSessionWithMessagesSchema>;
+
+/**
+ * Request to send a message in a chat session
+ */
+export const AIChatSendMessageRequestSchema = z.object({
+  /** Session ID (omit for new session) */
+  sessionId: z.string().optional(),
+  /** Message content */
+  content: z.string().min(1).max(2000),
+  /** File attachments (base64 encoded) */
+  attachments: z.array(z.object({
+    filename: z.string(),
+    mimeType: z.string(),
+    base64: z.string(),
+  })).max(5).optional(),
+});
+
+export type AIChatSendMessageRequest = z.infer<typeof AIChatSendMessageRequestSchema>;
+
+/**
+ * Response from sending a message
+ */
+export const AIChatSendMessageResponseSchema = z.object({
+  /** The session (created or existing) */
+  session: AIChatSessionSchema,
+  /** The user's message */
+  userMessage: AIChatMessageSchema,
+  /** The assistant's response */
+  assistantMessage: AIChatMessageSchema,
+});
+
+export type AIChatSendMessageResponse = z.infer<typeof AIChatSendMessageResponseSchema>;
+
+/**
+ * List sessions response
+ */
+export const AIChatSessionListSchema = z.object({
+  sessions: z.array(AIChatSessionSchema),
+  total: z.number(),
+});
+
+export type AIChatSessionList = z.infer<typeof AIChatSessionListSchema>;
+
+// ============================================================================
 // REFERRAL TREE
 // ============================================================================
 
