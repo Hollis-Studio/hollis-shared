@@ -23,6 +23,7 @@ import { z } from 'zod';
 /** Tuple of valid lab order status values (source of truth) */
 export const LAB_ORDER_STATUSES = [
   'ORDERED',
+  'KIT_SENT',
   'SAMPLE_RECEIVED',
   'RESULTS_PENDING',
   'RESULTS_REVIEWED',
@@ -35,6 +36,7 @@ export const LabOrderStatusSchema = z.enum(LAB_ORDER_STATUSES);
 /** Constant object for lab order status comparisons */
 export const LAB_ORDER_STATUS = {
   ORDERED: 'ORDERED' as LabOrderStatus,
+  KIT_SENT: 'KIT_SENT' as LabOrderStatus,
   SAMPLE_RECEIVED: 'SAMPLE_RECEIVED' as LabOrderStatus,
   RESULTS_PENDING: 'RESULTS_PENDING' as LabOrderStatus,
   RESULTS_REVIEWED: 'RESULTS_REVIEWED' as LabOrderStatus,
@@ -43,6 +45,7 @@ export const LAB_ORDER_STATUS = {
 /** Human-readable labels for lab order statuses */
 export const LAB_ORDER_STATUS_LABELS: Record<LabOrderStatus, string> = {
   ORDERED: 'Ordered',
+  KIT_SENT: 'Kit Sent',
   SAMPLE_RECEIVED: 'Sample Received',
   RESULTS_PENDING: 'Results Pending',
   RESULTS_REVIEWED: 'Results Reviewed',
@@ -247,6 +250,7 @@ export type LabPipelineItem = z.infer<typeof LabPipelineItemSchema>;
  */
 export const LabPipelineSchema = z.object({
   ordered: z.array(LabPipelineItemSchema),
+  kitSent: z.array(LabPipelineItemSchema),
   sampleReceived: z.array(LabPipelineItemSchema),
   resultsPending: z.array(LabPipelineItemSchema),
   resultsReviewed: z.array(LabPipelineItemSchema),
