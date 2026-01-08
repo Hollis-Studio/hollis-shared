@@ -12,20 +12,21 @@
 
 import { z } from 'zod';
 import {
-  AccountStatusSchema,
-  ActivityLevelSchema,
-  BiologicalSexSchema,
-  FitnessExperienceSchema,
-  GoalDataSourceSchema,
-  PregnancyStatusSchema,
-  PrimaryGoalSchema,
-  StrategyStatusSchema,
-  StrategyTypeSchema,
-  UserRoleSchema,
-  UserTierSchema,
-  isoDateSchema,
+    AccountStatusSchema,
+    ActivityLevelSchema,
+    BiologicalSexSchema,
+    FitnessExperienceSchema,
+    GoalDataSourceSchema,
+    GoalMetricKeySchema,
+    PregnancyStatusSchema,
+    PrimaryGoalSchema,
+    StrategyStatusSchema,
+    StrategyTypeSchema,
+    UserRoleSchema,
+    UserTierSchema,
+    isoDateSchema,
 } from '../domain';
-import { LabMappingStatusSchema, LabMetricCategorySchema, LabMetricDirectionalitySchema } from '../domain/labs';
+import { LabMappingStatusSchema, LabMetricCategorySchema, LabMetricDirectionalitySchema, MetricApprovalStatusSchema } from '../domain/labs';
 
 // ============================================================================
 // ADMIN-SPECIFIC ENUMS
@@ -45,6 +46,16 @@ export const volumeLevelSchema = z.enum(['low', 'moderate', 'high']);
  * Limitation severity schema.
  */
 export const limitationSeveritySchema = z.enum(['mild', 'moderate', 'severe']);
+
+/**
+ * Injury recovery status schema.
+ */
+export const injuryRecoveryStatusSchema = z.enum(['active', 'recovering', 'healed', 'chronic']);
+
+/**
+ * Medical condition status schema.
+ */
+export const medicalConditionStatusSchema = z.enum(['active', 'managed', 'resolved', 'monitoring']);
 
 // ============================================================================
 // PATIENT MANAGEMENT SCHEMAS
@@ -85,6 +96,30 @@ export const adminLimitationSchema = z.object({
 });
 
 /**
+ * Admin injury schema.
+ */
+export const adminInjurySchema = z.object({
+  id: z.string(),
+  description: z.string().min(1).max(500),
+  bodyPart: z.string().max(100).optional(),
+  occurredAt: isoDateSchema.optional(),
+  severity: limitationSeveritySchema.optional(),
+  recoveryStatus: injuryRecoveryStatusSchema.optional(),
+  notes: z.string().max(5000).optional(),
+});
+
+/**
+ * Admin medical condition schema.
+ */
+export const adminMedicalConditionSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1).max(200),
+  status: medicalConditionStatusSchema,
+  diagnosisDate: isoDateSchema.optional(),
+  notes: z.string().max(5000).optional(),
+});
+
+/**
  * Patient profile update payload schema.
  */
 export const patientProfileUpdatePayloadSchema = z.object({
@@ -104,6 +139,8 @@ export const patientProfileUpdatePayloadSchema = z.object({
   primaryGoal: PrimaryGoalSchema.nullable().optional(),
   medications: z.array(adminMedicationSchema).optional(),
   limitations: z.array(adminLimitationSchema).optional(),
+  injuries: z.array(adminInjurySchema).optional(),
+  medicalConditions: z.array(adminMedicalConditionSchema).optional(),
 });
 
 /**
@@ -250,7 +287,7 @@ export const createPhaseInputSchema = z.object({
  * Create goal input schema.
  */
 export const createGoalInputSchema = z.object({
-  goalMetric: z.string().min(1).max(100),
+  goalMetric: GoalMetricKeySchema,
   goalTarget: z.number(),
   baselineValue: z.number().optional(),
   weight: z.number().min(0).max(1).optional(),
@@ -397,6 +434,8 @@ export const labMetricDefinitionSummarySchema = z.object({
   category: LabMetricCategorySchema,
   canonicalUnit: z.string().min(1).max(50),
   directionality: LabMetricDirectionalitySchema,
+  isCanonical: z.boolean().optional(),
+  approvalStatus: MetricApprovalStatusSchema.optional(),
 });
 
 /** Population qualifier for race/ethnicity/sex-specific lab results */
@@ -517,6 +556,7 @@ export const clientIntakePayloadSchema = z.object({
   injuries: z.string().max(5000).optional(),
   preferences: z.string().max(5000).optional(),
   limitations: z.string().max(5000).optional(),
+  medications: z.string().max(5000).optional(),
   medicalConditions: z.string().max(5000).optional(),
 });
 
@@ -552,4 +592,79 @@ export const adminAnalyticsDataSchema = z.object({
   averageComplianceScore: z.number().min(0).max(100),
   appointmentsToday: z.number().min(0),
   pendingLabReviews: z.number().min(0),
+});
+
+// ============================================================================
+// METRIC GOVERNANCE SCHEMAS
+// ============================================================================
+
+/**
+ * Pending metric review schema - represents a metric awaiting admin review.
+ */
+export const pendingMetricReviewSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  name: z.string(),
+  category: LabMetricCategorySchema,
+  canonicalUnit: z.string(),
+  directionality: LabMetricDirectionalitySchema,
+  aliases: z.array(z.string()),
+  approvalStatus: MetricApprovalStatusSchema,
+  isCanonical: z.boolean(),
+  createdBy: z.string().nullable(),
+  createdAt: z.string(),
+  observationCount: z.number().min(0),
+  suggestedMergeTargets: z.array(z.object({
+    id: z.string(),
+    code: z.string(),
+    name: z.string(),
+    similarity: z.number().min(0).max(1),
+  })).optional(),
+});
+
+/**
+ * Suggested new metric schema - proposed metric not yet persisted.
+ */
+export const suggestedNewMetricSchema = z.object({
+  suggestedCode: z.string(),
+  suggestedName: z.string(),
+  suggestedCategory: LabMetricCategorySchema,
+  suggestedAliases: z.array(z.string()),
+  canonicalUnit: z.string(),
+  directionality: LabMetricDirectionalitySchema,
+  confidence: z.number().min(0).max(1),
+  reasoning: z.string().optional(),
+  rawAnalyteName: z.string(),
+  isPopulationVariant: z.boolean().optional(),
+  parentMetricCode: z.string().optional(),
+});
+
+/**
+ * Metric governance action schema - approve/reject a pending metric.
+ */
+export const metricGovernanceActionSchema = z.object({
+  action: z.enum(['approve', 'reject']),
+  reviewNotes: z.string().max(2000).optional(),
+  setAsCanonical: z.boolean().optional(),
+});
+
+/**
+ * Merge metrics payload schema - merge source metrics into target.
+ */
+export const mergeMetricsPayloadSchema = z.object({
+  sourceMetricIds: z.array(z.string()).min(1),
+  targetMetricId: z.string(),
+  migrateObservations: z.boolean().default(true),
+  reviewNotes: z.string().max(2000).optional(),
+});
+
+/**
+ * Metric governance result schema - response from governance actions.
+ */
+export const metricGovernanceResultSchema = z.object({
+  success: z.boolean(),
+  metricId: z.string(),
+  action: z.enum(['approved', 'rejected', 'merged']),
+  observationsMigrated: z.number().optional(),
+  message: z.string().optional(),
 });

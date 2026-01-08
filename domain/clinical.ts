@@ -42,14 +42,15 @@ export const LIMITATION_SEVERITY_LABELS: Record<LimitationSeverity, string> = {
  * Used to track data provenance and enable source-specific filtering.
  * 
  * **VERIFICATION RULE**:
- * - VERIFIED (isVerified: true): LAB_REPORT, CLINICIAN_ENTRY
- *   → Manual input from admins/clinicians/trainers or parsed lab reports
+ * - VERIFIED (isVerified: true): LAB_REPORT, CLINICIAN_ENTRY, DERIVED
+ *   → Manual input from admins/clinicians/trainers, parsed lab reports, or system-calculated values
  * - UNVERIFIED (isVerified: false): All others (APPLE_HEALTH, USER_LOG, GOOGLE_FIT, OURA, WHOOP, DEVICE)
  *   → Data from wearables or user self-entry - not vetted for accuracy
  */
 export const BIOMETRIC_SOURCES = [
   'LAB_REPORT',
   'CLINICIAN_ENTRY',
+  'DERIVED',
   'APPLE_HEALTH',
   'USER_LOG',
   'GOOGLE_FIT',
@@ -64,6 +65,7 @@ export const BiometricSourceSchema = z.enum(BIOMETRIC_SOURCES);
 export const BIOMETRIC_SOURCE = {
   LAB_REPORT: 'LAB_REPORT' as BiometricSource,
   CLINICIAN_ENTRY: 'CLINICIAN_ENTRY' as BiometricSource,
+  DERIVED: 'DERIVED' as BiometricSource,
   APPLE_HEALTH: 'APPLE_HEALTH' as BiometricSource,
   USER_LOG: 'USER_LOG' as BiometricSource,
   GOOGLE_FIT: 'GOOGLE_FIT' as BiometricSource,
@@ -76,6 +78,7 @@ export const BIOMETRIC_SOURCE = {
 export const BIOMETRIC_SOURCE_LABELS: Record<BiometricSource, string> = {
   LAB_REPORT: 'Lab Report',
   CLINICIAN_ENTRY: 'Clinician Entry',
+  DERIVED: 'System Calculated',
   APPLE_HEALTH: 'Apple Health',
   USER_LOG: 'User Log',
   GOOGLE_FIT: 'Google Fit',
@@ -83,3 +86,153 @@ export const BIOMETRIC_SOURCE_LABELS: Record<BiometricSource, string> = {
   WHOOP: 'Whoop',
   DEVICE: 'Device',
 };
+
+// ============================================================================
+// INJURY RECOVERY STATUS
+// ============================================================================
+
+export const INJURY_RECOVERY_STATUSES = ['active', 'recovering', 'healed', 'chronic'] as const;
+export type InjuryRecoveryStatus = (typeof INJURY_RECOVERY_STATUSES)[number];
+
+export const InjuryRecoveryStatusSchema = z.enum(INJURY_RECOVERY_STATUSES);
+
+export const INJURY_RECOVERY_STATUS = {
+  ACTIVE: 'active' as InjuryRecoveryStatus,
+  RECOVERING: 'recovering' as InjuryRecoveryStatus,
+  HEALED: 'healed' as InjuryRecoveryStatus,
+  CHRONIC: 'chronic' as InjuryRecoveryStatus,
+} as const;
+
+export const INJURY_RECOVERY_STATUS_LABELS: Record<InjuryRecoveryStatus, string> = {
+  active: 'Active',
+  recovering: 'Recovering',
+  healed: 'Healed',
+  chronic: 'Chronic',
+};
+
+// ============================================================================
+// MEDICAL CONDITION STATUS
+// ============================================================================
+
+export const MEDICAL_CONDITION_STATUSES = ['active', 'managed', 'resolved', 'monitoring'] as const;
+export type MedicalConditionStatus = (typeof MEDICAL_CONDITION_STATUSES)[number];
+
+export const MedicalConditionStatusSchema = z.enum(MEDICAL_CONDITION_STATUSES);
+
+export const MEDICAL_CONDITION_STATUS = {
+  ACTIVE: 'active' as MedicalConditionStatus,
+  MANAGED: 'managed' as MedicalConditionStatus,
+  RESOLVED: 'resolved' as MedicalConditionStatus,
+  MONITORING: 'monitoring' as MedicalConditionStatus,
+} as const;
+
+export const MEDICAL_CONDITION_STATUS_LABELS: Record<MedicalConditionStatus, string> = {
+  active: 'Active',
+  managed: 'Managed',
+  resolved: 'Resolved',
+  monitoring: 'Monitoring',
+};
+
+// ============================================================================
+// MEDICATION CONTRACT
+// ============================================================================
+
+/**
+ * Medication entry for patient clinical profile.
+ */
+export interface Medication {
+  id: string;
+  name: string;
+  dosage: string;
+  frequency: string;
+  notes?: string;
+}
+
+export const medicationSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1, 'Medication name is required').max(200),
+  dosage: z.string().min(1, 'Dosage is required').max(100),
+  frequency: z.string().min(1, 'Frequency is required').max(200),
+  notes: z.string().max(5000).optional(),
+});
+
+export const medicationsSchema = z.array(medicationSchema);
+
+// ============================================================================
+// LIMITATION CONTRACT
+// ============================================================================
+
+/**
+ * Physical limitation/restriction for patient clinical profile.
+ */
+export interface Limitation {
+  id: string;
+  description: string;
+  severity?: LimitationSeverity;
+  notes?: string;
+}
+
+export const limitationSchema = z.object({
+  id: z.string(),
+  description: z.string().min(1, 'Limitation description is required').max(500),
+  severity: LimitationSeveritySchema.optional(),
+  notes: z.string().max(5000).optional(),
+});
+
+export const limitationsSchema = z.array(limitationSchema);
+
+// ============================================================================
+// INJURY CONTRACT
+// ============================================================================
+
+/**
+ * Injury entry for patient clinical profile.
+ * Tracks injuries with body location, timing, severity, and recovery progress.
+ */
+export interface Injury {
+  id: string;
+  description: string;
+  bodyPart?: string;
+  occurredAt?: string; // ISO date string
+  severity?: LimitationSeverity;
+  recoveryStatus?: InjuryRecoveryStatus;
+  notes?: string;
+}
+
+export const injurySchema = z.object({
+  id: z.string(),
+  description: z.string().min(1, 'Injury description is required').max(500),
+  bodyPart: z.string().max(100).optional(),
+  occurredAt: z.string().optional(), // ISO date
+  severity: LimitationSeveritySchema.optional(),
+  recoveryStatus: InjuryRecoveryStatusSchema.optional(),
+  notes: z.string().max(5000).optional(),
+});
+
+export const injuriesSchema = z.array(injurySchema);
+
+// ============================================================================
+// MEDICAL CONDITION CONTRACT
+// ============================================================================
+
+/**
+ * Medical condition entry for patient clinical profile.
+ * Tracks diagnoses with status and management information.
+ */
+export interface MedicalCondition {
+  id: string;
+  name: string;
+  status: MedicalConditionStatus;
+  diagnosisDate?: string; // ISO date string
+  notes?: string;
+}
+
+export const medicalConditionSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1, 'Condition name is required').max(200),
+  status: MedicalConditionStatusSchema,
+  diagnosisDate: z.string().optional(), // ISO date
+  notes: z.string().max(5000).optional(),
+});
+
+export const medicalConditionsSchema = z.array(medicalConditionSchema);

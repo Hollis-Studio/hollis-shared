@@ -250,6 +250,40 @@ export const LAB_METRIC_CATEGORY_LABELS: Record<LabMetricCategory, string> = {
 };
 
 // ============================================================================
+// METRIC APPROVAL STATUS (Governance Workflow)
+// ============================================================================
+
+/** Tuple of valid metric approval status values (source of truth) */
+export const METRIC_APPROVAL_STATUSES = ['PENDING', 'APPROVED', 'REJECTED', 'MERGED'] as const;
+export type MetricApprovalStatus = (typeof METRIC_APPROVAL_STATUSES)[number];
+
+/** Zod schema for metric approval status */
+export const MetricApprovalStatusSchema = z.enum(METRIC_APPROVAL_STATUSES);
+
+/** Constant object for metric approval status comparisons */
+export const METRIC_APPROVAL_STATUS = {
+  PENDING: 'PENDING' as MetricApprovalStatus,
+  APPROVED: 'APPROVED' as MetricApprovalStatus,
+  REJECTED: 'REJECTED' as MetricApprovalStatus,
+  MERGED: 'MERGED' as MetricApprovalStatus,
+} as const;
+
+/** Human-readable labels for metric approval statuses */
+export const METRIC_APPROVAL_STATUS_LABELS: Record<MetricApprovalStatus, string> = {
+  PENDING: 'Pending Review',
+  APPROVED: 'Approved',
+  REJECTED: 'Rejected',
+  MERGED: 'Merged',
+};
+
+/**
+ * Type guard to check if a string is a valid metric approval status
+ */
+export function isMetricApprovalStatus(value: string): value is MetricApprovalStatus {
+  return (METRIC_APPROVAL_STATUSES as readonly string[]).includes(value);
+}
+
+// ============================================================================
 // CLINICIAN GOAL STATUS (Goal Evaluation)
 // ============================================================================
 

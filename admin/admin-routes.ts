@@ -403,6 +403,9 @@ export const ADMIN_LAB_ROUTES = {
   /** POST - Create lab metric definition */
   METRIC_CREATE: '/api/admin/labs/metrics',
 
+  /** Base path for metric governance operations */
+  METRICS: '/api/admin/labs/metrics',
+
   /** PATCH - Update lab order status */
   status: (labId: string) => `/api/admin/labs/${labId}/status` as const,
 

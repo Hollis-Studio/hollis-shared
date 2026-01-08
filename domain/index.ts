@@ -62,3 +62,9 @@ export * from './pagination';
 
 // Clinical Registry domain - clinical metric definitions schema
 export * from './clinical-registry.schema';
+
+// Goal Metrics domain - canonical goal metric keys for validation
+export * from './goal-metrics';
+
+// Biometrics domain - canonical biometric keys for validation
+export * from './biometrics';
