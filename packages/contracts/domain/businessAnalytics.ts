@@ -250,6 +250,7 @@ export type LabPipelineItem = z.infer<typeof LabPipelineItemSchema>;
  */
 export const LabPipelineSchema = z.object({
   ordered: z.array(LabPipelineItemSchema),
+  kitSent: z.array(LabPipelineItemSchema),
   sampleReceived: z.array(LabPipelineItemSchema),
   resultsPending: z.array(LabPipelineItemSchema),
   resultsReviewed: z.array(LabPipelineItemSchema),
