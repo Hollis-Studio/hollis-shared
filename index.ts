@@ -40,6 +40,12 @@ export * from './admin';
 // AI contracts (types, validation, prompts)
 export * from './ai';
 
+// Public contracts (contact forms, public API)
+export * from './public';
+
+// Stripe contracts (products, payment links)
+export * from './stripe';
+
 // Password contracts (validation, policies, reset)
 // NOTE: Explicitly re-export passwordSchema from password module to resolve ambiguity
 export { PASSWORD_POLICY, ZXCVBN_SCORE_LABELS, checkPasswordBreached, passwordLengthSchema, passwordSchema, validatePassword, validatePasswordStrength, type PasswordValidationResult } from './password';

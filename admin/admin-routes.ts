@@ -272,6 +272,28 @@ export const ADMIN_EXERCISE_ROUTES = {
 } as const;
 
 // ============================================================================
+// ADMIN BOOKING ROUTES
+// ============================================================================
+
+/**
+ * Admin appointment/booking management routes.
+ * Base path: /api/admin/appointments
+ */
+export const ADMIN_BOOKING_ROUTES = {
+  /** GET - List appointments with optional filters */
+  LIST: '/api/admin/appointments',
+
+  /** POST - Create appointment for a patient */
+  CREATE: '/api/admin/appointments',
+
+  /** PUT - Update appointment */
+  update: (appointmentId: string) => `/api/admin/appointments/${appointmentId}` as const,
+
+  /** POST - Cancel appointment */
+  cancel: (appointmentId: string) => `/api/admin/appointments/${appointmentId}/cancel` as const,
+} as const;
+
+// ============================================================================
 // ADMIN WORKOUT ROUTES
 // ============================================================================
 
@@ -317,6 +339,12 @@ export const ADMIN_REGISTRATION_ROUTES = {
 
   /** POST - Create registration */
   CREATE: '/api/admin/registrations',
+
+  /** POST - Approve registration */
+  approve: (id: string) => `/api/admin/registrations/${id}/approve` as const,
+
+  /** POST - Reject registration */
+  reject: (id: string) => `/api/admin/registrations/${id}/reject` as const,
 
   /** DELETE - Delete registration */
   delete: (barcode: string) => `/api/admin/registrations/${barcode}` as const,
@@ -518,6 +546,7 @@ export const ADMIN_API_ROUTES = {
   MESSAGES: ADMIN_MESSAGE_ROUTES,
   EXERCISES: ADMIN_EXERCISE_ROUTES,
   WORKOUTS: ADMIN_WORKOUT_ROUTES,
+  BOOKINGS: ADMIN_BOOKING_ROUTES,
   SESSION_NOTES: ADMIN_SESSION_NOTES_ROUTES,
   REGISTRATIONS: ADMIN_REGISTRATION_ROUTES,
   ANALYTICS: ADMIN_ANALYTICS_ROUTES,

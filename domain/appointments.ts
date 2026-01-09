@@ -135,3 +135,42 @@ export const BOOKING_STEP_LABELS: Record<BookingStep, string> = {
 export function isBookingStep(value: string): value is BookingStep {
   return (BOOKING_STEPS as readonly string[]).includes(value);
 }
+
+// ============================================================================
+// Admin Booking Flow (includes patient selection as first step)
+// ============================================================================
+
+/**
+ * Steps in the admin appointment booking flow.
+ * Admin flow includes patient selection as the first step.
+ */
+export const ADMIN_BOOKING_STEPS = ['patient', 'provider', 'type', 'datetime', 'confirm'] as const;
+
+export type AdminBookingStep = (typeof ADMIN_BOOKING_STEPS)[number];
+
+export const AdminBookingStepSchema = z.enum(ADMIN_BOOKING_STEPS);
+
+/** Centralized admin booking step constants for equality checks */
+export const ADMIN_BOOKING_STEP = {
+  PATIENT: 'patient' as AdminBookingStep,
+  PROVIDER: 'provider' as AdminBookingStep,
+  TYPE: 'type' as AdminBookingStep,
+  DATETIME: 'datetime' as AdminBookingStep,
+  CONFIRM: 'confirm' as AdminBookingStep,
+} as const;
+
+/** Human-readable labels for admin booking steps */
+export const ADMIN_BOOKING_STEP_LABELS: Record<AdminBookingStep, string> = {
+  patient: 'Patient',
+  provider: 'Provider',
+  type: 'Type',
+  datetime: 'Date/Time',
+  confirm: 'Confirm',
+};
+
+/**
+ * Check if a string is a valid admin booking step
+ */
+export function isAdminBookingStep(value: string): value is AdminBookingStep {
+  return (ADMIN_BOOKING_STEPS as readonly string[]).includes(value);
+}

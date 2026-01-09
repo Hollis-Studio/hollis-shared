@@ -15,6 +15,7 @@
 
 import type { VolumeLevel as AdminVolumeLevel } from '../admin/admin-types';
 import { type AINoteCategory } from '../domain/ai-notes';
+import { type GoalMetricKey } from '../domain/goal-metrics';
 import { type WorkoutSectionType } from '../domain/workouts';
 
 // ============================================================================
@@ -242,7 +243,7 @@ export type StrategyGenerationProgressCallback = (progress: StrategyGenerationPr
  * Goal draft for strategy generation
  */
 export interface StrategyGoalDraft {
-  goalMetric: string;
+  goalMetric: GoalMetricKey;
   goalTarget: number;
   linkedExerciseId?: string;
   weight?: number;
