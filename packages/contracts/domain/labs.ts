@@ -321,3 +321,174 @@ export type GoalTargetDirection = (typeof GOAL_TARGET_DIRECTIONS)[number];
 
 /** Zod schema for goal target direction */
 export const GoalTargetDirectionSchema = z.enum(GOAL_TARGET_DIRECTIONS);
+
+// ============================================================================
+// LAB OBSERVATION CONTRACT
+// ============================================================================
+
+/**
+ * Lab observation contract - represents a single lab result observation.
+ */
+export interface LabObservationContract {
+  id: string;
+  /**
+   * Patient's user ID in HH-XXXXXX barcode format.
+   * References the patient this lab result belongs to.
+   *
+   * @format HH-XXXXXX
+   */
+  userId: string;
+  reportId: string;
+  metricDefinitionId?: string | null;
+  observedAt: string; // IsoTimestampString
+  rawAnalyteName: string;
+  rawValueText?: string | null;
+  rawValueNumber?: number | null;
+  rawUnit?: string | null;
+  rawReferenceIntervalText?: string | null;
+  rawReferenceIntervalLow?: number | null;
+  rawReferenceIntervalHigh?: number | null;
+  rawFlag?: string | null;
+  canonicalValue?: number | null;
+  canonicalUnit?: string | null;
+  labReferenceIntervalLow?: number | null;
+  labReferenceIntervalHigh?: number | null;
+  labReferenceIntervalText?: string | null;
+  labFlag?: string | null;
+  mappingStatus: LabMappingStatus;
+  mappingConfidence?: number | null;
+  notes?: string | null;
+  tags?: string[] | null;
+  extractionConfidences?: Record<string, number> | null;
+  extractionFragments?: Record<string, string> | null;
+  createdAt: string; // IsoTimestampString
+  updatedAt: string; // IsoTimestampString
+}
+
+export const LabObservationSchema: z.ZodType<LabObservationContract> = z.object({
+  id: z.string(),
+  userId: z.string(),
+  reportId: z.string(),
+  metricDefinitionId: z.string().nullable().optional(),
+  observedAt: z.string(),
+  rawAnalyteName: z.string(),
+  rawValueText: z.string().nullable().optional(),
+  rawValueNumber: z.number().nullable().optional(),
+  rawUnit: z.string().nullable().optional(),
+  rawReferenceIntervalText: z.string().nullable().optional(),
+  rawReferenceIntervalLow: z.number().nullable().optional(),
+  rawReferenceIntervalHigh: z.number().nullable().optional(),
+  rawFlag: z.string().nullable().optional(),
+  canonicalValue: z.number().nullable().optional(),
+  canonicalUnit: z.string().nullable().optional(),
+  labReferenceIntervalLow: z.number().nullable().optional(),
+  labReferenceIntervalHigh: z.number().nullable().optional(),
+  labReferenceIntervalText: z.string().nullable().optional(),
+  labFlag: z.string().nullable().optional(),
+  mappingStatus: LabMappingStatusSchema,
+  mappingConfidence: z.number().min(0).max(1).nullable().optional(),
+  notes: z.string().nullable().optional(),
+  tags: z.array(z.string()).nullable().optional(),
+  extractionConfidences: z.record(z.string(), z.number()).nullable().optional(),
+  extractionFragments: z.record(z.string(), z.string()).nullable().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+// ============================================================================
+// LAB REPORT CONTRACT
+// ============================================================================
+
+/**
+ * Lab report contract - represents a complete lab report with observations.
+ */
+export interface LabReportContract {
+  id: string;
+  /**
+   * Patient's user ID in HH-XXXXXX barcode format.
+   * References the patient this lab panel belongs to.
+   *
+   * @format HH-XXXXXX
+   */
+  userId: string;
+  reportDate: string; // IsoTimestampString
+  labName?: string | null;
+  labLocation?: string | null;
+  specimenType?: string | null;
+  orderingProvider?: string | null;
+  panelName?: string | null;
+  panelCode?: string | null;
+  sourceDocumentId?: string | null;
+  verifiedById?: string | null;
+  verifiedAt?: string | null; // IsoTimestampString
+  notes?: string | null;
+  observations: LabObservationContract[];
+  createdAt: string; // IsoTimestampString
+  updatedAt: string; // IsoTimestampString
+}
+
+export const LabReportSchema: z.ZodType<LabReportContract> = z.object({
+  id: z.string(),
+  userId: z.string(),
+  reportDate: z.string(),
+  labName: z.string().nullable().optional(),
+  labLocation: z.string().nullable().optional(),
+  specimenType: z.string().nullable().optional(),
+  orderingProvider: z.string().nullable().optional(),
+  panelName: z.string().nullable().optional(),
+  panelCode: z.string().nullable().optional(),
+  sourceDocumentId: z.string().nullable().optional(),
+  verifiedById: z.string().nullable().optional(),
+  verifiedAt: z.string().nullable().optional(),
+  notes: z.string().nullable().optional(),
+  observations: z.array(LabObservationSchema),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+// ============================================================================
+// MOCK FACTORIES
+// ============================================================================
+
+const nowIso = () => new Date().toISOString();
+
+export const createMockLabObservation = (
+  overrides: Partial<LabObservationContract> = {},
+): LabObservationContract => {
+  const timestamp = nowIso();
+  return {
+    id: 'mock-observation-id',
+    userId: 'HH-ABC123',
+    reportId: 'mock-report-id',
+    observedAt: timestamp,
+    rawAnalyteName: 'Glucose',
+    rawValueNumber: 95,
+    rawUnit: 'mg/dL',
+    rawReferenceIntervalLow: 70,
+    rawReferenceIntervalHigh: 100,
+    canonicalValue: 95,
+    canonicalUnit: 'mg/dL',
+    mappingStatus: 'matched',
+    mappingConfidence: 0.95,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    ...overrides,
+  };
+};
+
+export const createMockLabReport = (
+  overrides: Partial<LabReportContract> = {},
+): LabReportContract => {
+  const timestamp = nowIso();
+  return {
+    id: 'mock-report-id',
+    userId: 'HH-ABC123',
+    reportDate: timestamp,
+    labName: 'Quest Diagnostics',
+    panelName: 'Comprehensive Metabolic Panel',
+    observations: [createMockLabObservation()],
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    ...overrides,
+  };
+};

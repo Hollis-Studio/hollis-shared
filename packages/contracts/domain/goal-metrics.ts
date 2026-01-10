@@ -8,10 +8,15 @@
  * IMPORTANT: This is the single source of truth for valid goal metric keys.
  * Any AI-generated goalMetric value MUST be one of these keys.
  *
- * deps: zod | consumers: shared/contracts/ai, server/src/services/ai, web-admin
+ * deps: zod, ./training | consumers: shared/contracts/ai, server/src/services/ai, web-admin
  */
 
 import { z } from 'zod';
+import {
+    type GoalCategory,
+    type GoalDataSource,
+    type HealthMetricDirection,
+} from './training';
 
 // ============================================================================
 // GOAL METRIC KEYS (Canonical Registry)
@@ -70,6 +75,242 @@ export const GoalMetricKeySchema = z.enum(GOAL_METRIC_KEYS, {
     message: `goalMetric must be one of: ${GOAL_METRIC_KEYS.join(', ')}`,
   }),
 });
+
+// ============================================================================
+// GOAL METRIC DEFINITIONS
+// ============================================================================
+
+/**
+ * Definition for a goal metric, including display info and data source.
+ */
+export interface GoalMetricDefinition {
+  /** Human-readable label for display */
+  label: string;
+  /** Unit of measurement */
+  unit: string;
+  /** Improvement direction */
+  direction: HealthMetricDirection;
+  /** Goal category for grouping */
+  category: GoalCategory;
+  /** Where to pull current value from */
+  dataSource: GoalDataSource;
+  /** Key to query from data source (e.g., 'glucose_fasting', 'weight') */
+  dataKey: string;
+}
+
+/**
+ * Central registry of all goal metric definitions.
+ * This is the single source of truth for goal metric metadata.
+ * Uses Record<string, ...> to allow dynamic string indexing.
+ */
+export const GOAL_METRIC_DEFINITIONS: Record<string, GoalMetricDefinition> = {
+  // -------------------------------------------------------------------------
+  // Body Composition (from biometrics)
+  // -------------------------------------------------------------------------
+  weight: {
+    label: 'Body Weight',
+    unit: 'lbs',
+    direction: 'context',
+    category: 'body_composition',
+    dataSource: 'biometric',
+    dataKey: 'Weight',
+  },
+  body_fat_percent: {
+    label: 'Body Fat Percentage',
+    unit: '%',
+    direction: 'lower_better',
+    category: 'body_composition',
+    dataSource: 'biometric',
+    dataKey: 'BodyFatPercentage',
+  },
+  lean_mass: {
+    label: 'Lean Body Mass',
+    unit: 'lbs',
+    direction: 'higher_better',
+    category: 'body_composition',
+    dataSource: 'biometric',
+    dataKey: 'MuscleMassKg',
+  },
+
+  // -------------------------------------------------------------------------
+  // Cardiovascular (from biometrics)
+  // -------------------------------------------------------------------------
+  resting_hr: {
+    label: 'Resting Heart Rate',
+    unit: 'bpm',
+    direction: 'lower_better',
+    category: 'cardiovascular',
+    dataSource: 'biometric',
+    dataKey: 'RestingHeartRate',
+  },
+  blood_pressure_systolic: {
+    label: 'Blood Pressure (Systolic)',
+    unit: 'mmHg',
+    direction: 'lower_better',
+    category: 'cardiovascular',
+    dataSource: 'biometric',
+    dataKey: 'BloodPressureSystolic',
+  },
+  blood_pressure_diastolic: {
+    label: 'Blood Pressure (Diastolic)',
+    unit: 'mmHg',
+    direction: 'lower_better',
+    category: 'cardiovascular',
+    dataSource: 'biometric',
+    dataKey: 'BloodPressureDiastolic',
+  },
+  vo2_max: {
+    label: 'VO2 Max Estimate',
+    unit: 'ml/kg/min',
+    direction: 'higher_better',
+    category: 'cardiovascular',
+    dataSource: 'biometric',
+    dataKey: 'VO2Max',
+  },
+
+  // -------------------------------------------------------------------------
+  // Metabolic (from labs)
+  // -------------------------------------------------------------------------
+  hba1c: {
+    label: 'Hemoglobin A1C',
+    unit: '%',
+    direction: 'lower_better',
+    category: 'metabolic',
+    dataSource: 'lab',
+    dataKey: 'hba1c',
+  },
+  fasting_glucose: {
+    label: 'Fasting Blood Glucose',
+    unit: 'mg/dL',
+    direction: 'lower_better',
+    category: 'metabolic',
+    dataSource: 'lab',
+    dataKey: 'glucose_fasting',
+  },
+  total_cholesterol: {
+    label: 'Total Cholesterol',
+    unit: 'mg/dL',
+    direction: 'lower_better',
+    category: 'metabolic',
+    dataSource: 'lab',
+    dataKey: 'totalCholesterol',
+  },
+  ldl_cholesterol: {
+    label: 'LDL Cholesterol',
+    unit: 'mg/dL',
+    direction: 'lower_better',
+    category: 'metabolic',
+    dataSource: 'lab',
+    dataKey: 'ldlCholesterol',
+  },
+  hdl_cholesterol: {
+    label: 'HDL Cholesterol',
+    unit: 'mg/dL',
+    direction: 'higher_better',
+    category: 'metabolic',
+    dataSource: 'lab',
+    dataKey: 'hdlCholesterol',
+  },
+  triglycerides: {
+    label: 'Triglycerides',
+    unit: 'mg/dL',
+    direction: 'lower_better',
+    category: 'metabolic',
+    dataSource: 'lab',
+    dataKey: 'triglycerides',
+  },
+  vitamin_d: {
+    label: 'Vitamin D',
+    unit: 'ng/mL',
+    direction: 'higher_better',
+    category: 'metabolic',
+    dataSource: 'lab',
+    dataKey: 'vitaminD',
+  },
+
+  // -------------------------------------------------------------------------
+  // Hormonal (from labs)
+  // -------------------------------------------------------------------------
+  testosterone_total: {
+    label: 'Total Testosterone',
+    unit: 'ng/dL',
+    direction: 'context',
+    category: 'hormonal',
+    dataSource: 'lab',
+    dataKey: 'testosteroneTotal',
+  },
+
+  // -------------------------------------------------------------------------
+  // Performance (from biometrics/manual)
+  // -------------------------------------------------------------------------
+  grip_strength: {
+    label: 'Grip Strength',
+    unit: 'kg',
+    direction: 'higher_better',
+    category: 'performance',
+    dataSource: 'manual',
+    dataKey: 'gripStrength',
+  },
+
+  // -------------------------------------------------------------------------
+  // Fitness (from exercise_log)
+  // -------------------------------------------------------------------------
+  squat_1rm: {
+    label: 'Squat 1RM',
+    unit: 'lbs',
+    direction: 'higher_better',
+    category: 'fitness',
+    dataSource: 'exercise_log',
+    dataKey: 'estimated1RM',
+  },
+  bench_1rm: {
+    label: 'Bench Press 1RM',
+    unit: 'lbs',
+    direction: 'higher_better',
+    category: 'fitness',
+    dataSource: 'exercise_log',
+    dataKey: 'estimated1RM',
+  },
+  deadlift_1rm: {
+    label: 'Deadlift 1RM',
+    unit: 'lbs',
+    direction: 'higher_better',
+    category: 'fitness',
+    dataSource: 'exercise_log',
+    dataKey: 'estimated1RM',
+  },
+  overhead_press_1rm: {
+    label: 'Overhead Press 1RM',
+    unit: 'lbs',
+    direction: 'higher_better',
+    category: 'fitness',
+    dataSource: 'exercise_log',
+    dataKey: 'estimated1RM',
+  },
+  pull_up_max: {
+    label: 'Max Pull-ups',
+    unit: 'reps',
+    direction: 'higher_better',
+    category: 'fitness',
+    dataSource: 'exercise_log',
+    dataKey: 'estimated1RM',
+  },
+  mile_time: {
+    label: 'Mile Run Time',
+    unit: 'minutes',
+    direction: 'lower_better',
+    category: 'fitness',
+    dataSource: 'exercise_log',
+    dataKey: 'bestDuration',
+  },
+};
+
+/**
+ * Get the definition for a goal metric key.
+ */
+export function getGoalMetricDefinition(key: GoalMetricKey): GoalMetricDefinition {
+  return GOAL_METRIC_DEFINITIONS[key];
+}
 
 // ============================================================================
 // GOAL METRIC CONSTANTS

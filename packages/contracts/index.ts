@@ -50,3 +50,5 @@ export * from './stripe';
 // NOTE: Explicitly re-export passwordSchema from password module to resolve ambiguity
 export { PASSWORD_POLICY, ZXCVBN_SCORE_LABELS, checkPasswordBreached, passwordLengthSchema, passwordSchema, validatePassword, validatePasswordStrength, type PasswordValidationResult } from './password';
 
+// Error sanitization (PHI protection)
+export { REDACTION_PLACEHOLDERS, containsPotentialPhi, sanitizeErrorMessage, sanitizeErrorObject } from './errorSanitization';

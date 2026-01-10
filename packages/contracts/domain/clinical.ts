@@ -236,3 +236,70 @@ export const medicalConditionSchema = z.object({
 });
 
 export const medicalConditionsSchema = z.array(medicalConditionSchema);
+
+// ============================================================================
+// CARE TEAM ROLE
+// ============================================================================
+
+/**
+ * Roles for care team members associated with a patient.
+ */
+export const CARE_TEAM_ROLES = [
+  'primary_care',
+  'endocrinologist',
+  'cardiologist',
+  'nutritionist',
+  'nurse',
+  'health_coach',
+  'other',
+] as const;
+export type CareTeamRole = (typeof CARE_TEAM_ROLES)[number];
+
+export const CareTeamRoleSchema = z.enum(CARE_TEAM_ROLES);
+
+export const CARE_TEAM_ROLE = {
+  PRIMARY_CARE: 'primary_care' as CareTeamRole,
+  ENDOCRINOLOGIST: 'endocrinologist' as CareTeamRole,
+  CARDIOLOGIST: 'cardiologist' as CareTeamRole,
+  NUTRITIONIST: 'nutritionist' as CareTeamRole,
+  NURSE: 'nurse' as CareTeamRole,
+  HEALTH_COACH: 'health_coach' as CareTeamRole,
+  OTHER: 'other' as CareTeamRole,
+} as const;
+
+export const CARE_TEAM_ROLE_LABELS: Record<CareTeamRole, string> = {
+  primary_care: 'Primary Care',
+  endocrinologist: 'Endocrinologist',
+  cardiologist: 'Cardiologist',
+  nutritionist: 'Nutritionist',
+  nurse: 'Nurse',
+  health_coach: 'Health Coach',
+  other: 'Other',
+};
+
+// ============================================================================
+// MOCK FACTORIES
+// ============================================================================
+
+/**
+ * Mock factory for Medication (testing)
+ */
+export const createMockMedication = (overrides: Partial<Medication> = {}): Medication => ({
+  id: 'med-test-id',
+  name: 'Test Medication',
+  dosage: '100mg',
+  frequency: 'once daily',
+  notes: 'Take with food',
+  ...overrides,
+});
+
+/**
+ * Mock factory for Limitation (testing)
+ */
+export const createMockLimitation = (overrides: Partial<Limitation> = {}): Limitation => ({
+  id: 'lim-test-id',
+  description: 'Test limitation',
+  severity: 'moderate',
+  notes: 'Avoid high-impact exercises',
+  ...overrides,
+});

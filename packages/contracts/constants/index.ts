@@ -106,16 +106,6 @@ export const CACHE_TTL = {
 } as const;
 
 // ============================================================================
-// BUSINESS TIMEZONE
-// ============================================================================
-
-/**
- * Default business timezone for appointment scheduling.
- * All appointments are displayed in this timezone by default.
- */
-export const BUSINESS_TIMEZONE = 'America/Los_Angeles';
-
-// ============================================================================
 // VALIDATION LIMITS
 // ============================================================================
 

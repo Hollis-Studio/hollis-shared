@@ -362,6 +362,8 @@ export const WEEKDAY_LABELS: Record<Weekday, string> = {
  */
 export const ACCOUNT_STATUSES = ['active', 'suspended', 'inactive'] as const;
 export type AccountStatus = (typeof ACCOUNT_STATUSES)[number];
+/** Type alias for backwards compatibility */
+export type AccountStatusValue = AccountStatus;
 
 export const AccountStatusSchema = z.enum(ACCOUNT_STATUSES);
 
@@ -409,6 +411,29 @@ export const PREGNANCY_STATUS_LABELS: Record<PregnancyStatus, string> = {
   postpartum: 'Postpartum',
 };
 
+/**
+ * Calculate trimester from an expected due date (assumes 40-week gestation).
+ * T1: 0-13 weeks, T2: 14-27 weeks, T3: 28-40 weeks, postpartum after due date.
+ *
+ * @param dueDate - The expected due date
+ * @param referenceDate - The reference date for calculation (defaults to now)
+ * @returns The calculated pregnancy status
+ */
+export function calculateTrimesterFromDueDate(dueDate: Date, referenceDate: Date = new Date()): PregnancyStatus {
+  if (Number.isNaN(dueDate.getTime()) || Number.isNaN(referenceDate.getTime())) {
+    return 'not_pregnant';
+  }
+  const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
+  const weeksUntilDue = (dueDate.getTime() - referenceDate.getTime()) / MS_PER_WEEK;
+  const gestationalWeeks = 40 - weeksUntilDue;
+
+  if (weeksUntilDue < 0) return 'postpartum';
+  if (gestationalWeeks < 0) return 'trimester_1';
+  if (gestationalWeeks <= 13) return 'trimester_1';
+  if (gestationalWeeks <= 27) return 'trimester_2';
+  return 'trimester_3';
+}
+
 // ============================================================================
 // MESSAGE RECIPIENT ROLES
 // ============================================================================
@@ -447,3 +472,243 @@ export const MESSAGE_RECIPIENT_ROLE_LABELS: Record<MessagingRecipientRole, strin
  * This comment remains for backward compatibility references, but the export
  * has been removed to avoid duplicate exports in the barrel file.
  */
+
+// ============================================================================
+// USER PROFILE CONTRACT
+// ============================================================================
+
+/**
+ * User profile contract - core user profile information.
+ */
+export interface UserProfileContract {
+  id?: string;
+  /**
+   * User identifier in HH-XXXXXX barcode format (e.g., HH-ABC123).
+   * This IS the patient's barcode - the same value used for QR codes and registration.
+   *
+   * @format HH-XXXXXX
+   */
+  userId: string;
+  email: string;
+  fullName: string;
+  preferredName?: string;
+  role?: UserRole;
+  tier?: UserTier;
+  avatarUrl?: string;
+  bio?: string;
+  occupation?: string;
+  primaryGoal?: PrimaryGoal;
+  activityLevel?: ActivityLevel;
+  experienceLevel?: FitnessExperience;
+  dateOfBirth?: string; // IsoDateString
+  biologicalSex?: BiologicalSex;
+  pregnancyStatus?: PregnancyStatus | null;
+  pregnancyDueDate?: string | null; // IsoDateString
+  heightCm?: number;
+  weightKg?: number;
+  initialWeightKg?: number;
+  timezone?: string;
+  assignedClinicianId?: string | null;
+  assignedTrainerId?: string | null;
+  onboardingCompleted: boolean;
+  isActive?: boolean;
+  createdAt: string; // IsoTimestampString
+  updatedAt: string; // IsoTimestampString
+}
+
+export const UserProfileSchema: z.ZodType<UserProfileContract> = z.object({
+  id: z.string().optional(),
+  userId: z.string(),
+  email: z.string().email(),
+  fullName: z.string().min(1),
+  preferredName: z.string().optional(),
+  role: UserRoleSchema.optional(),
+  tier: UserTierSchema.optional(),
+  avatarUrl: z.string().url().optional(),
+  bio: z.string().optional(),
+  occupation: z.string().optional(),
+  primaryGoal: PrimaryGoalSchema.optional(),
+  activityLevel: ActivityLevelSchema.optional(),
+  experienceLevel: FitnessExperienceSchema.optional(),
+  dateOfBirth: z.string().optional(),
+  biologicalSex: BiologicalSexSchema.optional(),
+  pregnancyStatus: PregnancyStatusSchema.nullable().optional(),
+  pregnancyDueDate: z.string().nullable().optional(),
+  heightCm: z.number().min(0).optional(),
+  weightKg: z.number().min(0).optional(),
+  initialWeightKg: z.number().min(0).optional(),
+  timezone: z.string().optional(),
+  assignedClinicianId: z.string().nullable().optional(),
+  assignedTrainerId: z.string().nullable().optional(),
+  onboardingCompleted: z.boolean(),
+  isActive: z.boolean().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+// ============================================================================
+// USER GOALS CONTRACT
+// ============================================================================
+
+export interface UserGoalsContract {
+  id?: string;
+  userId: string;
+  calorieTarget: number;
+  proteinTarget: number;
+  carbTarget: number;
+  fatTarget: number;
+  weeklyWeightChangeTarget: number; // kg per week
+  workoutsPerWeek: number;
+  sleepHoursTarget?: number;
+  createdAt: string; // IsoTimestampString
+  updatedAt: string; // IsoTimestampString
+}
+
+export const UserGoalsSchema: z.ZodType<UserGoalsContract> = z.object({
+  id: z.string().optional(),
+  userId: z.string(),
+  calorieTarget: z.number().min(0),
+  proteinTarget: z.number().min(0),
+  carbTarget: z.number().min(0),
+  fatTarget: z.number().min(0),
+  weeklyWeightChangeTarget: z.number(),
+  workoutsPerWeek: z.number().min(0),
+  sleepHoursTarget: z.number().min(0).optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+// ============================================================================
+// USER METRICS CONTRACT
+// ============================================================================
+
+export interface UserMetricsContract {
+  tdee: number;
+  bmr: number;
+  recoveryScore: number;
+  trainingLoad?: number;
+  currentWeight?: number;
+  weeklyWeightChange?: number;
+  monthlyWeightChange?: number;
+  currentBodyFat?: number;
+  currentMuscleMass?: number;
+  sleepPerformance: number;
+  averageSleepDuration?: number;
+  averageSleepQuality?: number;
+  averageHRV?: number;
+  averageRestingHR?: number;
+  stressScore?: number;
+  todaysStrain: number;
+  weeklyStrain?: number;
+  monthlyStrain?: number;
+  stepCount?: number;
+  activeMinutes?: number;
+  loggedCalories: number;
+  weeklyCalorieAverage?: number;
+  macroAdherence?: number;
+  workoutStreak?: number;
+  loggingStreak?: number;
+  adherenceScore?: number;
+  lastUpdated: string; // IsoTimestampString
+}
+
+export const UserMetricsSchema: z.ZodType<UserMetricsContract> = z.object({
+  tdee: z.number().min(0),
+  bmr: z.number().min(0),
+  recoveryScore: z.number().min(0).max(100),
+  trainingLoad: z.number().optional(),
+  currentWeight: z.number().optional(),
+  weeklyWeightChange: z.number().optional(),
+  monthlyWeightChange: z.number().optional(),
+  currentBodyFat: z.number().optional(),
+  currentMuscleMass: z.number().optional(),
+  sleepPerformance: z.number().min(0).max(100),
+  averageSleepDuration: z.number().optional(),
+  averageSleepQuality: z.number().optional(),
+  averageHRV: z.number().optional(),
+  averageRestingHR: z.number().optional(),
+  stressScore: z.number().optional(),
+  todaysStrain: z.number().min(0),
+  weeklyStrain: z.number().optional(),
+  monthlyStrain: z.number().optional(),
+  stepCount: z.number().optional(),
+  activeMinutes: z.number().optional(),
+  loggedCalories: z.number().min(0),
+  weeklyCalorieAverage: z.number().optional(),
+  macroAdherence: z.number().optional(),
+  workoutStreak: z.number().optional(),
+  loggingStreak: z.number().optional(),
+  adherenceScore: z.number().optional(),
+  lastUpdated: z.string(),
+});
+
+// ============================================================================
+// USER ACCOUNT CONTRACT (AGGREGATE)
+// ============================================================================
+
+/**
+ * User account contract - aggregate of profile, preferences, goals, and metrics.
+ */
+export interface UserAccountContract {
+  profile: UserProfileContract;
+  preferences?: UserPreferencesContract;
+  goals?: UserGoalsContract;
+  metrics?: UserMetricsContract;
+}
+
+export interface UserPreferencesContract {
+  id?: string;
+  userId: string;
+  unitSystem: 'imperial' | 'metric';
+  timeFormat: '12h' | '24h';
+  locale: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const UserPreferencesSchema: z.ZodType<UserPreferencesContract> = z.object({
+  id: z.string().optional(),
+  userId: z.string(),
+  unitSystem: z.enum(['imperial', 'metric']),
+  timeFormat: z.enum(['12h', '24h']),
+  locale: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export const UserAccountSchema: z.ZodType<UserAccountContract> = z.object({
+  profile: UserProfileSchema,
+  preferences: UserPreferencesSchema.optional(),
+  goals: UserGoalsSchema.optional(),
+  metrics: UserMetricsSchema.optional(),
+});
+
+// ============================================================================
+// MOCK FACTORIES
+// ============================================================================
+
+const nowIso = () => new Date().toISOString();
+
+export const createMockUserProfile = (
+  overrides: Partial<UserProfileContract> = {},
+): UserProfileContract => {
+  const timestamp = nowIso();
+  return {
+    userId: 'HH-ABC123',
+    email: 'user@example.com',
+    fullName: 'John Doe',
+    role: 'CLIENT',
+    tier: 'CORE',
+    onboardingCompleted: true,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    ...overrides,
+  };
+};
+
+export const createMockUserAccount = (
+  overrides: Partial<UserAccountContract> = {},
+): UserAccountContract => ({
+  profile: createMockUserProfile(overrides.profile),
+  ...overrides,
+});

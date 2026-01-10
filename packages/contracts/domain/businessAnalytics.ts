@@ -104,6 +104,66 @@ export function isLeadStage(value: string): value is LeadStage {
 }
 
 // ============================================================================
+// USER EVENT TYPE (Domain Constants Pattern)
+// ============================================================================
+
+/** Tuple of valid user event type values (source of truth) */
+export const USER_EVENT_TYPES = [
+  'WORKOUT_COMPLETED',
+  'APPOINTMENT_CANCELLED',
+  'APPOINTMENT_RESCHEDULED',
+  'MEAL_LOGGED',
+  'DAILY_CHECKIN_COMPLETED',
+  'PLAN_PUBLISHED',
+  'LAB_PANEL_CREATED',
+  'LAB_PANEL_DELETED',
+  'NOTIFICATION_SENT',
+  'BILLING_DATE_CHANGED',
+  'TIER_CHANGED',
+] as const;
+export type UserEventType = (typeof USER_EVENT_TYPES)[number];
+
+/** Zod schema for user event type - derived from tuple */
+export const UserEventTypeSchema = z.enum(USER_EVENT_TYPES);
+
+/** Constant object for user event type comparisons */
+export const USER_EVENT_TYPE = {
+  WORKOUT_COMPLETED: 'WORKOUT_COMPLETED' as UserEventType,
+  APPOINTMENT_CANCELLED: 'APPOINTMENT_CANCELLED' as UserEventType,
+  APPOINTMENT_RESCHEDULED: 'APPOINTMENT_RESCHEDULED' as UserEventType,
+  MEAL_LOGGED: 'MEAL_LOGGED' as UserEventType,
+  DAILY_CHECKIN_COMPLETED: 'DAILY_CHECKIN_COMPLETED' as UserEventType,
+  PLAN_PUBLISHED: 'PLAN_PUBLISHED' as UserEventType,
+  LAB_PANEL_CREATED: 'LAB_PANEL_CREATED' as UserEventType,
+  LAB_PANEL_DELETED: 'LAB_PANEL_DELETED' as UserEventType,
+  NOTIFICATION_SENT: 'NOTIFICATION_SENT' as UserEventType,
+  BILLING_DATE_CHANGED: 'BILLING_DATE_CHANGED' as UserEventType,
+  TIER_CHANGED: 'TIER_CHANGED' as UserEventType,
+} as const;
+
+/** Human-readable labels for user event types */
+export const USER_EVENT_TYPE_LABELS: Record<UserEventType, string> = {
+  WORKOUT_COMPLETED: 'Workout Completed',
+  APPOINTMENT_CANCELLED: 'Appointment Cancelled',
+  APPOINTMENT_RESCHEDULED: 'Appointment Rescheduled',
+  MEAL_LOGGED: 'Meal Logged',
+  DAILY_CHECKIN_COMPLETED: 'Daily Check-in Completed',
+  PLAN_PUBLISHED: 'Plan Published',
+  LAB_PANEL_CREATED: 'Lab Panel Created',
+  LAB_PANEL_DELETED: 'Lab Panel Deleted',
+  NOTIFICATION_SENT: 'Notification Sent',
+  BILLING_DATE_CHANGED: 'Billing Date Changed',
+  TIER_CHANGED: 'Tier Changed',
+};
+
+/**
+ * Type guard to check if a string is a valid user event type
+ */
+export function isUserEventType(value: string): value is UserEventType {
+  return (USER_EVENT_TYPES as readonly string[]).includes(value);
+}
+
+// ============================================================================
 // BUSINESS DAILY SNAPSHOT
 // ============================================================================
 
@@ -410,6 +470,65 @@ export function calculateChurnRiskLevel(
   if (daysInactive > thresholds.MEDIUM) return CHURN_RISK_LEVEL.MEDIUM;
   return CHURN_RISK_LEVEL.LOW;
 }
+
+// ============================================================================
+// CRM ANALYTICS (Retention, Churn, Revenue)
+// ============================================================================
+
+/**
+ * Schema for retention cohort data
+ * Tracks user retention over time by signup month
+ */
+export const RetentionCohortSchema = z.object({
+  month: z.string(), // YYYY-MM format
+  cohortSize: z.number().int(),
+  retentionMonth1: z.number(), // Percentage retained after 1 month
+  retentionMonth3: z.number(), // Percentage retained after 3 months
+  retentionMonth6: z.number(), // Percentage retained after 6 months
+  retentionMonth12: z.number(), // Percentage retained after 12 months
+});
+
+export type RetentionCohort = z.infer<typeof RetentionCohortSchema>;
+
+/**
+ * Schema for individual churn risk assessment
+ */
+export const ChurnRiskSchema = z.object({
+  patientId: z.string(),
+  patientName: z.string(),
+  lastLoginDate: z.string(),
+  daysSinceLastLogin: z.number().int(),
+  riskLevel: ChurnRiskLevelSchema,
+  predictedChurnDate: z.string().optional(),
+});
+
+export type ChurnRisk = z.infer<typeof ChurnRiskSchema>;
+
+/**
+ * Schema for revenue breakdown by membership tier
+ */
+export const RevenueTierSchema = z.object({
+  tierName: z.string(),
+  patientCount: z.number().int(),
+  monthlyRevenue: z.number(),
+  churnRate: z.number(),
+});
+
+export type RevenueTier = z.infer<typeof RevenueTierSchema>;
+
+/**
+ * Schema for comprehensive CRM analytics response
+ * Used by admin dashboard for business intelligence
+ */
+export const CRMAnalyticsSchema = z.object({
+  retentionCohorts: z.array(RetentionCohortSchema),
+  churnRisks: z.array(ChurnRiskSchema),
+  revenueByTier: z.array(RevenueTierSchema),
+  totalActivePatients: z.number().int(),
+  averageEngagementScore: z.number(),
+});
+
+export type CRMAnalytics = z.infer<typeof CRMAnalyticsSchema>;
 
 /**
  * Schema for at-risk client

@@ -68,3 +68,39 @@ export * from './goal-metrics';
 
 // Biometrics domain - canonical biometric keys for validation
 export * from './biometrics';
+
+// Organization domain - multi-tenancy for MSO model
+export * from './organization';
+
+export * from './appointment-config';
+export * from './documents';
+
+// Realtime domain - SSE resource types, event types
+export * from './realtime';
+
+// Health Progress domain - health metrics, trends, data quality
+export * from './health-progress';
+
+// Health Metrics domain - unified health metric types, utilities, and schemas
+// Provides HEALTH_METRIC_DEFINITIONS, HEALTH_METRIC_KEYS, HealthMetricKey,
+// utility functions (getMetricCategory, determineTrend, calculateInRangeScore, etc.),
+// and related types (MetricChange, ConcernArea, HealthProgressOverview, etc.)
+export * from './health-metrics';
+
+// Exercise domain - exercise definitions, logs, and performance tracking
+export * from './exercise';
+
+// Daily Metrics domain - TDEE, recovery, training load
+export * from './daily-metrics';
+
+// Journal domain - journal entries and AI assessments
+export * from './journal';
+
+// Compliance domain - tier-aware compliance tracking
+export * from './compliance';
+
+// Push notifications domain - platforms, app roles, token management
+export * from './push';
+
+// Metric key conversion utilities - bidirectional mapping between GoalMetricKey and HealthMetricKey
+export * from './metric-key-conversion';

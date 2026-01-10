@@ -38,3 +38,6 @@ export * from './admin-routes';
 
 // Schemas
 export * from './admin-schemas';
+
+// Notifications - admin realtime notification kinds
+export * from './notifications';

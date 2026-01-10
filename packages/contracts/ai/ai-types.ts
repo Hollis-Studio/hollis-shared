@@ -16,6 +16,7 @@
 import type { VolumeLevel as AdminVolumeLevel } from '../admin/admin-types';
 import { type AINoteCategory } from '../domain/ai-notes';
 import { type GoalMetricKey } from '../domain/goal-metrics';
+import { type StrategyGenerationPhase } from '../domain/training';
 import { type WorkoutSectionType } from '../domain/workouts';
 
 // ============================================================================
@@ -201,28 +202,23 @@ export interface NutritionTargetsArgs {
 // We import for use in this module but don't re-export to avoid conflicts
 // ============================================================================
 
-/**
- * Strategy generation phases for progress tracking
- */
-export const STRATEGY_GENERATION_PHASES = [
-  'analyzing_context',
-  'checking_conflicts',
-  'searching_exercises',
-  'generating_strategy',
-  'complete',
-] as const;
-export type StrategyGenerationPhase = (typeof STRATEGY_GENERATION_PHASES)[number];
+// Note: STRATEGY_GENERATION_PHASES, StrategyGenerationPhase, and STRATEGY_GENERATION_PHASE
+// are defined in domain/training.ts and exported from there (via the domain barrel).
+// We don't re-export here to avoid duplicate export conflicts.
 
 /**
- * Strategy generation phase constants
+ * Activity entry for real-time strategy generation progress display.
  */
-export const STRATEGY_GENERATION_PHASE = {
-  ANALYZING_CONTEXT: 'analyzing_context' as StrategyGenerationPhase,
-  CHECKING_CONFLICTS: 'checking_conflicts' as StrategyGenerationPhase,
-  SEARCHING_EXERCISES: 'searching_exercises' as StrategyGenerationPhase,
-  GENERATING_STRATEGY: 'generating_strategy' as StrategyGenerationPhase,
-  COMPLETE: 'complete' as StrategyGenerationPhase,
-} as const;
+export interface StrategyGenerationActivity {
+  /** Timestamp of the activity */
+  timestamp: string;
+  /** Type of activity */
+  type: 'search' | 'create' | 'select' | 'plan' | 'note' | 'thinking' | 'complete' | 'analyze';
+  /** Short description of the activity */
+  message: string;
+  /** Optional additional data */
+  data?: Record<string, unknown>;
+}
 
 /**
  * Progress update for strategy generation
@@ -232,6 +228,19 @@ export interface StrategyGenerationProgress {
   totalSteps: number;
   phase: StrategyGenerationPhase | string;
   detail?: string;
+  /** Current AI conversation turn */
+  turn?: number;
+  /** Maximum conversation turns allowed */
+  maxTurns?: number;
+  /** Agent activity log entries for real-time display */
+  activities?: StrategyGenerationActivity[];
+  /** Running stats for progress summary */
+  stats?: {
+    goalsIdentified?: number;
+    phasesCreated?: number;
+    exercisesSearched?: number;
+    exercisesCreated?: number;
+  };
 }
 
 /**
@@ -280,29 +289,34 @@ export interface StrategyDraft {
   status: string;
   goals: StrategyGoalDraft[];
   phases?: TrainingPhaseDraft[];
-  reasoning: string;
+  /** AI reasoning for why this strategy was designed this way */
+  reasoning?: string;
 }
 
 /**
  * Clarification request when AI needs more information
+ * Uses needsClarification: true as discriminator for discriminated union
  */
 export interface StrategyClarificationNeeded {
-  type: 'clarification_needed';
+  needsClarification: true;
   requestId: string;
   questions: string[];
+  partialContext?: unknown;
 }
 
 /**
  * Strategy generation result when successful
+ * Uses needsClarification: false as discriminator for discriminated union
  */
 export interface StrategyGenerationResult {
-  type: 'strategy_generated';
+  needsClarification: false;
   strategy: StrategyDraft;
   reasoning: string;
 }
 
 /**
  * Combined response type for strategy generation
+ * Discriminated union on needsClarification boolean
  */
 export type StrategyGenerationResponse = StrategyClarificationNeeded | StrategyGenerationResult;
 
