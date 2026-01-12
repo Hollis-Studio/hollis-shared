@@ -17,19 +17,19 @@ import { z } from 'zod';
 // ============================================================================
 
 /** Supported native push token platforms */
-export const PUSH_PLATFORMS = ['ios', 'android'] as const;
+export const PUSH_PLATFORMS = ['IOS', 'ANDROID'] as const;
 export type PushPlatform = (typeof PUSH_PLATFORMS)[number];
 
 export const PushPlatformSchema = z.enum(PUSH_PLATFORMS);
 
 export const PUSH_PLATFORM = {
-  IOS: 'ios' as PushPlatform,
-  ANDROID: 'android' as PushPlatform,
+  IOS: 'IOS' as PushPlatform,
+  ANDROID: 'ANDROID' as PushPlatform,
 } as const;
 
 export const PUSH_PLATFORM_LABELS: Record<PushPlatform, string> = {
-  ios: 'iOS',
-  android: 'Android',
+  IOS: 'iOS',
+  ANDROID: 'Android',
 };
 
 /**
@@ -45,22 +45,22 @@ export function isPushPlatform(value: string): value is PushPlatform {
 
 /**
  * App surface role for push routing.
- * - 'client': patient-facing tabs
- * - 'admin': staff/admin portal inside the mobile app
+ * - 'CLIENT': patient-facing tabs
+ * - 'ADMIN': staff/admin portal inside the mobile app
  */
-export const PUSH_APP_ROLES = ['client', 'admin'] as const;
+export const PUSH_APP_ROLES = ['CLIENT', 'ADMIN'] as const;
 export type PushAppRole = (typeof PUSH_APP_ROLES)[number];
 
 export const PushAppRoleSchema = z.enum(PUSH_APP_ROLES);
 
 export const PUSH_APP_ROLE = {
-  CLIENT: 'client' as PushAppRole,
-  ADMIN: 'admin' as PushAppRole,
+  CLIENT: 'CLIENT' as PushAppRole,
+  ADMIN: 'ADMIN' as PushAppRole,
 } as const;
 
 export const PUSH_APP_ROLE_LABELS: Record<PushAppRole, string> = {
-  client: 'Client',
-  admin: 'Admin',
+  CLIENT: 'Client',
+  ADMIN: 'Admin',
 };
 
 /**

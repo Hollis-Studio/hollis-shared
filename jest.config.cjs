@@ -8,6 +8,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+  extensionsToTreatAsEsm: ['.ts'],
   testMatch: ['**/__tests__/**/*.test.ts'],
   rootDir: '.',
   moduleNameMapper: {
@@ -18,11 +19,12 @@ module.exports = {
     '^.+\\.tsx?$': [
       'ts-jest',
       {
+        useESM: true,
         tsconfig: {
           // Inline tsconfig for jest - compatible with our module structure
-          target: 'ES2020',
-          module: 'commonjs',
-          lib: ['ES2020'],
+          target: 'ES2022',
+          module: 'ESNext',
+          lib: ['ES2022'],
           strict: true,
           esModuleInterop: true,
           skipLibCheck: true,

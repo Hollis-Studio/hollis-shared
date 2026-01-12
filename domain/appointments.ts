@@ -24,11 +24,11 @@ export const AppointmentStatusSchema = z.enum(APPOINTMENT_STATUSES);
 
 /** Centralized appointment status constants for equality checks */
 export const APPOINTMENT_STATUS = {
-  SCHEDULED: 'SCHEDULED' as AppointmentStatus,
-  COMPLETED: 'COMPLETED' as AppointmentStatus,
-  CANCELLED: 'CANCELLED' as AppointmentStatus,
-  NO_SHOW: 'NO_SHOW' as AppointmentStatus,
-} as const;
+  SCHEDULED: 'SCHEDULED',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  NO_SHOW: 'NO_SHOW',
+} as const satisfies Record<AppointmentStatus, AppointmentStatus>;
 
 /** Human-readable labels for appointment statuses */
 export const APPOINTMENT_STATUS_LABELS: Record<AppointmentStatus, string> = {
@@ -70,15 +70,15 @@ export const AppointmentTypeSchema = z.enum(APPOINTMENT_TYPES);
 
 /** Centralized appointment type constants for equality checks */
 export const APPOINTMENT_TYPE = {
-  CHECK_IN: 'CHECK_IN' as AppointmentType,
-  CONSULTATION: 'CONSULTATION' as AppointmentType,
-  TRAINING_SESSION: 'TRAINING_SESSION' as AppointmentType,
-  ONBOARDING: 'ONBOARDING' as AppointmentType,
-  RECOVERY_SESSION: 'RECOVERY_SESSION' as AppointmentType,
-  LABWORK: 'LABWORK' as AppointmentType,
-  DXA_SCAN: 'DXA_SCAN' as AppointmentType,
-  SLEEP_SCREENING: 'SLEEP_SCREENING' as AppointmentType,
-} as const;
+  CHECK_IN: 'CHECK_IN',
+  CONSULTATION: 'CONSULTATION',
+  TRAINING_SESSION: 'TRAINING_SESSION',
+  ONBOARDING: 'ONBOARDING',
+  RECOVERY_SESSION: 'RECOVERY_SESSION',
+  LABWORK: 'LABWORK',
+  DXA_SCAN: 'DXA_SCAN',
+  SLEEP_SCREENING: 'SLEEP_SCREENING',
+} as const satisfies Record<AppointmentType, AppointmentType>;
 
 /** Human-readable labels for appointment types */
 export const APPOINTMENT_TYPE_LABELS: Record<AppointmentType, string> = {

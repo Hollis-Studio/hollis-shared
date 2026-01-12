@@ -82,9 +82,9 @@ export * from './realtime';
 export * from './health-progress';
 
 // Health Metrics domain - unified health metric types, utilities, and schemas
-// Provides HEALTH_METRIC_DEFINITIONS, HEALTH_METRIC_KEYS, HealthMetricKey,
-// utility functions (getMetricCategory, determineTrend, calculateInRangeScore, etc.),
+// Provides utility functions (getMetricCategory, determineTrend, calculateInRangeScore, etc.),
 // and related types (MetricChange, ConcernArea, HealthProgressOverview, etc.)
+// NOTE: For GOAL_METRIC_DEFINITIONS and GOAL_METRIC_KEYS, import from goal-metrics.ts
 export * from './health-metrics';
 
 // Exercise domain - exercise definitions, logs, and performance tracking

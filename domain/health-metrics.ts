@@ -11,6 +11,12 @@
  * The health-progress.ts module has a separate HealthMetricKey type using camelCase
  * for biometric/lab data mapping. These are intentionally different types.
  *
+ * For goal metric definitions and keys, import directly from goal-metrics.ts:
+ * - GOAL_METRIC_DEFINITIONS
+ * - GOAL_METRIC_KEYS
+ * - GoalMetricKey
+ * - GoalMetricKeySchema
+ *
  * deps: zod | consumers: all codebases
  */
 
@@ -39,25 +45,6 @@ import {
     type HealthMetricDirection,
     HealthMetricDirectionSchema,
 } from './training';
-
-// ============================================================================
-// HEALTH METRIC ALIASES (Goal Metrics → Health Metrics)
-// ============================================================================
-
-/**
- * @deprecated Use GOAL_METRIC_DEFINITIONS for new code.
- * This alias exists for backward compatibility with imports expecting HEALTH_METRIC_DEFINITIONS.
- */
-export const HEALTH_METRIC_DEFINITIONS = GOAL_METRIC_DEFINITIONS;
-
-/**
- * @deprecated Use GOAL_METRIC_KEYS for new code.
- * This alias exists for backward compatibility.
- */
-export const HEALTH_METRIC_KEYS = GOAL_METRIC_KEYS;
-
-// Re-export GoalMetricKey and GoalMetricKeySchema for convenience
-// (they are already exported from goal-metrics.ts which is in the barrel)
 
 // ============================================================================
 // SOURCE WEIGHTS (Data Quality Weighting)

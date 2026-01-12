@@ -63,16 +63,16 @@ export type BiometricSource = (typeof BIOMETRIC_SOURCES)[number];
 export const BiometricSourceSchema = z.enum(BIOMETRIC_SOURCES);
 
 export const BIOMETRIC_SOURCE = {
-  LAB_REPORT: 'LAB_REPORT' as BiometricSource,
-  CLINICIAN_ENTRY: 'CLINICIAN_ENTRY' as BiometricSource,
-  DERIVED: 'DERIVED' as BiometricSource,
-  APPLE_HEALTH: 'APPLE_HEALTH' as BiometricSource,
-  USER_LOG: 'USER_LOG' as BiometricSource,
-  GOOGLE_FIT: 'GOOGLE_FIT' as BiometricSource,
-  OURA: 'OURA' as BiometricSource,
-  WHOOP: 'WHOOP' as BiometricSource,
-  DEVICE: 'DEVICE' as BiometricSource,
-} as const;
+  LAB_REPORT: 'LAB_REPORT',
+  CLINICIAN_ENTRY: 'CLINICIAN_ENTRY',
+  DERIVED: 'DERIVED',
+  APPLE_HEALTH: 'APPLE_HEALTH',
+  USER_LOG: 'USER_LOG',
+  GOOGLE_FIT: 'GOOGLE_FIT',
+  OURA: 'OURA',
+  WHOOP: 'WHOOP',
+  DEVICE: 'DEVICE',
+} as const satisfies Record<BiometricSource, BiometricSource>;
 
 /** Human-readable labels for biometric sources */
 export const BIOMETRIC_SOURCE_LABELS: Record<BiometricSource, string> = {

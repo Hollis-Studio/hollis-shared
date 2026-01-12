@@ -13,11 +13,11 @@
  */
 
 import { z } from 'zod';
-import { VOLUME_LEVELS } from '../admin/admin-types';
 import { AI_NOTE_CATEGORIES, aiPermanentNoteSchema } from '../domain/ai-notes';
 import { GoalMetricKeySchema } from '../domain/goal-metrics';
 import { STRATEGY_STATUS, STRATEGY_STATUSES, STRATEGY_TYPES } from '../domain/training';
 import { WORKOUT_SECTION_TYPES } from '../domain/workouts';
+import { VOLUME_LEVELS } from '../primitives';
 import { USER_ID_REGEX } from '../schemas';
 
 // ============================================================================

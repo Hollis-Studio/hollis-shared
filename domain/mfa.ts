@@ -74,6 +74,7 @@ export const STEP_UP_AUTH_ACTIONS = [
   'VIEW_AUDIT_LOGS',
   'MODIFY_PERMISSIONS',
   'BULK_OPERATIONS',
+  'RESET_USER_MFA', // Admin action to reset another user's MFA
 ] as const;
 export type StepUpAuthAction = (typeof STEP_UP_AUTH_ACTIONS)[number];
 export const StepUpAuthActionSchema = z.enum(STEP_UP_AUTH_ACTIONS);
@@ -97,10 +98,10 @@ export const AssignmentStatusSchema = z.enum(ASSIGNMENT_STATUSES);
 
 /** Centralized assignment status constants for equality checks */
 export const ASSIGNMENT_STATUS = {
-  ACTIVE: 'ACTIVE' as AssignmentStatus,
-  REVOKED: 'REVOKED' as AssignmentStatus,
-  PENDING: 'PENDING' as AssignmentStatus,
-} as const;
+  ACTIVE: 'ACTIVE',
+  REVOKED: 'REVOKED',
+  PENDING: 'PENDING',
+} as const satisfies Record<AssignmentStatus, AssignmentStatus>;
 
 /**
  * Labels for assignment statuses

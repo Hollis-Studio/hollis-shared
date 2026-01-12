@@ -10,6 +10,19 @@ This module contains the canonical definitions for:
 - **Zod Schemas** - Shared validation schemas for request/response payloads
 - **Constants** - Storage keys, configuration values, and magic numbers
 
+## 📖 Schema Index
+
+Looking for a specific schema? See **[SCHEMA_INDEX.md](./SCHEMA_INDEX.md)** for a complete reference of all Zod schemas organized by category:
+
+| Category | Location | When to Use |
+|----------|----------|-------------|
+| API Request/Response | `schemas/index.ts` | Route parameter/body validation |
+| Domain Enums | `domain/*.ts` | User roles, statuses, types, etc. |
+| JSON Blobs | `schemas/json-blobs.ts` | Prisma JSON field validation |
+| Admin Operations | `admin/admin-schemas.ts` | Admin portal, patient management |
+| AI/Agent | `ai/ai-validation.ts` | AI function call validation |
+| Platform-Specific | `src/contracts/*.ts` | Mobile/web extensions |
+
 ## Why Shared Contracts?
 
 1. **Type Safety** - Ensures frontend and backend use identical types
@@ -44,6 +57,25 @@ import { APPOINTMENT_STATUSES, AppointmentStatusSchema } from '@hollis/contracts
 
 // Or via local contracts
 import { USER_TIERS } from '@contracts';
+```
+
+### Subpath Exports
+For tree-shaking and targeted imports, use subpath exports:
+```typescript
+// Admin contracts (patient summaries, admin routes, etc.)
+import { PatientSummary, ADMIN_API_ROUTES } from '@hollis/contracts/admin';
+
+// AI/Agent contracts
+import { AgentMessageSchema, AI_ROUTES } from '@hollis/contracts/ai';
+
+// Public API contracts
+import { PublicRoutes } from '@hollis/contracts/public';
+
+// Stripe/Billing contracts
+import { StripeWebhookPayload } from '@hollis/contracts/stripe';
+
+// Password validation contracts
+import { PasswordStrengthSchema } from '@hollis/contracts/password';
 ```
 
 ## Module Structure
@@ -116,7 +148,59 @@ shared/contracts/
 ❌ Import Node-specific modules (fs, path, crypto)  
 ❌ Import from `@services/*`, `@features/*`, or any layer modules  
 ❌ Add platform-specific code  
-❌ Create circular dependencies with local contracts
+❌ Create circular dependencies with local contracts (caught by `npm run check:circular`)
+
+## Avoiding Circular Dependencies
+
+Circular dependencies can cause:
+- Module initialization failures
+- Undefined exports at runtime  
+- Build tool confusion (Vite, Metro, Webpack)
+
+### When to Extract to `primitives/`
+
+Use the **3-Module Test** — extract to `primitives/` ONLY when:
+
+✅ **Used by 3+ domain modules** (actual `domain/*.ts` files, not just admin/ai)
+✅ **OR** causing an actual circular dependency error
+
+Otherwise, keep it in the domain module where it naturally belongs.
+
+**Examples:**
+```typescript
+// ✅ STAYS in domain/user.ts (only user module needs it)
+export const USER_ROLES = ['ADMIN', 'CLINICIAN', 'CLIENT'] as const;
+
+// ✅ STAYS in domain/appointments.ts (only appointments need it)
+export const APPOINTMENT_STATUSES = ['SCHEDULED', 'COMPLETED'] as const;
+
+// ✅ EXTRACTED to primitives/volume-level.ts
+// Used by: domain/training.ts, admin/admin-types.ts, ai/ai-types.ts
+export const VOLUME_LEVELS = ['low', 'moderate', 'high'] as const;
+```
+
+**Simple Check:**
+```bash
+# Count domain modules that import this type
+grep -r "import.*MyType" shared/contracts/domain/*.ts | wc -l
+
+# If result < 3, DON'T extract to primitives
+```
+
+### Prevention Rules:
+1. ✅ Extract to `primitives/` only when hitting the 3-Module Test threshold
+2. ✅ Make primitives depend only on Zod, not other contracts
+3. ✅ Have higher-level contracts import from primitives
+4. ❌ Never import from barrel `index.ts` files within the same module
+5. ❌ Don't preemptively extract "just in case"
+
+**Detection:**
+```bash
+npm run check:circular       # Check for circular deps
+npm run test:circular        # Run circular deps tests
+```
+
+The CI pipeline automatically checks for circular dependencies on every push.
 
 ## Pattern Examples
 
