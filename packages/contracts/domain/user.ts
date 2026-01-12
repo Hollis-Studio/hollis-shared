@@ -36,11 +36,11 @@ export const UserRoleSchema = z.enum(USER_ROLES);
 
 /** Centralized role constants for equality checks */
 export const USER_ROLE = {
-  ADMIN: 'ADMIN' as UserRole,
-  CLINICIAN: 'CLINICIAN' as UserRole,
-  TRAINER: 'TRAINER' as UserRole,
-  CLIENT: 'CLIENT' as UserRole,
-} as const;
+  ADMIN: 'ADMIN',
+  CLINICIAN: 'CLINICIAN',
+  TRAINER: 'TRAINER',
+  CLIENT: 'CLIENT',
+} as const satisfies Record<UserRole, UserRole>;
 
 export const DEFAULT_USER_ROLE: UserRole = USER_ROLE.CLIENT;
 
@@ -143,10 +143,10 @@ export type UserTier = (typeof USER_TIERS)[number];
 export const UserTierSchema = z.enum(USER_TIERS);
 
 export const USER_TIER = {
-  ESSENTIALS: 'ESSENTIALS' as UserTier,
-  CORE: 'CORE' as UserTier,
-  CONCIERGE: 'CONCIERGE' as UserTier,
-} as const;
+  ESSENTIALS: 'ESSENTIALS',
+  CORE: 'CORE',
+  CONCIERGE: 'CONCIERGE',
+} as const satisfies Record<UserTier, UserTier>;
 
 export const DEFAULT_USER_TIER: UserTier = USER_TIER.ESSENTIALS;
 

@@ -13,6 +13,7 @@
  */
 
 import { z } from 'zod';
+import { type VolumeLevel, VolumeLevelSchema } from '../primitives';
 
 // ============================================================================
 // STRATEGY TYPES
@@ -276,23 +277,7 @@ export function isWorkoutType(value: string): value is WorkoutType {
 // VOLUME LEVELS
 // ============================================================================
 
-// Note: VolumeLevel type and VOLUME_LEVELS constant are canonically defined in admin/admin-types.ts
-// Import from there if needed. We only define the schema and local constants here.
-import type { VolumeLevel } from '../admin/admin-types';
-
-export const VolumeLevelSchema = z.enum(['low', 'moderate', 'high'] as const);
-
-export const VOLUME_LEVEL = {
-  LOW: 'low' as const,
-  MODERATE: 'moderate' as const,
-  HIGH: 'high' as const,
-} as const;
-
-export const VOLUME_LEVEL_LABELS: Record<'low' | 'moderate' | 'high', string> = {
-  low: 'Low',
-  moderate: 'Moderate',
-  high: 'High',
-};
+// Note: VolumeLevel type, constants, and labels are imported from primitives (canonical export location)
 
 // ============================================================================
 // TRAINING PHASE CONTRACT

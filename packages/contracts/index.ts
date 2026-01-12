@@ -6,6 +6,7 @@
  * - Domain contracts (types, schemas, constants)
  * - Shared Zod schemas for validation
  * - Common constants and enums
+ * - Primitive types (no cross-dependencies)
  * - Admin contracts for CRM/admin operations
  * - AI contracts for AI-powered features
  *
@@ -21,6 +22,9 @@
  *
  * @packageDocumentation
  */
+
+// Primitives (exported first to avoid circular dependencies)
+export * from './primitives';
 
 // API Routes
 export * from './api';

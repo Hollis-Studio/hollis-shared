@@ -38,6 +38,7 @@ import type {
     UserRole,
     UserTier
 } from '../domain';
+import { type VolumeLevel } from '../primitives';
 
 // ============================================================================
 // COMPLIANCE STATUS (admin-specific)
@@ -49,12 +50,7 @@ import type {
 export const ADMIN_COMPLIANCE_STATUSES = ['excellent', 'good', 'at-risk', 'non-compliant'] as const;
 export type AdminComplianceStatus = (typeof ADMIN_COMPLIANCE_STATUSES)[number];
 
-// ============================================================================
-// VOLUME LEVELS (for training phases)
-// ============================================================================
-
-export const VOLUME_LEVELS = ['low', 'moderate', 'high'] as const;
-export type VolumeLevel = (typeof VOLUME_LEVELS)[number];
+// Note: VolumeLevel type is imported from primitives (canonical export location)
 
 // ============================================================================
 // PATIENT MANAGEMENT TYPES

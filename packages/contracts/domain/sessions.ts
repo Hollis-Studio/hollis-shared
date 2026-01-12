@@ -14,6 +14,7 @@
  */
 
 import { z } from 'zod';
+import { type AppointmentType } from './appointments';
 import { USER_TIERS, type UserTier } from './user';
 
 // ============================================================================
@@ -327,9 +328,6 @@ export const SESSION_ERROR_LABELS: Record<SessionErrorCode, string> = {
 // ============================================================================
 // APPOINTMENT TO SESSION MAPPING
 // ============================================================================
-
-// Import AppointmentType from appointments.ts for type-safe mapping
-import { type AppointmentType } from './appointments';
 
 /**
  * Map AppointmentType to SessionType for booking integration.

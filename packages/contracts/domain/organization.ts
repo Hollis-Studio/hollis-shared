@@ -17,21 +17,24 @@ import { z } from 'zod';
 /**
  * Organization lifecycle status.
  * Controls what operations are allowed for the organization.
+ * - ACTIVE: Normal operation - full access
+ * - SUSPENDED: Billing/compliance issue - read-only access
+ * - ARCHIVED: Soft-deleted - no access
+ * - ONBOARDING: New org being set up - limited access
+ */
+export const ORGANIZATION_STATUSES = ['ACTIVE', 'SUSPENDED', 'ARCHIVED', 'ONBOARDING'] as const;
+
+export type OrganizationStatus = (typeof ORGANIZATION_STATUSES)[number];
+
+/**
+ * @deprecated Use ORGANIZATION_STATUSES array directly. Kept for backward compatibility.
  */
 export const ORGANIZATION_STATUS = {
-  /** Normal operation - full access */
   ACTIVE: 'ACTIVE',
-  /** Billing/compliance issue - read-only access */
   SUSPENDED: 'SUSPENDED',
-  /** Soft-deleted - no access */
   ARCHIVED: 'ARCHIVED',
-  /** New org being set up - limited access */
   ONBOARDING: 'ONBOARDING',
-} as const;
-
-export type OrganizationStatus = (typeof ORGANIZATION_STATUS)[keyof typeof ORGANIZATION_STATUS];
-
-export const ORGANIZATION_STATUSES = Object.values(ORGANIZATION_STATUS) as readonly OrganizationStatus[];
+} as const satisfies Record<string, OrganizationStatus>;
 
 /**
  * Display labels for organization statuses.
@@ -42,6 +45,11 @@ export const ORGANIZATION_STATUS_LABELS: Record<OrganizationStatus, string> = {
   [ORGANIZATION_STATUS.ARCHIVED]: 'Archived',
   [ORGANIZATION_STATUS.ONBOARDING]: 'Onboarding',
 };
+
+/**
+ * Zod schema for organization status validation.
+ */
+export const OrganizationStatusSchema = z.enum(ORGANIZATION_STATUSES);
 
 // ============================================================================
 // Zod Schemas
@@ -96,7 +104,7 @@ export const OrganizationSchema = z.object({
   id: z.string().uuid(),
   slug: z.string().min(3).max(50).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
   name: z.string().min(1).max(255),
-  status: z.enum(['ACTIVE', 'SUSPENDED', 'ARCHIVED', 'ONBOARDING']),
+  status: OrganizationStatusSchema,
   billingInfo: OrganizationBillingInfoSchema.nullable().optional(),
   settings: OrganizationSettingsSchema.nullable().optional(),
   contactEmail: z.string().email().nullable().optional(),
@@ -127,7 +135,7 @@ export type CreateOrganizationRequest = z.infer<typeof CreateOrganizationRequest
  */
 export const UpdateOrganizationRequestSchema = z.object({
   name: z.string().min(1).max(255).optional(),
-  status: z.enum(['ACTIVE', 'SUSPENDED', 'ARCHIVED', 'ONBOARDING']).optional(),
+  status: OrganizationStatusSchema.optional(),
   contactEmail: z.string().email().nullable().optional(),
   contactPhone: z.string().nullable().optional(),
   settings: OrganizationSettingsSchema.partial().optional(),
@@ -144,7 +152,7 @@ export const OrganizationSummarySchema = z.object({
   id: z.string().uuid(),
   slug: z.string(),
   name: z.string(),
-  status: z.enum(['ACTIVE', 'SUSPENDED', 'ARCHIVED', 'ONBOARDING']),
+  status: OrganizationStatusSchema,
 });
 
 export type OrganizationSummary = z.infer<typeof OrganizationSummarySchema>;
@@ -160,7 +168,7 @@ export type OrganizationSummary = z.infer<typeof OrganizationSummarySchema>;
 export const OrganizationJwtClaimsSchema = z.object({
   organizationId: z.string().uuid(),
   organizationSlug: z.string().optional(),
-  organizationStatus: z.enum(['ACTIVE', 'SUSPENDED', 'ARCHIVED', 'ONBOARDING']).optional(),
+  organizationStatus: OrganizationStatusSchema.optional(),
 });
 
 export type OrganizationJwtClaims = z.infer<typeof OrganizationJwtClaimsSchema>;

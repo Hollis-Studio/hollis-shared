@@ -13,11 +13,11 @@
  * deps: admin/admin-types | consumers: server/src/services/ai*, web-admin/services
  */
 
-import type { VolumeLevel as AdminVolumeLevel } from '../admin/admin-types';
 import { type AINoteCategory } from '../domain/ai-notes';
 import { type GoalMetricKey } from '../domain/goal-metrics';
 import { type StrategyGenerationPhase } from '../domain/training';
 import { type WorkoutSectionType } from '../domain/workouts';
+import { type VolumeLevel } from '../primitives';
 
 // ============================================================================
 // Generated Workout Plan Types
@@ -198,8 +198,8 @@ export interface NutritionTargetsArgs {
 
 // ============================================================================
 // Training Strategy Generation Types
-// Note: VOLUME_LEVELS and VolumeLevel are defined in admin/admin-types.ts
-// We import for use in this module but don't re-export to avoid conflicts
+// Note: VOLUME_LEVELS and VolumeLevel are defined in primitives/volume-level.ts
+// to avoid circular dependencies
 // ============================================================================
 
 // Note: STRATEGY_GENERATION_PHASES, StrategyGenerationPhase, and STRATEGY_GENERATION_PHASE
@@ -267,7 +267,7 @@ export interface TrainingPhaseDraft {
   order: number;
   weekCount: number;
   intensityRange?: string;
-  volumeLevel?: AdminVolumeLevel;
+  volumeLevel?: VolumeLevel;
   focusAreas: string[];
   notes?: string;
   startDate?: string;

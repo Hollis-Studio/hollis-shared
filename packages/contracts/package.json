@@ -25,6 +25,26 @@
     "./constants": {
       "types": "./constants/index.ts",
       "default": "./constants/index.ts"
+    },
+    "./admin": {
+      "types": "./admin/index.ts",
+      "default": "./admin/index.ts"
+    },
+    "./ai": {
+      "types": "./ai/index.ts",
+      "default": "./ai/index.ts"
+    },
+    "./public": {
+      "types": "./public/index.ts",
+      "default": "./public/index.ts"
+    },
+    "./stripe": {
+      "types": "./stripe/index.ts",
+      "default": "./stripe/index.ts"
+    },
+    "./password": {
+      "types": "./password/index.ts",
+      "default": "./password/index.ts"
     }
   },
   "scripts": {
