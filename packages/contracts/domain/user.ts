@@ -504,6 +504,13 @@ export interface UserProfileContract {
   biologicalSex?: BiologicalSex;
   pregnancyStatus?: PregnancyStatus | null;
   pregnancyDueDate?: string | null; // IsoDateString
+  /**
+   * @computed Derived from pregnancyStatus (if set) or pregnancyDueDate (if set).
+   * If pregnancyStatus is explicitly set, it takes precedence.
+   * Otherwise, calculated from pregnancyDueDate using calculateTrimesterFromDueDate.
+   * Null if neither pregnancyStatus nor pregnancyDueDate is set.
+   */
+  calculatedPregnancyStatus?: PregnancyStatus | null;
   heightCm?: number;
   weightKg?: number;
   initialWeightKg?: number;
@@ -534,6 +541,7 @@ export const UserProfileSchema: z.ZodType<UserProfileContract> = z.object({
   biologicalSex: BiologicalSexSchema.optional(),
   pregnancyStatus: PregnancyStatusSchema.nullable().optional(),
   pregnancyDueDate: z.string().nullable().optional(),
+  calculatedPregnancyStatus: PregnancyStatusSchema.nullable().optional(),
   heightCm: z.number().min(0).optional(),
   weightKg: z.number().min(0).optional(),
   initialWeightKg: z.number().min(0).optional(),
