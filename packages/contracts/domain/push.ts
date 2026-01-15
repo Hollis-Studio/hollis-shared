@@ -95,12 +95,14 @@ export const registerDevicePushTokenRequestSchema: z.ZodType<RegisterDevicePushT
  * Unregister a native device push token.
  */
 export interface UnregisterDevicePushTokenRequest {
+  platform: PushPlatform;
   devicePushToken: string;
   deviceId?: string;
   appRole?: PushAppRole;
 }
 
 export const unregisterDevicePushTokenRequestSchema: z.ZodType<UnregisterDevicePushTokenRequest> = z.object({
+  platform: PushPlatformSchema,
   devicePushToken: z.string().min(1),
   deviceId: z.string().min(1).optional(),
   appRole: PushAppRoleSchema.optional(),
