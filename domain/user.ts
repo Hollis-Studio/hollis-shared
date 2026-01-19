@@ -667,8 +667,8 @@ export interface UserAccountContract {
 export interface UserPreferencesContract {
   id?: string;
   userId: string;
-  unitSystem: 'imperial' | 'metric';
-  timeFormat: '12h' | '24h';
+  unitSystem: 'imperial' | 'metric' | 'advanced';
+  timeFormat: 'standard' | 'military';
   locale: string;
   createdAt: string;
   updatedAt: string;
@@ -677,8 +677,8 @@ export interface UserPreferencesContract {
 export const UserPreferencesSchema: z.ZodType<UserPreferencesContract> = z.object({
   id: z.string().optional(),
   userId: z.string(),
-  unitSystem: z.enum(['imperial', 'metric']),
-  timeFormat: z.enum(['12h', '24h']),
+  unitSystem: z.enum(['imperial', 'metric', 'advanced']),
+  timeFormat: z.enum(['standard', 'military']),
   locale: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
