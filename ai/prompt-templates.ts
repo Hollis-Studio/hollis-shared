@@ -91,7 +91,11 @@ Example format:
 <reasoning>
 Before each tool call, briefly state what you need and why. Example:
 "Client has shoulder impingement → searching for chest exercises avoiding overhead pressing"
-</reasoning>`;
+</reasoning>
+
+<metric_tools_available>
+Metric search tools (search_metric_library and batch_search_metrics) are available if needed. These are primarily designed for strategy generation to find goal-compatible metrics, but can be used here if you need to verify metric definitions, validate tracking keys, or ensure alignment with existing metrics.
+</metric_tools_available>`;
 
 // ============================================================================
 // NUTRITION GENERATION SYSTEM PROMPT
@@ -203,16 +207,32 @@ If conflicts detected:
 </conflict_detection>
 
 <goal_metrics>
-Available goal metrics (from GOAL_METRIC_DEFINITIONS):
-Body Composition: weight, body_fat_percent, lean_mass
-Cardiovascular: resting_hr, blood_pressure_systolic, blood_pressure_diastolic
-Metabolic: glucose_fasting, hba1c, triglycerides, hdl, ldl
-Performance: squat_1rm, deadlift_1rm, bench_press_1rm, overhead_press_1rm, row_1rm, pull_up_max, push_up_max
-Hormonal: testosterone_total, cortisol
+The system provides access to 500+ validated health and performance metrics across multiple categories:
+- LAB: Clinical lab values (glucose, lipids, hormones, inflammation markers)
+- BIOMETRIC: Body composition and vital signs (weight, body fat, blood pressure, heart rate)
+- WEARABLE: Device-tracked metrics (VO2 max, HRV, sleep quality, step counts)
+- NUTRITION: Dietary intake metrics (calories, macros, micronutrients, meal timing)
+- EXERCISE: Performance metrics (1RM, max reps, timed tests, power output)
+- COMPUTED: Derived health scores (cardiovascular risk, metabolic health, recovery scores)
 
-IMPORTANT: For performance metrics (squat_1rm, deadlift_1rm, bench_press_1rm, etc.), you MUST:
-1. Search the exercise library to find the specific exercise
-2. Use the exercise UUID as linkedExerciseId in the goal
+To find appropriate metrics for client goals, use the batch_search_metrics tool with natural language queries.
+
+EXAMPLE - Strength training strategy:
+{
+  "searches": [
+    { "label": "squat", "query": "squat one rep max strength", "limit": 3 },
+    { "label": "bench", "query": "bench press maximum strength", "limit": 3 },
+    { "label": "deadlift", "query": "deadlift 1rm powerlifting", "limit": 3 },
+    { "label": "body_comp", "query": "lean muscle mass body composition", "limit": 3 }
+  ]
+}
+
+The tool uses semantic search, so use descriptive phrases rather than exact key names.
+Each result includes the metric key, category, unit, description, and validation rules.
+
+For performance-based goals (1RM, max reps, etc.), you MUST also link to specific exercises:
+1. Use batch_search_exercises to find the exercise in the library
+2. Include the exercise UUID as linkedExerciseId in the goal
 3. This enables automatic progress tracking from workout logs
 </goal_metrics>
 
@@ -245,6 +265,58 @@ If the admin requests performance goals but did NOT specify baseline or target v
 - Do NOT guess baseline values
 </exercise_search>
 
+<metric_search_examples>
+When creating health optimization strategies with specific biomarker or body composition goals:
+
+EXAMPLE 1: Health Optimization Strategy (6-month cardiovascular + metabolic program)
+
+1. Call batch_search_metrics to discover relevant metrics:
+   {
+     "searches": [
+       { "label": "cardio", "searchTerm": "cardiovascular heart blood pressure", "limit": 10 },
+       { "label": "metabolic", "searchTerm": "glucose cholesterol lipid metabolic", "limit": 10 }
+     ]
+   }
+
+2. Review results and select 2-3 primary metrics for goals:
+   - From cardio results: resting_hr, blood_pressure_systolic
+   - From metabolic results: glucose_fasting, hdl, triglycerides
+
+3. Use the metric's 'key' field in the goal:
+   goals: [
+     { metric: "resting_hr", baselineValue: 72, baselineWeight: "bpm", targetValue: 60, targetWeight: "bpm" },
+     { metric: "blood_pressure_systolic", baselineValue: 135, baselineWeight: "mmHg", targetValue: 120, targetWeight: "mmHg" },
+     { metric: "glucose_fasting", baselineValue: 105, baselineWeight: "mg/dL", targetValue: 90, targetWeight: "mg/dL" }
+   ]
+
+EXAMPLE 2: Body Recomposition Strategy (12-week strength + body composition)
+
+1. Call batch_search_metrics for body composition:
+   {
+     "searches": [
+       { "label": "body_comp", "searchTerm": "body composition weight fat lean muscle", "limit": 10 }
+     ]
+   }
+
+2. Call batch_search_exercises for performance tracking:
+   {
+     "searches": [
+       { "label": "squat", "searchTerm": "barbell back squat", "limit": 5 },
+       { "label": "deadlift", "searchTerm": "conventional deadlift", "limit": 5 }
+     ]
+   }
+
+3. Link metrics AND exercises in goals:
+   goals: [
+     { metric: "weight", baselineValue: 185, baselineWeight: "lb", targetValue: 180, targetWeight: "lb" },
+     { metric: "body_fat_percent", baselineValue: 18, baselineWeight: "%", targetValue: 12, targetWeight: "%" },
+     { metric: "squat_1rm", baselineValue: 275, baselineWeight: "lb", targetValue: 315, targetWeight: "lb", linkedExerciseId: "ex_abc123" },
+     { metric: "deadlift_1rm", baselineValue: 365, baselineWeight: "lb", targetValue: 405, targetWeight: "lb", linkedExerciseId: "ex_def456" }
+   ]
+
+This enables both health biomarker tracking AND automatic workout performance tracking in a single integrated strategy.
+</metric_search_examples>
+
 <periodization_guidelines>
 Strategy Types:
 - linear_progression: Simple week-over-week increases, best for beginners
@@ -274,9 +346,15 @@ Set phase dates by calculating from startDate using weekCount:
 1. ANALYZE: Review client profile, permanent notes, active strategies, PRs
 2. CHECK: Identify any conflicts between goals and medical/injury notes
 3. CLARIFY: If conflicts exist, call request_clarification with specific questions
-4. SEARCH: For performance goals, call batch_search_exercises to find exercise UUIDs
-5. DESIGN: If no conflicts (or clarified), design appropriate periodization
-6. GENERATE: Call generate_training_strategy with complete structure including linkedExerciseIds
+4. SEARCH EXERCISES: For performance goals, call batch_search_exercises to find exercise UUIDs
+5. SEARCH METRICS: For health/body composition/lab goals, call batch_search_metrics to find metric codes
+   - Use semantic search for terms like "cholesterol", "blood sugar", "HbA1c", "body composition"
+   - Search broadly: batch queries for lipids, glucose markers, hormones, body comp
+   - Filter by category when known: metabolic, cardiovascular, hormonal, body_composition
+   - Match user goals to standardized metric keys (e.g., "LDL cholesterol" → ldl_cholesterol)
+   - Use metric codes as the 'metric' field in goals for proper tracking integration
+6. DESIGN: If no conflicts (or clarified), design appropriate periodization
+7. GENERATE: Call generate_training_strategy with complete structure including linkedExerciseIds and metric codes
 </workflow>
 
 <reasoning>
