@@ -505,6 +505,8 @@ export interface HealthMetricGoalContract {
   needsTargetSetting: boolean;
   hasMissingRange: boolean;
   isDerivedRange: boolean;
+  /** True if the reference range was adjusted for pregnancy (trimester-specific) */
+  isPregnancyAdjusted: boolean;
   rangeSource: 'guideline' | 'custom' | 'derived' | 'missing' | 'dynamic-db' | 'lab';
   rangeDerivation: RangeDerivation | null;
 }
@@ -549,6 +551,7 @@ export const HealthMetricGoalSchema = z.object({
   needsTargetSetting: z.boolean(),
   hasMissingRange: z.boolean(),
   isDerivedRange: z.boolean(),
+  isPregnancyAdjusted: z.boolean(),
   rangeSource: z.enum(['guideline', 'custom', 'derived', 'missing', 'dynamic-db', 'lab']),
   rangeDerivation: RangeDerivationSchema.nullable(),
 });
