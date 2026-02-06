@@ -27,6 +27,11 @@ export const MESSAGES_ROUTES = {
   SEND: '/api/messages',
 
   /**
+   * DELETE /api/messages/:messageId - Delete a message (sender-only)
+   */
+  DELETE: '/api/messages',
+
+  /**
    * PUT /api/messages/read - Mark messages as read
    */
   MARK_READ: '/api/messages/read',

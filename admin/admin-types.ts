@@ -216,6 +216,10 @@ export interface PrefilledProfile {
   dateOfBirth?: string;
   sex?: BiologicalSex;
   goals?: string;
+  /** Set by admin when rejecting a registration */
+  rejectionReason?: string;
+  /** ISO timestamp when admin rejected the registration */
+  rejectedAt?: string;
 }
 
 /**

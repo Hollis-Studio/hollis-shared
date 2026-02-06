@@ -307,8 +307,9 @@ describe('Shared Contracts Compilation', () => {
 
     it('should export UNIT_SYSTEMS', () => {
       expect(contracts.UNIT_SYSTEMS).toBeDefined();
-      expect(contracts.UNIT_SYSTEMS).toContain('METRIC');
-      expect(contracts.UNIT_SYSTEMS).toContain('IMPERIAL');
+      expect(contracts.UNIT_SYSTEMS).toContain('metric');
+      expect(contracts.UNIT_SYSTEMS).toContain('imperial');
+      expect(contracts.UNIT_SYSTEMS).toContain('advanced');
     });
 
     it('should export PAGINATION defaults', () => {

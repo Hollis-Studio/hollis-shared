@@ -225,8 +225,8 @@ describe('Schema Validation Integration', () => {
                 type: 'warmup' as const,
                 title: 'Dynamic Warmup',
                 exercises: [
-                  { name: 'Arm Circles', duration: '30 seconds' },
-                  { name: 'Band Pull-aparts', sets: 2, reps: '15' },
+                  { name: 'Arm Circles', exerciseId: '550e8400-e29b-41d4-a716-446655440002', duration: '30 seconds' },
+                  { name: 'Band Pull-aparts', exerciseId: '550e8400-e29b-41d4-a716-446655440003', sets: 2, reps: '15' },
                 ],
               },
               {
@@ -235,7 +235,7 @@ describe('Schema Validation Integration', () => {
                 exercises: [
                   {
                     name: 'Bench Press',
-                    exerciseId: 'abc-123',
+                    exerciseId: '550e8400-e29b-41d4-a716-446655440000',
                     sets: 4,
                     reps: '8-10',
                     weight: '185lbs',
@@ -243,7 +243,7 @@ describe('Schema Validation Integration', () => {
                   },
                   {
                     name: 'Overhead Press',
-                    exerciseId: 'def-456',
+                    exerciseId: '550e8400-e29b-41d4-a716-446655440001',
                     sets: 3,
                     reps: '10',
                     weight: '95lbs',
@@ -254,7 +254,7 @@ describe('Schema Validation Integration', () => {
                 type: 'cooldown' as const,
                 title: 'Stretching',
                 exercises: [
-                  { name: 'Chest Stretch', duration: '30 seconds' },
+                  { name: 'Chest Stretch', exerciseId: '550e8400-e29b-41d4-a716-446655440004', duration: '30 seconds' },
                 ],
               },
             ],
@@ -300,6 +300,15 @@ describe('Schema Validation Integration', () => {
         protein: 180,
         carbs: 300,
         fat: 80,
+        dailyTargets: [
+          { dayOfWeek: 0, calories: 2500, protein: 180, carbs: 300, fat: 80 },
+          { dayOfWeek: 1, calories: 2500, protein: 180, carbs: 300, fat: 80 },
+          { dayOfWeek: 2, calories: 2500, protein: 180, carbs: 300, fat: 80 },
+          { dayOfWeek: 3, calories: 2500, protein: 180, carbs: 300, fat: 80 },
+          { dayOfWeek: 4, calories: 2500, protein: 180, carbs: 300, fat: 80 },
+          { dayOfWeek: 5, calories: 2500, protein: 180, carbs: 300, fat: 80 },
+          { dayOfWeek: 6, calories: 2500, protein: 180, carbs: 300, fat: 80 },
+        ],
         reasoning: 'Based on moderate activity level and muscle gain goals. Protein set at 1g/lb bodyweight.',
       };
 
@@ -313,6 +322,15 @@ describe('Schema Validation Integration', () => {
         protein: 180,
         carbs: 300,
         fat: 80,
+        dailyTargets: [
+          { dayOfWeek: 0, calories: 20000, protein: 180, carbs: 300, fat: 80 },
+          { dayOfWeek: 1, calories: 20000, protein: 180, carbs: 300, fat: 80 },
+          { dayOfWeek: 2, calories: 20000, protein: 180, carbs: 300, fat: 80 },
+          { dayOfWeek: 3, calories: 20000, protein: 180, carbs: 300, fat: 80 },
+          { dayOfWeek: 4, calories: 20000, protein: 180, carbs: 300, fat: 80 },
+          { dayOfWeek: 5, calories: 20000, protein: 180, carbs: 300, fat: 80 },
+          { dayOfWeek: 6, calories: 20000, protein: 180, carbs: 300, fat: 80 },
+        ],
         reasoning: 'Test',
       };
 
@@ -331,9 +349,9 @@ describe('Schema Validation Integration', () => {
         startDate: '2025-01-06',
         endDate: '2025-03-30',
         goals: [
-          { goalMetric: 'squat_1rm', goalTarget: 405, weight: 1.5 },
-          { goalMetric: 'bench_press_1rm', goalTarget: 285, weight: 1.0 },
-          { goalMetric: 'deadlift_1rm', goalTarget: 500, weight: 1.5 },
+          { goalMetric: 'weight', goalTarget: 405, weight: 1.5 },
+          { goalMetric: 'weight', goalTarget: 285, weight: 1.0 },
+          { goalMetric: 'weight', goalTarget: 500, weight: 1.5 },
         ],
         phases: [
           { name: 'Accumulation', order: 0, weekCount: 4, volumeLevel: 'high' },

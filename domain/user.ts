@@ -210,12 +210,26 @@ export const USER_TIER_LABELS: Record<UserTier, string> = {
   CONCIERGE: 'Concierge',
 };
 
-/** Monthly pricing for each tier (in USD) */
-export const USER_TIER_PRICES: Record<UserTier, number> = {
+/**
+ * Monthly pricing for each tier in whole dollars.
+ * Note: These are dollar amounts (e.g., 799 = $799), not cents.
+ * Convert to cents with `USER_TIER_PRICES_DOLLARS[tier] * 100` when needed for Stripe.
+ *
+ * @example
+ * USER_TIER_PRICES_DOLLARS.ESSENTIALS // 799 ($799/month)
+ * USER_TIER_PRICES_DOLLARS.ESSENTIALS * 100 // 79900 cents for Stripe
+ */
+export const USER_TIER_PRICES_DOLLARS: Record<UserTier, number> = {
   ESSENTIALS: 799,
   CORE: 1199,
   CONCIERGE: 1699,
 };
+
+/**
+ * @deprecated Use USER_TIER_PRICES_DOLLARS instead for clarity about units.
+ * This alias is maintained for backwards compatibility but will be removed in a future version.
+ */
+export const USER_TIER_PRICES = USER_TIER_PRICES_DOLLARS;
 
 /** Tiers that include premium features (CORE and CONCIERGE) */
 export const PREMIUM_TIERS: readonly UserTier[] = ['CORE', 'CONCIERGE'] as const;

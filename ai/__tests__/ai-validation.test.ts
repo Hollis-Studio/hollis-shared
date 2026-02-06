@@ -45,6 +45,7 @@ describe('generatedExerciseSchema', () => {
     it('should accept minimal valid exercise', () => {
       const result = generatedExerciseSchema.safeParse({
         name: 'Bench Press',
+        exerciseId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
       });
       expect(result.success).toBe(true);
     });
@@ -52,7 +53,7 @@ describe('generatedExerciseSchema', () => {
     it('should accept exercise with all optional fields', () => {
       const result = generatedExerciseSchema.safeParse({
         name: 'Squat',
-        exerciseId: 'abc-123',
+        exerciseId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
         sets: 4,
         reps: '8-10',
         weight: '185lbs',
@@ -66,6 +67,7 @@ describe('generatedExerciseSchema', () => {
     it('should transform empty link string to undefined', () => {
       const result = generatedExerciseSchema.safeParse({
         name: 'Deadlift',
+        exerciseId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
         link: '',
       });
       expect(result.success).toBe(true);
@@ -117,7 +119,7 @@ describe('generatedExerciseSchema', () => {
 // ============================================================================
 
 describe('generatedSectionSchema', () => {
-  const validExercise = { name: 'Push-up', sets: 3, reps: '10' };
+  const validExercise = { name: 'Push-up', exerciseId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', sets: 3, reps: '10' };
 
   describe('valid data', () => {
     it('should accept valid warmup section', () => {
@@ -187,7 +189,7 @@ describe('generatedDaySchema', () => {
   const validSection = {
     type: 'working' as const,
     title: 'Main',
-    exercises: [{ name: 'Squat' }],
+    exercises: [{ name: 'Squat', exerciseId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' }],
   };
 
   describe('valid data', () => {
@@ -371,6 +373,14 @@ describe('savePermanentNoteArgsSchema', () => {
 // ============================================================================
 
 describe('generateNutritionTargetsArgsSchema', () => {
+  const validDailyTargets = Array.from({ length: 7 }, (_, i) => ({
+    dayOfWeek: i,
+    calories: 2500,
+    protein: 180,
+    carbs: 300,
+    fat: 80,
+  }));
+
   describe('valid data', () => {
     it('should accept valid nutrition targets', () => {
       const result = generateNutritionTargetsArgsSchema.safeParse({
@@ -378,6 +388,7 @@ describe('generateNutritionTargetsArgsSchema', () => {
         protein: 180,
         carbs: 300,
         fat: 80,
+        dailyTargets: validDailyTargets,
         reasoning: 'Based on moderate activity and muscle gain goals.',
       });
       expect(result.success).toBe(true);
@@ -389,6 +400,13 @@ describe('generateNutritionTargetsArgsSchema', () => {
         protein: 0,
         carbs: 0,
         fat: 0,
+        dailyTargets: Array.from({ length: 7 }, (_, i) => ({
+          dayOfWeek: i,
+          calories: 1,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+        })),
         reasoning: 'Test',
       });
       expect(result.success).toBe(true);
@@ -402,6 +420,7 @@ describe('generateNutritionTargetsArgsSchema', () => {
         protein: 180,
         carbs: 300,
         fat: 80,
+        dailyTargets: validDailyTargets,
         reasoning: 'Test',
       });
       expect(result.success).toBe(false);
@@ -416,6 +435,7 @@ describe('generateNutritionTargetsArgsSchema', () => {
         protein: 600,
         carbs: 300,
         fat: 80,
+        dailyTargets: validDailyTargets,
         reasoning: 'Test',
       });
       expect(result.success).toBe(false);
@@ -427,6 +447,7 @@ describe('generateNutritionTargetsArgsSchema', () => {
         protein: -10,
         carbs: 300,
         fat: 80,
+        dailyTargets: validDailyTargets,
         reasoning: 'Test',
       });
       expect(result.success).toBe(false);
@@ -438,6 +459,7 @@ describe('generateNutritionTargetsArgsSchema', () => {
         protein: 180,
         carbs: 300,
         fat: 80,
+        dailyTargets: validDailyTargets,
         reasoning: '',
       });
       expect(result.success).toBe(false);
@@ -449,6 +471,7 @@ describe('generateNutritionTargetsArgsSchema', () => {
         protein: 180,
         carbs: 300,
         fat: 80,
+        dailyTargets: validDailyTargets,
         reasoning: 'Test',
       });
       expect(result.success).toBe(false);

@@ -173,7 +173,7 @@ describe('System Prompts', () => {
     it('should match snapshot (detect accidental changes)', () => {
       const wordCount = STRATEGY_SYSTEM_PROMPT.split(/\s+/).length;
       expect(wordCount).toBeGreaterThan(500);
-      expect(wordCount).toBeLessThan(1000);
+      expect(wordCount).toBeLessThan(1300); // Updated to allow for expanded metric search examples
     });
   });
 });
@@ -242,7 +242,7 @@ describe('Tool Descriptions', () => {
     });
 
     it('should give examples', () => {
-      expect(REQUEST_CLARIFICATION_TOOL_DESCRIPTION).toContain('EXAMPLES');
+      expect(REQUEST_CLARIFICATION_TOOL_DESCRIPTION).toContain('EXAMPLE QUESTIONS');
       expect(REQUEST_CLARIFICATION_TOOL_DESCRIPTION).toContain('ACL');
     });
   });

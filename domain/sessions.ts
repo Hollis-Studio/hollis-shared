@@ -32,6 +32,7 @@ export const SESSION_TYPES = [
   'CLINICIAN_FOLLOWUP',   // Regular PCP check-ins
   'DXA_SCAN',             // Body composition DEXA scan
   'SLEEP_SCREENING',      // Overnight O2/sleep health screening
+  'MOBILE_SESSION',       // Mobile/on-location sessions (CONCIERGE only)
 ] as const;
 
 export type SessionType = (typeof SESSION_TYPES)[number];
@@ -47,6 +48,7 @@ export const SESSION_TYPE = {
   CLINICIAN_FOLLOWUP: 'CLINICIAN_FOLLOWUP' as SessionType,
   DXA_SCAN: 'DXA_SCAN' as SessionType,
   SLEEP_SCREENING: 'SLEEP_SCREENING' as SessionType,
+  MOBILE_SESSION: 'MOBILE_SESSION' as SessionType,
 } as const;
 
 /** Human-readable labels for session types */
@@ -58,6 +60,7 @@ export const SESSION_TYPE_LABELS: Record<SessionType, string> = {
   CLINICIAN_FOLLOWUP: 'Follow-up Check-in',
   DXA_SCAN: 'DXA Scan',
   SLEEP_SCREENING: 'Sleep Screening',
+  MOBILE_SESSION: 'Mobile Session',
 };
 
 /**
@@ -114,9 +117,10 @@ export const RESET_FREQUENCY_LABELS: Record<ResetFrequency, string> = {
  */
 export interface SessionBalanceItemContract {
   sessionType: SessionType;
-  allocated: number;        // Total allocated for this period (-1 for unlimited)
+  allocated: number;        // Tier default for this period (-1 for unlimited)
+  rolledOver: number;       // Sessions carried from previous period
   used: number;             // Number used so far this period
-  remaining: number;        // allocated - used (or -1 if unlimited)
+  remaining: number;        // allocated + rolledOver - used + adjustments (or -1 if unlimited)
   adjustments: number;      // Manual admin adjustments (+ or -)
   resetFrequency: ResetFrequency;
   periodStart: string;      // ISO date - start of current billing period for this session type
@@ -127,6 +131,7 @@ export interface SessionBalanceItemContract {
 export const SessionBalanceItemSchema: z.ZodType<SessionBalanceItemContract> = z.object({
   sessionType: SessionTypeSchema,
   allocated: z.number().int().min(-1),
+  rolledOver: z.number().int().min(0),
   used: z.number().int().min(0),
   remaining: z.number().int().min(-1),
   adjustments: z.number().int(),
@@ -249,6 +254,7 @@ export const DEFAULT_TIER_ALLOCATIONS: Record<UserTier, SessionAllocationContrac
     { sessionType: SESSION_TYPE.CLINICIAN_FOLLOWUP, quantity: 1, resetFrequency: RESET_FREQUENCY.MONTHLY },
     { sessionType: SESSION_TYPE.DXA_SCAN, quantity: 1, resetFrequency: RESET_FREQUENCY.MONTHLY },
     { sessionType: SESSION_TYPE.SLEEP_SCREENING, quantity: 4, resetFrequency: RESET_FREQUENCY.MONTHLY },
+    { sessionType: SESSION_TYPE.MOBILE_SESSION, quantity: 2, resetFrequency: RESET_FREQUENCY.MONTHLY },
   ],
 };
 
@@ -303,6 +309,14 @@ export const SESSION_ERROR_CODES = [
   'CANNOT_ADJUST_UNLIMITED',
   'USER_NOT_FOUND',
   'SAME_TIER',
+  'MEMBERSHIP_PAUSED',
+  // Access control error codes (billing/account status)
+  'ACCOUNT_INACTIVE',
+  'ACCOUNT_SUSPENDED',
+  'ORGANIZATION_SUSPENDED',
+  'ORGANIZATION_ARCHIVED',
+  'SUBSCRIPTION_NOT_ACTIVE',
+  'NO_ACTIVE_SUBSCRIPTION',
 ] as const;
 
 export type SessionErrorCode = (typeof SESSION_ERROR_CODES)[number];
@@ -314,6 +328,14 @@ export const SESSION_ERROR_CODE = {
   CANNOT_ADJUST_UNLIMITED: 'CANNOT_ADJUST_UNLIMITED' as SessionErrorCode,
   USER_NOT_FOUND: 'USER_NOT_FOUND' as SessionErrorCode,
   SAME_TIER: 'SAME_TIER' as SessionErrorCode,
+  MEMBERSHIP_PAUSED: 'MEMBERSHIP_PAUSED' as SessionErrorCode,
+  // Access control error codes (billing/account status)
+  ACCOUNT_INACTIVE: 'ACCOUNT_INACTIVE' as SessionErrorCode,
+  ACCOUNT_SUSPENDED: 'ACCOUNT_SUSPENDED' as SessionErrorCode,
+  ORGANIZATION_SUSPENDED: 'ORGANIZATION_SUSPENDED' as SessionErrorCode,
+  ORGANIZATION_ARCHIVED: 'ORGANIZATION_ARCHIVED' as SessionErrorCode,
+  SUBSCRIPTION_NOT_ACTIVE: 'SUBSCRIPTION_NOT_ACTIVE' as SessionErrorCode,
+  NO_ACTIVE_SUBSCRIPTION: 'NO_ACTIVE_SUBSCRIPTION' as SessionErrorCode,
 } as const;
 
 /** Human-friendly labels for displaying session errors */
@@ -323,6 +345,14 @@ export const SESSION_ERROR_LABELS: Record<SessionErrorCode, string> = {
   CANNOT_ADJUST_UNLIMITED: 'Cannot adjust unlimited session types',
   USER_NOT_FOUND: 'User not found',
   SAME_TIER: 'User is already on this tier',
+  MEMBERSHIP_PAUSED: 'Cannot use sessions while membership is paused',
+  // Access control error labels
+  ACCOUNT_INACTIVE: 'Your account is inactive',
+  ACCOUNT_SUSPENDED: 'Your account is suspended due to a billing dispute',
+  ORGANIZATION_SUSPENDED: 'Your organization account is suspended',
+  ORGANIZATION_ARCHIVED: 'Your organization account is no longer active',
+  SUBSCRIPTION_NOT_ACTIVE: 'Your subscription is not active',
+  NO_ACTIVE_SUBSCRIPTION: 'No active subscription found',
 };
 
 // ============================================================================

@@ -19,9 +19,10 @@ import { z } from 'zod';
  * Status of a registered patient account.
  * - pending: Barcode generated, waiting for patient to claim
  * - claimed: Patient has claimed their account and set up credentials
- * - expired: Barcode expired before being claimed
+ * - expired: Barcode expired before being claimed (natural timeout)
+ * - rejected: Admin explicitly rejected the registration
  */
-export const REGISTRATION_STATUSES = ['pending', 'claimed', 'expired'] as const;
+export const REGISTRATION_STATUSES = ['pending', 'claimed', 'expired', 'rejected'] as const;
 export type RegistrationStatus = (typeof REGISTRATION_STATUSES)[number];
 
 export const RegistrationStatusSchema = z.enum(REGISTRATION_STATUSES);
@@ -31,6 +32,7 @@ export const REGISTRATION_STATUS = {
   PENDING: 'pending' as RegistrationStatus,
   CLAIMED: 'claimed' as RegistrationStatus,
   EXPIRED: 'expired' as RegistrationStatus,
+  REJECTED: 'rejected' as RegistrationStatus,
 } as const;
 
 /** Human-readable labels for registration statuses */
@@ -38,6 +40,7 @@ export const REGISTRATION_STATUS_LABELS: Record<RegistrationStatus, string> = {
   pending: 'Pending',
   claimed: 'Claimed',
   expired: 'Expired',
+  rejected: 'Rejected',
 };
 
 /**

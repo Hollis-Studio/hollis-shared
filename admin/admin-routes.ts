@@ -239,6 +239,9 @@ export const ADMIN_MESSAGE_ROUTES = {
   thread: (userId: string, partnerId: string) =>
     `/api/admin/messages/${userId}/thread/${partnerId}` as const,
 
+  /** DELETE - Delete a message */
+  delete: (messageId: string) => `/api/admin/messages/${messageId}` as const,
+
   /** POST - Mark messages as read */
   markRead: (userId: string) => `/api/admin/messages/${userId}/mark-read` as const,
 } as const;
@@ -282,6 +285,9 @@ export const ADMIN_EXERCISE_ROUTES = {
 export const ADMIN_BOOKING_ROUTES = {
   /** GET - List appointments with optional filters */
   LIST: '/api/admin/appointments',
+
+  /** GET - Get single appointment by ID */
+  get: (appointmentId: string) => `/api/admin/appointments/${appointmentId}` as const,
 
   /** POST - Create appointment for a patient */
   CREATE: '/api/admin/appointments',
@@ -526,6 +532,278 @@ export const ADMIN_UPLOAD_ROUTES = {
 } as const;
 
 // ============================================================================
+// ADMIN BILLING ANALYTICS ROUTES
+// ============================================================================
+
+/**
+ * Admin billing analytics routes.
+ * Base path: /api/admin/billing-analytics
+ */
+export const ADMIN_BILLING_ANALYTICS_ROUTES = {
+  /** GET - Monthly Recurring Revenue */
+  MRR: '/api/admin/billing-analytics/mrr',
+
+  /** GET - Churn metrics */
+  CHURN: '/api/admin/billing-analytics/churn',
+
+  /** GET - Lifetime Value metrics */
+  LTV: '/api/admin/billing-analytics/ltv',
+
+  /** GET - Inventory analytics */
+  INVENTORY: '/api/admin/billing-analytics/inventory',
+
+  /** GET - Revenue over time */
+  REVENUE: '/api/admin/billing-analytics/revenue',
+
+  /** GET - Combined analytics summary */
+  SUMMARY: '/api/admin/billing-analytics/summary',
+
+  /** GET - List delinquent users */
+  DELINQUENT_USERS: '/api/admin/billing-analytics/delinquent-users',
+
+  /** POST - Send delinquent user to collections */
+  sendToCollections: (userId: string) =>
+    `/api/admin/billing-analytics/delinquent-users/${userId}/collections` as const,
+
+  /** PATCH - Update delinquency notes */
+  updateDelinquencyNotes: (userId: string) =>
+    `/api/admin/billing-analytics/delinquent-users/${userId}/notes` as const,
+
+  /** GET - List payment disputes */
+  DISPUTES: '/api/admin/billing-analytics/disputes',
+
+  /** PATCH - Update dispute resolution */
+  updateDisputeResolution: (disputeId: string) =>
+    `/api/admin/billing-analytics/disputes/${disputeId}/resolution` as const,
+} as const;
+
+// ============================================================================
+// ADMIN PAYMENT ROUTES
+// ============================================================================
+
+/**
+ * Admin payment management routes.
+ * Base path: /api/admin/payments
+ */
+export const ADMIN_PAYMENT_ROUTES = {
+  /** GET - Stripe publishable key config */
+  CONFIG: '/api/admin/payments/config',
+
+  /** POST - Create SetupIntent for saving payment method */
+  SETUP_INTENT: '/api/admin/payments/setup-intent',
+
+  /** GET - List payment methods for user */
+  paymentMethods: (userId: string) => `/api/admin/payments/payment-methods/${userId}` as const,
+
+  /** POST - Attach payment method to user */
+  attachPaymentMethod: (userId: string) => `/api/admin/payments/payment-methods/${userId}` as const,
+
+  /** DELETE - Remove payment method */
+  detachPaymentMethod: (userId: string, paymentMethodId: string) =>
+    `/api/admin/payments/payment-methods/${userId}/${paymentMethodId}` as const,
+
+  /** POST - Set default payment method */
+  setDefaultPaymentMethod: (userId: string) =>
+    `/api/admin/payments/payment-methods/${userId}/default` as const,
+
+  /** POST - Collect one-time payment */
+  COLLECT: '/api/admin/payments/collect',
+
+  /** POST - Refund a payment */
+  REFUND: '/api/admin/payments/refund',
+
+  /** POST - Retry failed invoice payment */
+  RETRY_INVOICE: '/api/admin/payments/retry-invoice',
+
+  /** GET - Get payment history for user */
+  history: (userId: string) => `/api/admin/payments/history/${userId}` as const,
+} as const;
+
+// ============================================================================
+// ADMIN SUBSCRIPTION ROUTES
+// ============================================================================
+
+/**
+ * Admin subscription management routes.
+ * Base path: /api/admin/subscriptions
+ */
+export const ADMIN_SUBSCRIPTION_ROUTES = {
+  /** GET - List subscriptions with optional filters */
+  LIST: '/api/admin/subscriptions',
+
+  /** POST - Create subscription */
+  CREATE: '/api/admin/subscriptions',
+
+  /** GET - Get subscription by ID */
+  get: (id: string) => `/api/admin/subscriptions/${id}` as const,
+
+  /** GET - Get user's active subscription */
+  forUser: (userId: string) => `/api/admin/subscriptions/user/${userId}` as const,
+
+  /** GET - Get early termination fee quote */
+  terminationQuote: (id: string) => `/api/admin/subscriptions/${id}/early-termination-quote` as const,
+
+  /** POST - Cancel subscription */
+  cancel: (id: string) => `/api/admin/subscriptions/${id}/cancel` as const,
+
+  /** PATCH - Pause subscription */
+  pause: (id: string) => `/api/admin/subscriptions/${id}/pause` as const,
+
+  /** PATCH - Resume subscription */
+  resume: (id: string) => `/api/admin/subscriptions/${id}/resume` as const,
+
+  /** PATCH - Change subscription tier */
+  changeTier: (id: string) => `/api/admin/subscriptions/${id}/tier` as const,
+
+  /** DELETE - Cancel scheduled tier change */
+  cancelScheduledTierChange: (id: string) =>
+    `/api/admin/subscriptions/${id}/scheduled-tier-change` as const,
+
+  /** POST - Upload signed contract PDF */
+  uploadContract: (id: string) => `/api/admin/subscriptions/${id}/contract` as const,
+
+  /** GET - Get presigned URL for signed contract */
+  getContract: (id: string) => `/api/admin/subscriptions/${id}/contract` as const,
+
+  /** DELETE - Delete signed contract */
+  deleteContract: (id: string) => `/api/admin/subscriptions/${id}/contract` as const,
+} as const;
+
+// ============================================================================
+// ADMIN TERMINAL ROUTES
+// ============================================================================
+
+/**
+ * Admin Stripe Terminal (POS) routes.
+ * Base path: /api/admin/terminal
+ */
+export const ADMIN_TERMINAL_ROUTES = {
+  /** GET - Check if Terminal is enabled */
+  STATUS: '/api/admin/terminal/status',
+
+  /** POST - Get connection token for reader auth */
+  CONNECTION_TOKEN: '/api/admin/terminal/connection-token',
+
+  /** POST - Create PaymentIntent for Terminal */
+  PAYMENT_INTENT: '/api/admin/terminal/payment-intent',
+
+  /** POST - Capture Terminal payment */
+  capture: (paymentIntentId: string) => `/api/admin/terminal/capture/${paymentIntentId}` as const,
+
+  /** POST - Cancel Terminal payment */
+  cancel: (paymentIntentId: string) => `/api/admin/terminal/cancel/${paymentIntentId}` as const,
+
+  /** GET - List all registered readers */
+  READERS: '/api/admin/terminal/readers',
+
+  /** GET - Get specific reader */
+  reader: (readerId: string) => `/api/admin/terminal/readers/${readerId}` as const,
+
+  /** POST - Process payment on reader */
+  processPayment: (readerId: string) => `/api/admin/terminal/readers/${readerId}/process` as const,
+
+  /** POST - Cancel current reader action */
+  cancelReaderAction: (readerId: string) => `/api/admin/terminal/readers/${readerId}/cancel` as const,
+
+  /** POST - Set reader display */
+  setDisplay: (readerId: string) => `/api/admin/terminal/readers/${readerId}/display` as const,
+} as const;
+
+// ============================================================================
+// ADMIN ORDER ROUTES
+// ============================================================================
+
+/**
+ * Admin order management routes.
+ * Base path: /api/admin/orders
+ */
+export const ADMIN_ORDER_ROUTES = {
+  /** GET - List orders with optional filters */
+  LIST: '/api/admin/orders',
+
+  /** GET - Get order by ID */
+  get: (id: string) => `/api/admin/orders/${id}` as const,
+
+  /** PATCH - Update order fulfillment status */
+  updateFulfillment: (id: string) => `/api/admin/orders/${id}/fulfillment` as const,
+
+  /** POST - Cancel order */
+  cancel: (id: string) => `/api/admin/orders/${id}/cancel` as const,
+} as const;
+
+// ============================================================================
+// ADMIN INVENTORY ROUTES
+// ============================================================================
+
+/**
+ * Admin inventory management routes.
+ * Base path: /api/admin/inventory
+ */
+export const ADMIN_INVENTORY_ROUTES = {
+  /** GET - List inventory for tracked products */
+  LIST: '/api/admin/inventory',
+
+  /** GET - Low stock products */
+  LOW_STOCK: '/api/admin/inventory/low-stock',
+
+  /** GET - Out of stock products */
+  OUT_OF_STOCK: '/api/admin/inventory/out-of-stock',
+
+  /** PATCH - Adjust inventory for a product */
+  adjust: (productId: string) => `/api/admin/inventory/${productId}` as const,
+} as const;
+
+// ============================================================================
+// ADMIN MOBILE SESSION ROUTES
+// ============================================================================
+
+/**
+ * Admin mobile session management routes.
+ * Base path: /api/admin/mobile-sessions
+ */
+export const ADMIN_MOBILE_SESSION_ROUTES = {
+  /** GET - Get mobile session balance for user */
+  balance: (userId: string) => `/api/admin/mobile-sessions/${userId}` as const,
+
+  /** POST - Use a mobile session */
+  use: (userId: string) => `/api/admin/mobile-sessions/${userId}/use` as const,
+
+  /** POST - Create mobile session purchase */
+  purchase: (userId: string) => `/api/admin/mobile-sessions/${userId}/purchase` as const,
+
+  /** GET - Get mobile session usage history */
+  history: (userId: string) => `/api/admin/mobile-sessions/${userId}/history` as const,
+
+  /** GET - Get mobile session purchase history */
+  purchases: (userId: string) => `/api/admin/mobile-sessions/${userId}/purchases` as const,
+} as const;
+
+// ============================================================================
+// ADMIN AI CHAT ROUTES
+// ============================================================================
+
+/**
+ * Admin AI chat routes for natural language analytics.
+ * Base path: /api/admin/ai-chat
+ */
+export const ADMIN_AI_CHAT_ROUTES = {
+  /** GET - List all AI chat sessions for current user */
+  SESSIONS: '/api/admin/ai-chat/sessions',
+
+  /** GET - Get specific AI chat session with all messages */
+  session: (sessionId: string) => `/api/admin/ai-chat/sessions/${sessionId}` as const,
+
+  /** POST - Send message in AI chat (creates session if needed) */
+  SEND_MESSAGE: '/api/admin/ai-chat/messages',
+
+  /** DELETE - Delete AI chat session */
+  deleteSession: (sessionId: string) => `/api/admin/ai-chat/sessions/${sessionId}` as const,
+
+  /** PATCH - Rename AI chat session */
+  renameSession: (sessionId: string) => `/api/admin/ai-chat/sessions/${sessionId}` as const,
+} as const;
+
+// ============================================================================
 // AGGREGATED ADMIN ROUTES
 // ============================================================================
 
@@ -562,4 +840,12 @@ export const ADMIN_API_ROUTES = {
   AI: ADMIN_AI_ROUTES,
   UPLOAD: ADMIN_UPLOAD_ROUTES,
   TRAINERS: ADMIN_TRAINER_ROUTES,
+  BILLING_ANALYTICS: ADMIN_BILLING_ANALYTICS_ROUTES,
+  PAYMENTS: ADMIN_PAYMENT_ROUTES,
+  SUBSCRIPTIONS: ADMIN_SUBSCRIPTION_ROUTES,
+  TERMINAL: ADMIN_TERMINAL_ROUTES,
+  ORDERS: ADMIN_ORDER_ROUTES,
+  INVENTORY: ADMIN_INVENTORY_ROUTES,
+  MOBILE_SESSIONS: ADMIN_MOBILE_SESSION_ROUTES,
+  AI_CHAT: ADMIN_AI_CHAT_ROUTES,
 } as const;

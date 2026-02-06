@@ -560,6 +560,11 @@ export const MESSAGES_ROUTES = {
   SEND: '/api/messages',
 
   /**
+   * DELETE /api/messages/:messageId - Delete a message (sender-only)
+   */
+  DELETE: '/api/messages',
+
+  /**
    * PUT /api/messages/read - Mark messages as read
    */
   MARK_READ: '/api/messages/read',
@@ -826,6 +831,74 @@ export const SSE_ROUTES = {
 export type SseRoute = (typeof SSE_ROUTES)[keyof typeof SSE_ROUTES];
 
 // ============================================================================
+// ADMIN PAYMENTS ROUTES
+// ============================================================================
+
+/**
+ * Admin payments API routes.
+ * Base path: /api/admin/payments
+ * Requires admin role.
+ *
+ * @group ADMIN_PAYMENTS
+ */
+export const ADMIN_PAYMENTS_ROUTES = {
+  /** GET /api/admin/payments/config - Get Stripe publishable key config */
+  CONFIG: '/api/admin/payments/config',
+
+  /** POST /api/admin/payments/setup-intent - Create SetupIntent for card save */
+  SETUP_INTENT: '/api/admin/payments/setup-intent',
+
+  /** POST /api/admin/payments/collect - Create PaymentIntent for one-time charge */
+  COLLECT: '/api/admin/payments/collect',
+
+  /**
+   * POST /api/admin/payments/payment-methods/:userId - Attach payment method to user
+   * @param userId - User's unique identifier
+   */
+  attachPaymentMethod: (userId: string) => `/api/admin/payments/payment-methods/${userId}` as const,
+} as const;
+
+/** Type for admin payments route values */
+export type AdminPaymentsRoute =
+  | (typeof ADMIN_PAYMENTS_ROUTES)['CONFIG']
+  | (typeof ADMIN_PAYMENTS_ROUTES)['SETUP_INTENT']
+  | (typeof ADMIN_PAYMENTS_ROUTES)['COLLECT']
+  | ReturnType<typeof ADMIN_PAYMENTS_ROUTES.attachPaymentMethod>;
+
+// ============================================================================
+// ACCOUNT ROUTES (Customer Self-Service)
+// ============================================================================
+
+/**
+ * Customer account API routes (read-only billing display).
+ * Base path: /api/account
+ * Requires authentication but NOT admin role.
+ *
+ * @group ACCOUNT
+ */
+export const ACCOUNT_ROUTES = {
+  /** GET /api/account/subscription - Get current user's active subscription */
+  SUBSCRIPTION: '/api/account/subscription',
+
+  /** PATCH /api/account/subscription/pause - Pause current user's subscription */
+  PAUSE_SUBSCRIPTION: '/api/account/subscription/pause',
+
+  /** PATCH /api/account/subscription/resume - Resume current user's subscription */
+  RESUME_SUBSCRIPTION: '/api/account/subscription/resume',
+
+  /** PATCH /api/account/subscription/change-tier - Change current user's subscription tier */
+  CHANGE_TIER: '/api/account/subscription/change-tier',
+
+  /** GET /api/account/orders - Get current user's order history */
+  ORDERS: '/api/account/orders',
+  /** GET /api/account/payment-methods - Get current user's saved payment methods */
+  PAYMENT_METHODS: '/api/account/payment-methods',
+} as const;
+
+/** Type for account route values */
+export type AccountRoute = (typeof ACCOUNT_ROUTES)[keyof typeof ACCOUNT_ROUTES];
+
+// ============================================================================
 // AGGREGATED API ROUTES
 // ============================================================================
 
@@ -859,12 +932,14 @@ export const API_ROUTES = {
   MESSAGES: MESSAGES_ROUTES,
   UPLOAD: UPLOAD_ROUTES,
   ADMIN: ADMIN_ROUTES,
+  ADMIN_PAYMENTS: ADMIN_PAYMENTS_ROUTES,
   CRM: CRM_ROUTES,
   SESSIONS: SESSIONS_ROUTES,
   PROVIDERS: PROVIDERS_ROUTES,
   DOCUMENTS: DOCUMENTS_ROUTES,
   PUSH: PUSH_ROUTES,
   SSE: SSE_ROUTES,
+  ACCOUNT: ACCOUNT_ROUTES,
 } as const;
 
 // ============================================================================
@@ -928,6 +1003,22 @@ export const ROUTE_METADATA: Record<string, RouteMetadata> = {
   [CRM_ROUTES.EVENTS]: {
     method: 'POST',
     description: 'Create user event for compliance tracking',
+    requiresAuth: true,
+  },
+  // Account routes (customer self-service)
+  [ACCOUNT_ROUTES.SUBSCRIPTION]: {
+    method: 'GET',
+    description: 'Get current user\'s active subscription',
+    requiresAuth: true,
+  },
+  [ACCOUNT_ROUTES.ORDERS]: {
+    method: 'GET',
+    description: 'Get current user\'s order history',
+    requiresAuth: true,
+  },
+  [ACCOUNT_ROUTES.PAYMENT_METHODS]: {
+    method: 'GET',
+    description: 'Get current user\'s saved payment methods',
     requiresAuth: true,
   },
 } as const;
