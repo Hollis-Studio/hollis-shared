@@ -55,7 +55,7 @@ export interface CollectPaymentRequest {
 
 export const CollectPaymentRequestSchema = z.object({
   userId: z.string().uuid(),
-  amountInCents: z.number().int().positive(),
+  amountInCents: z.number().int().positive().max(500_000), // Max $5,000
   description: z.string(),
   metadata: z.record(z.string()).optional(),
 });
@@ -85,7 +85,7 @@ export interface RefundRequest {
 
 export const RefundRequestSchema = z.object({
   paymentIntentId: z.string(),
-  amountInCents: z.number().int().positive().optional(),
+  amountInCents: z.number().int().positive().max(500_000).optional(), // Max $5,000
   reason: z.enum(['requested_by_customer', 'duplicate', 'fraudulent']).optional(),
   notes: z.string().max(500).optional(),
 });
