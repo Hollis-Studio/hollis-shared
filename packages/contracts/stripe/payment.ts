@@ -43,6 +43,28 @@ export const PaymentMethodSchema = z.object({
 });
 
 // ============================================================================
+// STRIPE METADATA
+// ============================================================================
+
+/**
+ * Stripe metadata validation schema.
+ *
+ * Stripe API limits:
+ * - Each metadata value: max 500 characters
+ * - Each metadata object: max 50 keys
+ *
+ * @see https://stripe.com/docs/api/metadata
+ */
+export const StripeMetadataSchema = z
+  .record(z.string().max(500, 'Metadata values must be 500 characters or less'))
+  .refine(
+    (data) => Object.keys(data).length <= 50,
+    'Metadata cannot have more than 50 keys'
+  );
+
+export type StripeMetadata = z.infer<typeof StripeMetadataSchema>;
+
+// ============================================================================
 // COLLECT PAYMENT REQUEST
 // ============================================================================
 
@@ -57,7 +79,7 @@ export const CollectPaymentRequestSchema = z.object({
   userId: z.string().uuid(),
   amountInCents: z.number().int().positive().max(500_000), // Max $5,000
   description: z.string(),
-  metadata: z.record(z.string()).optional(),
+  metadata: StripeMetadataSchema.optional(),
 });
 
 // ============================================================================

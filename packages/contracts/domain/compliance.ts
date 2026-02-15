@@ -14,6 +14,8 @@
  */
 
 import { z } from 'zod';
+import type { UserTier } from './user';
+import { UserTierSchema } from './user';
 
 // ============================================================================
 // COMPLIANCE STATUS
@@ -80,18 +82,124 @@ export function isComplianceStatus(value: string): value is ComplianceStatus {
  * Compliance metrics for a user over a specific period.
  * Tracks adherence to tier-specific requirements for workouts, diet logging, check-ins, and appointments.
  */
-export interface ComplianceMetrics {
-  readonly patientId: string;
-  readonly periodStart: string;
-  readonly periodEnd: string;
-  readonly workoutAdherence: number;
-  readonly dietLoggingStreak: number;
-  readonly appointmentAttendanceRate: number;
-  readonly overallScore: number;
-  readonly avgWorkoutsPerWeek: number;
-  readonly avgFoodLoggingDaysPerWeek: number;
-  readonly avgEveningCheckinsPerWeek: number;
-  readonly nutritionQualityScore: number;
-  readonly createdAt: string;
-  readonly updatedAt: string;
+export const ComplianceMetricsSchema = z.object({
+  patientId: z.string(),
+  periodStart: z.string(),
+  periodEnd: z.string(),
+  workoutAdherence: z.number(),
+  dietLoggingStreak: z.number(),
+  appointmentAttendanceRate: z.number(),
+  overallScore: z.number(),
+  avgWorkoutsPerWeek: z.number(),
+  avgFoodLoggingDaysPerWeek: z.number(),
+  avgEveningCheckinsPerWeek: z.number(),
+  nutritionQualityScore: z.number(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type ComplianceMetrics = z.infer<typeof ComplianceMetricsSchema>;
+
+// ============================================================================
+// TIER COMPLIANCE REQUIREMENTS
+// ============================================================================
+
+export const TierComplianceRequirementsSchema = z.object({
+  checkinsPerWeek: z.number().min(0),
+  foodLogsPerWeek: z.number().min(0),
+  workoutsPerWeek: z.number().min(0),
+});
+
+export type TierComplianceRequirements = z.infer<typeof TierComplianceRequirementsSchema>;
+
+/**
+ * Tier-specific compliance requirements.
+ */
+export const TIER_COMPLIANCE_REQUIREMENTS: Record<UserTier, TierComplianceRequirements> = {
+  ESSENTIALS: {
+    checkinsPerWeek: 1,
+    foodLogsPerWeek: 0,
+    workoutsPerWeek: 1,
+  },
+  CORE: {
+    checkinsPerWeek: 0.5,
+    foodLogsPerWeek: 4,
+    workoutsPerWeek: 2,
+  },
+  CONCIERGE: {
+    checkinsPerWeek: 7,
+    foodLogsPerWeek: 7,
+    workoutsPerWeek: 4,
+  },
+} as const;
+
+// ============================================================================
+// COMPLIANCE BREAKDOWN
+// ============================================================================
+
+export const MetricAdherenceSchema = z.object({
+  actual: z.number().min(0),
+  expected: z.number().min(0),
+  adherence: z.number().min(0).max(100),
+});
+
+export type MetricAdherence = z.infer<typeof MetricAdherenceSchema>;
+
+export const ComplianceBreakdownSchema = z.object({
+  checkins: MetricAdherenceSchema,
+  foodLogs: MetricAdherenceSchema,
+  workouts: MetricAdherenceSchema,
+});
+
+export type ComplianceBreakdown = z.infer<typeof ComplianceBreakdownSchema>;
+
+// ============================================================================
+// TIER-AWARE COMPLIANCE RESULT
+// ============================================================================
+
+export const TierAwareComplianceResultSchema = z.object({
+  status: ComplianceStatusSchema,
+  score: z.number().min(0).max(100),
+  tier: UserTierSchema,
+  breakdown: ComplianceBreakdownSchema,
+  periodWeeks: z.number().int().min(1),
+});
+
+export type TierAwareComplianceResult = z.infer<typeof TierAwareComplianceResultSchema>;
+
+// ============================================================================
+// MOCK FACTORIES
+// ============================================================================
+
+export function createMockMetricAdherence(overrides: Partial<MetricAdherence> = {}): MetricAdherence {
+  return {
+    actual: 5,
+    expected: 7,
+    adherence: 71,
+    ...overrides,
+  };
+}
+
+export function createMockComplianceBreakdown(
+  overrides: Partial<ComplianceBreakdown> = {}
+): ComplianceBreakdown {
+  return {
+    checkins: createMockMetricAdherence(),
+    foodLogs: createMockMetricAdherence(),
+    workouts: createMockMetricAdherence({ actual: 3, expected: 4, adherence: 75 }),
+    ...overrides,
+  };
+}
+
+export function createMockTierAwareComplianceResult(
+  overrides: Partial<TierAwareComplianceResult> = {}
+): TierAwareComplianceResult {
+  return {
+    status: COMPLIANCE_STATUS.GOOD,
+    score: 72,
+    tier: 'CORE',
+    breakdown: createMockComplianceBreakdown(),
+    periodWeeks: 4,
+    ...overrides,
+  };
 }

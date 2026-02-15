@@ -164,3 +164,83 @@ export const PHI_ACCESS_REASON_LABELS: Record<PhiAccessReason, string> = {
   admin: 'System Administration',
   unspecified: 'Unspecified',
 };
+
+/** Constant map for PHI access reasons to avoid magic strings */
+export const PHI_ACCESS_REASON = {
+  TREATMENT: 'treatment' as PhiAccessReason,
+  PAYMENT: 'payment' as PhiAccessReason,
+  HEALTHCARE_OPS: 'healthcare_ops' as PhiAccessReason,
+  PATIENT_REQUEST: 'patient_request' as PhiAccessReason,
+  LEGAL_REQUIREMENT: 'legal_requirement' as PhiAccessReason,
+  EMERGENCY: 'emergency' as PhiAccessReason,
+  RESEARCH: 'research' as PhiAccessReason,
+  ADMIN: 'admin' as PhiAccessReason,
+  UNSPECIFIED: 'unspecified' as PhiAccessReason,
+} as const;
+
+// ============================================================================
+// LOWERCASE SCHEMA ALIASES (backward compatibility)
+// ============================================================================
+
+/** @deprecated Use PhiResourceSchema instead */
+export const phiResourceSchema = PhiResourceSchema;
+/** @deprecated Use PhiActionSchema instead */
+export const phiActionSchema = PhiActionSchema;
+/** @deprecated Use PhiAccessReasonSchema instead */
+export const phiAccessReasonSchema = PhiAccessReasonSchema;
+
+// ============================================================================
+// AUDIT LOG ENTRY
+// ============================================================================
+
+export const phiAuditLogEntrySchema = z.object({
+  id: z.string(),
+  actorId: z.string(),
+  userId: z.string().nullable(),
+  resource: PhiResourceSchema,
+  action: PhiActionSchema,
+  method: z.string(),
+  path: z.string(),
+  resourceId: z.string().nullable(),
+  ipAddress: z.string().nullable(),
+  userAgent: z.string().nullable(),
+  success: z.boolean(),
+  errorMessage: z.string().nullable(),
+  accessReason: z.string().nullable(),
+  sequenceNumber: z.string().nullable(),
+  previousHash: z.string().nullable(),
+  integrityHash: z.string().nullable(),
+  verifiedAt: z.string().nullable(),
+  createdAt: z.string(),
+});
+
+export type PhiAuditLogEntryContract = z.infer<typeof phiAuditLogEntrySchema>;
+
+// ============================================================================
+// MOCK FACTORIES
+// ============================================================================
+
+/** Mock factory for tests */
+export const createMockPhiAuditLogEntry = (
+  overrides: Partial<PhiAuditLogEntryContract> = {}
+): PhiAuditLogEntryContract => ({
+  id: 'audit-log-id',
+  actorId: 'actor-123',
+  userId: 'user-456',
+  resource: PHI_RESOURCE.USER as PhiResource,
+  action: PHI_ACTION.READ as PhiAction,
+  method: 'GET',
+  path: '/users/user-456',
+  resourceId: 'user-456',
+  ipAddress: '127.0.0.1',
+  userAgent: 'jest',
+  success: true,
+  errorMessage: null,
+  accessReason: 'Treatment',
+  sequenceNumber: null,
+  previousHash: null,
+  integrityHash: null,
+  verifiedAt: null,
+  createdAt: new Date().toISOString(),
+  ...overrides,
+});

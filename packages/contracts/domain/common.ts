@@ -40,14 +40,9 @@ export const isoDateSchema = z
 // BASE DOCUMENT METADATA
 // ============================================================================
 
-/** Base document metadata interface */
-export interface ContractDocumentMeta {
-  id?: string;
-  createdAt: IsoTimestampString;
-  updatedAt: IsoTimestampString;
-}
-
 export const baseDocumentSchema = z.object({
   createdAt: isoTimestampSchema,
   updatedAt: isoTimestampSchema,
 });
+
+export type ContractDocumentMeta = z.infer<typeof baseDocumentSchema>;

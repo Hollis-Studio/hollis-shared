@@ -4,11 +4,37 @@
  * This module provides the canonical definitions for health progress-related constants:
  * - Health trends (improving, stable, declining)
  * - Data quality levels (sufficient, sparse, insufficient)
+ * - Health metric directions and categories
+ * - Complete HEALTH_METRIC_DEFINITIONS registry (migrated from src/contracts/healthProgress)
  *
- * NOTE: Health metric directions and categories are defined in ./training.ts
- * NOTE: The full HEALTH_METRIC_DEFINITIONS registry is defined in src/contracts/healthProgress
- * due to its platform-specific nature and size. This module provides only the shared
- * enum values and types needed across codebases.
+ * BUSINESS CONTEXT:
+ * Hollis Health differentiates from standard gyms by tracking actual HEALTH OUTCOMES,
+ * not just activity metrics. This enables:
+ * - Demonstrating ROI to clients (is their A1C actually improving?)
+ * - Identifying clients whose health is declining despite activity
+ * - Providing data to referring physicians
+ * - Justifying premium pricing through measurable outcomes
+ *
+ * ============================================================================
+ * CRITICAL DATA INVARIANTS (Enforced by tests)
+ * ============================================================================
+ *
+ * 1. METRIC-ONLY STORAGE:
+ *    - Weight: ALWAYS stored in kg (never lbs)
+ *    - Height: ALWAYS stored in cm (never inches/feet)
+ *    - Temperature: ALWAYS stored in °C (never °F)
+ *
+ * 2. US LAB UNITS (not international SI):
+ *    - Glucose: mg/dL (NOT mmol/L - would be 18x wrong!)
+ *    - Testosterone: ng/dL (NOT nmol/L - would be 28x wrong!)
+ *    - Cholesterol: mg/dL (NOT mmol/L)
+ *    - HbA1c: % (NOT mmol/mol)
+ *
+ * 3. UNIT VALIDATION:
+ *    - Data with mismatched units is REJECTED, not auto-converted
+ *    - See isUnitMatch() for validation logic
+ *
+ * CRITICAL: Mixing units could show false "improvement" when health is declining!
  *
  * IMPORTANT: All health trend and data quality enum values MUST be imported from here.
  *
@@ -16,6 +42,42 @@
  */
 
 import { z } from 'zod';
+import { type BiometricSource } from './clinical';
+import {
+  HEALTH_METRIC_DEFINITIONS,
+  type HealthMetricDefinition,
+  type HealthMetricKey,
+  HEALTH_METRIC_KEYS,
+} from './health-metric-definitions';
+import {
+  HEALTH_METRIC_DIRECTIONS,
+  type HealthMetricDirection,
+  HEALTH_METRIC_CATEGORIES,
+  type HealthMetricCategory,
+} from './health-metric-types';
+
+// ============================================================================
+// HEALTH METRIC DIRECTION
+// ============================================================================
+
+/**
+ * Improvement direction for a metric:
+ * - lower_better: Decreasing value = improvement (e.g., A1C, LDL, body fat)
+ * - higher_better: Increasing value = improvement (e.g., HDL, grip strength)
+ * - context: Direction depends on individual (e.g., weight, testosterone)
+ */
+export { HEALTH_METRIC_DIRECTIONS, type HealthMetricDirection } from './health-metric-types';
+
+export const HealthMetricDirectionSchema = z.enum(HEALTH_METRIC_DIRECTIONS);
+
+// ============================================================================
+// HEALTH METRIC CATEGORY
+// ============================================================================
+
+/** Health metric categories for grouping and scoring */
+export { HEALTH_METRIC_CATEGORIES, type HealthMetricCategory, HEALTH_METRIC_CATEGORY_LABELS } from './health-metric-types';
+
+export const HealthMetricCategorySchema = z.enum(HEALTH_METRIC_CATEGORIES);
 
 // ============================================================================
 // HEALTH TREND
@@ -49,6 +111,27 @@ export const HEALTH_TREND_LABELS: Record<HealthTrend, string> = {
 export function isHealthTrend(value: string): value is HealthTrend {
   return (HEALTH_TRENDS as readonly string[]).includes(value);
 }
+
+// ============================================================================
+// DATA WEIGHTING
+// ============================================================================
+
+export const SOURCE_WEIGHTS: Record<BiometricSource, number> = {
+  LAB_REPORT: 1.0,
+  CLINICIAN_ENTRY: 1.0,
+  DERIVED: 0.9,
+  APPLE_HEALTH: 0.8,
+  OURA: 0.75,
+  WHOOP: 0.75,
+  GOOGLE_FIT: 0.7,
+  DEVICE: 0.7,
+  USER_LOG: 0.6,
+};
+
+export const VERIFICATION_MULTIPLIER = {
+  verified: 1.0,
+  unverified: 0.7,
+} as const;
 
 // ============================================================================
 // DATA QUALITY
@@ -87,39 +170,27 @@ export function isDataQualityLevel(value: string): value is DataQualityLevel {
 }
 
 // ============================================================================
-// HEALTH METRIC KEY MAPPINGS
+// HEALTH METRIC REGISTRY RE-EXPORTS
 // ============================================================================
 
 /**
- * Canonical health metric key type.
- * Matches keys defined in HEALTH_METRIC_DEFINITIONS (src/contracts/healthProgress/definitions.ts).
- * 
- * NOTE: The full HEALTH_METRIC_DEFINITIONS registry is in src/contracts/healthProgress due to
- * its platform-specific nature and size. This type covers the commonly used keys.
+ * Re-export the complete health metric definitions registry and related types.
+ * The full registry is now in ./health-metric-definitions.ts
  */
-export type HealthMetricKey =
-  // Body composition
-  | 'weight'
-  | 'bodyFatPercent'
-  | 'leanMassKg'
-  | 'bmi'
-  // Cardiovascular
-  | 'restingHR'
-  | 'bloodPressureSystolic'
-  | 'bloodPressureDiastolic'
-  | 'vo2MaxEstimate'
-  // Metabolic
-  | 'hba1c'
-  | 'fastingGlucose'
-  | 'totalCholesterol'
-  | 'ldlCholesterol'
-  | 'hdlCholesterol'
-  | 'triglycerides'
-  // Hormonal
-  | 'testosteroneTotal'
-  | 'vitaminD'
-  // Performance
-  | 'gripStrength';
+export {
+  HEALTH_METRIC_DEFINITIONS,
+  type HealthMetricKey,
+  HEALTH_METRIC_KEYS,
+  HEALTH_METRIC_LABELS,
+  type HealthMetricDefinition,
+} from './health-metric-definitions';
+
+/** Zod schema for HealthMetricKey validation */
+export const HealthMetricKeySchema = z.enum(HEALTH_METRIC_KEYS as [HealthMetricKey, ...HealthMetricKey[]]);
+
+// ============================================================================
+// HEALTH METRIC KEY MAPPINGS
+// ============================================================================
 
 /**
  * Maps biometric entry keys to health metric keys.
@@ -201,35 +272,14 @@ export const LAB_NAME_MAP: Record<string, HealthMetricKey> = {
 
 /**
  * Expected units for health metrics.
- * Used for unit validation without requiring the full HEALTH_METRIC_DEFINITIONS.
- * 
+ * Automatically derived from HEALTH_METRIC_DEFINITIONS.
+ *
  * CRITICAL: All biometrics are stored in metric units (kg, cm).
  * Lab values use US standard units (mg/dL, ng/dL).
  */
-export const EXPECTED_UNITS: Record<HealthMetricKey, string> = {
-  // Body composition
-  weight: 'kg',
-  bodyFatPercent: '%',
-  leanMassKg: 'kg',
-  bmi: 'kg/m²',
-  // Cardiovascular
-  restingHR: 'bpm',
-  bloodPressureSystolic: 'mmHg',
-  bloodPressureDiastolic: 'mmHg',
-  vo2MaxEstimate: 'ml/kg/min',
-  // Metabolic (US lab units)
-  hba1c: '%',
-  fastingGlucose: 'mg/dL',
-  totalCholesterol: 'mg/dL',
-  ldlCholesterol: 'mg/dL',
-  hdlCholesterol: 'mg/dL',
-  triglycerides: 'mg/dL',
-  // Hormonal (US lab units)
-  testosteroneTotal: 'ng/dL',
-  vitaminD: 'ng/mL',
-  // Performance
-  gripStrength: 'kg',
-};
+export const EXPECTED_UNITS: Record<HealthMetricKey, string> = Object.fromEntries(
+  HEALTH_METRIC_KEYS.map((key) => [key, HEALTH_METRIC_DEFINITIONS[key].unit])
+) as Record<HealthMetricKey, string>;
 
 /**
  * Gets the expected unit for a health metric.
@@ -259,5 +309,92 @@ export function getExpectedUnit(metricKey: HealthMetricKey): string {
 export function isUnitMatch(metricKey: HealthMetricKey, inputUnit: string): boolean {
   const expectedUnit = EXPECTED_UNITS[metricKey];
   return expectedUnit.toLowerCase() === inputUnit.toLowerCase();
+}
+
+// ============================================================================
+// ADDITIONAL UTILITY FUNCTIONS
+// ============================================================================
+
+/**
+ * Returns the weight for a data point based on source and verification status.
+ */
+export function getDataPointWeight(source: BiometricSource, isVerified: boolean): number {
+  const base = SOURCE_WEIGHTS[source];
+  const verification = isVerified ? VERIFICATION_MULTIPLIER.verified : VERIFICATION_MULTIPLIER.unverified;
+  return Math.min(1, Math.max(0, base * verification));
+}
+
+/**
+ * Gets the improvement direction for a health metric.
+ *
+ * @param metricKey - The health metric key
+ * @returns The direction ('lower_better', 'higher_better', or 'context')
+ */
+export function getMetricDirection(metricKey: HealthMetricKey): HealthMetricDirection {
+  return HEALTH_METRIC_DEFINITIONS[metricKey].direction;
+}
+
+/**
+ * Gets the category for a health metric.
+ *
+ * @param metricKey - The health metric key
+ * @returns The category
+ */
+export function getMetricCategory(metricKey: HealthMetricKey): HealthMetricCategory {
+  return HEALTH_METRIC_DEFINITIONS[metricKey].category;
+}
+
+/**
+ * @deprecated WARNING: Uses static reference ranges that ignore patient sex, age, and pregnancy status.
+ * This function is NOT appropriate for clinical decision-making.
+ *
+ * Use resolveReferenceRange() from referenceRanges module instead for patient-aware range checking.
+ *
+ * @param metricKey - The health metric key
+ * @param value - The value to check
+ * @returns true if within range or no range defined, false if outside range
+ */
+export function isWithinNormalRange(metricKey: HealthMetricKey, value: number): boolean {
+  const definition: HealthMetricDefinition = HEALTH_METRIC_DEFINITIONS[metricKey];
+  if (!definition.normalRange) {
+    return true; // No range defined, assume acceptable
+  }
+  const { min, max } = definition.normalRange;
+  return value >= min && value <= max;
+}
+
+/**
+ * Determines the health trend based on percent change and metric direction.
+ * A change of less than 3% in either direction is considered stable.
+ *
+ * @param metricKey - The health metric key
+ * @param percentChange - The percent change (can be negative)
+ * @returns The health trend
+ */
+export function determineTrend(metricKey: HealthMetricKey, percentChange: number | null): HealthTrend {
+  if (percentChange === null) {
+    return HEALTH_TREND.STABLE; // No data to determine trend
+  }
+
+  const STABILITY_THRESHOLD = 3; // ±3% is considered stable
+  const direction = getMetricDirection(metricKey);
+
+  if (Math.abs(percentChange) < STABILITY_THRESHOLD) {
+    return HEALTH_TREND.STABLE;
+  }
+
+  // For context-dependent metrics, we can't determine improvement without more info
+  if (direction === 'context') {
+    return HEALTH_TREND.STABLE;
+  }
+
+  const isIncreasing = percentChange > 0;
+
+  if (direction === 'higher_better') {
+    return isIncreasing ? HEALTH_TREND.IMPROVING : HEALTH_TREND.DECLINING;
+  } else {
+    // lower_better
+    return isIncreasing ? HEALTH_TREND.DECLINING : HEALTH_TREND.IMPROVING;
+  }
 }
 

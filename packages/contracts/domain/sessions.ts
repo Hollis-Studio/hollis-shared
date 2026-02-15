@@ -15,6 +15,7 @@
 
 import { z } from 'zod';
 import { type AppointmentType } from './appointments';
+import { baseDocumentSchema, isoTimestampSchema } from './common';
 import { USER_TIERS, type UserTier } from './user';
 
 // ============================================================================
@@ -112,23 +113,7 @@ export const RESET_FREQUENCY_LABELS: Record<ResetFrequency, string> = {
 // SESSION BALANCE
 // ============================================================================
 
-/**
- * User's current session balance for a specific session type
- */
-export interface SessionBalanceItemContract {
-  sessionType: SessionType;
-  allocated: number;        // Tier default for this period (-1 for unlimited)
-  rolledOver: number;       // Sessions carried from previous period
-  used: number;             // Number used so far this period
-  remaining: number;        // allocated + rolledOver - used + adjustments (or -1 if unlimited)
-  adjustments: number;      // Manual admin adjustments (+ or -)
-  resetFrequency: ResetFrequency;
-  periodStart: string;      // ISO date - start of current billing period for this session type
-  periodEnd: string;        // ISO date - end of current billing period
-  nextResetDate: string;    // ISO date - when this balance resets
-}
-
-export const SessionBalanceItemSchema: z.ZodType<SessionBalanceItemContract> = z.object({
+export const SessionBalanceItemSchema = z.object({
   sessionType: SessionTypeSchema,
   allocated: z.number().int().min(-1),
   rolledOver: z.number().int().min(0),
@@ -141,23 +126,13 @@ export const SessionBalanceItemSchema: z.ZodType<SessionBalanceItemContract> = z
   nextResetDate: z.string(),
 });
 
+export type SessionBalanceItemContract = z.infer<typeof SessionBalanceItemSchema>;
+
 // ============================================================================
 // USER SESSION BALANCE
 // ============================================================================
 
-/**
- * Complete session balance for a user.
- * Aggregates all session type balances for the user's current tier.
- */
-export interface UserSessionBalanceContract {
-  userId: string;
-  tier: UserTier;
-  billingAnchorDate: string;  // ISO date - user's billing cycle start date (day of month they signed up)
-  balances: SessionBalanceItemContract[];
-  lastUpdated: string;
-}
-
-export const UserSessionBalanceSchema: z.ZodType<UserSessionBalanceContract> = z.object({
+export const UserSessionBalanceSchema = z.object({
   userId: z.string(),
   tier: z.enum(USER_TIERS),
   billingAnchorDate: z.string(),
@@ -165,37 +140,26 @@ export const UserSessionBalanceSchema: z.ZodType<UserSessionBalanceContract> = z
   lastUpdated: z.string(),
 });
 
+export type UserSessionBalanceContract = z.infer<typeof UserSessionBalanceSchema>;
+
 // ============================================================================
 // SESSION ALLOCATIONS
 // ============================================================================
 
-/**
- * Session allocation definition for a specific session type
- */
-export interface SessionAllocationContract {
-  sessionType: SessionType;
-  quantity: number;         // How many sessions allocated per reset period (-1 for unlimited)
-  resetFrequency: ResetFrequency;
-}
-
-export const SessionAllocationSchema: z.ZodType<SessionAllocationContract> = z.object({
+export const SessionAllocationSchema = z.object({
   sessionType: SessionTypeSchema,
   quantity: z.number().int().min(-1),  // -1 = unlimited
   resetFrequency: ResetFrequencySchema,
 });
 
-/**
- * Complete tier session allocations - defines what each tier gets
- */
-export interface TierSessionAllocationsContract {
-  tier: UserTier;
-  allocations: SessionAllocationContract[];
-}
+export type SessionAllocationContract = z.infer<typeof SessionAllocationSchema>;
 
-export const TierSessionAllocationsSchema: z.ZodType<TierSessionAllocationsContract> = z.object({
+export const TierSessionAllocationsSchema = z.object({
   tier: z.enum(USER_TIERS),
   allocations: z.array(SessionAllocationSchema),
 });
+
+export type TierSessionAllocationsContract = z.infer<typeof TierSessionAllocationsSchema>;
 
 /**
  * Default tier allocations based on Hollis Health membership structure
@@ -376,3 +340,97 @@ export const APPOINTMENT_TO_SESSION_MAP: Record<AppointmentType, SessionType | n
   DXA_SCAN: SESSION_TYPE.DXA_SCAN,
   SLEEP_SCREENING: SESSION_TYPE.SLEEP_SCREENING,
 };
+
+// ============================================================================
+// SESSION USAGE
+// ============================================================================
+
+export const SessionUsageSchema = baseDocumentSchema.extend({
+  id: z.string().optional(),
+  userId: z.string(),
+  sessionType: SessionTypeSchema,
+  appointmentId: z.string().optional(),
+  usedAt: isoTimestampSchema,
+  notes: z.string().optional(),
+  source: SessionUsageSourceSchema,
+  quantity: z.number().int(),
+  balanceAfter: z.number().int(),
+});
+
+export type SessionUsageContract = z.infer<typeof SessionUsageSchema>;
+
+// ============================================================================
+// SESSION ADJUSTMENT
+// ============================================================================
+
+export const SessionAdjustmentPayloadSchema = z.object({
+  sessionType: SessionTypeSchema,
+  adjustment: z.number().int(),
+  reason: z.string().min(1),
+});
+
+export type SessionAdjustmentPayload = z.infer<typeof SessionAdjustmentPayloadSchema>;
+
+// ============================================================================
+// TIER CHANGE
+// ============================================================================
+
+export const TierChangePayloadSchema = z.object({
+  newTier: z.enum(USER_TIERS),
+  effectiveDate: z.string().optional(),
+  prorateSessions: z.boolean().optional(),
+  reason: z.string().optional(),
+});
+
+export type TierChangePayload = z.infer<typeof TierChangePayloadSchema>;
+
+// ============================================================================
+// BILLING DATE UPDATE
+// ============================================================================
+
+export const BillingDateUpdatePayloadSchema = z.object({
+  newBillingAnchorDate: z.string(),
+  reason: z.string().optional(),
+});
+
+export type BillingDateUpdatePayload = z.infer<typeof BillingDateUpdatePayloadSchema>;
+
+// ============================================================================
+// SESSION SERVICE ERROR
+// ============================================================================
+
+export const sessionServiceErrorSchema = z.object({
+  code: sessionErrorCodeSchema,
+  message: z.string(),
+  statusCode: z.number().int().positive().optional(),
+});
+
+export type SessionServiceErrorContract = z.infer<typeof sessionServiceErrorSchema>;
+
+export const createMockSessionError = (
+  overrides: Partial<SessionServiceErrorContract> = {},
+): SessionServiceErrorContract => ({
+  code: overrides.code ?? SESSION_ERROR_CODE.INVALID_SESSION_TYPE,
+  message: overrides.message ?? SESSION_ERROR_LABELS.INVALID_SESSION_TYPE,
+  statusCode: overrides.statusCode ?? 400,
+});
+
+// ============================================================================
+// SESSION HELPERS
+// ============================================================================
+
+/**
+ * Helper to check if a session type has sessions available
+ */
+export function hasSessionsAvailable(balance: SessionBalanceItemContract): boolean {
+  if (balance.allocated === -1) return true; // Unlimited
+  return balance.remaining > 0;
+}
+
+/**
+ * Helper to calculate the effective remaining (includes adjustments)
+ */
+export function getEffectiveRemaining(balance: SessionBalanceItemContract): number {
+  if (balance.allocated === -1) return -1; // Unlimited
+  return Math.max(0, balance.remaining + balance.adjustments);
+}

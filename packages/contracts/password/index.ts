@@ -224,8 +224,8 @@ export async function checkPasswordBreached(
       
       for (const line of lines) {
         const [hashSuffix, countStr] = line.split(':');
-        if (hashSuffix?.trim() === suffix) {
-          const count = parseInt(countStr?.trim() ?? '0', 10);
+        if (hashSuffix.trim() === suffix) {
+          const count = parseInt(countStr.trim(), 10);
           return { breached: true, count };
         }
       }

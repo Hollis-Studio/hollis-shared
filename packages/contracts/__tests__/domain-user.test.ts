@@ -460,8 +460,8 @@ describe('User Domain Contracts', () => {
 
       it('should have correct prices', () => {
         expect(USER_TIER_PRICES_DOLLARS.ESSENTIALS).toBe(799);
-        expect(USER_TIER_PRICES_DOLLARS.CORE).toBe(1199);
-        expect(USER_TIER_PRICES_DOLLARS.CONCIERGE).toBe(1699);
+        expect(USER_TIER_PRICES_DOLLARS.CORE).toBe(1349);
+        expect(USER_TIER_PRICES_DOLLARS.CONCIERGE).toBe(1999);
       });
 
       it('prices should increase with tier level', () => {

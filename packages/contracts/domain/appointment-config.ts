@@ -29,7 +29,7 @@ export const APPOINTMENT_DURATIONS: Record<AppointmentType, number> = {
 
 /** Get duration for an appointment type */
 export function getDurationForType(type: AppointmentType): number {
-  return APPOINTMENT_DURATIONS[type] ?? 60;
+  return APPOINTMENT_DURATIONS[type];
 }
 
 /** Time slot with timezone info */

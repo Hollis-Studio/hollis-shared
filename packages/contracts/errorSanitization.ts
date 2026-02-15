@@ -75,7 +75,7 @@ const BARCODE_PATTERN = /\bHH-[A-HJ-KM-NP-Z2-9]{6}\b/gi;
  */
 export function sanitizeErrorMessage(message: string): string {
   if (!message || typeof message !== 'string') {
-    return message ?? '';
+    return message;
   }
 
   let sanitized = message;

@@ -16,6 +16,7 @@ import { USER_TIERS } from '../domain/user';
 
 export const SUBSCRIPTION_STATUSES = [
   'PENDING',
+  'TRIAL',
   'ACTIVE',
   'PAUSED',
   'PAST_DUE',
@@ -31,6 +32,7 @@ export const SubscriptionStatusSchema = z.enum(SUBSCRIPTION_STATUSES);
 /** Lookup object for subscription statuses (avoids magic strings) */
 export const SUBSCRIPTION_STATUS = {
   PENDING: 'PENDING',
+  TRIAL: 'TRIAL',
   ACTIVE: 'ACTIVE',
   PAUSED: 'PAUSED',
   PAST_DUE: 'PAST_DUE',

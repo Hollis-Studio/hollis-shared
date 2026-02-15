@@ -12,7 +12,7 @@
  */
 
 import { z } from 'zod';
-import { baseDocumentSchema, isoDateSchema, type IsoTimestampString } from './common';
+import { baseDocumentSchema, isoDateSchema } from './common';
 
 // ============================================================================
 // JOURNAL MOOD & ENERGY
@@ -46,23 +46,14 @@ export const JOURNAL_ENERGY_LABELS: Record<JournalEnergy, string> = {
 // JOURNAL AI ASSESSMENT CONTRACT
 // ============================================================================
 
-/**
- * AI-generated assessment of a journal entry.
- * Includes sentiment analysis, theme extraction, and recommendations.
- */
-export interface JournalAIAssessmentContract {
-  summary: string;
-  themes: string[];
-  sentimentScore: number; // -1 to 1
-  recommendedActions?: string[];
-}
-
-export const journalAIAssessmentSchema: z.ZodType<JournalAIAssessmentContract> = z.object({
+export const journalAIAssessmentSchema = z.object({
   summary: z.string().min(1),
   themes: z.array(z.string()),
   sentimentScore: z.number().min(-1).max(1),
   recommendedActions: z.array(z.string()).optional(),
 });
+
+export type JournalAIAssessmentContract = z.infer<typeof journalAIAssessmentSchema>;
 
 // ============================================================================
 // JOURNAL ENTRY CONTRACT
@@ -74,36 +65,10 @@ export const journalAIAssessmentSchema: z.ZodType<JournalAIAssessmentContract> =
  */
 const moodEnergySchema = z
   .union([z.string(), z.number()])
-  .transform((val) => (val != null ? String(val) : val))
+  .transform((val) => String(val))
   .optional();
 
-/**
- * Journal entry contract - represents a user's journal entry.
- */
-export interface JournalEntryContract {
-  id?: string;
-  /**
-   * User identifier in HH-XXXXXX barcode format.
-   * References the patient this journal entry belongs to.
-   *
-   * @format HH-XXXXXX
-   */
-  userId: string;
-  createdAt: IsoTimestampString;
-  updatedAt: IsoTimestampString;
-  entryDate: string; // yyyy-mm-dd
-  content: string;
-  mood?: string | number; // 1-10 or enum
-  energy?: string | number; // 1-10 or enum
-  stressLevel?: number; // 1-10
-  planAdherence?: number; // 1=Yes, 2=Mostly, 3=No
-  motivation?: number; // 1-10
-  tags?: string[];
-  aiAssessment?: JournalAIAssessmentContract;
-  attachments?: string[];
-}
-
-export const journalEntrySchema: z.ZodType<JournalEntryContract> = baseDocumentSchema.extend({
+export const journalEntrySchema = baseDocumentSchema.extend({
   id: z.string().optional(),
   userId: z.string(),
   entryDate: isoDateSchema,
@@ -117,6 +82,8 @@ export const journalEntrySchema: z.ZodType<JournalEntryContract> = baseDocumentS
   aiAssessment: journalAIAssessmentSchema.optional(),
   attachments: z.array(z.string()).optional(),
 });
+
+export type JournalEntryContract = z.infer<typeof journalEntrySchema>;
 
 // ============================================================================
 // MOCK FACTORIES
@@ -134,12 +101,15 @@ export const createMockJournalAIAssessment = (
   ...overrides,
 });
 
+let mockJournalEntryCounter = 0;
+
 export const createMockJournalEntry = (
   overrides: Partial<JournalEntryContract> = {},
 ): JournalEntryContract => {
   const timestamp = nowIso();
+  mockJournalEntryCounter += 1;
   return {
-    id: 'mock-journal-entry-id',
+    id: overrides.id ?? `mock-journal-entry-${mockJournalEntryCounter}`,
     userId: 'HH-ABC123',
     createdAt: timestamp,
     updatedAt: timestamp,
@@ -151,6 +121,7 @@ export const createMockJournalEntry = (
     planAdherence: 1,
     motivation: 8,
     tags: ['workout', 'productive'],
+    aiAssessment: createMockJournalAIAssessment(),
     ...overrides,
   };
 };

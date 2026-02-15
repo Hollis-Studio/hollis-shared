@@ -14,7 +14,6 @@
 
 import { z } from 'zod';
 
-import type { Injury, Limitation, MedicalCondition, Medication } from './clinical';
 import {
     injurySchema,
     limitationSchema,
@@ -177,7 +176,10 @@ export const ROLE_BADGE_CONFIG: Record<UserRole, RoleBadge> = {
  */
 export function getRoleBadge(role: string | undefined | null): RoleBadge | null {
   if (!role) return null;
-  return ROLE_BADGE_CONFIG[role as UserRole] ?? { label: role, color: ROLE_BADGE_COLORS.default.color, bg: ROLE_BADGE_COLORS.default.bg };
+  if (role in ROLE_BADGE_CONFIG) {
+    return ROLE_BADGE_CONFIG[role as UserRole];
+  }
+  return { label: role, color: ROLE_BADGE_COLORS.default.color, bg: ROLE_BADGE_COLORS.default.bg };
 }
 
 // ============================================================================
@@ -221,8 +223,8 @@ export const USER_TIER_LABELS: Record<UserTier, string> = {
  */
 export const USER_TIER_PRICES_DOLLARS: Record<UserTier, number> = {
   ESSENTIALS: 799,
-  CORE: 1199,
-  CONCIERGE: 1699,
+  CORE: 1349,
+  CONCIERGE: 1999,
 };
 
 /**
@@ -547,58 +549,7 @@ export const MESSAGE_RECIPIENT_ROLE_LABELS: Record<MessagingRecipientRole, strin
 /**
  * User profile contract - core user profile information.
  */
-export interface UserProfileContract {
-  id?: string;
-  /**
-   * User identifier in HH-XXXXXX barcode format (e.g., HH-ABC123).
-   * This IS the patient's barcode - the same value used for QR codes and registration.
-   *
-   * @format HH-XXXXXX
-   */
-  userId: string;
-  email: string;
-  fullName: string;
-  preferredName?: string;
-  role?: UserRole;
-  tier?: UserTier;
-  avatarUrl?: string;
-  bio?: string;
-  occupation?: string;
-  primaryGoal?: PrimaryGoal;
-  activityLevel?: ActivityLevel;
-  experienceLevel?: FitnessExperience;
-  dateOfBirth?: string; // IsoDateString
-  biologicalSex?: BiologicalSex;
-  pregnancyStatus?: PregnancyStatus | null;
-  pregnancyDueDate?: string | null; // IsoDateString
-  /**
-   * @computed Derived from pregnancyStatus (if set) or pregnancyDueDate (if set).
-   * If pregnancyStatus is explicitly set, it takes precedence.
-   * Otherwise, calculated from pregnancyDueDate using calculateTrimesterFromDueDate.
-   * Null if neither pregnancyStatus nor pregnancyDueDate is set.
-   */
-  calculatedPregnancyStatus?: PregnancyStatus | null;
-  heightCm?: number;
-  weightKg?: number;
-  initialWeightKg?: number;
-  timezone?: string;
-  assignedClinicianId?: string | null;
-  assignedTrainerId?: string | null;
-  /** Active medications for this user */
-  medications?: Medication[];
-  /** Physical limitations or restrictions */
-  limitations?: Limitation[];
-  /** Past or current injuries */
-  injuries?: Injury[];
-  /** Medical conditions (e.g., diabetes, hypertension) */
-  medicalConditions?: MedicalCondition[];
-  onboardingCompleted: boolean;
-  isActive?: boolean;
-  createdAt: string; // IsoTimestampString
-  updatedAt: string; // IsoTimestampString
-}
-
-export const UserProfileSchema: z.ZodType<UserProfileContract> = z.object({
+export const UserProfileSchema = z.object({
   id: z.string().optional(),
   userId: z.string(),
   email: z.string().email(),
@@ -617,8 +568,8 @@ export const UserProfileSchema: z.ZodType<UserProfileContract> = z.object({
   pregnancyStatus: PregnancyStatusSchema.nullable().optional(),
   pregnancyDueDate: z.string().nullable().optional(),
   calculatedPregnancyStatus: PregnancyStatusSchema.nullable().optional(),
-  heightCm: z.number().min(0).optional(),
-  weightKg: z.number().min(0).optional(),
+  heightCm: z.number().min(0).max(300).optional(),
+  weightKg: z.number().min(0).max(500).optional(),
   initialWeightKg: z.number().min(0).optional(),
   timezone: z.string().optional(),
   assignedClinicianId: z.string().nullable().optional(),
@@ -633,25 +584,13 @@ export const UserProfileSchema: z.ZodType<UserProfileContract> = z.object({
   updatedAt: z.string(),
 });
 
+export type UserProfileContract = z.infer<typeof UserProfileSchema>;
+
 // ============================================================================
 // USER GOALS CONTRACT
 // ============================================================================
 
-export interface UserGoalsContract {
-  id?: string;
-  userId: string;
-  calorieTarget: number;
-  proteinTarget: number;
-  carbTarget: number;
-  fatTarget: number;
-  weeklyWeightChangeTarget: number; // kg per week
-  workoutsPerWeek: number;
-  sleepHoursTarget?: number;
-  createdAt: string; // IsoTimestampString
-  updatedAt: string; // IsoTimestampString
-}
-
-export const UserGoalsSchema: z.ZodType<UserGoalsContract> = z.object({
+export const UserGoalsSchema = z.object({
   id: z.string().optional(),
   userId: z.string(),
   calorieTarget: z.number().min(0),
@@ -660,46 +599,18 @@ export const UserGoalsSchema: z.ZodType<UserGoalsContract> = z.object({
   fatTarget: z.number().min(0),
   weeklyWeightChangeTarget: z.number(),
   workoutsPerWeek: z.number().min(0),
-  sleepHoursTarget: z.number().min(0).optional(),
+  sleepHoursTarget: z.number().min(0).max(24).optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
+
+export type UserGoalsContract = z.infer<typeof UserGoalsSchema>;
 
 // ============================================================================
 // USER METRICS CONTRACT
 // ============================================================================
 
-export interface UserMetricsContract {
-  tdee: number;
-  bmr: number;
-  recoveryScore: number;
-  trainingLoad?: number;
-  currentWeight?: number;
-  weeklyWeightChange?: number;
-  monthlyWeightChange?: number;
-  currentBodyFat?: number;
-  currentMuscleMass?: number;
-  sleepPerformance: number;
-  averageSleepDuration?: number;
-  averageSleepQuality?: number;
-  averageHRV?: number;
-  averageRestingHR?: number;
-  stressScore?: number;
-  todaysStrain: number;
-  weeklyStrain?: number;
-  monthlyStrain?: number;
-  stepCount?: number;
-  activeMinutes?: number;
-  loggedCalories: number;
-  weeklyCalorieAverage?: number;
-  macroAdherence?: number;
-  workoutStreak?: number;
-  loggingStreak?: number;
-  adherenceScore?: number;
-  lastUpdated: string; // IsoTimestampString
-}
-
-export const UserMetricsSchema: z.ZodType<UserMetricsContract> = z.object({
+export const UserMetricsSchema = z.object({
   tdee: z.number().min(0),
   bmr: z.number().min(0),
   recoveryScore: z.number().min(0).max(100),
@@ -729,46 +640,13 @@ export const UserMetricsSchema: z.ZodType<UserMetricsContract> = z.object({
   lastUpdated: z.string(),
 });
 
+export type UserMetricsContract = z.infer<typeof UserMetricsSchema>;
+
 // ============================================================================
 // USER ACCOUNT CONTRACT (AGGREGATE)
 // ============================================================================
 
-/**
- * User account contract - aggregate of profile, preferences, goals, and metrics.
- */
-export interface UserAccountContract {
-  profile: UserProfileContract;
-  preferences?: UserPreferencesContract;
-  goals?: UserGoalsContract;
-  metrics?: UserMetricsContract;
-}
-
-export interface UserPreferencesContract {
-  id?: string;
-  userId: string;
-  unitSystem: 'imperial' | 'metric' | 'advanced';
-  timeFormat: 'standard' | 'military';
-  locale: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export const UserPreferencesSchema: z.ZodType<UserPreferencesContract> = z.object({
-  id: z.string().optional(),
-  userId: z.string(),
-  unitSystem: z.enum(['imperial', 'metric', 'advanced']),
-  timeFormat: z.enum(['standard', 'military']),
-  locale: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-});
-
-export const UserAccountSchema: z.ZodType<UserAccountContract> = z.object({
-  profile: UserProfileSchema,
-  preferences: UserPreferencesSchema.optional(),
-  goals: UserGoalsSchema.optional(),
-  metrics: UserMetricsSchema.optional(),
-});
+// UserPreferencesContract, UserAccountContract are derived from schemas below (after dashboard/notification schemas)
 
 // ============================================================================
 // MOCK FACTORIES
@@ -781,11 +659,13 @@ export const createMockUserProfile = (
 ): UserProfileContract => {
   const timestamp = nowIso();
   return {
-    userId: 'HH-ABC123',
-    email: 'user@example.com',
-    fullName: 'John Doe',
+    userId: 'mock-user',
+    email: 'mock.user@example.com',
+    fullName: 'Mock User',
     role: 'CLIENT',
     tier: 'CORE',
+    heightCm: 175,
+    weightKg: 72,
     onboardingCompleted: true,
     createdAt: timestamp,
     updatedAt: timestamp,
@@ -793,9 +673,313 @@ export const createMockUserProfile = (
   };
 };
 
-export const createMockUserAccount = (
-  overrides: Partial<UserAccountContract> = {},
-): UserAccountContract => ({
-  profile: createMockUserProfile(overrides.profile),
+/**
+ * Default notification preferences factory
+ */
+export const defaultNotifications = (): NotificationPreferencesContract => ({
+  morningBriefing: { enabled: true, time: '07:00', autoLearn: true },
+  eveningCheckIn: { enabled: true, time: '20:00', autoLearn: true },
+  weeklyInsights: { enabled: true, time: '09:00', day: 'monday' },
+  coPilotCheckIns: { enabled: false, time: '10:00', frequency: 'weekly' },
+  trainingGuidance: { enabled: true, time: '08:00', frequency: 'daily', intelligentMode: true },
+  nutritionCoaching: { enabled: false, breakfastTime: '08:00', lunchTime: '12:30', dinnerTime: '19:00' },
+  adminPortal: {
+    appointmentBookedByOthers: false,
+    appointmentCancelledByOthers: false,
+    appointmentModifiedByOthers: false,
+    patientAssignedToMe: false,
+  },
+});
+
+/**
+ * Default advanced unit preferences factory
+ */
+export const defaultAdvancedUnits = (): import('./units').AdvancedUnitPreferencesContract => ({
+  weight: 'kg',
+  height: 'cm',
+  foodWeight: 'g',
+  foodVolume: 'ml',
+  calories: 'kcal',
+  exerciseWeight: 'kg',
+  distance: 'km',
+  speed: 'km_h',
+  altitude: 'm',
+  temperature: 'celsius',
+  water: 'ml',
+});
+
+/** Default card order for mock preferences */
+const DEFAULT_MOCK_CARD_ORDER = [
+  'dailySummary',
+  'nutrition',
+  'workout',
+  'recovery',
+] as const;
+
+/**
+ * Create a mock UserPreferencesContract for testing
+ */
+export const createMockUserPreferences = (
+  overrides: Partial<UserPreferencesContract> = {},
+): UserPreferencesContract => {
+  const timestamp = nowIso();
+  const defaultOrder = [...DEFAULT_MOCK_CARD_ORDER];
+  const base: UserPreferencesContract = {
+    id: overrides.id,
+    userId: overrides.userId ?? 'mock-user',
+    unitSystem: overrides.unitSystem ?? 'metric',
+    timeFormat: overrides.timeFormat ?? 'standard',
+    locale: overrides.locale ?? 'en-US',
+    dashboard: overrides.dashboard ?? {
+      sectionOrder: defaultOrder,
+      hiddenSections: [],
+      pinnedSections: [DEFAULT_MOCK_CARD_ORDER[0]],
+    },
+    advancedUnits: overrides.advancedUnits ?? defaultAdvancedUnits(),
+    notifications: overrides.notifications ?? defaultNotifications(),
+    units: overrides.units ?? overrides.unitSystem ?? 'metric',
+    dashboardCardOrder:
+      overrides.dashboardCardOrder ?? overrides.dashboard?.sectionOrder ?? defaultOrder,
+    dashboardSections:
+      overrides.dashboardSections ?? {
+        order: overrides.dashboard?.sectionOrder ?? defaultOrder,
+        visibility: {
+          [DEFAULT_MOCK_CARD_ORDER[0]]: true,
+          [DEFAULT_MOCK_CARD_ORDER[1]]: true,
+          [DEFAULT_MOCK_CARD_ORDER[2]]: true,
+          [DEFAULT_MOCK_CARD_ORDER[3]]: true,
+        },
+      },
+    hiddenDashboardCards: overrides.hiddenDashboardCards ?? overrides.dashboard?.hiddenSections ?? [],
+    createdAt: overrides.createdAt ?? timestamp,
+    updatedAt: overrides.updatedAt ?? timestamp,
+  };
+  return { ...base, ...overrides };
+};
+
+/**
+ * Create a mock UserGoalsContract for testing
+ */
+export const createMockUserGoals = (
+  overrides: Partial<UserGoalsContract> = {},
+): UserGoalsContract => {
+  const timestamp = nowIso();
+  const base: UserGoalsContract = {
+    id: overrides.id,
+    userId: overrides.userId ?? 'mock-user',
+    calorieTarget: overrides.calorieTarget ?? 2200,
+    proteinTarget: overrides.proteinTarget ?? 150,
+    carbTarget: overrides.carbTarget ?? 200,
+    fatTarget: overrides.fatTarget ?? 65,
+    weeklyWeightChangeTarget: overrides.weeklyWeightChangeTarget ?? -0.25,
+    workoutsPerWeek: overrides.workoutsPerWeek ?? 4,
+    sleepHoursTarget: overrides.sleepHoursTarget ?? 7.5,
+    createdAt: overrides.createdAt ?? timestamp,
+    updatedAt: overrides.updatedAt ?? timestamp,
+  };
+  return { ...base, ...overrides };
+};
+
+/**
+ * Create a mock UserMetricsContract for testing
+ */
+export const createMockUserMetrics = (
+  overrides: Partial<UserMetricsContract> = {},
+): UserMetricsContract => ({
+  tdee: 2200,
+  bmr: 1700,
+  recoveryScore: 75,
+  trainingLoad: 250,
+  currentWeight: 72,
+  weeklyWeightChange: -0.2,
+  monthlyWeightChange: -0.8,
+  currentBodyFat: 18,
+  currentMuscleMass: 32,
+  sleepPerformance: 80,
+  averageSleepDuration: 7.5,
+  averageSleepQuality: 82,
+  averageHRV: 65,
+  averageRestingHR: 58,
+  stressScore: 35,
+  todaysStrain: 12,
+  weeklyStrain: 80,
+  monthlyStrain: 320,
+  stepCount: 8500,
+  activeMinutes: 45,
+  loggedCalories: 2100,
+  weeklyCalorieAverage: 2150,
+  macroAdherence: 85,
+  workoutStreak: 5,
+  loggingStreak: 12,
+  adherenceScore: 88,
+  lastUpdated: nowIso(),
   ...overrides,
 });
+
+export const createMockUserAccount = (
+  overrides: {
+    profile?: Partial<UserProfileContract>;
+    preferences?: Partial<UserPreferencesContract>;
+    goals?: Partial<UserGoalsContract> | null;
+    metrics?: Partial<UserMetricsContract> | null;
+  } = {},
+): UserAccountContract => ({
+  profile: createMockUserProfile(overrides.profile),
+  preferences: createMockUserPreferences(overrides.preferences),
+  goals: overrides.goals === null ? undefined : createMockUserGoals(overrides.goals ?? {}),
+  metrics: overrides.metrics === null ? undefined : createMockUserMetrics(overrides.metrics ?? {}),
+});
+
+// ============================================================================
+// DASHBOARD PREFERENCES
+// ============================================================================
+
+// ============================================================================
+// NOTIFICATION PREFERENCES
+// ============================================================================
+
+// ============================================================================
+// PREFERENCES SCHEMAS
+// ============================================================================
+
+export const timeOfDaySchema = z
+  .string()
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/u, 'Must be HH:mm (24h) time string');
+
+export const advancedUnitPreferencesSchema = z.object({
+  weight: z.enum(['kg', 'lbs']),
+  height: z.enum(['cm', 'ft_in']),
+  foodWeight: z.enum(['g', 'oz', 'lbs']),
+  foodVolume: z.enum(['ml', 'fl_oz', 'cups', 'tbsp', 'tsp']),
+  calories: z.enum(['kcal', 'kj']),
+  exerciseWeight: z.enum(['kg', 'lbs']),
+  distance: z.enum(['km', 'mi', 'm', 'ft']),
+  speed: z.enum(['km_h', 'mph', 'm_s']),
+  altitude: z.enum(['m', 'ft']),
+  temperature: z.enum(['celsius', 'fahrenheit']),
+  water: z.enum(['ml', 'fl_oz', 'cups', 'l']),
+});
+
+export const dashboardPreferencesSchema = z.object({
+  sectionOrder: z.array(z.string()),
+  hiddenSections: z.array(z.string()),
+  pinnedSections: z.array(z.string()),
+});
+
+export type DashboardPreferencesContract = z.infer<typeof dashboardPreferencesSchema>;
+
+export const dashboardSectionsSchema = z.object({
+  order: z.array(z.string()),
+  visibility: z.record(z.boolean()),
+});
+
+export type DashboardSectionsContract = z.infer<typeof dashboardSectionsSchema>;
+
+export const dailyNotificationSchema = z.object({
+  enabled: z.boolean(),
+  time: timeOfDaySchema,
+  autoLearn: z.boolean().optional(),
+  customMessage: z.string().max(120).optional(),
+});
+
+export type DailyNotificationContract = z.infer<typeof dailyNotificationSchema>;
+
+export const weeklyNotificationSchema = z.object({
+  enabled: z.boolean(),
+  time: timeOfDaySchema,
+  day: z.enum(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']),
+});
+
+export type WeeklyNotificationContract = z.infer<typeof weeklyNotificationSchema>;
+
+export const frequencyNotificationSchema = z.object({
+  enabled: z.boolean(),
+  time: timeOfDaySchema,
+  frequency: z.enum(['daily', 'weekly', 'biweekly', 'monthly', 'custom']),
+  intelligentMode: z.boolean().optional(),
+});
+
+export type FrequencyNotificationContract = z.infer<typeof frequencyNotificationSchema>;
+
+export const nutritionNotificationSchema = z.object({
+  enabled: z.boolean(),
+  breakfastTime: timeOfDaySchema,
+  lunchTime: timeOfDaySchema,
+  dinnerTime: timeOfDaySchema,
+});
+
+export type NutritionNotificationContract = z.infer<typeof nutritionNotificationSchema>;
+
+export const adminPortalNotificationPreferencesSchema = z.object({
+  appointmentBookedByOthers: z.boolean(),
+  appointmentCancelledByOthers: z.boolean(),
+  appointmentModifiedByOthers: z.boolean(),
+  patientAssignedToMe: z.boolean(),
+});
+
+export type AdminPortalNotificationPreferencesContract = z.infer<typeof adminPortalNotificationPreferencesSchema>;
+
+export const notificationPreferencesSchema = z.object({
+  morningBriefing: dailyNotificationSchema,
+  eveningCheckIn: dailyNotificationSchema,
+  weeklyInsights: weeklyNotificationSchema,
+  coPilotCheckIns: frequencyNotificationSchema,
+  trainingGuidance: frequencyNotificationSchema,
+  nutritionCoaching: nutritionNotificationSchema,
+  adminPortal: adminPortalNotificationPreferencesSchema,
+});
+
+export type NotificationPreferencesContract = z.infer<typeof notificationPreferencesSchema>;
+
+// ============================================================================
+// USER PREFERENCES SCHEMA (defined here after dashboard/notification schemas)
+// ============================================================================
+
+export const UserPreferencesSchema = z.object({
+  id: z.string().optional(),
+  userId: z.string(),
+  unitSystem: z.enum(['imperial', 'metric', 'advanced']),
+  timeFormat: z.enum(['standard', 'military']),
+  locale: z.string(),
+  dashboard: dashboardPreferencesSchema.default({
+    sectionOrder: ['dailySummary', 'nutrition', 'workout', 'recovery'],
+    hiddenSections: [],
+    pinnedSections: [],
+  }),
+  advancedUnits: advancedUnitPreferencesSchema.default(defaultAdvancedUnits()),
+  notifications: notificationPreferencesSchema.default(defaultNotifications()),
+  units: z.enum(['imperial', 'metric', 'advanced']).optional(),
+  dashboardCardOrder: z.array(z.string()).optional(),
+  dashboardSections: dashboardSectionsSchema.optional(),
+  hiddenDashboardCards: z.array(z.string()).optional(),
+  eveningReminderEnabled: z.boolean().optional(),
+  eveningReminderTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/u, 'Must be HH:mm format (00:00-23:59)').optional(),
+  customReminderMessage: z.string().max(120).optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type UserPreferencesContract = z.infer<typeof UserPreferencesSchema>;
+
+export const UserAccountSchema = z.object({
+  profile: UserProfileSchema,
+  preferences: UserPreferencesSchema.optional(),
+  goals: UserGoalsSchema.optional(),
+  metrics: UserMetricsSchema.optional(),
+});
+
+export type UserAccountContract = z.infer<typeof UserAccountSchema>;
+
+// ============================================================================
+// HELPER UTILITIES
+// ============================================================================
+
+export const buildVisibilityMap = (
+  order: string[],
+  hidden: string[],
+  existing?: Record<string, boolean>,
+): Record<string, boolean> =>
+  order.reduce<Record<string, boolean>>((acc, id) => {
+    acc[id] = existing?.[id] ?? !hidden.includes(id);
+    return acc;
+  }, {});

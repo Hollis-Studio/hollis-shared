@@ -2,11 +2,12 @@
  * @ai-context Stripe Payment Contracts Tests | validates all payment domain contracts
  *
  * This test suite verifies:
- * 1. SetupIntentSchema validates valid setup intent data
- * 2. PaymentMethodSchema validates payment method data
- * 3. CollectPaymentRequestSchema validates payment requests, rejects negative/over-limit amounts
- * 4. RefundRequestSchema validates refund requests
- * 5. StripeConfigSchema validates config
+ * 1. StripeMetadataSchema validates metadata (500 char limit per value, 50 keys max)
+ * 2. SetupIntentSchema validates valid setup intent data
+ * 3. PaymentMethodSchema validates payment method data
+ * 4. CollectPaymentRequestSchema validates payment requests, rejects negative/over-limit amounts
+ * 5. RefundRequestSchema validates refund requests
+ * 6. StripeConfigSchema validates config
  *
  * Run: npx jest shared/contracts/__tests__/stripe-payment.test.ts
  */
@@ -17,6 +18,7 @@ import {
     RefundRequestSchema,
     SetupIntentSchema,
     StripeConfigSchema,
+    StripeMetadataSchema,
 } from '../stripe/payment';
 
 // ============================================================================
@@ -26,10 +28,146 @@ import {
 const VALID_UUID = '550e8400-e29b-41d4-a716-446655440000';
 
 // ============================================================================
-// SETUP INTENT TESTS
+// STRIPE METADATA TESTS
 // ============================================================================
 
 describe('Stripe Payment Contracts', () => {
+  describe('StripeMetadataSchema', () => {
+    describe('valid objects', () => {
+      it('should accept empty metadata', () => {
+        const result = StripeMetadataSchema.safeParse({});
+        expect(result.success).toBe(true);
+      });
+
+      it('should accept metadata with single key-value pair', () => {
+        const result = StripeMetadataSchema.safeParse({ userId: '123' });
+        expect(result.success).toBe(true);
+      });
+
+      it('should accept metadata with multiple key-value pairs', () => {
+        const result = StripeMetadataSchema.safeParse({
+          userId: '123',
+          type: 'mobile_session_purchase',
+          quantity: '5',
+        });
+        expect(result.success).toBe(true);
+      });
+
+      it('should accept metadata value at exactly 500 characters', () => {
+        const result = StripeMetadataSchema.safeParse({
+          longValue: 'x'.repeat(500),
+        });
+        expect(result.success).toBe(true);
+      });
+
+      it('should accept metadata with exactly 50 keys', () => {
+        const metadata: Record<string, string> = {};
+        for (let i = 0; i < 50; i++) {
+          metadata[`key${i}`] = `value${i}`;
+        }
+        const result = StripeMetadataSchema.safeParse(metadata);
+        expect(result.success).toBe(true);
+      });
+
+      it('should accept metadata value at 499 characters', () => {
+        const result = StripeMetadataSchema.safeParse({
+          longValue: 'x'.repeat(499),
+        });
+        expect(result.success).toBe(true);
+      });
+    });
+
+    describe('invalid objects', () => {
+      it('should reject metadata value exceeding 500 characters', () => {
+        const result = StripeMetadataSchema.safeParse({
+          longValue: 'x'.repeat(501),
+        });
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.message).toContain('500 characters or less');
+        }
+      });
+
+      it('should reject metadata with more than 50 keys', () => {
+        const metadata: Record<string, string> = {};
+        for (let i = 0; i < 51; i++) {
+          metadata[`key${i}`] = `value${i}`;
+        }
+        const result = StripeMetadataSchema.safeParse(metadata);
+        expect(result.success).toBe(false);
+        if (!result.success) {
+          expect(result.error.message).toContain('more than 50 keys');
+        }
+      });
+
+      it('should reject metadata with non-string values', () => {
+        const result = StripeMetadataSchema.safeParse({
+          userId: 123,
+        });
+        expect(result.success).toBe(false);
+      });
+
+      it('should reject metadata with array values', () => {
+        const result = StripeMetadataSchema.safeParse({
+          items: ['item1', 'item2'],
+        });
+        expect(result.success).toBe(false);
+      });
+
+      it('should reject metadata with object values', () => {
+        const result = StripeMetadataSchema.safeParse({
+          nested: { key: 'value' },
+        });
+        expect(result.success).toBe(false);
+      });
+
+      it('should reject null', () => {
+        expect(StripeMetadataSchema.safeParse(null).success).toBe(false);
+      });
+
+      it('should reject array', () => {
+        expect(StripeMetadataSchema.safeParse([]).success).toBe(false);
+      });
+
+      it('should reject string', () => {
+        expect(StripeMetadataSchema.safeParse('metadata').success).toBe(false);
+      });
+    });
+
+    describe('edge cases', () => {
+      it('should reject metadata with one value exceeding 500 chars even if others are valid', () => {
+        const result = StripeMetadataSchema.safeParse({
+          validKey: 'valid value',
+          invalidKey: 'x'.repeat(501),
+          anotherValidKey: 'another valid value',
+        });
+        expect(result.success).toBe(false);
+      });
+
+      it('should accept metadata with multiple values at exactly 500 chars', () => {
+        const result = StripeMetadataSchema.safeParse({
+          key1: 'x'.repeat(500),
+          key2: 'y'.repeat(500),
+          key3: 'z'.repeat(500),
+        });
+        expect(result.success).toBe(true);
+      });
+
+      it('should reject metadata with 51 keys even if all values are short', () => {
+        const metadata: Record<string, string> = {};
+        for (let i = 0; i < 51; i++) {
+          metadata[`k${i}`] = 'v';
+        }
+        const result = StripeMetadataSchema.safeParse(metadata);
+        expect(result.success).toBe(false);
+      });
+    });
+  });
+
+// ============================================================================
+// SETUP INTENT TESTS
+// ============================================================================
+
   describe('SetupIntentSchema', () => {
     describe('valid objects', () => {
       it('should accept a valid setup intent', () => {
@@ -313,6 +451,26 @@ describe('Stripe Payment Contracts', () => {
 
       it('should reject empty object', () => {
         const result = CollectPaymentRequestSchema.safeParse({});
+        expect(result.success).toBe(false);
+      });
+
+      it('should reject metadata value exceeding 500 characters', () => {
+        const result = CollectPaymentRequestSchema.safeParse({
+          ...validPaymentRequest,
+          metadata: { longValue: 'x'.repeat(501) },
+        });
+        expect(result.success).toBe(false);
+      });
+
+      it('should reject metadata with more than 50 keys', () => {
+        const metadata: Record<string, string> = {};
+        for (let i = 0; i < 51; i++) {
+          metadata[`key${i}`] = `value${i}`;
+        }
+        const result = CollectPaymentRequestSchema.safeParse({
+          ...validPaymentRequest,
+          metadata,
+        });
         expect(result.success).toBe(false);
       });
     });

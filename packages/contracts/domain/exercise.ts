@@ -12,7 +12,7 @@
  */
 
 import { z } from 'zod';
-import { baseDocumentSchema, isoDateSchema, isoTimestampSchema, type IsoDateString, type IsoTimestampString } from './common';
+import { baseDocumentSchema, isoDateSchema, isoTimestampSchema } from './common';
 
 // ============================================================================
 // EXERCISE CATEGORIES
@@ -192,31 +192,7 @@ export const TRACKING_TYPE_LABELS: Record<TrackingType, string> = {
 // EXERCISE CONTRACT
 // ============================================================================
 
-/**
- * Exercise definition contract - represents an exercise in the library.
- */
-export interface ExerciseContract {
-  id: string;
-  name: string;
-  category: ExerciseCategory;
-  movementPattern?: MovementPattern;
-  primaryMuscleGroups: MuscleGroup[];
-  secondaryMuscleGroups?: MuscleGroup[];
-  equipment: EquipmentType[];
-  difficulty: DifficultyLevel;
-  description?: string;
-  instructions?: string[];
-  videoUrl?: string;
-  thumbnailUrl?: string;
-  isCompound: boolean;
-  isUnilateral: boolean;
-  isActive: boolean;
-  tags?: string[];
-  createdAt: IsoTimestampString;
-  updatedAt: IsoTimestampString;
-}
-
-export const exerciseSchema: z.ZodType<ExerciseContract> = baseDocumentSchema.extend({
+export const exerciseSchema = baseDocumentSchema.extend({
   id: z.string().uuid(),
   name: z.string().min(1).max(200),
   category: ExerciseCategorySchema,
@@ -233,38 +209,15 @@ export const exerciseSchema: z.ZodType<ExerciseContract> = baseDocumentSchema.ex
   isUnilateral: z.boolean(),
   isActive: z.boolean(),
   tags: z.array(z.string()).optional(),
-}) satisfies z.ZodType<ExerciseContract>;
+});
+
+export type ExerciseContract = z.infer<typeof exerciseSchema>;
 
 // ============================================================================
 // EXERCISE LOG CONTRACT
 // ============================================================================
 
-/**
- * Exercise log contract - represents a logged exercise performance.
- */
-export interface ExerciseLogContract {
-  id: string;
-  /** User identifier in HH-XXXXXX barcode format */
-  userId: string;
-  exerciseId: string;
-  exerciseName: string;
-  workoutSessionId?: string;
-  performedAt: IsoTimestampString;
-  date: IsoDateString;
-  sets: number;
-  reps?: number;
-  weight?: number;
-  weightUnit?: 'kg' | 'lbs';
-  duration?: number; // seconds
-  distance?: number; // meters
-  rpe?: number; // 1-10
-  notes?: string;
-  tags?: string[];
-  createdAt: IsoTimestampString;
-  updatedAt: IsoTimestampString;
-}
-
-export const exerciseLogSchema: z.ZodType<ExerciseLogContract> = baseDocumentSchema.extend({
+export const exerciseLogSchema = baseDocumentSchema.extend({
   id: z.string().uuid(),
   userId: z.string(),
   exerciseId: z.string().uuid(),
@@ -281,7 +234,49 @@ export const exerciseLogSchema: z.ZodType<ExerciseLogContract> = baseDocumentSch
   rpe: z.number().min(1).max(10).optional(),
   notes: z.string().max(1000).optional(),
   tags: z.array(z.string()).optional(),
-}) satisfies z.ZodType<ExerciseLogContract>;
+});
+
+export type ExerciseLogContract = z.infer<typeof exerciseLogSchema>;
+
+// ============================================================================
+// CREATE/UPDATE SCHEMAS
+// ============================================================================
+
+export const createExerciseSchema = exerciseSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const updateExerciseSchema = createExerciseSchema.partial();
+
+export const createExerciseLogSchema = exerciseLogSchema.omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// ============================================================================
+// SCHEMA ALIASES (backwards compatibility with camelCase names)
+// ============================================================================
+
+/** @deprecated Use ExerciseCategorySchema instead */
+export const exerciseCategorySchema = ExerciseCategorySchema;
+
+/** @deprecated Use MovementPatternSchema instead */
+export const movementPatternSchema = MovementPatternSchema;
+
+/** @deprecated Use MuscleGroupSchema instead */
+export const muscleGroupSchema = MuscleGroupSchema;
+
+/** @deprecated Use EquipmentTypeSchema instead */
+export const equipmentTypeSchema = EquipmentTypeSchema;
+
+/** @deprecated Use DifficultyLevelSchema instead */
+export const difficultyLevelSchema = DifficultyLevelSchema;
+
+/** @deprecated Use TrackingTypeSchema instead */
+export const trackingTypeSchema = TrackingTypeSchema;
 
 // ============================================================================
 // MOCK FACTORIES

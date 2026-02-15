@@ -78,5 +78,8 @@ export function isDocumentCategory(value: string): value is DocumentCategory {
  * Falls back to 'Other' for unknown categories.
  */
 export function getDocumentCategoryLabel(category: string): string {
-  return DOCUMENT_CATEGORY_LABELS[category as DocumentCategory] ?? 'Other';
+  if (category in DOCUMENT_CATEGORY_LABELS) {
+    return DOCUMENT_CATEGORY_LABELS[category as DocumentCategory];
+  }
+  return 'Other';
 }

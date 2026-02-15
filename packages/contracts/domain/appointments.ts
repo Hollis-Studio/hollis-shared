@@ -12,6 +12,8 @@
  */
 
 import { z } from 'zod';
+import { baseDocumentSchema, isoTimestampSchema } from './common';
+import { USER_ROLES } from './user';
 
 // ============================================================================
 // APPOINTMENT STATUS
@@ -174,3 +176,45 @@ export const ADMIN_BOOKING_STEP_LABELS: Record<AdminBookingStep, string> = {
 export function isAdminBookingStep(value: string): value is AdminBookingStep {
   return (ADMIN_BOOKING_STEPS as readonly string[]).includes(value);
 }
+
+// ============================================================================
+// APPOINTMENT SCHEMA
+// ============================================================================
+
+export const PatientSummarySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+});
+
+export type PatientSummaryContract = z.infer<typeof PatientSummarySchema>;
+
+export const AppointmentSchema = baseDocumentSchema.extend({
+  id: z.string().optional(),
+  patientId: z.string(),
+  providerId: z.string(), // Admin/Clinician ID
+  title: z.string(),
+  description: z.string().optional(),
+  startTime: isoTimestampSchema,
+  endTime: isoTimestampSchema,
+  status: AppointmentStatusSchema,
+  type: AppointmentTypeSchema,
+  meetingLink: z.string().url().optional(),
+  location: z.string().optional(),
+  notes: z.string().optional(),
+  /** Patient info included for admin booking lists */
+  patient: PatientSummarySchema.optional(),
+});
+
+export type Appointment = z.infer<typeof AppointmentSchema>;
+
+export const ProviderSummarySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  role: z.enum(USER_ROLES).optional(),
+  avatarUrl: z.string().url().optional(),
+  specialty: z.string().optional(),
+});
+
+export type ProviderSummaryContract = z.infer<typeof ProviderSummarySchema>;

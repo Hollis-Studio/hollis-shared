@@ -11,6 +11,7 @@
  */
 
 import { z } from 'zod';
+import { baseDocumentSchema } from './common';
 
 // ============================================================================
 // LIMITATION SEVERITIES
@@ -137,17 +138,6 @@ export const MEDICAL_CONDITION_STATUS_LABELS: Record<MedicalConditionStatus, str
 // MEDICATION CONTRACT
 // ============================================================================
 
-/**
- * Medication entry for patient clinical profile.
- */
-export interface Medication {
-  id: string;
-  name: string;
-  dosage: string;
-  frequency: string;
-  notes?: string;
-}
-
 export const medicationSchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Medication name is required').max(200),
@@ -156,21 +146,13 @@ export const medicationSchema = z.object({
   notes: z.string().max(5000).optional(),
 });
 
+export type Medication = z.infer<typeof medicationSchema>;
+
 export const medicationsSchema = z.array(medicationSchema);
 
 // ============================================================================
 // LIMITATION CONTRACT
 // ============================================================================
-
-/**
- * Physical limitation/restriction for patient clinical profile.
- */
-export interface Limitation {
-  id: string;
-  description: string;
-  severity?: LimitationSeverity;
-  notes?: string;
-}
 
 export const limitationSchema = z.object({
   id: z.string(),
@@ -179,25 +161,13 @@ export const limitationSchema = z.object({
   notes: z.string().max(5000).optional(),
 });
 
+export type Limitation = z.infer<typeof limitationSchema>;
+
 export const limitationsSchema = z.array(limitationSchema);
 
 // ============================================================================
 // INJURY CONTRACT
 // ============================================================================
-
-/**
- * Injury entry for patient clinical profile.
- * Tracks injuries with body location, timing, severity, and recovery progress.
- */
-export interface Injury {
-  id: string;
-  description: string;
-  bodyPart?: string;
-  occurredAt?: string; // ISO date string
-  severity?: LimitationSeverity;
-  recoveryStatus?: InjuryRecoveryStatus;
-  notes?: string;
-}
 
 export const injurySchema = z.object({
   id: z.string(),
@@ -209,23 +179,13 @@ export const injurySchema = z.object({
   notes: z.string().max(5000).optional(),
 });
 
+export type Injury = z.infer<typeof injurySchema>;
+
 export const injuriesSchema = z.array(injurySchema);
 
 // ============================================================================
 // MEDICAL CONDITION CONTRACT
 // ============================================================================
-
-/**
- * Medical condition entry for patient clinical profile.
- * Tracks diagnoses with status and management information.
- */
-export interface MedicalCondition {
-  id: string;
-  name: string;
-  status: MedicalConditionStatus;
-  diagnosisDate?: string; // ISO date string
-  notes?: string;
-}
 
 export const medicalConditionSchema = z.object({
   id: z.string(),
@@ -234,6 +194,8 @@ export const medicalConditionSchema = z.object({
   diagnosisDate: z.string().optional(), // ISO date
   notes: z.string().max(5000).optional(),
 });
+
+export type MedicalCondition = z.infer<typeof medicalConditionSchema>;
 
 export const medicalConditionsSchema = z.array(medicalConditionSchema);
 
@@ -281,20 +243,6 @@ export const CARE_TEAM_ROLE_LABELS: Record<CareTeamRole, string> = {
 // CLINICAL NOTE CONTRACT
 // ============================================================================
 
-/**
- * Clinical note entry for patient records.
- * Tagged clinical notes from care team members.
- */
-export interface ClinicalNoteContract {
-  id: string;
-  patientId: string;
-  authorId: string;
-  content: string;
-  tags: string[];
-  createdAt: string;
-  updatedAt: string;
-}
-
 export const ClinicalNoteContractSchema = z.object({
   id: z.string(),
   patientId: z.string(),
@@ -303,6 +251,46 @@ export const ClinicalNoteContractSchema = z.object({
   tags: z.array(z.string()),
   createdAt: z.string(),
   updatedAt: z.string(),
+});
+
+export type ClinicalNoteContract = z.infer<typeof ClinicalNoteContractSchema>;
+
+// ============================================================================
+// PATIENT DOCUMENT CONTRACT
+// ============================================================================
+
+export const PatientDocumentContractSchema = z.object({
+  id: z.string(),
+  patientId: z.string(),
+  uploaderId: z.string(),
+  fileUrl: z.string().url(),
+  fileType: z.string().min(1),
+  category: z.string().optional(),
+  tags: z.array(z.string()),
+  extractedData: z.string().optional().nullable(),
+  createdAt: z.string(),
+});
+
+export type PatientDocumentContract = z.infer<typeof PatientDocumentContractSchema>;
+
+// Backward-compatible schemas using baseDocumentSchema
+export const clinicalNoteSchema = baseDocumentSchema.extend({
+  id: z.string().optional(),
+  patientId: z.string(),
+  authorId: z.string(),
+  content: z.string().min(1),
+  tags: z.array(z.string()),
+});
+
+export const patientDocumentSchema = baseDocumentSchema.extend({
+  id: z.string().optional(),
+  patientId: z.string(),
+  uploaderId: z.string(),
+  fileUrl: z.string().url(),
+  fileType: z.string().min(1),
+  category: z.string().optional(),
+  tags: z.array(z.string()),
+  extractedData: z.string().optional().nullable(),
 });
 
 // ============================================================================

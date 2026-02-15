@@ -12,69 +12,13 @@
  */
 
 import { z } from 'zod';
-import { baseDocumentSchema, isoDateSchema, type IsoDateString, type IsoTimestampString } from './common';
+import { baseDocumentSchema, isoDateSchema } from './common';
 
 // ============================================================================
 // DAILY METRICS CONTRACT
 // ============================================================================
 
-/**
- * Daily metrics contract - aggregated health metrics for a single day.
- * These values are typically computed from wearable data and other sources.
- */
-export interface DailyMetricsContract {
-  id?: string;
-  /**
-   * User identifier in HH-XXXXXX barcode format.
-   * References the patient this metrics record belongs to.
-   *
-   * @format HH-XXXXXX
-   */
-  userId: string;
-  date: IsoDateString;
-  /**
-   * @computed Calculated by metricsEngine.computeDailyMetrics() using BMR + active calories.
-   */
-  tdeeEstimate: number;
-  /**
-   * @computed Calculated by metricsEngine based on data completeness.
-   */
-  tdeeConfidence?: number | null; // 0-1
-  /**
-   * @computed Calculated by metricsEngine as weighted combination: sleepScore (60%) + rhrScore (40%).
-   */
-  recoveryScore: number; // 0-100
-  /**
-   * @computed Calculated by metricsEngine as activeCalories / 10 (simplified TRIMP).
-   */
-  trainingLoad: number; // arbitrary TRIMP-style score
-  /**
-   * @computed Calculated by metricsEngine comparing today's vs yesterday's training load.
-   */
-  strainDelta?: number; // change vs prior day
-  /**
-   * @computed Calculated by metricsEngine as (sleepHours / 8) * 100, capped at 100.
-   */
-  sleepScore?: number; // 0-100
-  /**
-   * @computed Calculated by metricsEngine (currently aliased to recoveryScore).
-   */
-  readinessScore?: number; // 0-100
-  /**
-   * @computed Calculated as TDEE - consumed calories.
-   */
-  caloricBalance?: number;
-  /**
-   * @computed Acute:Chronic workload ratio for injury risk assessment.
-   */
-  acuteChronicRatio?: number;
-  notes?: string[];
-  recommendations?: string[];
-  createdAt: IsoTimestampString;
-  updatedAt: IsoTimestampString;
-}
-
-export const dailyMetricsSchema: z.ZodType<DailyMetricsContract> = baseDocumentSchema.extend({
+export const dailyMetricsSchema = baseDocumentSchema.extend({
   id: z.string().optional(),
   userId: z.string(),
   date: isoDateSchema,
@@ -90,6 +34,8 @@ export const dailyMetricsSchema: z.ZodType<DailyMetricsContract> = baseDocumentS
   notes: z.array(z.string()).optional(),
   recommendations: z.array(z.string()).optional(),
 });
+
+export type DailyMetricsContract = z.infer<typeof dailyMetricsSchema>;
 
 // ============================================================================
 // MOCK FACTORY

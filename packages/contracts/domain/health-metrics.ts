@@ -38,8 +38,9 @@ import {
     type HealthTrend,
     HealthTrendSchema
 } from './health-progress';
-import { type JournalEntryContract } from './journal';
-import { type DailyNutritionLogContract } from './nutrition';
+import { journalEntrySchema } from './journal';
+import { DailyNutritionLogSchema } from './nutrition';
+import { dailyMetricsSchema } from './daily-metrics';
 import {
     type HealthMetricCategory,
     type HealthMetricDirection,
@@ -75,7 +76,7 @@ export const VERIFICATION_MULTIPLIER = {
  * Returns the weight for a data point based on source and verification status.
  */
 export function getDataPointWeight(source: BiometricSource, isVerified: boolean): number {
-  const base = SOURCE_WEIGHTS[source] ?? 0.6;
+  const base = SOURCE_WEIGHTS[source];
   const verification = isVerified ? VERIFICATION_MULTIPLIER.verified : VERIFICATION_MULTIPLIER.unverified;
   return Math.min(1, Math.max(0, base * verification));
 }
@@ -86,9 +87,7 @@ export function getDataPointWeight(source: BiometricSource, isVerified: boolean)
  * @returns The category or 'metabolic' as default
  */
 export function getMetricCategory(metricKey: GoalMetricKey): HealthMetricCategory {
-  const definition = GOAL_METRIC_DEFINITIONS[metricKey];
-  if (!definition) return 'metabolic';
-  return definition.category as HealthMetricCategory;
+  return GOAL_METRIC_DEFINITIONS[metricKey].category as HealthMetricCategory;
 }
 
 /**
@@ -97,9 +96,7 @@ export function getMetricCategory(metricKey: GoalMetricKey): HealthMetricCategor
  * @returns The direction ('lower_better', 'higher_better', or 'context')
  */
 export function getMetricDirection(metricKey: GoalMetricKey): HealthMetricDirection {
-  const definition = GOAL_METRIC_DEFINITIONS[metricKey];
-  if (!definition) return 'context';
-  return definition.direction;
+  return GOAL_METRIC_DEFINITIONS[metricKey].direction;
 }
 
 /**
@@ -615,32 +612,23 @@ export const WearablesDataSchema = z.object({
 
 /**
  * Daily summary aggregating wearables, nutrition, journal, metrics, and documents.
- * This is a simplified contract - full implementation uses domain-specific schemas.
  */
-export interface DailySummaryContract {
-  date: string;
-  userId: string;
-  wearables: WearablesDataContract;
-  nutrition: DailyNutritionLogContract;
-  journal?: JournalEntryContract;
-  metrics?: Record<string, unknown>;
-  documents: Record<string, unknown>[];
-}
-
 export const DailySummarySchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   userId: z.string(),
   wearables: WearablesDataSchema,
-  nutrition: z.record(z.string(), z.unknown()),
-  journal: z.record(z.string(), z.unknown()).optional(),
-  metrics: z.record(z.string(), z.unknown()).optional(),
+  nutrition: DailyNutritionLogSchema,
+  journal: journalEntrySchema.optional(),
+  metrics: dailyMetricsSchema.optional(),
   documents: z.array(z.record(z.string(), z.unknown())),
 });
+
+export type DailySummaryContract = z.infer<typeof DailySummarySchema>;
 
 // ============================================================================
 // HEALTH METRIC LABELS (derived from goal metrics)
 // ============================================================================
 
 export const HEALTH_METRIC_LABELS: Record<GoalMetricKey, string> = Object.fromEntries(
-  GOAL_METRIC_KEYS.map((key) => [key, GOAL_METRIC_DEFINITIONS[key]?.label ?? key])
+  GOAL_METRIC_KEYS.map((key) => [key, GOAL_METRIC_DEFINITIONS[key].label])
 ) as Record<GoalMetricKey, string>;

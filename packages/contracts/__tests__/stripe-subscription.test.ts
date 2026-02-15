@@ -89,12 +89,13 @@ function validSubscription() {
 describe('Stripe Subscription Contracts', () => {
   describe('SubscriptionStatus', () => {
     describe('tuple values', () => {
-      it('should contain exactly 7 values', () => {
-        expect(SUBSCRIPTION_STATUSES).toHaveLength(7);
+      it('should contain exactly 8 values', () => {
+        expect(SUBSCRIPTION_STATUSES).toHaveLength(8);
       });
 
       it('should contain all expected values', () => {
         expect(SUBSCRIPTION_STATUSES).toContain('PENDING');
+        expect(SUBSCRIPTION_STATUSES).toContain('TRIAL');
         expect(SUBSCRIPTION_STATUSES).toContain('ACTIVE');
         expect(SUBSCRIPTION_STATUSES).toContain('PAUSED');
         expect(SUBSCRIPTION_STATUSES).toContain('PAST_DUE');
@@ -123,6 +124,7 @@ describe('Stripe Subscription Contracts', () => {
     describe('constants object', () => {
       it('should have keys that map to tuple values', () => {
         expect(SUBSCRIPTION_STATUS.PENDING).toBe('PENDING');
+        expect(SUBSCRIPTION_STATUS.TRIAL).toBe('TRIAL');
         expect(SUBSCRIPTION_STATUS.ACTIVE).toBe('ACTIVE');
         expect(SUBSCRIPTION_STATUS.PAUSED).toBe('PAUSED');
         expect(SUBSCRIPTION_STATUS.PAST_DUE).toBe('PAST_DUE');
@@ -133,7 +135,7 @@ describe('Stripe Subscription Contracts', () => {
 
       it('should have all values present in tuple', () => {
         const constantValues = Object.values(SUBSCRIPTION_STATUS);
-        expect(constantValues).toHaveLength(7);
+        expect(constantValues).toHaveLength(8);
         for (const value of constantValues) {
           expect(SUBSCRIPTION_STATUSES).toContain(value);
         }

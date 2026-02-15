@@ -714,7 +714,7 @@ export const ClinicalMetricRegistrySchema = z.object({
     if (definition.panelComponents) {
       for (let i = 0; i < definition.panelComponents.length; i++) {
         const component = definition.panelComponents[i];
-        if (!data.metrics[component.metricKey]) {
+        if (!(component.metricKey in data.metrics)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: `Panel component "${component.metricKey}" references non-existent metric`,
@@ -725,7 +725,7 @@ export const ClinicalMetricRegistrySchema = z.object({
     }
     
     // Validate replacedBy references exist
-    if (definition.replacedBy && !data.metrics[definition.replacedBy]) {
+    if (definition.replacedBy && !(definition.replacedBy in data.metrics)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: `replacedBy "${definition.replacedBy}" references non-existent metric`,
@@ -735,19 +735,21 @@ export const ClinicalMetricRegistrySchema = z.object({
     
     // Validate parentPanelKey references exist and is a panel
     if (definition.parentPanelKey) {
-      const parentMetric = data.metrics[definition.parentPanelKey];
-      if (!parentMetric) {
+      if (!(definition.parentPanelKey in data.metrics)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: `parentPanelKey "${definition.parentPanelKey}" references non-existent metric`,
           path: ['metrics', metricKey, 'parentPanelKey'],
         });
-      } else if (!parentMetric.panelComponents || parentMetric.panelComponents.length === 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `parentPanelKey "${definition.parentPanelKey}" references a metric that is not a panel`,
-          path: ['metrics', metricKey, 'parentPanelKey'],
-        });
+      } else {
+        const parentMetric = data.metrics[definition.parentPanelKey];
+        if (!parentMetric.panelComponents || parentMetric.panelComponents.length === 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `parentPanelKey "${definition.parentPanelKey}" references a metric that is not a panel`,
+            path: ['metrics', metricKey, 'parentPanelKey'],
+          });
+        }
       }
     }
   }

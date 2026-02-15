@@ -15,7 +15,7 @@
  */
 
 import { z } from 'zod';
-import { foodLogEntrySchema, type FoodLogEntryContract } from '../schemas/json-blobs';
+import { foodLogEntrySchema } from '../schemas/json-blobs';
 
 // Note: foodLogEntrySchema and FoodLogEntryContract are used internally but NOT re-exported
 // to avoid duplicate export errors in barrel files. Import them from @hollis/contracts/schemas.
@@ -226,24 +226,13 @@ export const FOOD_UNIT_LABELS: Record<FoodUnit, string> = {
 // MACRONUTRIENT SHORTHAND
 // ============================================================================
 
-/**
- * Shorthand macro structure used in database (totalMacros JSON field).
- * This is a compact representation: { p: protein, c: carbs, f: fat }
- *
- * IMPORTANT: The database stores this as JSON string in DailyLog.totalMacros.
- * Always use parseMacroShorthand() and stringifyMacroShorthand() for conversion.
- */
-export interface MacroShorthand {
-  p: number; // protein in grams
-  c: number; // carbs in grams
-  f: number; // fat in grams
-}
-
 export const MacroShorthandSchema = z.object({
   p: z.number().min(0),
   c: z.number().min(0),
   f: z.number().min(0),
-}) satisfies z.ZodType<MacroShorthand>;
+});
+
+export type MacroShorthand = z.infer<typeof MacroShorthandSchema>;
 
 /** Default empty macro shorthand */
 export const EMPTY_MACRO_SHORTHAND: MacroShorthand = { p: 0, c: 0, f: 0 };
@@ -288,20 +277,7 @@ export function stringifyMacroShorthand(macros: MacroShorthand): string {
 // NUTRITION MACRO BREAKDOWN
 // ============================================================================
 
-/**
- * Full macro breakdown for meal/daily totals.
- */
-export interface NutritionMacroBreakdown {
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  fiber?: number;
-  sugar?: number;
-  sodium?: number;
-}
-
-export const NutritionMacroBreakdownSchema: z.ZodType<NutritionMacroBreakdown> = z.object({
+export const NutritionMacroBreakdownSchema = z.object({
   calories: z.number().min(0),
   protein: z.number().min(0),
   carbs: z.number().min(0),
@@ -311,21 +287,13 @@ export const NutritionMacroBreakdownSchema: z.ZodType<NutritionMacroBreakdown> =
   sodium: z.number().min(0).optional(),
 });
 
+export type NutritionMacroBreakdown = z.infer<typeof NutritionMacroBreakdownSchema>;
+
 // ============================================================================
 // NUTRITION PORTION CONTRACT
 // ============================================================================
 
-export interface NutritionPortionContract {
-  id?: string;
-  foodName: string;
-  brand?: string;
-  quantity: number;
-  unit: string;
-  macros: NutritionMacroBreakdown;
-  photoUrl?: string;
-}
-
-export const NutritionPortionSchema: z.ZodType<NutritionPortionContract> = z.object({
+export const NutritionPortionSchema = z.object({
   id: z.string().optional(),
   foodName: z.string().min(1),
   brand: z.string().optional(),
@@ -335,47 +303,26 @@ export const NutritionPortionSchema: z.ZodType<NutritionPortionContract> = z.obj
   photoUrl: z.string().url().optional(),
 });
 
+export type NutritionPortionContract = z.infer<typeof NutritionPortionSchema>;
+
 // ============================================================================
 // MEAL CONTEXT CONTRACT
 // ============================================================================
 
-export interface MealContextContract {
-  location?: LocationType;
-  preparationMethod?: PreparationMethod;
-  socialContext?: string;
-  mealDuration?: number; // minutes
-}
-
-export const MealContextSchema: z.ZodType<MealContextContract> = z.object({
+export const MealContextSchema = z.object({
   location: LocationTypeSchema.optional(),
   preparationMethod: PreparationMethodSchema.optional(),
   socialContext: z.string().optional(),
   mealDuration: z.number().min(0).optional(),
 });
 
+export type MealContextContract = z.infer<typeof MealContextSchema>;
+
 // ============================================================================
 // MEAL LOG CONTRACT
 // ============================================================================
 
-/**
- * Meal log contract - represents a single meal entry.
- */
-export interface MealLogContract {
-  id?: string;
-  mealType: MealType;
-  loggedAt: string; // IsoTimestampString
-  portions: NutritionPortionContract[];
-  notes?: string;
-  hungerLevel?: number; // 1-10
-  fullnessLevel?: number; // 1-10
-  mood?: MoodLevel;
-  mealContext?: MealContextContract;
-  digestion?: DigestionQuality;
-  energy?: EnergyLevel;
-  photoUrls?: string[];
-}
-
-export const MealLogSchema: z.ZodType<MealLogContract> = z.object({
+export const MealLogSchema = z.object({
   id: z.string().optional(),
   mealType: MealTypeSchema,
   loggedAt: z.string(),
@@ -390,6 +337,8 @@ export const MealLogSchema: z.ZodType<MealLogContract> = z.object({
   photoUrls: z.array(z.string().url()).optional(),
 });
 
+export type MealLogContract = z.infer<typeof MealLogSchema>;
+
 // ============================================================================
 // DAILY NUTRITION LOG CONTRACT
 // ============================================================================
@@ -397,39 +346,10 @@ export const MealLogSchema: z.ZodType<MealLogContract> = z.object({
 // Note: FoodLogEntryContract is defined in ../schemas/json-blobs.ts
 // and re-exported via the schemas barrel. Import from there for use with foodEntries.
 
-/**
- * Daily nutrition log contract - aggregated nutrition data for a single day.
- */
-export interface DailyNutritionLogContract {
-  id?: string; // defaults to date
-  /**
-   * User identifier in HH-XXXXXX barcode format.
-   * References the patient this nutrition log belongs to.
-   *
-   * @format HH-XXXXXX
-   */
-  userId: string;
-  date: string; // IsoDateString
-  timezone: string;
-  meals: MealLogContract[];
-  /**
-   * @computed Calculated by aggregateDailyTotals() summing all meal portion macros.
-   */
-  totals: NutritionMacroBreakdown;
-  hydrationMl?: number;
-  supplements?: string[];
-  foodEntries?: {
-    [hour: string]: FoodLogEntryContract[];
-  };
-  isVerified: boolean; // AI processed entries are verified
-  createdAt: string; // IsoTimestampString
-  updatedAt: string; // IsoTimestampString
-}
-
-export const DailyNutritionLogSchema: z.ZodType<DailyNutritionLogContract> = z.object({
+export const DailyNutritionLogSchema = z.object({
   id: z.string().optional(),
   userId: z.string(),
-  date: z.string(),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD format'),
   timezone: z.string(),
   meals: z.array(MealLogSchema),
   totals: NutritionMacroBreakdownSchema,
@@ -440,6 +360,149 @@ export const DailyNutritionLogSchema: z.ZodType<DailyNutritionLogContract> = z.o
   createdAt: z.string(),
   updatedAt: z.string(),
 });
+
+export type DailyNutritionLogContract = z.infer<typeof DailyNutritionLogSchema>;
+
+// ============================================================================
+// FOOD ITEM CONTRACT
+// ============================================================================
+
+export interface FoodItemContract {
+  name: string;
+  brand?: string;
+  barcode?: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber?: number;
+  sugar?: number;
+  addedSugar?: number;
+  sugarAlcohols?: number;
+  starch?: number;
+  saturatedFat?: number;
+  transFat?: number;
+  monounsaturatedFat?: number;
+  polyunsaturatedFat?: number;
+  omega3?: number;
+  omega6?: number;
+  cholesterol?: number;
+  vitamins?: Record<string, number | undefined>;
+  minerals?: Record<string, number | undefined>;
+  alcohol?: number;
+  caffeine?: number;
+  water?: number;
+  portionWeightG?: number;
+  glycemicIndex?: number;
+  glycemicLoad?: number;
+  foodGroup?: string;
+  tags?: string[];
+}
+
+// ============================================================================
+// MICRONUTRIENTS
+// ============================================================================
+
+export const micronutrientsSchema = z.object({
+  vitaminA: z.number().optional(),
+  vitaminC: z.number().optional(),
+  vitaminD: z.number().optional(),
+  vitaminE: z.number().optional(),
+  vitaminK: z.number().optional(),
+  thiamin: z.number().optional(),
+  riboflavin: z.number().optional(),
+  niacin: z.number().optional(),
+  vitaminB6: z.number().optional(),
+  folate: z.number().optional(),
+  vitaminB12: z.number().optional(),
+  biotin: z.number().optional(),
+  pantothenicAcid: z.number().optional(),
+  calcium: z.number().optional(),
+  iron: z.number().optional(),
+  magnesium: z.number().optional(),
+  phosphorus: z.number().optional(),
+  potassium: z.number().optional(),
+  zinc: z.number().optional(),
+  copper: z.number().optional(),
+  manganese: z.number().optional(),
+  selenium: z.number().optional(),
+  iodine: z.number().optional(),
+  chromium: z.number().optional(),
+  molybdenum: z.number().optional(),
+  chloride: z.number().optional(),
+  choline: z.number().optional(),
+  lycopene: z.number().optional(),
+  lutein: z.number().optional(),
+});
+
+export type Micronutrients = z.infer<typeof micronutrientsSchema>;
+
+// ============================================================================
+// AI ANALYSIS RESULT
+// ============================================================================
+
+export const aiAnalysisResultSchema = z.object({
+  foodName: z.string(),
+  description: z.string(),
+  macros: NutritionMacroBreakdownSchema,
+  micros: micronutrientsSchema.optional(),
+  nutritionQualityIndex: z.number().min(1).max(100),
+  confidence: z.number().min(0).max(1),
+  reasoning: z.string().optional(),
+});
+
+export type AIAnalysisResult = z.infer<typeof aiAnalysisResultSchema>;
+
+// ============================================================================
+// SCHEMA ALIASES (backwards compatibility with camelCase names)
+// ============================================================================
+
+/** @deprecated Use NutritionMacroBreakdownSchema instead */
+export const macrosSchema = NutritionMacroBreakdownSchema;
+
+/** @deprecated Use MealContextSchema instead */
+export const mealContextSchema = MealContextSchema;
+
+/** @deprecated Use DailyNutritionLogSchema instead */
+export const dailyNutritionLogSchema = DailyNutritionLogSchema;
+
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+/**
+ * Sum macros across an array of portions.
+ */
+export const sumMacros = (portions: NutritionPortionContract[]): NutritionMacroBreakdown =>
+  portions.reduce<NutritionMacroBreakdown>(
+    (acc, portion) => ({
+      calories: acc.calories + portion.macros.calories,
+      protein: acc.protein + portion.macros.protein,
+      carbs: acc.carbs + portion.macros.carbs,
+      fat: acc.fat + portion.macros.fat,
+      fiber: (acc.fiber ?? 0) + (portion.macros.fiber ?? 0),
+      sugar: (acc.sugar ?? 0) + (portion.macros.sugar ?? 0),
+      sodium: (acc.sodium ?? 0) + (portion.macros.sodium ?? 0),
+    }),
+    { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0, sodium: 0 },
+  );
+
+/**
+ * Aggregate daily totals across an array of meals.
+ */
+export const aggregateDailyTotals = (meals: MealLogContract[]): NutritionMacroBreakdown =>
+  meals.reduce<NutritionMacroBreakdown>((acc, meal) => {
+    const mealTotals = sumMacros(meal.portions);
+    return {
+      calories: acc.calories + mealTotals.calories,
+      protein: acc.protein + mealTotals.protein,
+      carbs: acc.carbs + mealTotals.carbs,
+      fat: acc.fat + mealTotals.fat,
+      fiber: (acc.fiber ?? 0) + (mealTotals.fiber ?? 0),
+      sugar: (acc.sugar ?? 0) + (mealTotals.sugar ?? 0),
+      sodium: (acc.sodium ?? 0) + (mealTotals.sodium ?? 0),
+    };
+  }, { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0, sodium: 0 });
 
 // ============================================================================
 // MOCK FACTORIES
@@ -479,17 +542,40 @@ export const createMockMealLog = (
   ...overrides,
 });
 
+export const createMockNutritionPortion = (
+  overrides: Partial<NutritionPortionContract> = {},
+): NutritionPortionContract => ({
+  id: overrides.id ?? `portion-${Math.random().toString(36).slice(2, 8)}`,
+  foodName: overrides.foodName ?? 'Greek Yogurt',
+  brand: overrides.brand ?? 'Chobani',
+  quantity: overrides.quantity ?? 1,
+  unit: overrides.unit ?? 'cup',
+  macros:
+    overrides.macros ?? {
+      calories: 140,
+      protein: 15,
+      carbs: 12,
+      fat: 4,
+      fiber: 0,
+      sugar: 7,
+      sodium: 65,
+    },
+  photoUrl: overrides.photoUrl,
+});
+
 export const createMockDailyNutritionLog = (
   overrides: Partial<DailyNutritionLogContract> = {},
 ): DailyNutritionLogContract => {
   const timestamp = nowIso();
+  const meals = overrides.meals ?? [createMockMealLog()];
+  const totals = overrides.totals ?? aggregateDailyTotals(meals);
   return {
     id: overrides.date ?? '2024-01-01',
     userId: 'HH-ABC123',
     date: '2024-01-01',
     timezone: 'America/New_York',
-    meals: [createMockMealLog()],
-    totals: createMockNutritionMacroBreakdown({ calories: 2000, protein: 120, carbs: 200, fat: 80 }),
+    meals,
+    totals,
     hydrationMl: 2500,
     supplements: ['Vitamin D', 'Fish Oil'],
     isVerified: true,
