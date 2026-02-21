@@ -56,70 +56,73 @@ function generateVars(
 // ─────────────────────────────────────────────────────────────────────────────
 
 function generateDesignTokensCss(): string {
-  const sections: string[] = [];
+  const themeSections: string[] = [];
+  const rootSections: string[] = [];
 
   // Brand colors (Tailwind 4 uses --color-* prefix for color utilities)
-  sections.push('  /* Brand Colors */');
-  sections.push(...generateVars(brandColors, 'color-brand-'));
-  sections.push('');
+  themeSections.push('  /* Brand Colors */');
+  themeSections.push(...generateVars(brandColors, 'color-brand-'));
+  themeSections.push('');
 
   // Semantic colors (light theme - web-admin is light-only)
-  sections.push('  /* Semantic Colors */');
-  sections.push(...generateVars(lightColors, 'color-'));
-  sections.push('');
+  themeSections.push('  /* Semantic Colors */');
+  themeSections.push(...generateVars(lightColors, 'color-'));
+  themeSections.push('');
 
   // Accent colors with variants
-  sections.push('  /* Accent Colors */');
+  themeSections.push('  /* Accent Colors */');
   for (const [name, shades] of Object.entries(accentColors)) {
-    sections.push(`  --color-${name}: ${shades.DEFAULT};`);
-    sections.push(`  --color-${name}-light: ${shades.light};`);
-    sections.push(`  --color-${name}-dark: ${shades.dark};`);
+    themeSections.push(`  --color-${name}: ${shades.DEFAULT};`);
+    themeSections.push(`  --color-${name}-light: ${shades.light};`);
+    themeSections.push(`  --color-${name}-dark: ${shades.dark};`);
   }
-  sections.push('');
+  themeSections.push('');
 
-  // Spacing
-  sections.push('  /* Spacing */');
-  sections.push(...generateVars(spacingCss, 'spacing-'));
-  sections.push('');
+  // Spacing — placed in :root (NOT @theme) to avoid colliding with Tailwind v4's
+  // utility resolution. Tailwind resolves max-w-md, gap-sm, etc. from --spacing-*
+  // in @theme, which breaks layout when our named tokens (xs/sm/md/lg/xl) shadow
+  // Tailwind's size scale.
+  rootSections.push('  /* Spacing */');
+  rootSections.push(...generateVars(spacingCss, 'spacing-'));
 
   // Border radius
-  sections.push('  /* Border Radius */');
-  sections.push(...generateVars(radiiCss, 'radius-'));
-  sections.push('');
+  themeSections.push('  /* Border Radius */');
+  themeSections.push(...generateVars(radiiCss, 'radius-'));
+  themeSections.push('');
 
   // Shadows
-  sections.push('  /* Shadows */');
-  sections.push(...generateVars(shadowsCss, 'shadow-'));
-  sections.push('');
+  themeSections.push('  /* Shadows */');
+  themeSections.push(...generateVars(shadowsCss, 'shadow-'));
+  themeSections.push('');
 
   // Font sizes
-  sections.push('  /* Font Sizes */');
-  sections.push(...generateVars(fontSizesCss, 'text-'));
-  sections.push('');
+  themeSections.push('  /* Font Sizes */');
+  themeSections.push(...generateVars(fontSizesCss, 'text-'));
+  themeSections.push('');
 
   // Font family
-  sections.push('  /* Font Family */');
-  sections.push(`  --font-sans: ${fontFamily.sans};`);
-  sections.push(`  --font-mono: ${fontFamily.mono};`);
-  sections.push('');
+  themeSections.push('  /* Font Family */');
+  themeSections.push(`  --font-sans: ${fontFamily.sans};`);
+  themeSections.push(`  --font-mono: ${fontFamily.mono};`);
+  themeSections.push('');
 
   // Status colors (trend, progress, strategy)
-  sections.push('  /* Trend Colors */');
+  themeSections.push('  /* Trend Colors */');
   for (const [key, value] of Object.entries(trendColors.light)) {
-    sections.push(`  --color-trend-${toKebabCase(key)}: ${value};`);
+    themeSections.push(`  --color-trend-${toKebabCase(key)}: ${value};`);
   }
-  sections.push('');
+  themeSections.push('');
 
-  sections.push('  /* Goal Progress Colors */');
+  themeSections.push('  /* Goal Progress Colors */');
   for (const [key, value] of Object.entries(goalProgressColors.light)) {
-    sections.push(`  --color-progress-${toKebabCase(key)}: ${value};`);
+    themeSections.push(`  --color-progress-${toKebabCase(key)}: ${value};`);
   }
-  sections.push('');
+  themeSections.push('');
 
-  sections.push('  /* Strategy Status Colors */');
+  themeSections.push('  /* Strategy Status Colors */');
   for (const [status, colors] of Object.entries(strategyStatusColors.light)) {
-    sections.push(`  --color-strategy-${status}: ${colors.color};`);
-    sections.push(`  --color-strategy-${status}-bg: ${colors.bg};`);
+    themeSections.push(`  --color-strategy-${status}: ${colors.color};`);
+    themeSections.push(`  --color-strategy-${status}-bg: ${colors.bg};`);
   }
 
   return `/* ═══════════════════════════════════════════════════════════════════════════
@@ -128,7 +131,13 @@ function generateDesignTokensCss(): string {
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 @theme {
-${sections.join('\n')}
+${themeSections.join('\n')}
+}
+
+/* Spacing tokens as CSS variables (NOT in @theme to avoid colliding with
+   Tailwind v4's utility resolution — e.g. --spacing-md would break max-w-md) */
+:root {
+${rootSections.join('\n')}
 }`;
 }
 
