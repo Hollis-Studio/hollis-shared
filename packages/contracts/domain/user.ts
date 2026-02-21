@@ -12,14 +12,14 @@
  * deps: zod | consumers: all codebases
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 import {
     injurySchema,
     limitationSchema,
     medicalConditionSchema,
     medicationSchema,
-} from './clinical';
+} from "./clinical";
 
 // ============================================================================
 // USER ROLES
@@ -31,38 +31,52 @@ import {
  * - CLINICIAN: Health coaches, can manage assigned patients
  * - TRAINER: Fitness trainers, can manage assigned clients for training
  * - CLIENT: Regular users/patients
- * 
+ *
  * NOTE: Users can have only one role. However, ADMIN role grants full access
  * to all features (clinician + trainer capabilities). For staff who need both
  * clinician and trainer access, assign ADMIN role or use assignment tables.
  */
-export const USER_ROLES = ['ADMIN', 'CLINICIAN', 'TRAINER', 'CLIENT'] as const;
+export const USER_ROLES = ["ADMIN", "CLINICIAN", "TRAINER", "CLIENT"] as const;
 export type UserRole = (typeof USER_ROLES)[number];
 
 export const UserRoleSchema = z.enum(USER_ROLES);
 
 /** Centralized role constants for equality checks */
 export const USER_ROLE = {
-  ADMIN: 'ADMIN',
-  CLINICIAN: 'CLINICIAN',
-  TRAINER: 'TRAINER',
-  CLIENT: 'CLIENT',
+  ADMIN: "ADMIN",
+  CLINICIAN: "CLINICIAN",
+  TRAINER: "TRAINER",
+  CLIENT: "CLIENT",
 } as const satisfies Record<UserRole, UserRole>;
 
 export const DEFAULT_USER_ROLE: UserRole = USER_ROLE.CLIENT;
 
 /** Roles that can access admin features (web-admin, mobile admin panel) */
-export const ADMIN_ROLES: readonly UserRole[] = ['ADMIN', 'CLINICIAN', 'TRAINER'] as const;
+export const ADMIN_ROLES: readonly UserRole[] = [
+  "ADMIN",
+  "CLINICIAN",
+  "TRAINER",
+] as const;
 
 /** Roles that can access clinical/PHI data (clinicians and admins, not trainers) */
-export const CLINICAL_ROLES: readonly UserRole[] = ['ADMIN', 'CLINICIAN'] as const;
+export const CLINICAL_ROLES: readonly UserRole[] = [
+  "ADMIN",
+  "CLINICIAN",
+] as const;
 
 /** Roles that can access training data (trainers and admins, not clinicians unless admin) */
-export const TRAINING_ROLES: readonly UserRole[] = ['ADMIN', 'TRAINER'] as const;
+export const TRAINING_ROLES: readonly UserRole[] = [
+  "ADMIN",
+  "TRAINER",
+] as const;
 
 /** Check if a role has admin portal access (can log into web-admin) */
 export function isAdminRole(role: string | undefined | null): boolean {
-  return role === USER_ROLE.ADMIN || role === USER_ROLE.CLINICIAN || role === USER_ROLE.TRAINER;
+  return (
+    role === USER_ROLE.ADMIN ||
+    role === USER_ROLE.CLINICIAN ||
+    role === USER_ROLE.TRAINER
+  );
 }
 
 /** Check if a role has clinical/PHI access (ADMIN or CLINICIAN) */
@@ -122,16 +136,18 @@ export function canViewLabResults(role: string | undefined | null): boolean {
  * Permission: Can manage registrations and lead pipeline
  * Only ADMIN handles new member onboarding and sales funnel
  */
-export function canManageRegistrations(role: string | undefined | null): boolean {
+export function canManageRegistrations(
+  role: string | undefined | null,
+): boolean {
   return role === USER_ROLE.ADMIN;
 }
 
 /** Human-readable labels for user roles */
 export const USER_ROLE_LABELS: Record<UserRole, string> = {
-  ADMIN: 'Admin',
-  CLINICIAN: 'Clinician',
-  TRAINER: 'Trainer',
-  CLIENT: 'Client',
+  ADMIN: "Admin",
+  CLINICIAN: "Clinician",
+  TRAINER: "Trainer",
+  CLIENT: "Client",
 };
 
 // ============================================================================
@@ -152,21 +168,37 @@ export interface RoleBadge {
  * These values mirror @hollis/design-tokens roleBadgeColors.
  */
 const ROLE_BADGE_COLORS = {
-  admin: { color: '#7C3AED', bg: '#EDE9FE' },
-  clinician: { color: '#059669', bg: '#D1FAE5' },
-  trainer: { color: '#F59E0B', bg: '#FEF3C7' },
-  client: { color: '#2563EB', bg: '#DBEAFE' },
-  default: { color: '#6B7280', bg: '#F3F4F6' },
+  admin: { color: "#7C3AED", bg: "#EDE9FE" },
+  clinician: { color: "#059669", bg: "#D1FAE5" },
+  trainer: { color: "#F59E0B", bg: "#FEF3C7" },
+  client: { color: "#2563EB", bg: "#DBEAFE" },
+  default: { color: "#6B7280", bg: "#F3F4F6" },
 } as const;
 
 /**
  * Role badge configuration mapped by user role.
  */
 export const ROLE_BADGE_CONFIG: Record<UserRole, RoleBadge> = {
-  ADMIN: { label: 'Admin', color: ROLE_BADGE_COLORS.admin.color, bg: ROLE_BADGE_COLORS.admin.bg },
-  CLINICIAN: { label: 'Clinician', color: ROLE_BADGE_COLORS.clinician.color, bg: ROLE_BADGE_COLORS.clinician.bg },
-  TRAINER: { label: 'Trainer', color: ROLE_BADGE_COLORS.trainer.color, bg: ROLE_BADGE_COLORS.trainer.bg },
-  CLIENT: { label: 'Patient', color: ROLE_BADGE_COLORS.client.color, bg: ROLE_BADGE_COLORS.client.bg },
+  ADMIN: {
+    label: "Admin",
+    color: ROLE_BADGE_COLORS.admin.color,
+    bg: ROLE_BADGE_COLORS.admin.bg,
+  },
+  CLINICIAN: {
+    label: "Clinician",
+    color: ROLE_BADGE_COLORS.clinician.color,
+    bg: ROLE_BADGE_COLORS.clinician.bg,
+  },
+  TRAINER: {
+    label: "Trainer",
+    color: ROLE_BADGE_COLORS.trainer.color,
+    bg: ROLE_BADGE_COLORS.trainer.bg,
+  },
+  CLIENT: {
+    label: "Patient",
+    color: ROLE_BADGE_COLORS.client.color,
+    bg: ROLE_BADGE_COLORS.client.bg,
+  },
 };
 
 /**
@@ -174,12 +206,18 @@ export const ROLE_BADGE_CONFIG: Record<UserRole, RoleBadge> = {
  * Returns badge config for known roles, or a default badge for unknown roles.
  * Returns null if role is null/undefined.
  */
-export function getRoleBadge(role: string | undefined | null): RoleBadge | null {
+export function getRoleBadge(
+  role: string | undefined | null,
+): RoleBadge | null {
   if (!role) return null;
   if (role in ROLE_BADGE_CONFIG) {
     return ROLE_BADGE_CONFIG[role as UserRole];
   }
-  return { label: role, color: ROLE_BADGE_COLORS.default.color, bg: ROLE_BADGE_COLORS.default.bg };
+  return {
+    label: role,
+    color: ROLE_BADGE_COLORS.default.color,
+    bg: ROLE_BADGE_COLORS.default.bg,
+  };
 }
 
 // ============================================================================
@@ -192,24 +230,24 @@ export function getRoleBadge(role: string | undefined | null): RoleBadge | null 
  * - CORE ($1199/mo): 8 fitness sessions, enhanced clinical access
  * - CONCIERGE ($1699/mo): 16 fitness sessions, full clinical access
  */
-export const USER_TIERS = ['ESSENTIALS', 'CORE', 'CONCIERGE'] as const;
+export const USER_TIERS = ["ESSENTIALS", "CORE", "CONCIERGE"] as const;
 export type UserTier = (typeof USER_TIERS)[number];
 
 export const UserTierSchema = z.enum(USER_TIERS);
 
 export const USER_TIER = {
-  ESSENTIALS: 'ESSENTIALS',
-  CORE: 'CORE',
-  CONCIERGE: 'CONCIERGE',
+  ESSENTIALS: "ESSENTIALS",
+  CORE: "CORE",
+  CONCIERGE: "CONCIERGE",
 } as const satisfies Record<UserTier, UserTier>;
 
 export const DEFAULT_USER_TIER: UserTier = USER_TIER.ESSENTIALS;
 
 /** Human-readable labels for membership tiers */
 export const USER_TIER_LABELS: Record<UserTier, string> = {
-  ESSENTIALS: 'Essentials',
-  CORE: 'Core',
-  CONCIERGE: 'Concierge',
+  ESSENTIALS: "Essentials",
+  CORE: "Core",
+  CONCIERGE: "Concierge",
 };
 
 /**
@@ -234,7 +272,10 @@ export const USER_TIER_PRICES_DOLLARS: Record<UserTier, number> = {
 export const USER_TIER_PRICES = USER_TIER_PRICES_DOLLARS;
 
 /** Tiers that include premium features (CORE and CONCIERGE) */
-export const PREMIUM_TIERS: readonly UserTier[] = ['CORE', 'CONCIERGE'] as const;
+export const PREMIUM_TIERS: readonly UserTier[] = [
+  "CORE",
+  "CONCIERGE",
+] as const;
 
 /** Check if a tier has premium features (CORE or CONCIERGE) */
 export function isPremiumTier(tier: string | undefined | null): boolean {
@@ -248,27 +289,33 @@ export function isPremiumTier(tier: string | undefined | null): boolean {
 /**
  * Valid biological sex values for user profiles.
  */
-export const BIOLOGICAL_SEXES = ['female', 'male', 'non_binary', 'intersex', 'prefer_not_to_say'] as const;
+export const BIOLOGICAL_SEXES = [
+  "female",
+  "male",
+  "non_binary",
+  "intersex",
+  "prefer_not_to_say",
+] as const;
 export type BiologicalSex = (typeof BIOLOGICAL_SEXES)[number];
 
 export const BiologicalSexSchema = z.enum(BIOLOGICAL_SEXES);
 
 /** Centralized biological sex constants for equality checks */
 export const BIOLOGICAL_SEX = {
-  FEMALE: 'female' as BiologicalSex,
-  MALE: 'male' as BiologicalSex,
-  NON_BINARY: 'non_binary' as BiologicalSex,
-  INTERSEX: 'intersex' as BiologicalSex,
-  PREFER_NOT_TO_SAY: 'prefer_not_to_say' as BiologicalSex,
+  FEMALE: "female" as BiologicalSex,
+  MALE: "male" as BiologicalSex,
+  NON_BINARY: "non_binary" as BiologicalSex,
+  INTERSEX: "intersex" as BiologicalSex,
+  PREFER_NOT_TO_SAY: "prefer_not_to_say" as BiologicalSex,
 } as const;
 
 /** Human-readable labels for biological sex */
 export const BIOLOGICAL_SEX_LABELS: Record<BiologicalSex, string> = {
-  female: 'Female',
-  male: 'Male',
-  non_binary: 'Non-Binary',
-  intersex: 'Intersex',
-  prefer_not_to_say: 'Prefer Not to Say',
+  female: "Female",
+  male: "Male",
+  non_binary: "Non-Binary",
+  intersex: "Intersex",
+  prefer_not_to_say: "Prefer Not to Say",
 };
 
 // ============================================================================
@@ -278,27 +325,33 @@ export const BIOLOGICAL_SEX_LABELS: Record<BiologicalSex, string> = {
 /**
  * Valid activity level values for user profiles.
  */
-export const ACTIVITY_LEVELS = ['sedentary', 'lightly_active', 'moderately_active', 'very_active', 'athlete'] as const;
+export const ACTIVITY_LEVELS = [
+  "sedentary",
+  "lightly_active",
+  "moderately_active",
+  "very_active",
+  "athlete",
+] as const;
 export type ActivityLevel = (typeof ACTIVITY_LEVELS)[number];
 
 export const ActivityLevelSchema = z.enum(ACTIVITY_LEVELS);
 
 /** Centralized activity level constants for equality checks */
 export const ACTIVITY_LEVEL = {
-  SEDENTARY: 'sedentary' as ActivityLevel,
-  LIGHTLY_ACTIVE: 'lightly_active' as ActivityLevel,
-  MODERATELY_ACTIVE: 'moderately_active' as ActivityLevel,
-  VERY_ACTIVE: 'very_active' as ActivityLevel,
-  ATHLETE: 'athlete' as ActivityLevel,
+  SEDENTARY: "sedentary" as ActivityLevel,
+  LIGHTLY_ACTIVE: "lightly_active" as ActivityLevel,
+  MODERATELY_ACTIVE: "moderately_active" as ActivityLevel,
+  VERY_ACTIVE: "very_active" as ActivityLevel,
+  ATHLETE: "athlete" as ActivityLevel,
 } as const;
 
 /** Human-readable labels for activity levels */
 export const ACTIVITY_LEVEL_LABELS: Record<ActivityLevel, string> = {
-  sedentary: 'Sedentary',
-  lightly_active: 'Lightly Active',
-  moderately_active: 'Moderately Active',
-  very_active: 'Very Active',
-  athlete: 'Athlete',
+  sedentary: "Sedentary",
+  lightly_active: "Lightly Active",
+  moderately_active: "Moderately Active",
+  very_active: "Very Active",
+  athlete: "Athlete",
 };
 
 // ============================================================================
@@ -308,25 +361,30 @@ export const ACTIVITY_LEVEL_LABELS: Record<ActivityLevel, string> = {
 /**
  * Valid primary goal values for user profiles.
  */
-export const PRIMARY_GOALS = ['lose_weight', 'gain_muscle', 'maintain', 'improve_health'] as const;
+export const PRIMARY_GOALS = [
+  "lose_weight",
+  "gain_muscle",
+  "maintain",
+  "improve_health",
+] as const;
 export type PrimaryGoal = (typeof PRIMARY_GOALS)[number];
 
 export const PrimaryGoalSchema = z.enum(PRIMARY_GOALS);
 
 /** Centralized primary goal constants for equality checks */
 export const PRIMARY_GOAL = {
-  LOSE_WEIGHT: 'lose_weight' as PrimaryGoal,
-  GAIN_MUSCLE: 'gain_muscle' as PrimaryGoal,
-  MAINTAIN: 'maintain' as PrimaryGoal,
-  IMPROVE_HEALTH: 'improve_health' as PrimaryGoal,
+  LOSE_WEIGHT: "lose_weight" as PrimaryGoal,
+  GAIN_MUSCLE: "gain_muscle" as PrimaryGoal,
+  MAINTAIN: "maintain" as PrimaryGoal,
+  IMPROVE_HEALTH: "improve_health" as PrimaryGoal,
 } as const;
 
 /** Human-readable labels for primary goals */
 export const PRIMARY_GOAL_LABELS: Record<PrimaryGoal, string> = {
-  lose_weight: 'Lose Weight',
-  gain_muscle: 'Gain Muscle',
-  maintain: 'Maintain',
-  improve_health: 'Improve Health',
+  lose_weight: "Lose Weight",
+  gain_muscle: "Gain Muscle",
+  maintain: "Maintain",
+  improve_health: "Improve Health",
 };
 
 // ============================================================================
@@ -336,25 +394,30 @@ export const PRIMARY_GOAL_LABELS: Record<PrimaryGoal, string> = {
 /**
  * Valid fitness experience values for user profiles.
  */
-export const FITNESS_EXPERIENCES = ['beginner', 'intermediate', 'advanced', 'expert'] as const;
+export const FITNESS_EXPERIENCES = [
+  "beginner",
+  "intermediate",
+  "advanced",
+  "expert",
+] as const;
 export type FitnessExperience = (typeof FITNESS_EXPERIENCES)[number];
 
 export const FitnessExperienceSchema = z.enum(FITNESS_EXPERIENCES);
 
 /** Centralized fitness experience constants for equality checks */
 export const FITNESS_EXPERIENCE = {
-  BEGINNER: 'beginner' as FitnessExperience,
-  INTERMEDIATE: 'intermediate' as FitnessExperience,
-  ADVANCED: 'advanced' as FitnessExperience,
-  EXPERT: 'expert' as FitnessExperience,
+  BEGINNER: "beginner" as FitnessExperience,
+  INTERMEDIATE: "intermediate" as FitnessExperience,
+  ADVANCED: "advanced" as FitnessExperience,
+  EXPERT: "expert" as FitnessExperience,
 } as const;
 
 /** Human-readable labels for fitness experience */
 export const FITNESS_EXPERIENCE_LABELS: Record<FitnessExperience, string> = {
-  beginner: 'Beginner',
-  intermediate: 'Intermediate',
-  advanced: 'Advanced',
-  expert: 'Expert',
+  beginner: "Beginner",
+  intermediate: "Intermediate",
+  advanced: "Advanced",
+  expert: "Expert",
 };
 
 // ============================================================================
@@ -364,27 +427,36 @@ export const FITNESS_EXPERIENCE_LABELS: Record<FitnessExperience, string> = {
 /**
  * Valid notification frequency values.
  */
-export const NOTIFICATION_FREQUENCIES = ['daily', 'weekly', 'biweekly', 'monthly', 'custom'] as const;
+export const NOTIFICATION_FREQUENCIES = [
+  "daily",
+  "weekly",
+  "biweekly",
+  "monthly",
+  "custom",
+] as const;
 export type NotificationFrequency = (typeof NOTIFICATION_FREQUENCIES)[number];
 
 export const NotificationFrequencySchema = z.enum(NOTIFICATION_FREQUENCIES);
 
 /** Centralized notification frequency constants for equality checks */
 export const NOTIFICATION_FREQUENCY = {
-  DAILY: 'daily' as NotificationFrequency,
-  WEEKLY: 'weekly' as NotificationFrequency,
-  BIWEEKLY: 'biweekly' as NotificationFrequency,
-  MONTHLY: 'monthly' as NotificationFrequency,
-  CUSTOM: 'custom' as NotificationFrequency,
+  DAILY: "daily" as NotificationFrequency,
+  WEEKLY: "weekly" as NotificationFrequency,
+  BIWEEKLY: "biweekly" as NotificationFrequency,
+  MONTHLY: "monthly" as NotificationFrequency,
+  CUSTOM: "custom" as NotificationFrequency,
 } as const;
 
 /** Human-readable labels for notification frequencies */
-export const NOTIFICATION_FREQUENCY_LABELS: Record<NotificationFrequency, string> = {
-  daily: 'Daily',
-  weekly: 'Weekly',
-  biweekly: 'Biweekly',
-  monthly: 'Monthly',
-  custom: 'Custom',
+export const NOTIFICATION_FREQUENCY_LABELS: Record<
+  NotificationFrequency,
+  string
+> = {
+  daily: "Daily",
+  weekly: "Weekly",
+  biweekly: "Biweekly",
+  monthly: "Monthly",
+  custom: "Custom",
 };
 
 // ============================================================================
@@ -394,31 +466,39 @@ export const NOTIFICATION_FREQUENCY_LABELS: Record<NotificationFrequency, string
 /**
  * Valid weekday values for scheduling.
  */
-export const WEEKDAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const;
+export const WEEKDAYS = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+] as const;
 export type Weekday = (typeof WEEKDAYS)[number];
 
 export const WeekdaySchema = z.enum(WEEKDAYS);
 
 /** Centralized weekday constants for equality checks */
 export const WEEKDAY = {
-  MONDAY: 'monday' as Weekday,
-  TUESDAY: 'tuesday' as Weekday,
-  WEDNESDAY: 'wednesday' as Weekday,
-  THURSDAY: 'thursday' as Weekday,
-  FRIDAY: 'friday' as Weekday,
-  SATURDAY: 'saturday' as Weekday,
-  SUNDAY: 'sunday' as Weekday,
+  MONDAY: "monday" as Weekday,
+  TUESDAY: "tuesday" as Weekday,
+  WEDNESDAY: "wednesday" as Weekday,
+  THURSDAY: "thursday" as Weekday,
+  FRIDAY: "friday" as Weekday,
+  SATURDAY: "saturday" as Weekday,
+  SUNDAY: "sunday" as Weekday,
 } as const;
 
 /** Human-readable labels for weekdays */
 export const WEEKDAY_LABELS: Record<Weekday, string> = {
-  monday: 'Monday',
-  tuesday: 'Tuesday',
-  wednesday: 'Wednesday',
-  thursday: 'Thursday',
-  friday: 'Friday',
-  saturday: 'Saturday',
-  sunday: 'Sunday',
+  monday: "Monday",
+  tuesday: "Tuesday",
+  wednesday: "Wednesday",
+  thursday: "Thursday",
+  friday: "Friday",
+  saturday: "Saturday",
+  sunday: "Sunday",
 };
 
 // ============================================================================
@@ -429,7 +509,7 @@ export const WEEKDAY_LABELS: Record<Weekday, string> = {
  * Valid account status values.
  * Maps to isActive boolean in DB: 'active' = true, others = false
  */
-export const ACCOUNT_STATUSES = ['active', 'suspended', 'inactive'] as const;
+export const ACCOUNT_STATUSES = ["active", "suspended", "inactive"] as const;
 export type AccountStatus = (typeof ACCOUNT_STATUSES)[number];
 /** Type alias for backwards compatibility */
 export type AccountStatusValue = AccountStatus;
@@ -438,16 +518,16 @@ export const AccountStatusSchema = z.enum(ACCOUNT_STATUSES);
 
 /** Constant object for account status comparisons */
 export const ACCOUNT_STATUS = {
-  ACTIVE: 'active' as AccountStatus,
-  SUSPENDED: 'suspended' as AccountStatus,
-  INACTIVE: 'inactive' as AccountStatus,
+  ACTIVE: "active" as AccountStatus,
+  SUSPENDED: "suspended" as AccountStatus,
+  INACTIVE: "inactive" as AccountStatus,
 } as const;
 
 /** Human-readable labels for account statuses */
 export const ACCOUNT_STATUS_LABELS: Record<AccountStatus, string> = {
-  active: 'Active',
-  suspended: 'Suspended',
-  inactive: 'Inactive',
+  active: "Active",
+  suspended: "Suspended",
+  inactive: "Inactive",
 };
 
 // ============================================================================
@@ -457,27 +537,33 @@ export const ACCOUNT_STATUS_LABELS: Record<AccountStatus, string> = {
 /**
  * Valid pregnancy status values (manual override for clinical profile).
  */
-export const PREGNANCY_STATUSES = ['not_pregnant', 'trimester_1', 'trimester_2', 'trimester_3', 'postpartum'] as const;
+export const PREGNANCY_STATUSES = [
+  "not_pregnant",
+  "trimester_1",
+  "trimester_2",
+  "trimester_3",
+  "postpartum",
+] as const;
 export type PregnancyStatus = (typeof PREGNANCY_STATUSES)[number];
 
 export const PregnancyStatusSchema = z.enum(PREGNANCY_STATUSES);
 
 /** Centralized pregnancy status constants for equality checks */
 export const PREGNANCY_STATUS = {
-  NOT_PREGNANT: 'not_pregnant' as PregnancyStatus,
-  TRIMESTER_1: 'trimester_1' as PregnancyStatus,
-  TRIMESTER_2: 'trimester_2' as PregnancyStatus,
-  TRIMESTER_3: 'trimester_3' as PregnancyStatus,
-  POSTPARTUM: 'postpartum' as PregnancyStatus,
+  NOT_PREGNANT: "not_pregnant" as PregnancyStatus,
+  TRIMESTER_1: "trimester_1" as PregnancyStatus,
+  TRIMESTER_2: "trimester_2" as PregnancyStatus,
+  TRIMESTER_3: "trimester_3" as PregnancyStatus,
+  POSTPARTUM: "postpartum" as PregnancyStatus,
 } as const;
 
 /** Human-readable labels for pregnancy status */
 export const PREGNANCY_STATUS_LABELS: Record<PregnancyStatus, string> = {
-  not_pregnant: 'Not Pregnant',
-  trimester_1: 'Trimester 1',
-  trimester_2: 'Trimester 2',
-  trimester_3: 'Trimester 3',
-  postpartum: 'Postpartum',
+  not_pregnant: "Not Pregnant",
+  trimester_1: "Trimester 1",
+  trimester_2: "Trimester 2",
+  trimester_3: "Trimester 3",
+  postpartum: "Postpartum",
 };
 
 /**
@@ -488,19 +574,26 @@ export const PREGNANCY_STATUS_LABELS: Record<PregnancyStatus, string> = {
  * @param referenceDate - The reference date for calculation (defaults to now)
  * @returns The calculated pregnancy status
  */
-export function calculateTrimesterFromDueDate(dueDate: Date, referenceDate: Date = new Date()): PregnancyStatus {
-  if (Number.isNaN(dueDate.getTime()) || Number.isNaN(referenceDate.getTime())) {
-    return 'not_pregnant';
+export function calculateTrimesterFromDueDate(
+  dueDate: Date,
+  referenceDate: Date = new Date(),
+): PregnancyStatus {
+  if (
+    Number.isNaN(dueDate.getTime()) ||
+    Number.isNaN(referenceDate.getTime())
+  ) {
+    return "not_pregnant";
   }
   const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
-  const weeksUntilDue = (dueDate.getTime() - referenceDate.getTime()) / MS_PER_WEEK;
+  const weeksUntilDue =
+    (dueDate.getTime() - referenceDate.getTime()) / MS_PER_WEEK;
   const gestationalWeeks = 40 - weeksUntilDue;
 
-  if (weeksUntilDue < 0) return 'postpartum';
-  if (gestationalWeeks < 0) return 'trimester_1';
-  if (gestationalWeeks <= 13) return 'trimester_1';
-  if (gestationalWeeks <= 27) return 'trimester_2';
-  return 'trimester_3';
+  if (weeksUntilDue < 0) return "postpartum";
+  if (gestationalWeeks < 0) return "trimester_1";
+  if (gestationalWeeks <= 13) return "trimester_1";
+  if (gestationalWeeks <= 27) return "trimester_2";
+  return "trimester_3";
 }
 
 // ============================================================================
@@ -513,21 +606,27 @@ export function calculateTrimesterFromDueDate(dueDate: Date, referenceDate: Date
  * - FITNESS_COORDINATOR: The assigned fitness coordinator/trainer
  * - CLINICIAN: The assigned clinician/healthcare provider
  */
-export const MESSAGE_RECIPIENT_ROLES = ['FITNESS_COORDINATOR', 'CLINICIAN'] as const;
+export const MESSAGE_RECIPIENT_ROLES = [
+  "FITNESS_COORDINATOR",
+  "CLINICIAN",
+] as const;
 export type MessagingRecipientRole = (typeof MESSAGE_RECIPIENT_ROLES)[number];
 
 export const MessagingRecipientRoleSchema = z.enum(MESSAGE_RECIPIENT_ROLES);
 
 /** Centralized messaging recipient role constants for equality checks */
 export const MESSAGE_RECIPIENT_ROLE = {
-  FITNESS_COORDINATOR: 'FITNESS_COORDINATOR' as MessagingRecipientRole,
-  CLINICIAN: 'CLINICIAN' as MessagingRecipientRole,
+  FITNESS_COORDINATOR: "FITNESS_COORDINATOR" as MessagingRecipientRole,
+  CLINICIAN: "CLINICIAN" as MessagingRecipientRole,
 } as const;
 
 /** Human-readable labels for messaging recipient roles */
-export const MESSAGE_RECIPIENT_ROLE_LABELS: Record<MessagingRecipientRole, string> = {
-  FITNESS_COORDINATOR: 'Fitness Coordinator',
-  CLINICIAN: 'Clinician',
+export const MESSAGE_RECIPIENT_ROLE_LABELS: Record<
+  MessagingRecipientRole,
+  string
+> = {
+  FITNESS_COORDINATOR: "Fitness Coordinator",
+  CLINICIAN: "Clinician",
 };
 
 // ============================================================================
@@ -537,7 +636,7 @@ export const MESSAGE_RECIPIENT_ROLE_LABELS: Record<MessagingRecipientRole, strin
 /**
  * UNIT_CONVERSION has been moved to shared/contracts/constants/index.ts
  * Import from @hollis/contracts or ../constants instead of this file.
- * 
+ *
  * This comment remains for backward compatibility references, but the export
  * has been removed to avoid duplicate exports in the barrel file.
  */
@@ -551,9 +650,9 @@ export const MESSAGE_RECIPIENT_ROLE_LABELS: Record<MessagingRecipientRole, strin
  */
 export const UserProfileSchema = z.object({
   id: z.string().optional(),
-  userId: z.string(),
-  email: z.string().email(),
-  fullName: z.string().min(1),
+  userId: z.string().max(20),
+  email: z.string().email().max(255),
+  fullName: z.string().min(1).max(200),
   preferredName: z.string().optional(),
   role: UserRoleSchema.optional(),
   tier: UserTierSchema.optional(),
@@ -569,10 +668,19 @@ export const UserProfileSchema = z.object({
   pregnancyDueDate: z.string().nullable().optional(),
   calculatedPregnancyStatus: PregnancyStatusSchema.nullable().optional(),
   heightCm: z.number().min(0).max(300).optional(),
+  /**
+   * Current weight in kilograms. Updated as new measurements are taken.
+   * Distinct from Prisma's `startWeight` which captures the initial onboarding weight.
+   * Requires null-safe access — may be absent for users who haven't set a weight.
+   */
   weightKg: z.number().min(0).max(500).optional(),
+  /** Initial weight at onboarding (kg). Null-safe — may be absent for legacy users. */
   initialWeightKg: z.number().min(0).optional(),
+  /** IANA timezone identifier. Null-safe — defaults to organization timezone if absent. */
   timezone: z.string().optional(),
+  /** Assigned clinician ID. Null when no clinician is assigned. */
   assignedClinicianId: z.string().nullable().optional(),
+  /** Assigned trainer ID. Null when no trainer is assigned. */
   assignedTrainerId: z.string().nullable().optional(),
   medications: z.array(medicationSchema).optional(),
   limitations: z.array(limitationSchema).optional(),
@@ -592,7 +700,7 @@ export type UserProfileContract = z.infer<typeof UserProfileSchema>;
 
 export const UserGoalsSchema = z.object({
   id: z.string().optional(),
-  userId: z.string(),
+  userId: z.string().max(20),
   calorieTarget: z.number().min(0),
   proteinTarget: z.number().min(0),
   carbTarget: z.number().min(0),
@@ -659,11 +767,11 @@ export const createMockUserProfile = (
 ): UserProfileContract => {
   const timestamp = nowIso();
   return {
-    userId: 'mock-user',
-    email: 'mock.user@example.com',
-    fullName: 'Mock User',
-    role: 'CLIENT',
-    tier: 'CORE',
+    userId: "mock-user",
+    email: "mock.user@example.com",
+    fullName: "Mock User",
+    role: "CLIENT",
+    tier: "CORE",
     heightCm: 175,
     weightKg: 72,
     onboardingCompleted: true,
@@ -677,12 +785,22 @@ export const createMockUserProfile = (
  * Default notification preferences factory
  */
 export const defaultNotifications = (): NotificationPreferencesContract => ({
-  morningBriefing: { enabled: true, time: '07:00', autoLearn: true },
-  eveningCheckIn: { enabled: true, time: '20:00', autoLearn: true },
-  weeklyInsights: { enabled: true, time: '09:00', day: 'monday' },
-  coPilotCheckIns: { enabled: false, time: '10:00', frequency: 'weekly' },
-  trainingGuidance: { enabled: true, time: '08:00', frequency: 'daily', intelligentMode: true },
-  nutritionCoaching: { enabled: false, breakfastTime: '08:00', lunchTime: '12:30', dinnerTime: '19:00' },
+  morningBriefing: { enabled: true, time: "07:00", autoLearn: true },
+  eveningCheckIn: { enabled: true, time: "20:00", autoLearn: true },
+  weeklyInsights: { enabled: true, time: "09:00", day: "monday" },
+  coPilotCheckIns: { enabled: false, time: "10:00", frequency: "weekly" },
+  trainingGuidance: {
+    enabled: true,
+    time: "08:00",
+    frequency: "daily",
+    intelligentMode: true,
+  },
+  nutritionCoaching: {
+    enabled: false,
+    breakfastTime: "08:00",
+    lunchTime: "12:30",
+    dinnerTime: "19:00",
+  },
   adminPortal: {
     appointmentBookedByOthers: false,
     appointmentCancelledByOthers: false,
@@ -694,26 +812,27 @@ export const defaultNotifications = (): NotificationPreferencesContract => ({
 /**
  * Default advanced unit preferences factory
  */
-export const defaultAdvancedUnits = (): import('./units').AdvancedUnitPreferencesContract => ({
-  weight: 'kg',
-  height: 'cm',
-  foodWeight: 'g',
-  foodVolume: 'ml',
-  calories: 'kcal',
-  exerciseWeight: 'kg',
-  distance: 'km',
-  speed: 'km_h',
-  altitude: 'm',
-  temperature: 'celsius',
-  water: 'ml',
-});
+export const defaultAdvancedUnits =
+  (): import("./units").AdvancedUnitPreferencesContract => ({
+    weight: "kg",
+    height: "cm",
+    foodWeight: "g",
+    foodVolume: "ml",
+    calories: "kcal",
+    exerciseWeight: "kg",
+    distance: "km",
+    speed: "km_h",
+    altitude: "m",
+    temperature: "celsius",
+    water: "ml",
+  });
 
 /** Default card order for mock preferences */
 const DEFAULT_MOCK_CARD_ORDER = [
-  'dailySummary',
-  'nutrition',
-  'workout',
-  'recovery',
+  "dailySummary",
+  "nutrition",
+  "workout",
+  "recovery",
 ] as const;
 
 /**
@@ -726,10 +845,10 @@ export const createMockUserPreferences = (
   const defaultOrder = [...DEFAULT_MOCK_CARD_ORDER];
   const base: UserPreferencesContract = {
     id: overrides.id,
-    userId: overrides.userId ?? 'mock-user',
-    unitSystem: overrides.unitSystem ?? 'metric',
-    timeFormat: overrides.timeFormat ?? 'standard',
-    locale: overrides.locale ?? 'en-US',
+    userId: overrides.userId ?? "mock-user",
+    unitSystem: overrides.unitSystem ?? "metric",
+    timeFormat: overrides.timeFormat ?? "standard",
+    locale: overrides.locale ?? "en-US",
     dashboard: overrides.dashboard ?? {
       sectionOrder: defaultOrder,
       hiddenSections: [],
@@ -737,20 +856,24 @@ export const createMockUserPreferences = (
     },
     advancedUnits: overrides.advancedUnits ?? defaultAdvancedUnits(),
     notifications: overrides.notifications ?? defaultNotifications(),
-    units: overrides.units ?? overrides.unitSystem ?? 'metric',
+    units: overrides.units ?? overrides.unitSystem ?? "metric",
     dashboardCardOrder:
-      overrides.dashboardCardOrder ?? overrides.dashboard?.sectionOrder ?? defaultOrder,
-    dashboardSections:
-      overrides.dashboardSections ?? {
-        order: overrides.dashboard?.sectionOrder ?? defaultOrder,
-        visibility: {
-          [DEFAULT_MOCK_CARD_ORDER[0]]: true,
-          [DEFAULT_MOCK_CARD_ORDER[1]]: true,
-          [DEFAULT_MOCK_CARD_ORDER[2]]: true,
-          [DEFAULT_MOCK_CARD_ORDER[3]]: true,
-        },
+      overrides.dashboardCardOrder ??
+      overrides.dashboard?.sectionOrder ??
+      defaultOrder,
+    dashboardSections: overrides.dashboardSections ?? {
+      order: overrides.dashboard?.sectionOrder ?? defaultOrder,
+      visibility: {
+        [DEFAULT_MOCK_CARD_ORDER[0]]: true,
+        [DEFAULT_MOCK_CARD_ORDER[1]]: true,
+        [DEFAULT_MOCK_CARD_ORDER[2]]: true,
+        [DEFAULT_MOCK_CARD_ORDER[3]]: true,
       },
-    hiddenDashboardCards: overrides.hiddenDashboardCards ?? overrides.dashboard?.hiddenSections ?? [],
+    },
+    hiddenDashboardCards:
+      overrides.hiddenDashboardCards ??
+      overrides.dashboard?.hiddenSections ??
+      [],
     createdAt: overrides.createdAt ?? timestamp,
     updatedAt: overrides.updatedAt ?? timestamp,
   };
@@ -766,7 +889,7 @@ export const createMockUserGoals = (
   const timestamp = nowIso();
   const base: UserGoalsContract = {
     id: overrides.id,
-    userId: overrides.userId ?? 'mock-user',
+    userId: overrides.userId ?? "mock-user",
     calorieTarget: overrides.calorieTarget ?? 2200,
     proteinTarget: overrides.proteinTarget ?? 150,
     carbTarget: overrides.carbTarget ?? 200,
@@ -826,8 +949,14 @@ export const createMockUserAccount = (
 ): UserAccountContract => ({
   profile: createMockUserProfile(overrides.profile),
   preferences: createMockUserPreferences(overrides.preferences),
-  goals: overrides.goals === null ? undefined : createMockUserGoals(overrides.goals ?? {}),
-  metrics: overrides.metrics === null ? undefined : createMockUserMetrics(overrides.metrics ?? {}),
+  goals:
+    overrides.goals === null
+      ? undefined
+      : createMockUserGoals(overrides.goals ?? {}),
+  metrics:
+    overrides.metrics === null
+      ? undefined
+      : createMockUserMetrics(overrides.metrics ?? {}),
 });
 
 // ============================================================================
@@ -844,20 +973,20 @@ export const createMockUserAccount = (
 
 export const timeOfDaySchema = z
   .string()
-  .regex(/^([01]\d|2[0-3]):[0-5]\d$/u, 'Must be HH:mm (24h) time string');
+  .regex(/^([01]\d|2[0-3]):[0-5]\d$/u, "Must be HH:mm (24h) time string");
 
 export const advancedUnitPreferencesSchema = z.object({
-  weight: z.enum(['kg', 'lbs']),
-  height: z.enum(['cm', 'ft_in']),
-  foodWeight: z.enum(['g', 'oz', 'lbs']),
-  foodVolume: z.enum(['ml', 'fl_oz', 'cups', 'tbsp', 'tsp']),
-  calories: z.enum(['kcal', 'kj']),
-  exerciseWeight: z.enum(['kg', 'lbs']),
-  distance: z.enum(['km', 'mi', 'm', 'ft']),
-  speed: z.enum(['km_h', 'mph', 'm_s']),
-  altitude: z.enum(['m', 'ft']),
-  temperature: z.enum(['celsius', 'fahrenheit']),
-  water: z.enum(['ml', 'fl_oz', 'cups', 'l']),
+  weight: z.enum(["kg", "lbs"]),
+  height: z.enum(["cm", "ft_in"]),
+  foodWeight: z.enum(["g", "oz", "lbs"]),
+  foodVolume: z.enum(["ml", "fl_oz", "cups", "tbsp", "tsp"]),
+  calories: z.enum(["kcal", "kj"]),
+  exerciseWeight: z.enum(["kg", "lbs"]),
+  distance: z.enum(["km", "mi", "m", "ft"]),
+  speed: z.enum(["km_h", "mph", "m_s"]),
+  altitude: z.enum(["m", "ft"]),
+  temperature: z.enum(["celsius", "fahrenheit"]),
+  water: z.enum(["ml", "fl_oz", "cups", "l"]),
 });
 
 export const dashboardPreferencesSchema = z.object({
@@ -866,11 +995,13 @@ export const dashboardPreferencesSchema = z.object({
   pinnedSections: z.array(z.string()),
 });
 
-export type DashboardPreferencesContract = z.infer<typeof dashboardPreferencesSchema>;
+export type DashboardPreferencesContract = z.infer<
+  typeof dashboardPreferencesSchema
+>;
 
 export const dashboardSectionsSchema = z.object({
   order: z.array(z.string()),
-  visibility: z.record(z.boolean()),
+  visibility: z.record(z.string(), z.boolean()),
 });
 
 export type DashboardSectionsContract = z.infer<typeof dashboardSectionsSchema>;
@@ -887,19 +1018,31 @@ export type DailyNotificationContract = z.infer<typeof dailyNotificationSchema>;
 export const weeklyNotificationSchema = z.object({
   enabled: z.boolean(),
   time: timeOfDaySchema,
-  day: z.enum(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']),
+  day: z.enum([
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ]),
 });
 
-export type WeeklyNotificationContract = z.infer<typeof weeklyNotificationSchema>;
+export type WeeklyNotificationContract = z.infer<
+  typeof weeklyNotificationSchema
+>;
 
 export const frequencyNotificationSchema = z.object({
   enabled: z.boolean(),
   time: timeOfDaySchema,
-  frequency: z.enum(['daily', 'weekly', 'biweekly', 'monthly', 'custom']),
+  frequency: z.enum(["daily", "weekly", "biweekly", "monthly", "custom"]),
   intelligentMode: z.boolean().optional(),
 });
 
-export type FrequencyNotificationContract = z.infer<typeof frequencyNotificationSchema>;
+export type FrequencyNotificationContract = z.infer<
+  typeof frequencyNotificationSchema
+>;
 
 export const nutritionNotificationSchema = z.object({
   enabled: z.boolean(),
@@ -908,7 +1051,9 @@ export const nutritionNotificationSchema = z.object({
   dinnerTime: timeOfDaySchema,
 });
 
-export type NutritionNotificationContract = z.infer<typeof nutritionNotificationSchema>;
+export type NutritionNotificationContract = z.infer<
+  typeof nutritionNotificationSchema
+>;
 
 export const adminPortalNotificationPreferencesSchema = z.object({
   appointmentBookedByOthers: z.boolean(),
@@ -917,7 +1062,9 @@ export const adminPortalNotificationPreferencesSchema = z.object({
   patientAssignedToMe: z.boolean(),
 });
 
-export type AdminPortalNotificationPreferencesContract = z.infer<typeof adminPortalNotificationPreferencesSchema>;
+export type AdminPortalNotificationPreferencesContract = z.infer<
+  typeof adminPortalNotificationPreferencesSchema
+>;
 
 export const notificationPreferencesSchema = z.object({
   morningBriefing: dailyNotificationSchema,
@@ -929,7 +1076,9 @@ export const notificationPreferencesSchema = z.object({
   adminPortal: adminPortalNotificationPreferencesSchema,
 });
 
-export type NotificationPreferencesContract = z.infer<typeof notificationPreferencesSchema>;
+export type NotificationPreferencesContract = z.infer<
+  typeof notificationPreferencesSchema
+>;
 
 // ============================================================================
 // USER PREFERENCES SCHEMA (defined here after dashboard/notification schemas)
@@ -937,23 +1086,26 @@ export type NotificationPreferencesContract = z.infer<typeof notificationPrefere
 
 export const UserPreferencesSchema = z.object({
   id: z.string().optional(),
-  userId: z.string(),
-  unitSystem: z.enum(['imperial', 'metric', 'advanced']),
-  timeFormat: z.enum(['standard', 'military']),
+  userId: z.string().max(20),
+  unitSystem: z.enum(["imperial", "metric", "advanced"]),
+  timeFormat: z.enum(["standard", "military"]),
   locale: z.string(),
   dashboard: dashboardPreferencesSchema.default({
-    sectionOrder: ['dailySummary', 'nutrition', 'workout', 'recovery'],
+    sectionOrder: ["dailySummary", "nutrition", "workout", "recovery"],
     hiddenSections: [],
     pinnedSections: [],
   }),
   advancedUnits: advancedUnitPreferencesSchema.default(defaultAdvancedUnits()),
   notifications: notificationPreferencesSchema.default(defaultNotifications()),
-  units: z.enum(['imperial', 'metric', 'advanced']).optional(),
+  units: z.enum(["imperial", "metric", "advanced"]).optional(),
   dashboardCardOrder: z.array(z.string()).optional(),
   dashboardSections: dashboardSectionsSchema.optional(),
   hiddenDashboardCards: z.array(z.string()).optional(),
   eveningReminderEnabled: z.boolean().optional(),
-  eveningReminderTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/u, 'Must be HH:mm format (00:00-23:59)').optional(),
+  eveningReminderTime: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/u, "Must be HH:mm format (00:00-23:59)")
+    .optional(),
   customReminderMessage: z.string().max(120).optional(),
   createdAt: z.string(),
   updatedAt: z.string(),

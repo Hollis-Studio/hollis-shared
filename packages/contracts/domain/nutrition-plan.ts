@@ -9,10 +9,65 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // NUTRITION PLAN (Coach-Assigned)
+// ============================================================================
+
+// ============================================================================
+// NUTRITION PLAN DAY (structured daily plan from JSON column)
+// ============================================================================
+
+/**
+ * A food item within a meal in a daily nutrition plan.
+ */
+const nutritionPlanFoodSchema = z
+  .object({
+    name: z.string().max(200),
+    amount: z.string().max(100).optional(),
+    calories: z.number().nonnegative().optional(),
+    protein: z.number().nonnegative().optional(),
+    carbs: z.number().nonnegative().optional(),
+    fat: z.number().nonnegative().optional(),
+  })
+  .passthrough();
+
+/**
+ * A meal within a daily nutrition plan.
+ */
+const nutritionPlanMealSchema = z
+  .object({
+    name: z.string().max(200).optional(),
+    time: z.string().max(50).optional(),
+    calories: z.number().nonnegative().optional(),
+    protein: z.number().nonnegative().optional(),
+    carbs: z.number().nonnegative().optional(),
+    fat: z.number().nonnegative().optional(),
+    foods: z.array(nutritionPlanFoodSchema).optional(),
+  })
+  .passthrough();
+
+/**
+ * A single day's plan within a nutrition plan.
+ * Uses `.passthrough()` to avoid breaking existing data with extra fields.
+ */
+export const nutritionPlanDaySchema = z
+  .object({
+    dayOfWeek: z.number().min(0).max(6).optional(),
+    label: z.string().max(100).optional(),
+    totalCalories: z.number().nonnegative().optional(),
+    protein: z.number().nonnegative().optional(),
+    carbs: z.number().nonnegative().optional(),
+    fat: z.number().nonnegative().optional(),
+    meals: z.array(nutritionPlanMealSchema).optional(),
+  })
+  .passthrough();
+
+export type NutritionPlanDay = z.infer<typeof nutritionPlanDaySchema>;
+
+// ============================================================================
+// DAILY NUTRITION TARGET
 // ============================================================================
 
 /**
@@ -56,8 +111,8 @@ export interface NutritionPlanContract {
   notes?: string | null;
   /** Day-specific target overrides */
   dailyTargets?: DailyNutritionTarget[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Days structure is polymorphic JSON data from database
-  days?: any | null;
+  /** Structured daily plan data (JSON from database) */
+  days?: NutritionPlanDay[] | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -67,13 +122,13 @@ export const NutritionPlanSchema = z.object({
   userId: z.string(),
   startDate: z.string(),
   endDate: z.string().nullish(),
-  targetCalories: z.number().min(0),
-  targetProtein: z.number().min(0),
-  targetCarbs: z.number().min(0),
-  targetFats: z.number().min(0),
+  targetCalories: z.number().int().min(0),
+  targetProtein: z.number().int().min(0),
+  targetCarbs: z.number().int().min(0),
+  targetFats: z.number().int().min(0),
   notes: z.string().nullish(),
   dailyTargets: z.array(DailyNutritionTargetSchema).optional(),
-  days: z.any().nullish(),
+  days: z.array(nutritionPlanDaySchema).nullish(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
 });
@@ -98,10 +153,10 @@ export interface NutritionTargetsContract {
 }
 
 export const NutritionTargetsSchema = z.object({
-  calories: z.number().min(0),
-  protein: z.number().min(0),
-  carbs: z.number().min(0),
-  fat: z.number().min(0),
+  calories: z.number().int().min(0),
+  protein: z.number().int().min(0),
+  carbs: z.number().int().min(0),
+  fat: z.number().int().min(0),
   fiber: z.number().min(0).optional(),
   sugar: z.number().min(0).optional(),
   sodium: z.number().min(0).optional(),
@@ -147,6 +202,40 @@ export interface DetailedNutritionContract extends NutritionTargetsContract {
   caffeine?: number; // mg
 }
 
+export const DetailedNutritionSchema = NutritionTargetsSchema.extend({
+  // Vitamins
+  vitaminA: z.number().min(0).optional().nullable(),
+  vitaminC: z.number().min(0).optional().nullable(),
+  vitaminD: z.number().min(0).optional().nullable(),
+  vitaminE: z.number().min(0).optional().nullable(),
+  vitaminK: z.number().min(0).optional().nullable(),
+  thiamine: z.number().min(0).optional().nullable(),
+  riboflavin: z.number().min(0).optional().nullable(),
+  niacin: z.number().min(0).optional().nullable(),
+  vitaminB6: z.number().min(0).optional().nullable(),
+  folate: z.number().min(0).optional().nullable(),
+  vitaminB12: z.number().min(0).optional().nullable(),
+  biotin: z.number().min(0).optional().nullable(),
+  pantothenicAcid: z.number().min(0).optional().nullable(),
+  // Minerals
+  calcium: z.number().min(0).optional().nullable(),
+  iron: z.number().min(0).optional().nullable(),
+  magnesium: z.number().min(0).optional().nullable(),
+  phosphorus: z.number().min(0).optional().nullable(),
+  potassium: z.number().min(0).optional().nullable(),
+  zinc: z.number().min(0).optional().nullable(),
+  copper: z.number().min(0).optional().nullable(),
+  manganese: z.number().min(0).optional().nullable(),
+  selenium: z.number().min(0).optional().nullable(),
+  chromium: z.number().min(0).optional().nullable(),
+  molybdenum: z.number().min(0).optional().nullable(),
+  // Other
+  cholesterol: z.number().min(0).optional().nullable(),
+  alcohol: z.number().min(0).optional().nullable(),
+  caffeine: z.number().min(0).optional().nullable(),
+});
+export type DetailedNutrition = z.infer<typeof DetailedNutritionSchema>;
+
 // ============================================================================
 // NUTRITION PROGRESS
 // ============================================================================
@@ -175,7 +264,10 @@ export const NutritionProgressSchema = z.object({
 /**
  * Calculate progress toward a nutrition target.
  */
-export function calculateNutritionProgress(current: number, target: number): NutritionProgressContract {
+export function calculateNutritionProgress(
+  current: number,
+  target: number,
+): NutritionProgressContract {
   const safeTarget = Math.max(1, target);
   return {
     current,
@@ -192,8 +284,8 @@ export function calculateNutritionProgress(current: number, target: number): Nut
 export const DEFAULT_NUTRITION_TARGETS: NutritionTargetsContract = {
   calories: 2200,
   protein: 165, // ~30% of calories
-  carbs: 275,   // ~50% of calories
-  fat: 73,      // ~30% of calories
+  carbs: 275, // ~50% of calories
+  fat: 73, // ~30% of calories
   fiber: 35,
   sugar: 50,
   sodium: 2300,

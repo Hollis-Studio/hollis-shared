@@ -14,7 +14,7 @@
  * deps: zod | consumers: server/src/services/*, web-admin/services/*
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // LAB ORDER STATUS (Domain Constants Pattern)
@@ -22,11 +22,11 @@ import { z } from 'zod';
 
 /** Tuple of valid lab order status values (source of truth) */
 export const LAB_ORDER_STATUSES = [
-  'ORDERED',
-  'KIT_SENT',
-  'SAMPLE_RECEIVED',
-  'RESULTS_PENDING',
-  'RESULTS_REVIEWED',
+  "ORDERED",
+  "KIT_SENT",
+  "SAMPLE_RECEIVED",
+  "RESULTS_PENDING",
+  "RESULTS_REVIEWED",
 ] as const;
 export type LabOrderStatus = (typeof LAB_ORDER_STATUSES)[number];
 
@@ -35,20 +35,20 @@ export const LabOrderStatusSchema = z.enum(LAB_ORDER_STATUSES);
 
 /** Constant object for lab order status comparisons */
 export const LAB_ORDER_STATUS = {
-  ORDERED: 'ORDERED' as LabOrderStatus,
-  KIT_SENT: 'KIT_SENT' as LabOrderStatus,
-  SAMPLE_RECEIVED: 'SAMPLE_RECEIVED' as LabOrderStatus,
-  RESULTS_PENDING: 'RESULTS_PENDING' as LabOrderStatus,
-  RESULTS_REVIEWED: 'RESULTS_REVIEWED' as LabOrderStatus,
+  ORDERED: "ORDERED" as LabOrderStatus,
+  KIT_SENT: "KIT_SENT" as LabOrderStatus,
+  SAMPLE_RECEIVED: "SAMPLE_RECEIVED" as LabOrderStatus,
+  RESULTS_PENDING: "RESULTS_PENDING" as LabOrderStatus,
+  RESULTS_REVIEWED: "RESULTS_REVIEWED" as LabOrderStatus,
 } as const;
 
 /** Human-readable labels for lab order statuses */
 export const LAB_ORDER_STATUS_LABELS: Record<LabOrderStatus, string> = {
-  ORDERED: 'Ordered',
-  KIT_SENT: 'Kit Sent',
-  SAMPLE_RECEIVED: 'Sample Received',
-  RESULTS_PENDING: 'Results Pending',
-  RESULTS_REVIEWED: 'Results Reviewed',
+  ORDERED: "Ordered",
+  KIT_SENT: "Kit Sent",
+  SAMPLE_RECEIVED: "Sample Received",
+  RESULTS_PENDING: "Results Pending",
+  RESULTS_REVIEWED: "Results Reviewed",
 };
 
 /**
@@ -64,12 +64,12 @@ export function isLabOrderStatus(value: string): value is LabOrderStatus {
 
 /** Tuple of valid lead stage values (source of truth) */
 export const LEAD_STAGES = [
-  'INQUIRY',
-  'CONSULTATION_BOOKED',
-  'CONSULTATION_COMPLETED',
-  'PROPOSAL_SENT',
-  'ACTIVE_MEMBER',
-  'CHURNED',
+  "INQUIRY",
+  "CONSULTATION_BOOKED",
+  "CONSULTATION_COMPLETED",
+  "PROPOSAL_SENT",
+  "ACTIVE_MEMBER",
+  "CHURNED",
 ] as const;
 export type LeadStage = (typeof LEAD_STAGES)[number];
 
@@ -78,22 +78,22 @@ export const LeadStageSchema = z.enum(LEAD_STAGES);
 
 /** Constant object for lead stage comparisons */
 export const LEAD_STAGE = {
-  INQUIRY: 'INQUIRY' as LeadStage,
-  CONSULTATION_BOOKED: 'CONSULTATION_BOOKED' as LeadStage,
-  CONSULTATION_COMPLETED: 'CONSULTATION_COMPLETED' as LeadStage,
-  PROPOSAL_SENT: 'PROPOSAL_SENT' as LeadStage,
-  ACTIVE_MEMBER: 'ACTIVE_MEMBER' as LeadStage,
-  CHURNED: 'CHURNED' as LeadStage,
+  INQUIRY: "INQUIRY" as LeadStage,
+  CONSULTATION_BOOKED: "CONSULTATION_BOOKED" as LeadStage,
+  CONSULTATION_COMPLETED: "CONSULTATION_COMPLETED" as LeadStage,
+  PROPOSAL_SENT: "PROPOSAL_SENT" as LeadStage,
+  ACTIVE_MEMBER: "ACTIVE_MEMBER" as LeadStage,
+  CHURNED: "CHURNED" as LeadStage,
 } as const;
 
 /** Human-readable labels for lead stages */
 export const LEAD_STAGE_LABELS: Record<LeadStage, string> = {
-  INQUIRY: 'Inquiry',
-  CONSULTATION_BOOKED: 'Consultation Booked',
-  CONSULTATION_COMPLETED: 'Consultation Completed',
-  PROPOSAL_SENT: 'Proposal Sent',
-  ACTIVE_MEMBER: 'Active Member',
-  CHURNED: 'Churned',
+  INQUIRY: "Inquiry",
+  CONSULTATION_BOOKED: "Consultation Booked",
+  CONSULTATION_COMPLETED: "Consultation Completed",
+  PROPOSAL_SENT: "Proposal Sent",
+  ACTIVE_MEMBER: "Active Member",
+  CHURNED: "Churned",
 };
 
 /**
@@ -109,17 +109,17 @@ export function isLeadStage(value: string): value is LeadStage {
 
 /** Tuple of valid user event type values (source of truth) */
 export const USER_EVENT_TYPES = [
-  'WORKOUT_COMPLETED',
-  'APPOINTMENT_CANCELLED',
-  'APPOINTMENT_RESCHEDULED',
-  'MEAL_LOGGED',
-  'DAILY_CHECKIN_COMPLETED',
-  'PLAN_PUBLISHED',
-  'LAB_PANEL_CREATED',
-  'LAB_PANEL_DELETED',
-  'NOTIFICATION_SENT',
-  'BILLING_DATE_CHANGED',
-  'TIER_CHANGED',
+  "WORKOUT_COMPLETED",
+  "APPOINTMENT_CANCELLED",
+  "APPOINTMENT_RESCHEDULED",
+  "MEAL_LOGGED",
+  "DAILY_CHECKIN_COMPLETED",
+  "PLAN_PUBLISHED",
+  "LAB_PANEL_CREATED",
+  "LAB_PANEL_DELETED",
+  "NOTIFICATION_SENT",
+  "BILLING_DATE_CHANGED",
+  "TIER_CHANGED",
 ] as const;
 export type UserEventType = (typeof USER_EVENT_TYPES)[number];
 
@@ -128,32 +128,32 @@ export const UserEventTypeSchema = z.enum(USER_EVENT_TYPES);
 
 /** Constant object for user event type comparisons */
 export const USER_EVENT_TYPE = {
-  WORKOUT_COMPLETED: 'WORKOUT_COMPLETED' as UserEventType,
-  APPOINTMENT_CANCELLED: 'APPOINTMENT_CANCELLED' as UserEventType,
-  APPOINTMENT_RESCHEDULED: 'APPOINTMENT_RESCHEDULED' as UserEventType,
-  MEAL_LOGGED: 'MEAL_LOGGED' as UserEventType,
-  DAILY_CHECKIN_COMPLETED: 'DAILY_CHECKIN_COMPLETED' as UserEventType,
-  PLAN_PUBLISHED: 'PLAN_PUBLISHED' as UserEventType,
-  LAB_PANEL_CREATED: 'LAB_PANEL_CREATED' as UserEventType,
-  LAB_PANEL_DELETED: 'LAB_PANEL_DELETED' as UserEventType,
-  NOTIFICATION_SENT: 'NOTIFICATION_SENT' as UserEventType,
-  BILLING_DATE_CHANGED: 'BILLING_DATE_CHANGED' as UserEventType,
-  TIER_CHANGED: 'TIER_CHANGED' as UserEventType,
+  WORKOUT_COMPLETED: "WORKOUT_COMPLETED" as UserEventType,
+  APPOINTMENT_CANCELLED: "APPOINTMENT_CANCELLED" as UserEventType,
+  APPOINTMENT_RESCHEDULED: "APPOINTMENT_RESCHEDULED" as UserEventType,
+  MEAL_LOGGED: "MEAL_LOGGED" as UserEventType,
+  DAILY_CHECKIN_COMPLETED: "DAILY_CHECKIN_COMPLETED" as UserEventType,
+  PLAN_PUBLISHED: "PLAN_PUBLISHED" as UserEventType,
+  LAB_PANEL_CREATED: "LAB_PANEL_CREATED" as UserEventType,
+  LAB_PANEL_DELETED: "LAB_PANEL_DELETED" as UserEventType,
+  NOTIFICATION_SENT: "NOTIFICATION_SENT" as UserEventType,
+  BILLING_DATE_CHANGED: "BILLING_DATE_CHANGED" as UserEventType,
+  TIER_CHANGED: "TIER_CHANGED" as UserEventType,
 } as const;
 
 /** Human-readable labels for user event types */
 export const USER_EVENT_TYPE_LABELS: Record<UserEventType, string> = {
-  WORKOUT_COMPLETED: 'Workout Completed',
-  APPOINTMENT_CANCELLED: 'Appointment Cancelled',
-  APPOINTMENT_RESCHEDULED: 'Appointment Rescheduled',
-  MEAL_LOGGED: 'Meal Logged',
-  DAILY_CHECKIN_COMPLETED: 'Daily Check-in Completed',
-  PLAN_PUBLISHED: 'Plan Published',
-  LAB_PANEL_CREATED: 'Lab Panel Created',
-  LAB_PANEL_DELETED: 'Lab Panel Deleted',
-  NOTIFICATION_SENT: 'Notification Sent',
-  BILLING_DATE_CHANGED: 'Billing Date Changed',
-  TIER_CHANGED: 'Tier Changed',
+  WORKOUT_COMPLETED: "Workout Completed",
+  APPOINTMENT_CANCELLED: "Appointment Cancelled",
+  APPOINTMENT_RESCHEDULED: "Appointment Rescheduled",
+  MEAL_LOGGED: "Meal Logged",
+  DAILY_CHECKIN_COMPLETED: "Daily Check-in Completed",
+  PLAN_PUBLISHED: "Plan Published",
+  LAB_PANEL_CREATED: "Lab Panel Created",
+  LAB_PANEL_DELETED: "Lab Panel Deleted",
+  NOTIFICATION_SENT: "Notification Sent",
+  BILLING_DATE_CHANGED: "Billing Date Changed",
+  TIER_CHANGED: "Tier Changed",
 };
 
 /**
@@ -188,7 +188,7 @@ export const UserEventContractSchema = z.object({
   type: UserEventTypeSchema,
   occurredAt: z.string(),
   source: z.string().optional(),
-  metadata: z.record(z.unknown()),
+  metadata: z.record(z.string(), z.unknown()),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -205,8 +205,8 @@ export const BusinessDailySnapshotSchema = z.object({
   date: z.string(), // ISO date string
 
   // Financials
-  totalRevenue: z.number().default(0),
-  mrr: z.number().default(0),
+  totalRevenue: z.number().min(0).default(0),
+  mrr: z.number().min(0).default(0),
 
   // Engagement
   activeUsers: z.number().int().default(0),
@@ -230,13 +230,15 @@ export type BusinessDailySnapshot = z.infer<typeof BusinessDailySnapshotSchema>;
 export const BusinessSnapshotTrendSchema = z.object({
   current: BusinessDailySnapshotSchema,
   previous: BusinessDailySnapshotSchema.optional(),
-  changes: z.object({
-    mrr: z.number().optional(),
-    mrrPercent: z.number().optional(),
-    activeUsers: z.number().optional(),
-    avgComplianceScore: z.number().optional(),
-    studioTotalLbsLost: z.number().optional(),
-  }).optional(),
+  changes: z
+    .object({
+      mrr: z.number().optional(),
+      mrrPercent: z.number().optional(),
+      activeUsers: z.number().optional(),
+      avgComplianceScore: z.number().optional(),
+      studioTotalLbsLost: z.number().optional(),
+    })
+    .optional(),
 });
 
 export type BusinessSnapshotTrend = z.infer<typeof BusinessSnapshotTrendSchema>;
@@ -263,17 +265,19 @@ export type ComplianceScore = z.infer<typeof ComplianceScoreSchema>;
  * Schema for compliance heatmap data
  */
 export const ComplianceHeatmapSchema = z.object({
-  clients: z.array(z.object({
-    userId: z.string(),
-    name: z.string(),
-    tier: z.string(),
-    score: z.number().min(0).max(100),
-    nutritionLogging: z.number().min(0).max(100),
-    workoutCompletion: z.number().min(0).max(100),
-    wearableSync: z.number().min(0).max(100),
-    trend: z.enum(['improving', 'stable', 'declining']),
-    lastActivityDate: z.string().optional(),
-  })),
+  clients: z.array(
+    z.object({
+      userId: z.string(),
+      name: z.string(),
+      tier: z.string(),
+      score: z.number().min(0).max(100),
+      nutritionLogging: z.number().min(0).max(100),
+      workoutCompletion: z.number().min(0).max(100),
+      wearableSync: z.number().min(0).max(100),
+      trend: z.enum(["improving", "stable", "declining"]),
+      lastActivityDate: z.string().optional(),
+    }),
+  ),
   averageScore: z.number().min(0).max(100),
   totalClients: z.number().int(),
 });
@@ -295,7 +299,7 @@ export const TrainerEffectivenessSchema = z.object({
   avgGoalAchievement: z.number().min(0).max(100).default(0), // Percentage
   avgClientSatisfaction: z.number().min(0).max(5).optional(), // 1-5 stars
   totalSessionsCompleted: z.number().int().default(0),
-  avgWeightLossPerClient: z.number().default(0), // In kg
+  avgWeightLossPerClient: z.number().min(0).default(0), // In kg
 });
 
 export type TrainerEffectiveness = z.infer<typeof TrainerEffectivenessSchema>;
@@ -411,15 +415,15 @@ export type SalesFunnel = z.infer<typeof SalesFunnelSchema>;
 
 /** Risk factor types for at-risk identification */
 export const RISK_FACTORS = [
-  'low_compliance',
-  'no_recent_activity',
-  'missed_appointments',
-  'declining_engagement',
-  'no_weight_progress',
-  'expired_sessions',
-  'sessions_expiring_soon',
-  'no_wearable_sync',
-  'low_nutrition_logging',
+  "low_compliance",
+  "no_recent_activity",
+  "missed_appointments",
+  "declining_engagement",
+  "no_weight_progress",
+  "expired_sessions",
+  "sessions_expiring_soon",
+  "no_wearable_sync",
+  "low_nutrition_logging",
 ] as const;
 export type RiskFactor = (typeof RISK_FACTORS)[number];
 
@@ -427,15 +431,15 @@ export const RiskFactorSchema = z.enum(RISK_FACTORS);
 
 /** Human-readable labels for risk factors */
 export const RISK_FACTOR_LABELS: Record<RiskFactor, string> = {
-  low_compliance: 'Low Compliance Score',
-  no_recent_activity: 'No Recent Activity',
-  missed_appointments: 'Missed Appointments',
-  declining_engagement: 'Declining Engagement',
-  no_weight_progress: 'No Weight Progress',
-  expired_sessions: 'Expired Sessions',
-  sessions_expiring_soon: 'Sessions Expiring Soon',
-  no_wearable_sync: 'No Wearable Sync',
-  low_nutrition_logging: 'Low Nutrition Logging',
+  low_compliance: "Low Compliance Score",
+  no_recent_activity: "No Recent Activity",
+  missed_appointments: "Missed Appointments",
+  declining_engagement: "Declining Engagement",
+  no_weight_progress: "No Weight Progress",
+  expired_sessions: "Expired Sessions",
+  sessions_expiring_soon: "Sessions Expiring Soon",
+  no_wearable_sync: "No Wearable Sync",
+  low_nutrition_logging: "Low Nutrition Logging",
 };
 
 // ============================================================================
@@ -445,16 +449,16 @@ export const RISK_FACTOR_LABELS: Record<RiskFactor, string> = {
 /**
  * Churn risk levels
  */
-export const CHURN_RISK_LEVELS = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as const;
+export const CHURN_RISK_LEVELS = ["LOW", "MEDIUM", "HIGH", "CRITICAL"] as const;
 export type ChurnRiskLevel = (typeof CHURN_RISK_LEVELS)[number];
 
 export const ChurnRiskLevelSchema = z.enum(CHURN_RISK_LEVELS);
 
 export const CHURN_RISK_LEVEL = {
-  LOW: 'LOW' as ChurnRiskLevel,
-  MEDIUM: 'MEDIUM' as ChurnRiskLevel,
-  HIGH: 'HIGH' as ChurnRiskLevel,
-  CRITICAL: 'CRITICAL' as ChurnRiskLevel,
+  LOW: "LOW" as ChurnRiskLevel,
+  MEDIUM: "MEDIUM" as ChurnRiskLevel,
+  HIGH: "HIGH" as ChurnRiskLevel,
+  CRITICAL: "CRITICAL" as ChurnRiskLevel,
 } as const;
 
 /**
@@ -490,8 +494,8 @@ export type TierChurnThresholds = typeof TIER_CHURN_THRESHOLDS;
  * @returns ChurnRiskLevel
  */
 export function calculateChurnRiskLevel(
-  tier: 'ESSENTIALS' | 'CORE' | 'CONCIERGE',
-  daysInactive: number
+  tier: "ESSENTIALS" | "CORE" | "CONCIERGE",
+  daysInactive: number,
 ): ChurnRiskLevel {
   const thresholds = TIER_CHURN_THRESHOLDS[tier];
 
@@ -539,9 +543,9 @@ export type ChurnRisk = z.infer<typeof ChurnRiskSchema>;
  */
 export const RevenueTierSchema = z.object({
   tierName: z.string(),
-  patientCount: z.number().int(),
-  monthlyRevenue: z.number(),
-  churnRate: z.number(),
+  patientCount: z.number().int().min(0),
+  monthlyRevenue: z.number().min(0),
+  churnRate: z.number().min(0).max(100),
 });
 
 export type RevenueTier = z.infer<typeof RevenueTierSchema>;
@@ -554,8 +558,8 @@ export const CRMAnalyticsSchema = z.object({
   retentionCohorts: z.array(RetentionCohortSchema),
   churnRisks: z.array(ChurnRiskSchema),
   revenueByTier: z.array(RevenueTierSchema),
-  totalActivePatients: z.number().int(),
-  averageEngagementScore: z.number(),
+  totalActivePatients: z.number().int().min(0),
+  averageEngagementScore: z.number().min(0).max(100),
 });
 
 export type CRMAnalytics = z.infer<typeof CRMAnalyticsSchema>;
@@ -624,7 +628,9 @@ export const CreateTrainerAssignmentSchema = z.object({
   isPrimary: z.boolean().default(false),
 });
 
-export type CreateTrainerAssignment = z.infer<typeof CreateTrainerAssignmentSchema>;
+export type CreateTrainerAssignment = z.infer<
+  typeof CreateTrainerAssignmentSchema
+>;
 
 // ============================================================================
 // CLINICAL IMPACT
@@ -635,28 +641,28 @@ export type CreateTrainerAssignment = z.infer<typeof CreateTrainerAssignmentSche
  */
 export const ClinicalImpactSchema = z.object({
   totalClients: z.number().int(),
-  
+
   // Weight metrics (in metric - kg)
   avgWeightChange: z.number(), // Negative = loss
   clientsLosingWeight: z.number().int(),
   clientsGainingWeight: z.number().int(),
   clientsStable: z.number().int(),
   totalWeightLostKg: z.number(),
-  
+
   // Biomarker improvements
   clientsWithImprovedA1C: z.number().int(),
   clientsWithImprovedCholesterol: z.number().int(),
   clientsWithImprovedBloodPressure: z.number().int(),
   clientsWithImprovedTestosterone: z.number().int(),
-  
+
   // Fitness improvements
   avgVo2MaxImprovement: z.number(),
   avgStrengthImprovement: z.number(), // Percentage
-  
+
   // Sleep/recovery
   avgSleepScoreImprovement: z.number(),
   clientsWithImprovedSleep: z.number().int(),
-  
+
   // Period for comparison
   periodDays: z.number().int().default(30),
 });
@@ -672,14 +678,14 @@ export type ClinicalImpact = z.infer<typeof ClinicalImpactSchema>;
  * These are derived from clinical data but don't expose PHI
  */
 export const TRAINING_LIMITATIONS = [
-  'cardiovascular', // Heart rate restrictions, BP concerns
-  'musculoskeletal', // Joint issues, injury recovery
-  'respiratory', // Breathing limitations, asthma
-  'metabolic', // Blood sugar management needs
-  'neurological', // Balance, coordination considerations
-  'recovery', // Post-surgery, post-illness restrictions
-  'medication', // Exercise timing around medications
-  'other', // Other considerations
+  "cardiovascular", // Heart rate restrictions, BP concerns
+  "musculoskeletal", // Joint issues, injury recovery
+  "respiratory", // Breathing limitations, asthma
+  "metabolic", // Blood sugar management needs
+  "neurological", // Balance, coordination considerations
+  "recovery", // Post-surgery, post-illness restrictions
+  "medication", // Exercise timing around medications
+  "other", // Other considerations
 ] as const;
 export type TrainingLimitation = (typeof TRAINING_LIMITATIONS)[number];
 
@@ -687,14 +693,14 @@ export const TrainingLimitationSchema = z.enum(TRAINING_LIMITATIONS);
 
 /** Human-readable labels for training limitations */
 export const TRAINING_LIMITATION_LABELS: Record<TrainingLimitation, string> = {
-  cardiovascular: 'Cardiovascular',
-  musculoskeletal: 'Musculoskeletal',
-  respiratory: 'Respiratory',
-  metabolic: 'Metabolic',
-  neurological: 'Neurological',
-  recovery: 'Recovery Period',
-  medication: 'Medication Timing',
-  other: 'Other',
+  cardiovascular: "Cardiovascular",
+  musculoskeletal: "Musculoskeletal",
+  respiratory: "Respiratory",
+  metabolic: "Metabolic",
+  neurological: "Neurological",
+  recovery: "Recovery Period",
+  medication: "Medication Timing",
+  other: "Other",
 };
 
 /**
@@ -703,13 +709,15 @@ export const TRAINING_LIMITATION_LABELS: Record<TrainingLimitation, string> = {
 export const TrainingLimitationDetailSchema = z.object({
   category: TrainingLimitationSchema,
   description: z.string(), // e.g., "Avoid overhead pressing - shoulder impingement"
-  severity: z.enum(['caution', 'avoid', 'monitor']),
+  severity: z.enum(["caution", "avoid", "monitor"]),
   expiresAt: z.string().nullable(), // ISO timestamp - null means ongoing
   addedAt: z.string(), // ISO timestamp
   addedBy: z.string(), // Clinician name (not ID - trainers don't need that)
 });
 
-export type TrainingLimitationDetail = z.infer<typeof TrainingLimitationDetailSchema>;
+export type TrainingLimitationDetail = z.infer<
+  typeof TrainingLimitationDetailSchema
+>;
 
 /**
  * Schema for training-relevant heart rate zones
@@ -767,7 +775,9 @@ export const TrainingRelevantSummarySchema = z.object({
   lastUpdatedBy: z.string(), // Clinician name
 });
 
-export type TrainingRelevantSummary = z.infer<typeof TrainingRelevantSummarySchema>;
+export type TrainingRelevantSummary = z.infer<
+  typeof TrainingRelevantSummarySchema
+>;
 
 // ============================================================================
 // TIME TO FIRST VICTORY
@@ -813,7 +823,10 @@ export type CreditUtilization = z.infer<typeof CreditUtilizationSchema>;
  * Schema for AI analytics query request
  */
 export const AIQueryRequestSchema = z.object({
-  query: z.string().min(1, 'Query is required').max(500, 'Query must be 500 characters or less'),
+  query: z
+    .string()
+    .min(1, "Query is required")
+    .max(500, "Query must be 500 characters or less"),
 });
 
 export type AIQueryRequest = z.infer<typeof AIQueryRequestSchema>;
@@ -849,24 +862,24 @@ export type AIQueryResponse = z.infer<typeof AIQueryResponseSchema>;
 // AI CHAT SESSION (for Smart Assist conversational interface)
 // ============================================================================
 
-/** Message role in AI chat */
-export const AI_CHAT_ROLES = ['user', 'assistant'] as const;
+/** Message role in AI chat — matches Prisma AIChatRole enum (USER | ASSISTANT) */
+export const AI_CHAT_ROLES = ["USER", "ASSISTANT"] as const;
 export type AIChatRole = (typeof AI_CHAT_ROLES)[number];
 export const AIChatRoleSchema = z.enum(AI_CHAT_ROLES);
 
 /** Supported file types for AI chat attachments */
 export const AI_CHAT_FILE_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-  'application/pdf',
-  'text/plain',
-  'text/csv',
-  'text/markdown',
-  'application/json',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // xlsx
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "application/pdf",
+  "text/plain",
+  "text/csv",
+  "text/markdown",
+  "application/json",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // xlsx
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // docx
 ] as const;
 export type AIChatFileType = (typeof AI_CHAT_FILE_TYPES)[number];
 
@@ -941,7 +954,9 @@ export const AIChatSessionWithMessagesSchema = AIChatSessionSchema.extend({
   messages: z.array(AIChatMessageSchema),
 });
 
-export type AIChatSessionWithMessages = z.infer<typeof AIChatSessionWithMessagesSchema>;
+export type AIChatSessionWithMessages = z.infer<
+  typeof AIChatSessionWithMessagesSchema
+>;
 
 /**
  * Request to send a message in a chat session
@@ -952,14 +967,21 @@ export const AIChatSendMessageRequestSchema = z.object({
   /** Message content */
   content: z.string().min(1).max(2000),
   /** File attachments (base64 encoded) */
-  attachments: z.array(z.object({
-    filename: z.string(),
-    mimeType: z.string(),
-    base64: z.string(),
-  })).max(5).optional(),
+  attachments: z
+    .array(
+      z.object({
+        filename: z.string(),
+        mimeType: z.string(),
+        base64: z.string(),
+      }),
+    )
+    .max(5)
+    .optional(),
 });
 
-export type AIChatSendMessageRequest = z.infer<typeof AIChatSendMessageRequestSchema>;
+export type AIChatSendMessageRequest = z.infer<
+  typeof AIChatSendMessageRequestSchema
+>;
 
 /**
  * Response from sending a message
@@ -973,7 +995,9 @@ export const AIChatSendMessageResponseSchema = z.object({
   assistantMessage: AIChatMessageSchema,
 });
 
-export type AIChatSendMessageResponse = z.infer<typeof AIChatSendMessageResponseSchema>;
+export type AIChatSendMessageResponse = z.infer<
+  typeof AIChatSendMessageResponseSchema
+>;
 
 /**
  * List sessions response
@@ -1037,7 +1061,7 @@ export const ReferralNodeSchema: z.ZodType<ReferralNode> = z.lazy(() =>
     leadStage: LeadStageSchema.nullable(),
     joinedAt: z.string(),
     referrals: z.array(ReferralNodeSchema),
-  })
+  }),
 );
 
 /**
@@ -1049,13 +1073,15 @@ export const ReferralTreeSchema = z.object({
   /** Total number of referrers with at least 1 referral */
   totalReferrers: z.number().int(),
   /** VIP referrers (3+ direct referrals) */
-  vipReferrers: z.array(z.object({
-    id: z.string(),
-    name: z.string(),
-    directReferralCount: z.number().int(),
-    totalReferralCount: z.number().int(),
-    tier: z.string().nullable(),
-  })),
+  vipReferrers: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      directReferralCount: z.number().int(),
+      totalReferralCount: z.number().int(),
+      tier: z.string().nullable(),
+    }),
+  ),
   /** Max depth of referral chains */
   maxDepth: z.number().int(),
 });

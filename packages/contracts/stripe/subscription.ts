@@ -7,22 +7,22 @@
  * deps: zod, domain/user | consumers: server routes, web-admin
  */
 
-import { z } from 'zod';
-import { USER_TIERS } from '../domain/user';
+import { z } from "zod";
+import { USER_TIERS, type UserTier } from "../domain/user";
 
 // ============================================================================
 // SUBSCRIPTION STATUS
 // ============================================================================
 
 export const SUBSCRIPTION_STATUSES = [
-  'PENDING',
-  'TRIAL',
-  'ACTIVE',
-  'PAUSED',
-  'PAST_DUE',
-  'CANCELED',
-  'TERMINATED',
-  'SUSPENDED',
+  "PENDING",
+  "TRIAL",
+  "ACTIVE",
+  "PAUSED",
+  "PAST_DUE",
+  "CANCELED",
+  "TERMINATED",
+  "SUSPENDED",
 ] as const;
 
 export type SubscriptionStatus = (typeof SUBSCRIPTION_STATUSES)[number];
@@ -31,14 +31,14 @@ export const SubscriptionStatusSchema = z.enum(SUBSCRIPTION_STATUSES);
 
 /** Lookup object for subscription statuses (avoids magic strings) */
 export const SUBSCRIPTION_STATUS = {
-  PENDING: 'PENDING',
-  TRIAL: 'TRIAL',
-  ACTIVE: 'ACTIVE',
-  PAUSED: 'PAUSED',
-  PAST_DUE: 'PAST_DUE',
-  CANCELED: 'CANCELED',
-  TERMINATED: 'TERMINATED',
-  SUSPENDED: 'SUSPENDED',
+  PENDING: "PENDING",
+  TRIAL: "TRIAL",
+  ACTIVE: "ACTIVE",
+  PAUSED: "PAUSED",
+  PAST_DUE: "PAST_DUE",
+  CANCELED: "CANCELED",
+  TERMINATED: "TERMINATED",
+  SUSPENDED: "SUSPENDED",
 } as const satisfies Record<SubscriptionStatus, SubscriptionStatus>;
 
 // ============================================================================
@@ -51,29 +51,29 @@ export const SUBSCRIPTION_STATUS = {
  * @see https://docs.stripe.com/api/subscription_schedules/object#subscription_schedule_object-status
  */
 export const STRIPE_SCHEDULE_STATUSES = [
-  'not_started',
-  'active',
-  'completed',
-  'released',
-  'canceled',
+  "not_started",
+  "active",
+  "completed",
+  "released",
+  "canceled",
 ] as const;
 
 export type StripeScheduleStatus = (typeof STRIPE_SCHEDULE_STATUSES)[number];
 
 /** Lookup object for Stripe subscription schedule statuses */
 export const STRIPE_SCHEDULE_STATUS = {
-  NOT_STARTED: 'not_started',
-  ACTIVE: 'active',
-  COMPLETED: 'completed',
-  RELEASED: 'released',
-  CANCELED: 'canceled',
+  NOT_STARTED: "not_started",
+  ACTIVE: "active",
+  COMPLETED: "completed",
+  RELEASED: "released",
+  CANCELED: "canceled",
 } as const satisfies Record<string, StripeScheduleStatus>;
 
 // ============================================================================
 // CONTRACT DURATION
 // ============================================================================
 
-export const CONTRACT_DURATIONS = ['MONTH_4', 'MONTH_8', 'MONTH_12'] as const;
+export const CONTRACT_DURATIONS = ["MONTH_4", "MONTH_8", "MONTH_12"] as const;
 
 export type ContractDuration = (typeof CONTRACT_DURATIONS)[number];
 
@@ -97,7 +97,7 @@ export const CONTRACT_DURATION_DISCOUNTS: Record<ContractDuration, number> = {
 // BILLING SOURCE
 // ============================================================================
 
-export const BILLING_SOURCES = ['DIRECT', 'ORGANIZATION'] as const;
+export const BILLING_SOURCES = ["DIRECT", "ORGANIZATION"] as const;
 
 export type BillingSource = (typeof BILLING_SOURCES)[number];
 
@@ -116,13 +116,13 @@ export interface SubscriptionContract {
   stripeCustomerId: string;
 
   // Membership
-  tier: string; // UserTier
+  tier: UserTier;
   status: SubscriptionStatus;
 
   // Contract
   contractDuration: ContractDuration;
   contractStartDate: string; // ISO date
-  contractEndDate: string;   // ISO date
+  contractEndDate: string; // ISO date
   discountPercent: number;
 
   // Billing
@@ -152,7 +152,7 @@ export interface SubscriptionContract {
   cancelEffectiveDate: string | null;
 
   // Scheduled changes
-  scheduledTierChange: string | null;
+  scheduledTierChange: UserTier | null;
   tierChangeEffectiveDate: string | null;
 
   // Contract document
@@ -164,7 +164,8 @@ export interface SubscriptionContract {
 
 export const SubscriptionSchema: z.ZodType<SubscriptionContract> = z.object({
   id: z.string().uuid(),
-  userId: z.string().uuid(),
+  /** userId uses HH-XXXXXX barcode format, not UUID */
+  userId: z.string().min(1),
   stripeSubscriptionId: z.string(),
   stripeCustomerId: z.string(),
   tier: z.enum(USER_TIERS),
@@ -189,7 +190,7 @@ export const SubscriptionSchema: z.ZodType<SubscriptionContract> = z.object({
   isCanceled: z.boolean(),
   canceledAt: z.string().nullable(),
   cancelEffectiveDate: z.string().nullable(),
-  scheduledTierChange: z.string().nullable(),
+  scheduledTierChange: z.enum(USER_TIERS).nullable(),
   tierChangeEffectiveDate: z.string().nullable(),
   signedContractKey: z.string().nullable(),
   createdAt: z.string(),
@@ -202,7 +203,7 @@ export const SubscriptionSchema: z.ZodType<SubscriptionContract> = z.object({
 
 export interface CreateSubscriptionRequest {
   userId: string;
-  tier: string; // UserTier
+  tier: UserTier;
   contractDuration: ContractDuration;
   billingSource?: BillingSource;
   billingOrganizationId?: string;
@@ -210,10 +211,11 @@ export interface CreateSubscriptionRequest {
 }
 
 export const CreateSubscriptionRequestSchema = z.object({
-  userId: z.string().uuid(),
+  /** userId uses HH-XXXXXX barcode format, not UUID */
+  userId: z.string().min(1),
   tier: z.enum(USER_TIERS),
   contractDuration: ContractDurationSchema,
-  billingSource: BillingSourceSchema.optional().default('DIRECT'),
+  billingSource: BillingSourceSchema.optional().default("DIRECT"),
   billingOrganizationId: z.string().uuid().optional(),
   paymentMethodId: z.string().optional(),
 });
@@ -259,7 +261,7 @@ export const PauseSubscriptionRequestSchema = z.object({
 // ============================================================================
 
 export interface TierChangeRequest {
-  newTier: string; // UserTier
+  newTier: UserTier;
   effectiveDate?: string; // For downgrades, must be at least 7 days before billing
 }
 

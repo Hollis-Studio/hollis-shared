@@ -134,7 +134,7 @@ export async function validatePasswordStrength(
   if (!basicResult.success) {
     return {
       valid: false,
-      error: basicResult.error.errors[0]?.message ?? 'Invalid password',
+      error: basicResult.error.issues[0]?.message ?? 'Invalid password',
     };
   }
 
@@ -280,7 +280,7 @@ export async function validatePassword(
   if (!basicResult.success) {
     return {
       valid: false,
-      error: basicResult.error.errors[0]?.message ?? 'Invalid password',
+      error: basicResult.error.issues[0]?.message ?? 'Invalid password',
     };
   }
 

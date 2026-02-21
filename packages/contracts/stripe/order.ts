@@ -4,19 +4,19 @@
  * deps: zod | consumers: server routes, web-admin, web-public
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // FULFILLMENT STATUS
 // ============================================================================
 
 export const FULFILLMENT_STATUSES = [
-  'PENDING',
-  'PROCESSING',
-  'SHIPPED',
-  'DELIVERED',
-  'CANCELLED',
-  'RETURNED',
+  "PENDING",
+  "PROCESSING",
+  "SHIPPED",
+  "DELIVERED",
+  "CANCELLED",
+  "RETURNED",
 ] as const;
 
 export type FulfillmentStatus = (typeof FULFILLMENT_STATUSES)[number];
@@ -110,7 +110,8 @@ export interface OrderContract {
 
 export const OrderSchema: z.ZodType<OrderContract> = z.object({
   id: z.string().uuid(),
-  userId: z.string().uuid().nullable(),
+  /** userId uses HH-XXXXXX barcode format, not UUID */
+  userId: z.string().min(1).nullable(),
   customerEmail: z.string().email(),
   customerName: z.string().nullable(),
   subtotalInCents: z.number().int(),

@@ -8,7 +8,8 @@
  * See: server/src/lib/tenantContext.ts for enforcement mechanism.
  */
 
-import { z } from 'zod';
+import { z } from "zod";
+import { SubscriptionStatusSchema } from "../stripe/subscription";
 
 // ============================================================================
 // Organization Status
@@ -22,7 +23,12 @@ import { z } from 'zod';
  * - ARCHIVED: Soft-deleted - no access
  * - ONBOARDING: New org being set up - limited access
  */
-export const ORGANIZATION_STATUSES = ['ACTIVE', 'SUSPENDED', 'ARCHIVED', 'ONBOARDING'] as const;
+export const ORGANIZATION_STATUSES = [
+  "ACTIVE",
+  "SUSPENDED",
+  "ARCHIVED",
+  "ONBOARDING",
+] as const;
 
 export type OrganizationStatus = (typeof ORGANIZATION_STATUSES)[number];
 
@@ -30,20 +36,20 @@ export type OrganizationStatus = (typeof ORGANIZATION_STATUSES)[number];
  * @deprecated Use ORGANIZATION_STATUSES array directly. Kept for backward compatibility.
  */
 export const ORGANIZATION_STATUS = {
-  ACTIVE: 'ACTIVE',
-  SUSPENDED: 'SUSPENDED',
-  ARCHIVED: 'ARCHIVED',
-  ONBOARDING: 'ONBOARDING',
+  ACTIVE: "ACTIVE",
+  SUSPENDED: "SUSPENDED",
+  ARCHIVED: "ARCHIVED",
+  ONBOARDING: "ONBOARDING",
 } as const satisfies Record<string, OrganizationStatus>;
 
 /**
  * Display labels for organization statuses.
  */
 export const ORGANIZATION_STATUS_LABELS: Record<OrganizationStatus, string> = {
-  [ORGANIZATION_STATUS.ACTIVE]: 'Active',
-  [ORGANIZATION_STATUS.SUSPENDED]: 'Suspended',
-  [ORGANIZATION_STATUS.ARCHIVED]: 'Archived',
-  [ORGANIZATION_STATUS.ONBOARDING]: 'Onboarding',
+  [ORGANIZATION_STATUS.ACTIVE]: "Active",
+  [ORGANIZATION_STATUS.SUSPENDED]: "Suspended",
+  [ORGANIZATION_STATUS.ARCHIVED]: "Archived",
+  [ORGANIZATION_STATUS.ONBOARDING]: "Onboarding",
 };
 
 /**
@@ -63,22 +69,26 @@ export const OrganizationBillingInfoSchema = z.object({
   billingEmail: z.string().email().optional(),
   stripeCustomerId: z.string().optional(),
   subscriptionId: z.string().optional(),
-  subscriptionStatus: z.string().optional(),
+  subscriptionStatus: SubscriptionStatusSchema.optional(),
 });
 
-export type OrganizationBillingInfo = z.infer<typeof OrganizationBillingInfoSchema>;
+export type OrganizationBillingInfo = z.infer<
+  typeof OrganizationBillingInfoSchema
+>;
 
 /**
  * Organization settings schema.
  */
 export const OrganizationSettingsSchema = z.object({
-  timezone: z.string().default('America/Chicago'),
-  locale: z.string().default('en-US'),
+  timezone: z.string().default("America/Chicago"),
+  locale: z.string().default("en-US"),
   features: z.array(z.string()).default([]),
-  branding: z.object({
-    primaryColor: z.string().optional(),
-    logoUrl: z.string().url().optional(),
-  }).optional(),
+  branding: z
+    .object({
+      primaryColor: z.string().optional(),
+      logoUrl: z.string().url().optional(),
+    })
+    .optional(),
 });
 
 export type OrganizationSettings = z.infer<typeof OrganizationSettingsSchema>;
@@ -92,7 +102,7 @@ export const OrganizationAddressSchema = z.object({
   city: z.string().optional(),
   state: z.string().optional(),
   postalCode: z.string().optional(),
-  country: z.string().default('US'),
+  country: z.string().default("US"),
 });
 
 export type OrganizationAddress = z.infer<typeof OrganizationAddressSchema>;
@@ -102,7 +112,11 @@ export type OrganizationAddress = z.infer<typeof OrganizationAddressSchema>;
  */
 export const OrganizationSchema = z.object({
   id: z.string().uuid(),
-  slug: z.string().min(3).max(50).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
+  slug: z
+    .string()
+    .min(3)
+    .max(50)
+    .regex(/^[a-z0-9-]+$/, "Slug must be lowercase alphanumeric with hyphens"),
   name: z.string().min(1).max(255),
   status: OrganizationStatusSchema,
   billingInfo: OrganizationBillingInfoSchema.nullable().optional(),
@@ -120,7 +134,11 @@ export type Organization = z.infer<typeof OrganizationSchema>;
  * Create organization request schema.
  */
 export const CreateOrganizationRequestSchema = z.object({
-  slug: z.string().min(3).max(50).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with hyphens'),
+  slug: z
+    .string()
+    .min(3)
+    .max(50)
+    .regex(/^[a-z0-9-]+$/, "Slug must be lowercase alphanumeric with hyphens"),
   name: z.string().min(1).max(255),
   contactEmail: z.string().email().optional(),
   contactPhone: z.string().optional(),
@@ -128,7 +146,9 @@ export const CreateOrganizationRequestSchema = z.object({
   address: OrganizationAddressSchema.optional(),
 });
 
-export type CreateOrganizationRequest = z.infer<typeof CreateOrganizationRequestSchema>;
+export type CreateOrganizationRequest = z.infer<
+  typeof CreateOrganizationRequestSchema
+>;
 
 /**
  * Update organization request schema.
@@ -143,7 +163,9 @@ export const UpdateOrganizationRequestSchema = z.object({
   billingInfo: OrganizationBillingInfoSchema.partial().optional(),
 });
 
-export type UpdateOrganizationRequest = z.infer<typeof UpdateOrganizationRequestSchema>;
+export type UpdateOrganizationRequest = z.infer<
+  typeof UpdateOrganizationRequestSchema
+>;
 
 /**
  * Organization summary (for lists, dropdowns).

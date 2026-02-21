@@ -14,8 +14,8 @@
  * deps: zod | consumers: all codebases
  */
 
-import { z } from 'zod';
-import { foodLogEntrySchema } from '../schemas/json-blobs';
+import { z } from "zod";
+import { foodLogEntrySchema } from "../schemas/json-blobs";
 
 // Note: foodLogEntrySchema and FoodLogEntryContract are used internally but NOT re-exported
 // to avoid duplicate export errors in barrel files. Import them from @hollis/contracts/schemas.
@@ -28,13 +28,13 @@ import { foodLogEntrySchema } from '../schemas/json-blobs';
  * Valid meal type values for nutrition logging.
  */
 export const MEAL_TYPES = [
-  'breakfast',
-  'lunch',
-  'dinner',
-  'snack',
-  'pre_workout',
-  'post_workout',
-  'other',
+  "breakfast",
+  "lunch",
+  "dinner",
+  "snack",
+  "pre_workout",
+  "post_workout",
+  "other",
 ] as const;
 
 export type MealType = (typeof MEAL_TYPES)[number];
@@ -43,28 +43,31 @@ export const MealTypeSchema = z.enum(MEAL_TYPES);
 
 /** Centralized meal type constants for equality checks */
 export const MEAL_TYPE = {
-  BREAKFAST: 'breakfast' as MealType,
-  LUNCH: 'lunch' as MealType,
-  DINNER: 'dinner' as MealType,
-  SNACK: 'snack' as MealType,
-  PRE_WORKOUT: 'pre_workout' as MealType,
-  POST_WORKOUT: 'post_workout' as MealType,
-  OTHER: 'other' as MealType,
+  BREAKFAST: "breakfast" as MealType,
+  LUNCH: "lunch" as MealType,
+  DINNER: "dinner" as MealType,
+  SNACK: "snack" as MealType,
+  PRE_WORKOUT: "pre_workout" as MealType,
+  POST_WORKOUT: "post_workout" as MealType,
+  OTHER: "other" as MealType,
 } as const;
 
 /** Human-readable labels for meal types */
 export const MEAL_TYPE_LABELS: Record<MealType, string> = {
-  breakfast: 'Breakfast',
-  lunch: 'Lunch',
-  dinner: 'Dinner',
-  snack: 'Snack',
-  pre_workout: 'Pre-Workout',
-  post_workout: 'Post-Workout',
-  other: 'Other',
+  breakfast: "Breakfast",
+  lunch: "Lunch",
+  dinner: "Dinner",
+  snack: "Snack",
+  pre_workout: "Pre-Workout",
+  post_workout: "Post-Workout",
+  other: "Other",
 };
 
 /** Typical time ranges for meal types (24-hour format) */
-export const MEAL_TYPE_TIME_RANGES: Record<MealType, { start: number; end: number }> = {
+export const MEAL_TYPE_TIME_RANGES: Record<
+  MealType,
+  { start: number; end: number }
+> = {
   breakfast: { start: 5, end: 10 },
   lunch: { start: 11, end: 14 },
   dinner: { start: 17, end: 21 },
@@ -98,18 +101,24 @@ export function getMealTypeLabel(type: string): string {
 /**
  * Where a meal was consumed.
  */
-export const LOCATION_TYPES = ['home', 'restaurant', 'work', 'travel', 'social_event'] as const;
+export const LOCATION_TYPES = [
+  "home",
+  "restaurant",
+  "work",
+  "travel",
+  "social_event",
+] as const;
 export type LocationType = (typeof LOCATION_TYPES)[number];
 
 export const LocationTypeSchema = z.enum(LOCATION_TYPES);
 
 /** Human-readable labels for location types */
 export const LOCATION_TYPE_LABELS: Record<LocationType, string> = {
-  home: 'Home',
-  restaurant: 'Restaurant',
-  work: 'Work',
-  travel: 'Travel',
-  social_event: 'Social Event',
+  home: "Home",
+  restaurant: "Restaurant",
+  work: "Work",
+  travel: "Travel",
+  social_event: "Social Event",
 };
 
 // ============================================================================
@@ -119,18 +128,24 @@ export const LOCATION_TYPE_LABELS: Record<LocationType, string> = {
 /**
  * Self-reported digestion quality after a meal.
  */
-export const DIGESTION_QUALITIES = ['excellent', 'good', 'normal', 'poor', 'very_poor'] as const;
+export const DIGESTION_QUALITIES = [
+  "excellent",
+  "good",
+  "normal",
+  "poor",
+  "very_poor",
+] as const;
 export type DigestionQuality = (typeof DIGESTION_QUALITIES)[number];
 
 export const DigestionQualitySchema = z.enum(DIGESTION_QUALITIES);
 
 /** Human-readable labels for digestion quality */
 export const DIGESTION_QUALITY_LABELS: Record<DigestionQuality, string> = {
-  excellent: 'Excellent',
-  good: 'Good',
-  normal: 'Normal',
-  poor: 'Poor',
-  very_poor: 'Very Poor',
+  excellent: "Excellent",
+  good: "Good",
+  normal: "Normal",
+  poor: "Poor",
+  very_poor: "Very Poor",
 };
 
 // ============================================================================
@@ -140,18 +155,24 @@ export const DIGESTION_QUALITY_LABELS: Record<DigestionQuality, string> = {
 /**
  * Self-reported energy level.
  */
-export const ENERGY_LEVELS = ['very_low', 'low', 'normal', 'high', 'very_high'] as const;
+export const ENERGY_LEVELS = [
+  "very_low",
+  "low",
+  "normal",
+  "high",
+  "very_high",
+] as const;
 export type EnergyLevel = (typeof ENERGY_LEVELS)[number];
 
 export const EnergyLevelSchema = z.enum(ENERGY_LEVELS);
 
 /** Human-readable labels for energy levels */
 export const ENERGY_LEVEL_LABELS: Record<EnergyLevel, string> = {
-  very_low: 'Very Low',
-  low: 'Low',
-  normal: 'Normal',
-  high: 'High',
-  very_high: 'Very High',
+  very_low: "Very Low",
+  low: "Low",
+  normal: "Normal",
+  high: "High",
+  very_high: "Very High",
 };
 
 // ============================================================================
@@ -161,18 +182,24 @@ export const ENERGY_LEVEL_LABELS: Record<EnergyLevel, string> = {
 /**
  * Self-reported mood level.
  */
-export const MOOD_LEVELS = ['very_negative', 'negative', 'neutral', 'positive', 'very_positive'] as const;
+export const MOOD_LEVELS = [
+  "very_negative",
+  "negative",
+  "neutral",
+  "positive",
+  "very_positive",
+] as const;
 export type MoodLevel = (typeof MOOD_LEVELS)[number];
 
 export const MoodLevelSchema = z.enum(MOOD_LEVELS);
 
 /** Human-readable labels for mood levels */
 export const MOOD_LEVEL_LABELS: Record<MoodLevel, string> = {
-  very_negative: 'Very Negative',
-  negative: 'Negative',
-  neutral: 'Neutral',
-  positive: 'Positive',
-  very_positive: 'Very Positive',
+  very_negative: "Very Negative",
+  negative: "Negative",
+  neutral: "Neutral",
+  positive: "Positive",
+  very_positive: "Very Positive",
 };
 
 // ============================================================================
@@ -182,20 +209,28 @@ export const MOOD_LEVEL_LABELS: Record<MoodLevel, string> = {
 /**
  * How food was prepared.
  */
-export const PREPARATION_METHODS = ['raw', 'boiled', 'fried', 'baked', 'grilled', 'steamed', 'roasted'] as const;
+export const PREPARATION_METHODS = [
+  "raw",
+  "boiled",
+  "fried",
+  "baked",
+  "grilled",
+  "steamed",
+  "roasted",
+] as const;
 export type PreparationMethod = (typeof PREPARATION_METHODS)[number];
 
 export const PreparationMethodSchema = z.enum(PREPARATION_METHODS);
 
 /** Human-readable labels for preparation methods */
 export const PREPARATION_METHOD_LABELS: Record<PreparationMethod, string> = {
-  raw: 'Raw',
-  boiled: 'Boiled',
-  fried: 'Fried',
-  baked: 'Baked',
-  grilled: 'Grilled',
-  steamed: 'Steamed',
-  roasted: 'Roasted',
+  raw: "Raw",
+  boiled: "Boiled",
+  fried: "Fried",
+  baked: "Baked",
+  grilled: "Grilled",
+  steamed: "Steamed",
+  roasted: "Roasted",
 };
 
 // ============================================================================
@@ -205,21 +240,30 @@ export const PREPARATION_METHOD_LABELS: Record<PreparationMethod, string> = {
 /**
  * Units for measuring food quantities.
  */
-export const FOOD_UNITS = ['grams', 'ounces', 'cups', 'tablespoons', 'teaspoons', 'servings', 'milliliters', 'liters'] as const;
+export const FOOD_UNITS = [
+  "grams",
+  "ounces",
+  "cups",
+  "tablespoons",
+  "teaspoons",
+  "servings",
+  "milliliters",
+  "liters",
+] as const;
 export type FoodUnit = (typeof FOOD_UNITS)[number];
 
 export const FoodUnitSchema = z.enum(FOOD_UNITS);
 
 /** Human-readable labels for food units */
 export const FOOD_UNIT_LABELS: Record<FoodUnit, string> = {
-  grams: 'Grams',
-  ounces: 'Ounces',
-  cups: 'Cups',
-  tablespoons: 'Tablespoons',
-  teaspoons: 'Teaspoons',
-  servings: 'Servings',
-  milliliters: 'Milliliters',
-  liters: 'Liters',
+  grams: "Grams",
+  ounces: "Ounces",
+  cups: "Cups",
+  tablespoons: "Tablespoons",
+  teaspoons: "Teaspoons",
+  servings: "Servings",
+  milliliters: "Milliliters",
+  liters: "Liters",
 };
 
 // ============================================================================
@@ -241,11 +285,13 @@ export const EMPTY_MACRO_SHORTHAND: MacroShorthand = { p: 0, c: 0, f: 0 };
  * Parse totalMacros from database (JSON string or object).
  * Handles both string and object inputs for backwards compatibility.
  */
-export function parseMacroShorthand(value: string | MacroShorthand | null | undefined): MacroShorthand {
+export function parseMacroShorthand(
+  value: string | MacroShorthand | null | undefined,
+): MacroShorthand {
   if (!value) return { ...EMPTY_MACRO_SHORTHAND };
 
   const parsedValue = (() => {
-    if (typeof value !== 'string') return value;
+    if (typeof value !== "string") return value;
     try {
       return JSON.parse(value);
     } catch {
@@ -287,7 +333,9 @@ export const NutritionMacroBreakdownSchema = z.object({
   sodium: z.number().min(0).optional(),
 });
 
-export type NutritionMacroBreakdown = z.infer<typeof NutritionMacroBreakdownSchema>;
+export type NutritionMacroBreakdown = z.infer<
+  typeof NutritionMacroBreakdownSchema
+>;
 
 // ============================================================================
 // NUTRITION PORTION CONTRACT
@@ -349,11 +397,11 @@ export type MealLogContract = z.infer<typeof MealLogSchema>;
 export const DailyNutritionLogSchema = z.object({
   id: z.string().optional(),
   userId: z.string(),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be YYYY-MM-DD format'),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD format"),
   timezone: z.string(),
   meals: z.array(MealLogSchema),
   totals: NutritionMacroBreakdownSchema,
-  hydrationMl: z.number().min(0).optional(),
+  hydrationMl: z.number().int().min(0).optional(),
   supplements: z.array(z.string()).optional(),
   foodEntries: z.record(z.string(), z.array(foodLogEntrySchema)).optional(),
   isVerified: z.boolean(),
@@ -398,6 +446,39 @@ export interface FoodItemContract {
   foodGroup?: string;
   tags?: string[];
 }
+
+export const FoodItemSchema = z.object({
+  name: z.string().min(1),
+  brand: z.string().optional(),
+  barcode: z.string().optional(),
+  calories: z.number().int().min(0),
+  protein: z.number().min(0),
+  carbs: z.number().min(0),
+  fat: z.number().min(0),
+  fiber: z.number().min(0).optional(),
+  sugar: z.number().min(0).optional(),
+  addedSugar: z.number().min(0).optional(),
+  sugarAlcohols: z.number().min(0).optional(),
+  starch: z.number().min(0).optional(),
+  saturatedFat: z.number().min(0).optional(),
+  transFat: z.number().min(0).optional(),
+  monounsaturatedFat: z.number().min(0).optional(),
+  polyunsaturatedFat: z.number().min(0).optional(),
+  omega3: z.number().min(0).optional(),
+  omega6: z.number().min(0).optional(),
+  cholesterol: z.number().min(0).optional(),
+  vitamins: z.record(z.string(), z.number()).optional(),
+  minerals: z.record(z.string(), z.number()).optional(),
+  alcohol: z.number().min(0).optional(),
+  caffeine: z.number().min(0).optional(),
+  water: z.number().min(0).optional(),
+  portionWeightG: z.number().min(0).optional(),
+  glycemicIndex: z.number().min(0).max(100).optional(),
+  glycemicLoad: z.number().min(0).optional(),
+  foodGroup: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+});
+export type FoodItem = z.infer<typeof FoodItemSchema>;
 
 // ============================================================================
 // MICRONUTRIENTS
@@ -457,13 +538,13 @@ export type AIAnalysisResult = z.infer<typeof aiAnalysisResultSchema>;
 // SCHEMA ALIASES (backwards compatibility with camelCase names)
 // ============================================================================
 
-/** @deprecated Use NutritionMacroBreakdownSchema instead */
+/** @deprecated Use NutritionMacroBreakdownSchema instead. Remove after 2026-05-01 */
 export const macrosSchema = NutritionMacroBreakdownSchema;
 
-/** @deprecated Use MealContextSchema instead */
+/** @deprecated Use MealContextSchema instead. Remove after 2026-05-01 */
 export const mealContextSchema = MealContextSchema;
 
-/** @deprecated Use DailyNutritionLogSchema instead */
+/** @deprecated Use DailyNutritionLogSchema instead. Remove after 2026-05-01 */
 export const dailyNutritionLogSchema = DailyNutritionLogSchema;
 
 // ============================================================================
@@ -473,7 +554,9 @@ export const dailyNutritionLogSchema = DailyNutritionLogSchema;
 /**
  * Sum macros across an array of portions.
  */
-export const sumMacros = (portions: NutritionPortionContract[]): NutritionMacroBreakdown =>
+export const sumMacros = (
+  portions: NutritionPortionContract[],
+): NutritionMacroBreakdown =>
   portions.reduce<NutritionMacroBreakdown>(
     (acc, portion) => ({
       calories: acc.calories + portion.macros.calories,
@@ -484,25 +567,46 @@ export const sumMacros = (portions: NutritionPortionContract[]): NutritionMacroB
       sugar: (acc.sugar ?? 0) + (portion.macros.sugar ?? 0),
       sodium: (acc.sodium ?? 0) + (portion.macros.sodium ?? 0),
     }),
-    { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0, sodium: 0 },
+    {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      sugar: 0,
+      sodium: 0,
+    },
   );
 
 /**
  * Aggregate daily totals across an array of meals.
  */
-export const aggregateDailyTotals = (meals: MealLogContract[]): NutritionMacroBreakdown =>
-  meals.reduce<NutritionMacroBreakdown>((acc, meal) => {
-    const mealTotals = sumMacros(meal.portions);
-    return {
-      calories: acc.calories + mealTotals.calories,
-      protein: acc.protein + mealTotals.protein,
-      carbs: acc.carbs + mealTotals.carbs,
-      fat: acc.fat + mealTotals.fat,
-      fiber: (acc.fiber ?? 0) + (mealTotals.fiber ?? 0),
-      sugar: (acc.sugar ?? 0) + (mealTotals.sugar ?? 0),
-      sodium: (acc.sodium ?? 0) + (mealTotals.sodium ?? 0),
-    };
-  }, { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sugar: 0, sodium: 0 });
+export const aggregateDailyTotals = (
+  meals: MealLogContract[],
+): NutritionMacroBreakdown =>
+  meals.reduce<NutritionMacroBreakdown>(
+    (acc, meal) => {
+      const mealTotals = sumMacros(meal.portions);
+      return {
+        calories: acc.calories + mealTotals.calories,
+        protein: acc.protein + mealTotals.protein,
+        carbs: acc.carbs + mealTotals.carbs,
+        fat: acc.fat + mealTotals.fat,
+        fiber: (acc.fiber ?? 0) + (mealTotals.fiber ?? 0),
+        sugar: (acc.sugar ?? 0) + (mealTotals.sugar ?? 0),
+        sodium: (acc.sodium ?? 0) + (mealTotals.sodium ?? 0),
+      };
+    },
+    {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      sugar: 0,
+      sodium: 0,
+    },
+  );
 
 // ============================================================================
 // MOCK FACTORIES
@@ -524,19 +628,19 @@ export const createMockNutritionMacroBreakdown = (
 export const createMockMealLog = (
   overrides: Partial<MealLogContract> = {},
 ): MealLogContract => ({
-  id: 'mock-meal-id',
-  mealType: 'lunch',
+  id: "mock-meal-id",
+  mealType: "lunch",
   loggedAt: nowIso(),
   portions: [
     {
-      id: 'mock-portion-id',
-      foodName: 'Grilled Chicken Salad',
+      id: "mock-portion-id",
+      foodName: "Grilled Chicken Salad",
       quantity: 1,
-      unit: 'servings',
+      unit: "servings",
       macros: createMockNutritionMacroBreakdown(),
     },
   ],
-  notes: 'Enjoyed at home',
+  notes: "Enjoyed at home",
   hungerLevel: 7,
   fullnessLevel: 8,
   ...overrides,
@@ -546,20 +650,19 @@ export const createMockNutritionPortion = (
   overrides: Partial<NutritionPortionContract> = {},
 ): NutritionPortionContract => ({
   id: overrides.id ?? `portion-${Math.random().toString(36).slice(2, 8)}`,
-  foodName: overrides.foodName ?? 'Greek Yogurt',
-  brand: overrides.brand ?? 'Chobani',
+  foodName: overrides.foodName ?? "Greek Yogurt",
+  brand: overrides.brand ?? "Chobani",
   quantity: overrides.quantity ?? 1,
-  unit: overrides.unit ?? 'cup',
-  macros:
-    overrides.macros ?? {
-      calories: 140,
-      protein: 15,
-      carbs: 12,
-      fat: 4,
-      fiber: 0,
-      sugar: 7,
-      sodium: 65,
-    },
+  unit: overrides.unit ?? "cup",
+  macros: overrides.macros ?? {
+    calories: 140,
+    protein: 15,
+    carbs: 12,
+    fat: 4,
+    fiber: 0,
+    sugar: 7,
+    sodium: 65,
+  },
   photoUrl: overrides.photoUrl,
 });
 
@@ -570,14 +673,14 @@ export const createMockDailyNutritionLog = (
   const meals = overrides.meals ?? [createMockMealLog()];
   const totals = overrides.totals ?? aggregateDailyTotals(meals);
   return {
-    id: overrides.date ?? '2024-01-01',
-    userId: 'HH-ABC123',
-    date: '2024-01-01',
-    timezone: 'America/New_York',
+    id: overrides.date ?? "2024-01-01",
+    userId: "HH-ABC123",
+    date: "2024-01-01",
+    timezone: "America/New_York",
     meals,
     totals,
     hydrationMl: 2500,
-    supplements: ['Vitamin D', 'Fish Oil'],
+    supplements: ["Vitamin D", "Fish Oil"],
     isVerified: true,
     createdAt: timestamp,
     updatedAt: timestamp,

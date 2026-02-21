@@ -4,7 +4,7 @@
  * deps: zod | consumers: server routes, web-admin
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // SETUP INTENT
@@ -26,7 +26,7 @@ export const SetupIntentSchema = z.object({
 
 export interface PaymentMethodContract {
   id: string;
-  brand: string;       // visa, mastercard, amex, etc.
+  brand: string; // visa, mastercard, amex, etc.
   last4: string;
   expMonth: number;
   expYear: number;
@@ -56,10 +56,13 @@ export const PaymentMethodSchema = z.object({
  * @see https://stripe.com/docs/api/metadata
  */
 export const StripeMetadataSchema = z
-  .record(z.string().max(500, 'Metadata values must be 500 characters or less'))
+  .record(
+    z.string(),
+    z.string().max(500, "Metadata values must be 500 characters or less"),
+  )
   .refine(
     (data) => Object.keys(data).length <= 50,
-    'Metadata cannot have more than 50 keys'
+    "Metadata cannot have more than 50 keys",
   );
 
 export type StripeMetadata = z.infer<typeof StripeMetadataSchema>;
@@ -76,7 +79,8 @@ export interface CollectPaymentRequest {
 }
 
 export const CollectPaymentRequestSchema = z.object({
-  userId: z.string().uuid(),
+  /** userId uses HH-XXXXXX barcode format, not UUID */
+  userId: z.string().min(1),
   amountInCents: z.number().int().positive().max(500_000), // Max $5,000
   description: z.string(),
   metadata: StripeMetadataSchema.optional(),
@@ -101,14 +105,16 @@ export const StripeConfigSchema = z.object({
 export interface RefundRequest {
   paymentIntentId: string;
   amountInCents?: number; // Partial refund; omit for full
-  reason?: 'requested_by_customer' | 'duplicate' | 'fraudulent';
+  reason?: "requested_by_customer" | "duplicate" | "fraudulent";
   notes?: string;
 }
 
 export const RefundRequestSchema = z.object({
   paymentIntentId: z.string(),
   amountInCents: z.number().int().positive().max(500_000).optional(), // Max $5,000
-  reason: z.enum(['requested_by_customer', 'duplicate', 'fraudulent']).optional(),
+  reason: z
+    .enum(["requested_by_customer", "duplicate", "fraudulent"])
+    .optional(),
   notes: z.string().max(500).optional(),
 });
 

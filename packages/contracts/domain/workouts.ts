@@ -1,8 +1,9 @@
 /**
  * @ai-context Workout contracts | workout session, plan, and set schemas for training features
  */
-import { z } from 'zod';
-import { baseDocumentSchema, isoDateSchema } from './common';
+import { z } from "zod";
+import { baseDocumentSchema, isoDateSchema } from "./common";
+import { WeightUnitSchema } from "./units";
 
 // ============================================================================
 // WORKOUT SECTION TYPES
@@ -11,7 +12,7 @@ import { baseDocumentSchema, isoDateSchema } from './common';
 /**
  * Valid workout section types for training plans.
  */
-export const WORKOUT_SECTION_TYPES = ['warmup', 'working', 'cooldown'] as const;
+export const WORKOUT_SECTION_TYPES = ["warmup", "working", "cooldown"] as const;
 
 export type WorkoutSectionType = (typeof WORKOUT_SECTION_TYPES)[number];
 
@@ -19,22 +20,24 @@ export const WorkoutSectionTypeSchema = z.enum(WORKOUT_SECTION_TYPES);
 
 /** Centralized workout section type constants for equality checks */
 export const WORKOUT_SECTION_TYPE = {
-  WARMUP: 'warmup' as WorkoutSectionType,
-  WORKING: 'working' as WorkoutSectionType,
-  COOLDOWN: 'cooldown' as WorkoutSectionType,
+  WARMUP: "warmup" as WorkoutSectionType,
+  WORKING: "working" as WorkoutSectionType,
+  COOLDOWN: "cooldown" as WorkoutSectionType,
 } as const;
 
 /** Human-readable labels for workout section types */
 export const WORKOUT_SECTION_TYPE_LABELS: Record<WorkoutSectionType, string> = {
-  warmup: 'Warm-up',
-  working: 'Working Sets',
-  cooldown: 'Cool-down',
+  warmup: "Warm-up",
+  working: "Working Sets",
+  cooldown: "Cool-down",
 };
 
 /**
  * Check if a string is a valid workout section type
  */
-export function isWorkoutSectionType(value: string): value is WorkoutSectionType {
+export function isWorkoutSectionType(
+  value: string,
+): value is WorkoutSectionType {
   return (WORKOUT_SECTION_TYPES as readonly string[]).includes(value);
 }
 
@@ -46,6 +49,12 @@ export const workoutSetSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
   link: z.string().url().optional(),
+  reps: z.number().int().min(0).optional(),
+  weight: z.number().min(0).optional(),
+  weightUnit: WeightUnitSchema.optional(),
+  duration: z.number().int().min(0).optional(),
+  rpe: z.number().min(1).max(10).optional(),
+  restSeconds: z.number().int().min(0).optional(),
 });
 
 export type WorkoutSetContract = z.infer<typeof workoutSetSchema>;
@@ -63,7 +72,7 @@ export type WorkoutSectionContract = z.infer<typeof workoutSectionSchema>;
 
 export const workoutSessionSchema = z.object({
   id: z.string(),
-  dayOfWeek: z.number().min(0).max(6), // 0=Sunday, 1=Monday, etc.
+  dayOfWeek: z.number().int().min(0).max(6), // 0=Sunday, 1=Monday, etc.
   name: z.string(), // "Leg Day", "Rest", "Cardio"
   icon: z.string(), // Icon name for the UI
   sections: z.array(workoutSectionSchema),

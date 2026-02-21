@@ -39,11 +39,6 @@ import { z } from 'zod';
 export type NonEmptyTuple<T extends string = string> = readonly [T, ...T[]];
 
 /**
- * Writable version of a tuple for Zod compatibility.
- */
-type Writeable<T> = { -readonly [P in keyof T]: T[P] };
-
-/**
  * Options for creating an enum contract.
  */
 export interface EnumContractOptions<T extends NonEmptyTuple> {
@@ -69,7 +64,7 @@ export interface EnumContract<T extends NonEmptyTuple> {
   /** The source tuple of valid values */
   readonly values: T;
   /** Zod schema for validation */
-  readonly schema: z.ZodEnum<Writeable<T>>;
+  readonly schema: z.ZodEnum<{ [K in T[number] & string]: K }>;
   /** Constant object for equality checks (keys are UPPER_SNAKE_CASE) */
   readonly constants: { readonly [K in Uppercase<SnakeCase<T[number]>>]: T[number] };
   /** Human-readable labels for UI display */

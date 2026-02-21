@@ -9,7 +9,7 @@
  * deps: zod | consumers: server/src/services/*, src/features/documents/*, web-admin/services/*
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // DOCUMENT CATEGORIES (Domain Constants Pattern)
@@ -20,50 +20,59 @@ import { z } from 'zod';
  * These are used as tags when uploading and filtering documents.
  */
 export const DOCUMENT_CATEGORIES = [
-  'lab_result',
-  'insurance_card',
-  'medical_record',
-  'imaging',
-  'prescription',
-  'referral',
-  'consent_form',
-  'other',
+  "LAB_RESULT",
+  "INSURANCE_CARD",
+  "MEDICAL_RECORD",
+  "IMAGING",
+  "PRESCRIPTION",
+  "REFERRAL",
+  "CONSENT_FORM",
+  "ID_DOCUMENT",
+  "INTAKE_FORM",
+  "PROGRESS_PHOTO",
+  "OTHER",
 ] as const;
 
 /** Single document category type */
-export type DocumentCategory = typeof DOCUMENT_CATEGORIES[number];
+export type DocumentCategory = (typeof DOCUMENT_CATEGORIES)[number];
 
 /** Zod schema for document category validation - derived from tuple */
 export const DocumentCategorySchema = z.enum(DOCUMENT_CATEGORIES);
 
 /**
  * Document category constant object for type-safe access.
- * @example DOCUMENT_CATEGORY.LAB_RESULT // 'lab_result'
+ * @example DOCUMENT_CATEGORY.LAB_RESULT // 'LAB_RESULT'
  */
 export const DOCUMENT_CATEGORY = {
-  LAB_RESULT: 'lab_result' as DocumentCategory,
-  INSURANCE_CARD: 'insurance_card' as DocumentCategory,
-  MEDICAL_RECORD: 'medical_record' as DocumentCategory,
-  IMAGING: 'imaging' as DocumentCategory,
-  PRESCRIPTION: 'prescription' as DocumentCategory,
-  REFERRAL: 'referral' as DocumentCategory,
-  CONSENT_FORM: 'consent_form' as DocumentCategory,
-  OTHER: 'other' as DocumentCategory,
-} as const;
+  LAB_RESULT: "LAB_RESULT",
+  INSURANCE_CARD: "INSURANCE_CARD",
+  MEDICAL_RECORD: "MEDICAL_RECORD",
+  IMAGING: "IMAGING",
+  PRESCRIPTION: "PRESCRIPTION",
+  REFERRAL: "REFERRAL",
+  CONSENT_FORM: "CONSENT_FORM",
+  ID_DOCUMENT: "ID_DOCUMENT",
+  INTAKE_FORM: "INTAKE_FORM",
+  PROGRESS_PHOTO: "PROGRESS_PHOTO",
+  OTHER: "OTHER",
+} as const satisfies Record<string, DocumentCategory>;
 
 /**
  * Human-readable labels for document categories.
  * Used in dropdowns and display text.
  */
 export const DOCUMENT_CATEGORY_LABELS: Record<DocumentCategory, string> = {
-  lab_result: 'Lab Result',
-  insurance_card: 'Insurance Card',
-  medical_record: 'Medical Record',
-  imaging: 'Imaging',
-  prescription: 'Prescription',
-  referral: 'Referral',
-  consent_form: 'Consent Form',
-  other: 'Other',
+  LAB_RESULT: "Lab Result",
+  INSURANCE_CARD: "Insurance Card",
+  MEDICAL_RECORD: "Medical Record",
+  IMAGING: "Imaging",
+  PRESCRIPTION: "Prescription",
+  REFERRAL: "Referral",
+  CONSENT_FORM: "Consent Form",
+  ID_DOCUMENT: "ID Document",
+  INTAKE_FORM: "Intake Form",
+  PROGRESS_PHOTO: "Progress Photo",
+  OTHER: "Other",
 };
 
 /**
@@ -81,5 +90,5 @@ export function getDocumentCategoryLabel(category: string): string {
   if (category in DOCUMENT_CATEGORY_LABELS) {
     return DOCUMENT_CATEGORY_LABELS[category as DocumentCategory];
   }
-  return 'Other';
+  return "Other";
 }

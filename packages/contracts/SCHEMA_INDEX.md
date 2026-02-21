@@ -9,7 +9,7 @@
 ## How to Use This Index
 
 1. **API request/response validation** → See [API Request/Response Schemas](#api-requestresponse-schemas)
-2. **Domain enums and types** → See [Domain Schemas](#domain-schemas) 
+2. **Domain enums and types** → See [Domain Schemas](#domain-schemas)
 3. **Prisma JSON field validation** → See [JSON Blob Schemas](#json-blob-schemas)
 4. **Admin portal operations** → See [Admin Schemas](#admin-schemas)
 5. **AI/Agent function calls** → See [AI Schemas](#ai-schemas)
@@ -24,25 +24,25 @@
 
 Core validation schemas for HTTP request/response payloads.
 
-| Schema | Purpose | Prisma/API Reference |
-|--------|---------|---------------------|
-| `barcodeSchema` | Strict barcode format (HH-XXXXXX) | Barcode issuance |
-| `userIdSchema` | Permissive user ID format (HH-XXXXXX) | User ID validation |
-| `userIdParamSchema` | Route param with :userId | GET/PUT /users/:userId/* |
-| `dateParamSchema` | Route param with :date (ISO) | Routes with date params |
-| `userIdAndDateParamsSchema` | Combined :userId and :date | GET /users/:userId/logs/:date |
-| `dateRangeQuerySchema` | Query params for date ranges | ?startDate=&endDate= |
-| `paginationQuerySchema` | limit/offset query params | Paginated endpoints |
-| `userIdQuerySchema` | Query param for userId | ?userId= |
-| `loginBodySchema` | Login request body | POST /auth/login |
-| `refreshBodySchema` | Token refresh request | POST /auth/refresh |
-| `signupBodySchema` | Signup/registration request | POST /auth/signup |
-| `signupSexSchema` | Simplified sex options for signup | Registration forms |
-| `emailSchema` | Email validation | Various |
-| `legacyPasswordSchema` | Password validation (8 char min) | Legacy flows |
-| `uuidSchema` | UUID format validation | Various |
-| `phoneSchema` | International phone format | Various |
-| `urlSchema` | URL format validation | Various |
+| Schema                      | Purpose                               | Prisma/API Reference          |
+| --------------------------- | ------------------------------------- | ----------------------------- |
+| `barcodeSchema`             | Strict barcode format (HH-XXXXXX)     | Barcode issuance              |
+| `userIdSchema`              | Permissive user ID format (HH-XXXXXX) | User ID validation            |
+| `userIdParamSchema`         | Route param with :userId              | GET/PUT /users/:userId/\*     |
+| `dateParamSchema`           | Route param with :date (ISO)          | Routes with date params       |
+| `userIdAndDateParamsSchema` | Combined :userId and :date            | GET /users/:userId/logs/:date |
+| `dateRangeQuerySchema`      | Query params for date ranges          | ?startDate=&endDate=          |
+| `paginationQuerySchema`     | limit/offset query params             | Paginated endpoints           |
+| `userIdQuerySchema`         | Query param for userId                | ?userId=                      |
+| `loginBodySchema`           | Login request body                    | POST /auth/login              |
+| `refreshBodySchema`         | Token refresh request                 | POST /auth/refresh            |
+| `signupBodySchema`          | Signup/registration request           | POST /auth/signup             |
+| `signupSexSchema`           | Simplified sex options for signup     | Registration forms            |
+| `emailSchema`               | Email validation                      | Various                       |
+| `legacyPasswordSchema`      | Password validation (8 char min)      | Legacy flows                  |
+| `uuidSchema`                | UUID format validation                | Various                       |
+| `phoneSchema`               | International phone format            | Various                       |
+| `urlSchema`                 | URL format validation                 | Various                       |
 
 ---
 
@@ -51,219 +51,238 @@ Core validation schemas for HTTP request/response payloads.
 Domain-specific enum schemas live alongside their tuples/constants. Import from `@hollis/contracts` or the specific domain module.
 
 ### common.ts
-| Schema | Purpose |
-|--------|---------|
-| `isoDateSchema` | ISO date (YYYY-MM-DD) validation |
-| `isoTimestampSchema` | ISO 8601 timestamp validation |
+
+| Schema               | Purpose                                |
+| -------------------- | -------------------------------------- |
+| `isoDateSchema`      | ISO date (YYYY-MM-DD) validation       |
+| `isoTimestampSchema` | ISO 8601 timestamp validation          |
 | `baseDocumentSchema` | Base document with createdAt/updatedAt |
 
 ### user.ts
-| Schema | Purpose |
-|--------|---------|
-| `UserRoleSchema` | ADMIN, CLINICIAN, TRAINER, CLIENT |
-| `UserTierSchema` | ESSENTIALS, CORE, CONCIERGE |
-| `BiologicalSexSchema` | MALE, FEMALE, OTHER, PREFER_NOT_TO_SAY |
-| `ActivityLevelSchema` | SEDENTARY, LIGHT, MODERATE, ACTIVE, VERY_ACTIVE |
-| `PrimaryGoalSchema` | LOSE_WEIGHT, BUILD_MUSCLE, IMPROVE_HEALTH, etc. |
-| `FitnessExperienceSchema` | BEGINNER, INTERMEDIATE, ADVANCED, EXPERT |
-| `NotificationFrequencySchema` | IMMEDIATE, DAILY_DIGEST, WEEKLY_DIGEST, NEVER |
-| `WeekdaySchema` | MONDAY through SUNDAY |
-| `AccountStatusSchema` | ACTIVE, SUSPENDED, PENDING_VERIFICATION, DEACTIVATED |
-| `PregnancyStatusSchema` | NOT_PREGNANT, PREGNANT, POSTPARTUM, TTC |
-| `MessagingRecipientRoleSchema` | Message recipient roles |
+
+| Schema                         | Purpose                                              |
+| ------------------------------ | ---------------------------------------------------- |
+| `UserRoleSchema`               | ADMIN, CLINICIAN, TRAINER, CLIENT                    |
+| `UserTierSchema`               | ESSENTIALS, CORE, CONCIERGE                          |
+| `BiologicalSexSchema`          | MALE, FEMALE, OTHER, PREFER_NOT_TO_SAY               |
+| `ActivityLevelSchema`          | SEDENTARY, LIGHT, MODERATE, ACTIVE, VERY_ACTIVE      |
+| `PrimaryGoalSchema`            | LOSE_WEIGHT, BUILD_MUSCLE, IMPROVE_HEALTH, etc.      |
+| `FitnessExperienceSchema`      | BEGINNER, INTERMEDIATE, ADVANCED, EXPERT             |
+| `NotificationFrequencySchema`  | IMMEDIATE, DAILY_DIGEST, WEEKLY_DIGEST, NEVER        |
+| `WeekdaySchema`                | MONDAY through SUNDAY                                |
+| `AccountStatusSchema`          | ACTIVE, SUSPENDED, PENDING_VERIFICATION, DEACTIVATED |
+| `PregnancyStatusSchema`        | NOT_PREGNANT, PREGNANT, POSTPARTUM, TTC              |
+| `MessagingRecipientRoleSchema` | Message recipient roles                              |
 
 ### appointments.ts
-| Schema | Purpose |
-|--------|---------|
-| `AppointmentStatusSchema` | SCHEDULED, COMPLETED, CANCELLED, NO_SHOW |
-| `AppointmentTypeSchema` | CHECK_IN, CONSULTATION, TRAINING_SESSION, etc. |
-| `BookingStepSchema` | Client booking workflow steps |
-| `AdminBookingStepSchema` | Admin booking workflow steps |
+
+| Schema                    | Purpose                                        |
+| ------------------------- | ---------------------------------------------- |
+| `AppointmentStatusSchema` | SCHEDULED, COMPLETED, CANCELLED, NO_SHOW       |
+| `AppointmentTypeSchema`   | CHECK_IN, CONSULTATION, TRAINING_SESSION, etc. |
+| `BookingStepSchema`       | Client booking workflow steps                  |
+| `AdminBookingStepSchema`  | Admin booking workflow steps                   |
 
 ### training.ts
-| Schema | Purpose |
-|--------|---------|
-| `StrategyTypeSchema` | linear_progression, undulating, block_periodization, etc. |
-| `StrategyStatusSchema` | active, completed, paused, cancelled |
-| `GoalCategorySchema` | fitness, body_composition, cardiovascular, etc. |
-| `GoalDataSourceSchema` | biometric, lab, exercise_log, manual |
-| `ProgressTypeSchema` | on_track, ahead, behind, stalled |
+
+| Schema                 | Purpose                                                          |
+| ---------------------- | ---------------------------------------------------------------- |
+| `StrategyTypeSchema`   | LINEAR_PROGRESSION, UNDULATING, BLOCK, MESOCYCLE, DELOAD, CUSTOM |
+| `StrategyStatusSchema` | ACTIVE, COMPLETED, PAUSED, CANCELLED                             |
+| `GoalCategorySchema`   | fitness, body_composition, cardiovascular, etc.                  |
+| `GoalDataSourceSchema` | biometric, lab, exercise_log, manual                             |
+| `ProgressTypeSchema`   | on_track, ahead, behind, stalled                                 |
 
 ### sessions.ts
-| Schema | Purpose |
-|--------|---------|
-| `SessionTypeSchema` | FITNESS_SESSION, CLINICIAN_INITIAL, etc. |
-| `ResetFrequencySchema` | WEEKLY, BIWEEKLY, MONTHLY, YEARLY |
-| `SessionUsageSourceSchema` | How sessions are consumed |
-| `sessionErrorCodeSchema` | Session operation error codes |
+
+| Schema                     | Purpose                                  |
+| -------------------------- | ---------------------------------------- |
+| `SessionTypeSchema`        | FITNESS_SESSION, CLINICIAN_INITIAL, etc. |
+| `ResetFrequencySchema`     | WEEKLY, BIWEEKLY, MONTHLY, YEARLY        |
+| `SessionUsageSourceSchema` | How sessions are consumed                |
+| `sessionErrorCodeSchema`   | Session operation error codes            |
 
 ### nutrition.ts
-| Schema | Purpose |
-|--------|---------|
-| `MealTypeSchema` | breakfast, lunch, dinner, snack, etc. |
-| `LocationTypeSchema` | home, restaurant, work, etc. |
-| `PreparationMethodSchema` | homemade, takeout, delivery, etc. |
-| `FoodUnitSchema` | g, oz, serving, cup, etc. |
-| `MoodLevelSchema` | 1-5 mood rating |
-| `EnergyLevelSchema` | 1-5 energy rating |
-| `DigestionQualitySchema` | poor, fair, good, excellent |
+
+| Schema                    | Purpose                               |
+| ------------------------- | ------------------------------------- |
+| `MealTypeSchema`          | breakfast, lunch, dinner, snack, etc. |
+| `LocationTypeSchema`      | home, restaurant, work, etc.          |
+| `PreparationMethodSchema` | homemade, takeout, delivery, etc.     |
+| `FoodUnitSchema`          | g, oz, serving, cup, etc.             |
+| `MoodLevelSchema`         | 1-5 mood rating                       |
+| `EnergyLevelSchema`       | 1-5 energy rating                     |
+| `DigestionQualitySchema`  | poor, fair, good, excellent           |
 
 ### clinical.ts
-| Schema | Purpose |
-|--------|---------|
-| `LimitationSeveritySchema` | mild, moderate, severe |
-| `BiometricSourceSchema` | manual, device, lab, clinical |
-| `InjuryRecoveryStatusSchema` | active, recovering, healed, chronic |
+
+| Schema                         | Purpose                               |
+| ------------------------------ | ------------------------------------- |
+| `LimitationSeveritySchema`     | mild, moderate, severe                |
+| `BiometricSourceSchema`        | manual, device, lab, clinical         |
+| `InjuryRecoveryStatusSchema`   | active, recovering, healed, chronic   |
 | `MedicalConditionStatusSchema` | active, managed, resolved, monitoring |
-| `medicationSchema` | Medication object structure |
-| `medicationsSchema` | Array of medications |
-| `limitationSchema` | Limitation object structure |
-| `limitationsSchema` | Array of limitations |
-| `injurySchema` | Injury object structure |
-| `injuriesSchema` | Array of injuries |
-| `medicalConditionSchema` | Medical condition structure |
-| `medicalConditionsSchema` | Array of medical conditions |
-| `CareTeamRoleSchema` | Care team member roles |
+| `medicationSchema`             | Medication object structure           |
+| `medicationsSchema`            | Array of medications                  |
+| `limitationSchema`             | Limitation object structure           |
+| `limitationsSchema`            | Array of limitations                  |
+| `injurySchema`                 | Injury object structure               |
+| `injuriesSchema`               | Array of injuries                     |
+| `medicalConditionSchema`       | Medical condition structure           |
+| `medicalConditionsSchema`      | Array of medical conditions           |
+| `CareTeamRoleSchema`           | Care team member roles                |
 
 ### labs.ts
-| Schema | Purpose |
-|--------|---------|
-| `LabResultStatusSchema` | pending, reviewed, flagged |
-| `LabResultFlagSchema` | normal, low, high, critical_low, critical_high |
-| `LabMappingStatusSchema` | mapped, unmapped, ambiguous, needs_review |
-| `LabMetricDirectionalitySchema` | higher_better, lower_better, target_range |
-| `LabChangeSignificanceSchema` | minimal, moderate, significant |
-| `LabClinicalDirectionSchema` | improving, stable, worsening |
-| `LabRangeStatusSchema` | optimal, normal, borderline, out_of_range |
-| `LabMetricCategorySchema` | Lab metric categories |
-| `MetricApprovalStatusSchema` | pending, approved, rejected |
-| `ClinicianGoalStatusSchema` | active, achieved, paused, cancelled |
-| `GoalTargetDirectionSchema` | increase, decrease, maintain |
+
+| Schema                          | Purpose                                        |
+| ------------------------------- | ---------------------------------------------- |
+| `LabResultStatusSchema`         | pending, reviewed, flagged                     |
+| `LabResultFlagSchema`           | normal, low, high, critical_low, critical_high |
+| `LabMappingStatusSchema`        | mapped, unmapped, ambiguous, needs_review      |
+| `LabMetricDirectionalitySchema` | higher_better, lower_better, target_range      |
+| `LabChangeSignificanceSchema`   | minimal, moderate, significant                 |
+| `LabClinicalDirectionSchema`    | improving, stable, worsening                   |
+| `LabRangeStatusSchema`          | optimal, normal, borderline, out_of_range      |
+| `LabMetricCategorySchema`       | Lab metric categories                          |
+| `MetricApprovalStatusSchema`    | pending, approved, rejected                    |
+| `ClinicianGoalStatusSchema`     | active, achieved, paused, cancelled            |
+| `GoalTargetDirectionSchema`     | increase, decrease, maintain                   |
 
 ### biometrics.ts
-| Schema | Purpose |
-|--------|---------|
-| `BiometricKeySchema` | All biometric measurement keys |
+
+| Schema                         | Purpose                          |
+| ------------------------------ | -------------------------------- |
+| `BiometricEntryContractSchema` | Biometric entry validation       |
+| `biometricEntrySchema`         | Backward-compatible entry schema |
 
 ### exercise.ts
-| Schema | Purpose |
-|--------|---------|
+
+| Schema                   | Purpose                             |
+| ------------------------ | ----------------------------------- |
 | `ExerciseCategorySchema` | strength, cardio, flexibility, etc. |
-| `MovementPatternSchema` | push, pull, squat, hinge, etc. |
-| `MuscleGroupSchema` | chest, back, legs, shoulders, etc. |
-| `EquipmentTypeSchema` | barbell, dumbbell, cable, etc. |
-| `DifficultyLevelSchema` | beginner, intermediate, advanced |
+| `MovementPatternSchema`  | push, pull, squat, hinge, etc.      |
+| `MuscleGroupSchema`      | chest, back, legs, shoulders, etc.  |
+| `EquipmentTypeSchema`    | barbell, dumbbell, cable, etc.      |
+| `DifficultyLevelSchema`  | beginner, intermediate, advanced    |
 
 ### workouts.ts
-| Schema | Purpose |
-|--------|---------|
-| `WorkoutSectionTypeSchema` | warmup, main, cooldown, superset |
-| `workoutSetSchema` | Set structure (reps, weight, etc.) |
-| `workoutSectionSchema` | Section with exercises |
-| `workoutSessionSchema` | Complete workout session |
+
+| Schema                     | Purpose                            |
+| -------------------------- | ---------------------------------- |
+| `WorkoutSectionTypeSchema` | warmup, main, cooldown, superset   |
+| `workoutSetSchema`         | Set structure (reps, weight, etc.) |
+| `workoutSectionSchema`     | Section with exercises             |
+| `workoutSessionSchema`     | Complete workout session           |
 
 ### journal.ts
-| Schema | Purpose |
-|--------|---------|
-| `JournalMoodSchema` | Mood options for journal entries |
+
+| Schema                | Purpose                            |
+| --------------------- | ---------------------------------- |
+| `JournalMoodSchema`   | Mood options for journal entries   |
 | `JournalEnergySchema` | Energy options for journal entries |
 
 ### documents.ts
-| Schema | Purpose |
-|--------|---------|
+
+| Schema                   | Purpose                                  |
+| ------------------------ | ---------------------------------------- |
 | `DocumentCategorySchema` | lab_report, imaging, clinical_note, etc. |
 
 ### analytics.ts
-| Schema | Purpose |
-|--------|---------|
-| `TrendIndicatorSchema` | up, down, stable |
-| `WeightTrendSchema` | gaining, losing, maintaining |
-| `TrainingStatusSchema` | on_track, overreaching, detraining |
-| `RecoveryStatusSchema` | recovered, partial, fatigued |
-| `TrainingRiskLevelSchema` | low, moderate, high |
-| `ChartCategorySchema` | Chart display categories |
-| `TimeRangeSchema` | 7d, 30d, 90d, 1y, all |
-| `ChartTypeSchema` | line, bar, area, pie |
-| `ChartDataPointSchema` | Chart data point structure |
-| `ChartItemSchema` | Chart item structure |
+
+| Schema                    | Purpose                            |
+| ------------------------- | ---------------------------------- |
+| `TrendIndicatorSchema`    | up, down, stable                   |
+| `WeightTrendSchema`       | gaining, losing, maintaining       |
+| `TrainingStatusSchema`    | on_track, overreaching, detraining |
+| `RecoveryStatusSchema`    | recovered, partial, fatigued       |
+| `TrainingRiskLevelSchema` | low, moderate, high                |
+| `ChartCategorySchema`     | Chart display categories           |
+| `TimeRangeSchema`         | 7d, 30d, 90d, 1y, all              |
+| `ChartTypeSchema`         | line, bar, area, pie               |
+| `ChartDataPointSchema`    | Chart data point structure         |
+| `ChartItemSchema`         | Chart item structure               |
 
 ### health-progress.ts
-| Schema | Purpose |
-|--------|---------|
-| `HealthTrendSchema` | improving, stable, declining |
+
+| Schema                   | Purpose                           |
+| ------------------------ | --------------------------------- |
+| `HealthTrendSchema`      | improving, stable, declining      |
 | `DataQualityLevelSchema` | high, moderate, low, insufficient |
 
 ### organization.ts
-| Schema | Purpose |
-|--------|---------|
-| `OrganizationBillingInfoSchema` | Billing info structure |
-| `OrganizationSettingsSchema` | Org settings structure |
-| `OrganizationAddressSchema` | Address structure |
-| `OrganizationSchema` | Complete organization |
-| `CreateOrganizationRequestSchema` | Create org request |
-| `UpdateOrganizationRequestSchema` | Update org request |
-| `OrganizationSummarySchema` | Org summary |
-| `OrganizationJwtClaimsSchema` | JWT claims for orgs |
+
+| Schema                            | Purpose                |
+| --------------------------------- | ---------------------- |
+| `OrganizationBillingInfoSchema`   | Billing info structure |
+| `OrganizationSettingsSchema`      | Org settings structure |
+| `OrganizationAddressSchema`       | Address structure      |
+| `OrganizationSchema`              | Complete organization  |
+| `CreateOrganizationRequestSchema` | Create org request     |
+| `UpdateOrganizationRequestSchema` | Update org request     |
+| `OrganizationSummarySchema`       | Org summary            |
+| `OrganizationJwtClaimsSchema`     | JWT claims for orgs    |
 
 ### registration.ts
-| Schema | Purpose |
-|--------|---------|
+
+| Schema                     | Purpose                     |
+| -------------------------- | --------------------------- |
 | `RegistrationStatusSchema` | pending, completed, expired |
 
 ### phi-audit.ts
-| Schema | Purpose |
-|--------|---------|
-| `PhiResourceSchema` | PHI resource types |
-| `PhiActionSchema` | PHI action types (view, export, etc.) |
-| `PhiAccessReasonSchema` | Reasons for PHI access |
 
-### goal-metrics.ts
-| Schema | Purpose |
-|--------|---------|
-| `GoalMetricKeySchema` | All valid goal metric keys |
+| Schema                  | Purpose                               |
+| ----------------------- | ------------------------------------- |
+| `PhiResourceSchema`     | PHI resource types                    |
+| `PhiActionSchema`       | PHI action types (view, export, etc.) |
+| `PhiAccessReasonSchema` | Reasons for PHI access                |
 
 ### ai-notes.ts
-| Schema | Purpose |
-|--------|---------|
-| `AINoteCategorySchema` | AI note categories |
+
+| Schema                   | Purpose                   |
+| ------------------------ | ------------------------- |
+| `AINoteCategorySchema`   | AI note categories        |
 | `AINoteSourceTypeSchema` | Source types for AI notes |
 
 ### push.ts
-| Schema | Purpose |
-|--------|---------|
+
+| Schema               | Purpose           |
+| -------------------- | ----------------- |
 | `PushPlatformSchema` | ios, android, web |
-| `PushAppRoleSchema` | client, admin |
+| `PushAppRoleSchema`  | client, admin     |
 
 ### realtime.ts
-| Schema | Purpose |
-|--------|---------|
-| `sseEventTypeSchema` | SSE event types |
+
+| Schema                  | Purpose            |
+| ----------------------- | ------------------ |
+| `sseEventTypeSchema`    | SSE event types    |
 | `sseResourceTypeSchema` | SSE resource types |
 
 ### compliance.ts
-| Schema | Purpose |
-|--------|---------|
+
+| Schema                   | Purpose                                 |
+| ------------------------ | --------------------------------------- |
 | `ComplianceStatusSchema` | excellent, good, at_risk, non_compliant |
 
 ### clinical-registry.schema.ts
-| Schema | Purpose |
-|--------|---------|
-| `ClinicalMetricCategorySchema` | Metric categories |
-| `ClinicalMetricDirectionSchema` | higher_better, lower_better, etc. |
-| `ClinicalValueTypeSchema` | numeric, ratio, text |
-| `ClinicalAgeBracketSchema` | Age brackets for ranges |
-| `ClinicalSexSchema` | Sex options for clinical contexts |
-| `ClinicalPregnancyStatusSchema` | Pregnancy status for clinical |
-| `ClinicalModifierLogicSchema` | Logic types for modifiers |
-| `ClinicalUnitVariantSchema` | Unit conversion variant |
-| `ClinicalBaseRangeSchema` | Base reference range |
-| `ClinicalOptimalRangeSchema` | Optimal range structure |
-| `ClinicalHardLimitsSchema` | Hard limits structure |
-| `ClinicalModifierConditionsSchema` | Modifier conditions |
-| `ClinicalPopulationModifierSchema` | Population-specific modifiers |
-| `ClinicalPanelComponentSchema` | Panel component structure |
-| `ClinicalMetricDefinitionSchema` | Complete metric definition |
-| `ClinicalMetricRegistrySchema` | Full metric registry |
+
+| Schema                             | Purpose                           |
+| ---------------------------------- | --------------------------------- |
+| `ClinicalMetricCategorySchema`     | Metric categories                 |
+| `ClinicalMetricDirectionSchema`    | higher_better, lower_better, etc. |
+| `ClinicalValueTypeSchema`          | numeric, ratio, text              |
+| `ClinicalAgeBracketSchema`         | Age brackets for ranges           |
+| `ClinicalSexSchema`                | Sex options for clinical contexts |
+| `ClinicalPregnancyStatusSchema`    | Pregnancy status for clinical     |
+| `ClinicalModifierLogicSchema`      | Logic types for modifiers         |
+| `ClinicalUnitVariantSchema`        | Unit conversion variant           |
+| `ClinicalBaseRangeSchema`          | Base reference range              |
+| `ClinicalOptimalRangeSchema`       | Optimal range structure           |
+| `ClinicalHardLimitsSchema`         | Hard limits structure             |
+| `ClinicalModifierConditionsSchema` | Modifier conditions               |
+| `ClinicalPopulationModifierSchema` | Population-specific modifiers     |
+| `ClinicalPanelComponentSchema`     | Panel component structure         |
+| `ClinicalMetricDefinitionSchema`   | Complete metric definition        |
+| `ClinicalMetricRegistrySchema`     | Full metric registry              |
 
 ---
 
@@ -273,41 +292,41 @@ Domain-specific enum schemas live alongside their tuples/constants. Import from 
 
 Schemas for JSON fields stored in Prisma. Use these for validating data going into/out of JSON columns.
 
-| Schema | Purpose | Prisma Field |
-|--------|---------|--------------|
-| `stringArraySchema` | Generic string array | Various |
-| `supplementsArraySchema` | Daily supplements | DailyLog.supplements |
-| `tagsArraySchema` | Tag arrays | JournalEntry.tags, ClinicalNote.tags, PatientDocument.tags |
-| `attachmentsArraySchema` | URL array for attachments | JournalEntry.attachments |
-| `metricsNotesArraySchema` | Metric notes | DailyMetrics.notes |
-| `metricsRecommendationsArraySchema` | Recommendations | DailyMetrics.recommendations |
-| `dashboardCardOrderSchema` | Card ID order | UserPreferences.dashboardCardOrder |
-| `prismaAvailabilitySlotSchema` | Single availability slot | ProviderAvailability.slots (element) |
-| `prismaAvailabilitySlotsArraySchema` | Availability slots array | ProviderAvailability.slots |
-| `eventMetadataSchema` | Flexible event metadata | UserEvent.metadata |
-| `extractedDataSchema` | Extracted document data | PatientDocument.extractedData |
-| `foodLogEntrySchema` | Single food log entry | DailyLog.foodEntries (value element) |
-| `foodEntriesRecordSchema` | Hour → entries mapping | DailyLog.foodEntries |
-| `bloodPressureSchema` | Blood pressure object | Measurement JSON fields |
+| Schema                               | Purpose                   | Prisma Field                                               |
+| ------------------------------------ | ------------------------- | ---------------------------------------------------------- |
+| `stringArraySchema`                  | Generic string array      | Various                                                    |
+| `supplementsArraySchema`             | Daily supplements         | DailyLog.supplements                                       |
+| `tagsArraySchema`                    | Tag arrays                | JournalEntry.tags, ClinicalNote.tags, PatientDocument.tags |
+| `attachmentsArraySchema`             | URL array for attachments | JournalEntry.attachments                                   |
+| `metricsNotesArraySchema`            | Metric notes              | DailyMetrics.notes                                         |
+| `metricsRecommendationsArraySchema`  | Recommendations           | DailyMetrics.recommendations                               |
+| `dashboardCardOrderSchema`           | Card ID order             | UserPreferences.dashboardCardOrder                         |
+| `prismaAvailabilitySlotSchema`       | Single availability slot  | ProviderAvailability.slots (element)                       |
+| `prismaAvailabilitySlotsArraySchema` | Availability slots array  | ProviderAvailability.slots                                 |
+| `eventMetadataSchema`                | Flexible event metadata   | UserEvent.metadata                                         |
+| `extractedDataSchema`                | Extracted document data   | PatientDocument.extractedData                              |
+| `foodLogEntrySchema`                 | Single food log entry     | DailyLog.foodEntries (value element)                       |
+| `foodEntriesRecordSchema`            | Hour → entries mapping    | DailyLog.foodEntries                                       |
+| `bloodPressureSchema`                | Blood pressure object     | Measurement JSON fields                                    |
 
 ### JSON Schemas Defined Elsewhere
 
 Some JSON field schemas are canonically defined in other modules:
 
-| Schema | Location | Prisma Field |
-|--------|----------|--------------|
-| `prefilledProfileSchema` | `admin/admin-schemas.ts` | User.prefilledProfile |
-| `medicationsSchema` | `domain/clinical.ts` | ClinicalProfile.medications |
-| `limitationsSchema` | `domain/clinical.ts` | ClinicalProfile.limitations |
-| `dashboardPreferencesSchema` | `src/contracts/user/preferences.ts` | UserPreferences.dashboard |
-| `dashboardSectionsSchema` | `src/contracts/user/preferences.ts` | UserPreferences.dashboardSections |
-| `advancedUnitPreferencesSchema` | `src/contracts/user/preferences.ts` | UserPreferences.advancedUnits |
-| `notificationPreferencesSchema` | `src/contracts/user/preferences.ts` | UserPreferences.notifications |
-| `workoutSectionSchema[]` | `domain/workouts.ts` | WorkoutPlan.blocks |
-| `MacroShorthandSchema` | `src/contracts/commonEnums.ts` | DailyLog.totalMacros |
-| `mealSchema[]` | `src/contracts/nutrition.ts` | DailyLog.meals |
-| `journalAssessmentSchema` | `src/contracts/journal.ts` | JournalEntry.aiAssessment |
-| `SessionBalanceItemSchema[]` | `src/contracts/sessions.ts` | SessionBalance.balances |
+| Schema                          | Location                            | Prisma Field                      |
+| ------------------------------- | ----------------------------------- | --------------------------------- |
+| `prefilledProfileSchema`        | `admin/admin-schemas.ts`            | User.prefilledProfile             |
+| `medicationsSchema`             | `domain/clinical.ts`                | ClinicalProfile.medications       |
+| `limitationsSchema`             | `domain/clinical.ts`                | ClinicalProfile.limitations       |
+| `dashboardPreferencesSchema`    | `src/contracts/user/preferences.ts` | UserPreferences.dashboard         |
+| `dashboardSectionsSchema`       | `src/contracts/user/preferences.ts` | UserPreferences.dashboardSections |
+| `advancedUnitPreferencesSchema` | `src/contracts/user/preferences.ts` | UserPreferences.advancedUnits     |
+| `notificationPreferencesSchema` | `src/contracts/user/preferences.ts` | UserPreferences.notifications     |
+| `workoutSectionSchema[]`        | `domain/workouts.ts`                | WorkoutPlan.blocks                |
+| `MacroShorthandSchema`          | `src/contracts/commonEnums.ts`      | DailyLog.totalMacros              |
+| `mealSchema[]`                  | `src/contracts/nutrition.ts`        | DailyLog.meals                    |
+| `journalAssessmentSchema`       | `src/contracts/journal.ts`          | JournalEntry.aiAssessment         |
+| `SessionBalanceItemSchema[]`    | `src/contracts/sessions.ts`         | SessionBalance.balances           |
 
 ---
 
@@ -318,97 +337,108 @@ Some JSON field schemas are canonically defined in other modules:
 Schemas for admin portal operations, patient management, and clinical workflows.
 
 ### Admin-Specific Enums
-| Schema | Purpose |
-|--------|---------|
-| `adminComplianceStatusSchema` | excellent, good, at-risk, non-compliant |
-| `volumeLevelSchema` | low, moderate, high (training phases) |
-| `limitationSeveritySchema` | mild, moderate, severe |
-| `injuryRecoveryStatusSchema` | active, recovering, healed, chronic |
-| `medicalConditionStatusSchema` | active, managed, resolved, monitoring |
+
+| Schema                         | Purpose                                 |
+| ------------------------------ | --------------------------------------- |
+| `adminComplianceStatusSchema`  | excellent, good, at-risk, non-compliant |
+| `volumeLevelSchema`            | low, moderate, high (training phases)   |
+| `limitationSeveritySchema`     | mild, moderate, severe                  |
+| `injuryRecoveryStatusSchema`   | active, recovering, healed, chronic     |
+| `medicalConditionStatusSchema` | active, managed, resolved, monitoring   |
 
 ### Patient Management
-| Schema | Purpose |
-|--------|---------|
-| `patientSummarySchema` | Patient list summary |
-| `adminMedicationSchema` | Admin medication entry |
-| `adminLimitationSchema` | Admin limitation entry |
-| `adminInjurySchema` | Admin injury entry |
-| `adminMedicalConditionSchema` | Admin condition entry |
-| `patientProfileUpdatePayloadSchema` | Update patient profile |
-| `patientGoalsUpdatePayloadSchema` | Update patient goals |
+
+| Schema                              | Purpose                            |
+| ----------------------------------- | ---------------------------------- |
+| `patientSummarySchema`              | Patient list summary               |
+| `adminMedicationSchema`             | Admin medication entry             |
+| `adminLimitationSchema`             | Admin limitation entry             |
+| `adminInjurySchema`                 | Admin injury entry                 |
+| `adminMedicalConditionSchema`       | Admin condition entry              |
+| `patientProfileUpdatePayloadSchema` | Update patient profile             |
+| `patientGoalsUpdatePayloadSchema`   | Update patient goals               |
 | `patientAdminControlsPayloadSchema` | Update admin controls (tier, role) |
 
 ### Clinician Management
-| Schema | Purpose |
-|--------|---------|
-| `clinicianSummarySchema` | Clinician list summary |
-| `availabilitySlotSchema` | HH:MM time-based slot |
-| `clinicianAvailabilitySchema` | Clinician schedule |
-| `providerScheduleSlotSchema` | Hour-based schedule slot |
-| `providerScheduleDataSchema` | Provider schedule |
+
+| Schema                        | Purpose                  |
+| ----------------------------- | ------------------------ |
+| `clinicianSummarySchema`      | Clinician list summary   |
+| `availabilitySlotSchema`      | HH:MM time-based slot    |
+| `clinicianAvailabilitySchema` | Clinician schedule       |
+| `providerScheduleSlotSchema`  | Hour-based schedule slot |
+| `providerScheduleDataSchema`  | Provider schedule        |
 
 ### Registration
-| Schema | Purpose |
-|--------|---------|
-| `prefilledProfileSchema` | Pre-registration profile data |
-| `registeredUserSchema` | Registered user response |
-| `createRegistrationPayloadSchema` | Create registration request |
+
+| Schema                            | Purpose                       |
+| --------------------------------- | ----------------------------- |
+| `prefilledProfileSchema`          | Pre-registration profile data |
+| `registeredUserSchema`            | Registered user response      |
+| `createRegistrationPayloadSchema` | Create registration request   |
 
 ### Training Strategy
-| Schema | Purpose |
-|--------|---------|
-| `createPhaseInputSchema` | Create training phase |
-| `createGoalInputSchema` | Create goal input |
-| `updateGoalInputSchema` | Update goal input |
-| `createStrategyInputSchema` | Create strategy input |
-| `fetchValueRequestSchema` | Fetch goal value request |
-| `fetchValueResponseSchema` | Fetch goal value response |
+
+| Schema                      | Purpose                   |
+| --------------------------- | ------------------------- |
+| `createPhaseInputSchema`    | Create training phase     |
+| `createGoalInputSchema`     | Create goal input         |
+| `updateGoalInputSchema`     | Update goal input         |
+| `createStrategyInputSchema` | Create strategy input     |
+| `fetchValueRequestSchema`   | Fetch goal value request  |
+| `fetchValueResponseSchema`  | Fetch goal value response |
 
 ### Smart Assist / AI Generation
-| Schema | Purpose |
-|--------|---------|
-| `smartAssistActivitySchema` | Agent activity entry |
-| `smartAssistProgressSchema` | Real-time progress |
-| `workoutPlanGenerationParamsSchema` | Workout plan params |
-| `nutritionPreferencesSchema` | Nutrition preferences |
-| `macroTargetsSchema` | Macro targets |
+
+| Schema                                 | Purpose                |
+| -------------------------------------- | ---------------------- |
+| `smartAssistActivitySchema`            | Agent activity entry   |
+| `smartAssistProgressSchema`            | Real-time progress     |
+| `workoutPlanGenerationParamsSchema`    | Workout plan params    |
+| `nutritionPreferencesSchema`           | Nutrition preferences  |
+| `macroTargetsSchema`                   | Macro targets          |
 | `nutritionPlanGenerationRequestSchema` | Nutrition plan request |
 
 ### Lab Results
-| Schema | Purpose |
-|--------|---------|
+
+| Schema                             | Purpose                   |
+| ---------------------------------- | ------------------------- |
 | `labMetricDefinitionSummarySchema` | Metric definition summary |
-| `LabPopulationQualifierSchema` | Population qualifier |
-| `extractedLabObservationSchema` | Extracted lab observation |
-| `extractedLabReportSchema` | Extracted lab report |
-| `labDataExtractionResultSchema` | Extraction result |
-| `labObservationInputSchema` | Create observation input |
-| `createLabReportPayloadSchema` | Create lab report |
+| `LabPopulationQualifierSchema`     | Population qualifier      |
+| `extractedLabObservationSchema`    | Extracted lab observation |
+| `extractedLabReportSchema`         | Extracted lab report      |
+| `labDataExtractionResultSchema`    | Extraction result         |
+| `labObservationInputSchema`        | Create observation input  |
+| `createLabReportPayloadSchema`     | Create lab report         |
 
 ### Intake & Questionnaires
-| Schema | Purpose |
-|--------|---------|
+
+| Schema                              | Purpose                |
+| ----------------------------------- | ---------------------- |
 | `intakeQuestionnaireResponseSchema` | Questionnaire response |
-| `clientIntakePayloadSchema` | Client intake payload |
+| `clientIntakePayloadSchema`         | Client intake payload  |
 
 ### Exercise Library
-| Schema | Purpose |
-|--------|---------|
+
+| Schema                       | Purpose                 |
+| ---------------------------- | ----------------------- |
 | `exerciseFilterParamsSchema` | Exercise search filters |
 
 ### Analytics
-| Schema | Purpose |
-|--------|---------|
+
+| Schema                     | Purpose                   |
+| -------------------------- | ------------------------- |
 | `adminAnalyticsDataSchema` | Admin dashboard analytics |
 
 ### Metric Governance
-| Schema | Purpose |
-|--------|---------|
-| `pendingMetricReviewSchema` | Pending metric review |
-| `suggestedNewMetricSchema` | Suggested new metric |
+
+| Schema                         | Purpose               |
+| ------------------------------ | --------------------- |
+| `pendingMetricReviewSchema`    | Pending metric review |
+| `suggestedNewMetricSchema`     | Suggested new metric  |
 | `metricGovernanceActionSchema` | Approve/reject action |
-| `mergeMetricsPayloadSchema` | Merge metrics request |
-| `metricGovernanceResultSchema` | Governance result |
+| `mergeMetricsPayloadSchema`    | Merge metrics request |
+| `metricGovernanceResultSchema` | Governance result     |
 
 ---
 
@@ -419,42 +449,47 @@ Schemas for admin portal operations, patient management, and clinical workflows.
 Schemas for AI function call validation and generation request/response payloads.
 
 ### Exercise & Workout Generation
-| Schema | Purpose |
-|--------|---------|
-| `generatedExerciseSchema` | AI-generated exercise (requires exerciseId) |
-| `generatedSectionSchema` | AI-generated workout section |
-| `generatedDaySchema` | AI-generated workout day |
-| `generateWorkoutPlanArgsSchema` | generate_workout_plan function args |
-| `generatedWorkoutPlanSchema` | Workout plan structure |
-| `unresolvedExerciseSchema` | Exercise needing review |
-| `workoutPlanGenerationResultSchema` | Workout plan result |
+
+| Schema                              | Purpose                                     |
+| ----------------------------------- | ------------------------------------------- |
+| `generatedExerciseSchema`           | AI-generated exercise (requires exerciseId) |
+| `generatedSectionSchema`            | AI-generated workout section                |
+| `generatedDaySchema`                | AI-generated workout day                    |
+| `generateWorkoutPlanArgsSchema`     | generate_workout_plan function args         |
+| `generatedWorkoutPlanSchema`        | Workout plan structure                      |
+| `unresolvedExerciseSchema`          | Exercise needing review                     |
+| `workoutPlanGenerationResultSchema` | Workout plan result                         |
 
 ### Nutrition Generation
-| Schema | Purpose |
-|--------|---------|
-| `generateNutritionTargetsArgsSchema` | generate_nutrition_targets args |
-| `nutritionPlanGenerationResultSchema` | Nutrition plan result |
+
+| Schema                                | Purpose                         |
+| ------------------------------------- | ------------------------------- |
+| `generateNutritionTargetsArgsSchema`  | generate_nutrition_targets args |
+| `nutritionPlanGenerationResultSchema` | Nutrition plan result           |
 
 ### Permanent Notes
-| Schema | Purpose |
-|--------|---------|
+
+| Schema                        | Purpose                  |
+| ----------------------------- | ------------------------ |
 | `savePermanentNoteArgsSchema` | save_permanent_note args |
 
 ### Training Strategy
-| Schema | Purpose |
-|--------|---------|
-| `createStrategyGoalArgsSchema` | Strategy goal input |
-| `createPhaseArgsSchema` | Training phase input |
-| `generateStrategyArgsSchema` | generate_training_strategy args |
-| `requestClarificationArgsSchema` | request_clarification args |
-| `strategyGenerationRequestSchema` | Strategy generation request |
+
+| Schema                            | Purpose                         |
+| --------------------------------- | ------------------------------- |
+| `createStrategyGoalArgsSchema`    | Strategy goal input             |
+| `createPhaseArgsSchema`           | Training phase input            |
+| `generateStrategyArgsSchema`      | generate_training_strategy args |
+| `requestClarificationArgsSchema`  | request_clarification args      |
+| `strategyGenerationRequestSchema` | Strategy generation request     |
 
 ### Exercise Library Search
-| Schema | Purpose |
-|--------|---------|
+
+| Schema                            | Purpose                      |
+| --------------------------------- | ---------------------------- |
 | `searchExerciseLibraryArgsSchema` | search_exercise_library args |
-| `batchSearchExercisesArgsSchema` | batch_search_exercises args |
-| `createExerciseArgsSchema` | create_exercise args |
+| `batchSearchExercisesArgsSchema`  | batch_search_exercises args  |
+| `createExerciseArgsSchema`        | create_exercise args         |
 
 ---
 
@@ -464,12 +499,12 @@ Schemas for AI function call validation and generation request/response payloads
 
 Schemas for password validation and password reset flows.
 
-| Schema | Purpose | Used By |
-|--------|---------|---------|
-| `passwordSchema` | Basic password validation (10-128 chars) | Forms, registration, password change |
-| `passwordLengthSchema` | Length constraints based on PASSWORD_POLICY | Building block for other schemas |
-| `forgotPasswordRequestSchema` | Request to initiate password reset via email | POST /auth/forgot-password |
-| `resetPasswordRequestSchema` | Reset password with token and new password | POST /auth/reset-password |
+| Schema                        | Purpose                                      | Used By                              |
+| ----------------------------- | -------------------------------------------- | ------------------------------------ |
+| `passwordSchema`              | Basic password validation (10-128 chars)     | Forms, registration, password change |
+| `passwordLengthSchema`        | Length constraints based on PASSWORD_POLICY  | Building block for other schemas     |
+| `forgotPasswordRequestSchema` | Request to initiate password reset via email | POST /auth/forgot-password           |
+| `resetPasswordRequestSchema`  | Reset password with token and new password   | POST /auth/reset-password            |
 
 > **Note:** For complete password security validation (zxcvbn strength + HIBP breach check), use the async `validatePassword()` function from this module rather than the sync schemas alone.
 
@@ -484,54 +519,62 @@ These schemas extend or supplement shared contracts with platform-specific (mobi
 > **Note:** Many of these re-export from `@hollis/contracts`. Only platform-specific additions are listed here.
 
 ### auth.ts
-| Schema | Purpose |
-|--------|---------|
-| `oAuthProviderSchema` | OAuth providers (apple, google) |
-| `authProviderSchema` | All auth providers |
-| `authProfileSchema` | Client auth profile |
-| `authSessionSchema` | Client auth session |
-| `oAuthCredentialsSchema` | OAuth credentials |
-| `loginCredentialsSchema` | Login credentials |
-| `signupCredentialsSchema` | Signup credentials |
+
+| Schema                    | Purpose                         |
+| ------------------------- | ------------------------------- |
+| `oAuthProviderSchema`     | OAuth providers (apple, google) |
+| `authProviderSchema`      | All auth providers              |
+| `authProfileSchema`       | Client auth profile             |
+| `authSessionSchema`       | Client auth session             |
+| `oAuthCredentialsSchema`  | OAuth credentials               |
+| `loginCredentialsSchema`  | Login credentials               |
+| `signupCredentialsSchema` | Signup credentials              |
 
 ### clinical.ts
-| Schema | Purpose |
-|--------|---------|
+
+| Schema             | Purpose                                  |
+| ------------------ | ---------------------------------------- |
 | `medicationSchema` | Medication (re-exported with extensions) |
 | `limitationSchema` | Limitation (re-exported with extensions) |
 
 ### phiAudit.ts
-| Schema | Purpose |
-|--------|---------|
-| `phiResourceSchema` | PHI resources (platform-specific) |
-| `phiActionSchema` | PHI actions (platform-specific) |
+
+| Schema                  | Purpose                            |
+| ----------------------- | ---------------------------------- |
+| `phiResourceSchema`     | PHI resources (platform-specific)  |
+| `phiActionSchema`       | PHI actions (platform-specific)    |
 | `phiAccessReasonSchema` | Access reasons (platform-specific) |
 
 ### adminNotifications.ts
-| Schema | Purpose |
-|--------|---------|
+
+| Schema                                | Purpose                  |
+| ------------------------------------- | ------------------------ |
 | `adminRealtimeNotificationKindSchema` | Admin notification kinds |
 
 ### dashboardConfig.ts
-| Schema | Purpose |
-|--------|---------|
+
+| Schema                  | Purpose            |
+| ----------------------- | ------------------ |
 | `DashboardCardIdSchema` | Dashboard card IDs |
 
 ### push.ts
-| Schema | Purpose |
-|--------|---------|
+
+| Schema               | Purpose        |
+| -------------------- | -------------- |
 | `pushPlatformSchema` | Push platforms |
-| `pushAppRoleSchema` | Push app roles |
+| `pushAppRoleSchema`  | Push app roles |
 
 ### utils.ts
-| Schema | Purpose |
-|--------|---------|
-| `DataSourceSchema` | Data source types |
-| `TimestampFieldsSchema` | Timestamp fields |
+
+| Schema                  | Purpose           |
+| ----------------------- | ----------------- |
+| `DataSourceSchema`      | Data source types |
+| `TimestampFieldsSchema` | Timestamp fields  |
 
 ### healthMetricGoals.ts
-| Schema | Purpose |
-|--------|---------|
+
+| Schema                      | Purpose                |
+| --------------------------- | ---------------------- |
 | `RangeDerivationStepSchema` | Range derivation steps |
 
 ---
@@ -539,23 +582,30 @@ These schemas extend or supplement shared contracts with platform-specific (mobi
 ## Quick Lookup by Use Case
 
 ### "I need to validate a route parameter"
+
 → `schemas/index.ts`: `userIdParamSchema`, `dateParamSchema`, `userIdAndDateParamsSchema`
 
 ### "I need to validate a request body"
+
 → `schemas/index.ts`: `loginBodySchema`, `signupBodySchema`, `refreshBodySchema`
 → `admin/admin-schemas.ts`: `patientProfileUpdatePayloadSchema`, `createLabReportPayloadSchema`, etc.
 
 ### "I need to validate a domain enum value"
+
 → `domain/*.ts`: Each domain file has its `*Schema` (e.g., `UserRoleSchema`, `MealTypeSchema`)
 
 ### "I need to validate JSON going into Prisma"
+
 → `schemas/json-blobs.ts`: `foodEntriesRecordSchema`, `eventMetadataSchema`, etc.
 
 ### "I need to validate AI function call arguments"
+
 → `ai/ai-validation.ts`: `generateWorkoutPlanArgsSchema`, `searchExerciseLibraryArgsSchema`, etc.
 
 ### "I need to add a new enum"
+
 → Follow the pattern in existing domain files:
+
 1. Add tuple: `export const MY_THINGS = [...] as const`
 2. Add type: `export type MyThing = (typeof MY_THINGS)[number]`
 3. Add schema: `export const MyThingSchema = z.enum(MY_THINGS)`

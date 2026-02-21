@@ -11,9 +11,9 @@
  *
  * deps: zod, user.ts | consumers: all codebases
  */
-import { z } from 'zod';
+import { z } from "zod";
 
-import type { MessagingRecipientRole } from './user';
+import type { MessagingRecipientRole } from "./user";
 
 // ============================================================================
 // MESSAGE SCHEMA
@@ -23,26 +23,30 @@ export const MessageSchema = z.object({
   id: z.string(),
   senderId: z.string(),
   receiverId: z.string(),
-  content: z.string(),
+  content: z.string().max(10000),
   attachmentUrl: z.string().nullable().optional(),
   isRead: z.boolean().default(false),
   createdAt: z.string(), // ISO timestamp
   updatedAt: z.string().optional(),
   // Populated sender/receiver info
-  sender: z.object({
-    id: z.string(),
-    email: z.string(),
-    role: z.string(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-  }).optional(),
-  receiver: z.object({
-    id: z.string(),
-    email: z.string(),
-    role: z.string(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-  }).optional(),
+  sender: z
+    .object({
+      id: z.string(),
+      email: z.string(),
+      role: z.string(),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+    })
+    .optional(),
+  receiver: z
+    .object({
+      id: z.string(),
+      email: z.string(),
+      role: z.string(),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+    })
+    .optional(),
 });
 
 export type MessageContract = z.infer<typeof MessageSchema>;
@@ -57,13 +61,15 @@ export const ConversationSchema = z.object({
   participantIds: z.array(z.string()).length(2),
   lastMessage: MessageSchema.optional(),
   unreadCount: z.number().default(0),
-  participant: z.object({
-    id: z.string(),
-    email: z.string(),
-    role: z.string(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-  }).optional(), // The "other" participant in the conversation
+  participant: z
+    .object({
+      id: z.string(),
+      email: z.string(),
+      role: z.string(),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+    })
+    .optional(), // The "other" participant in the conversation
 });
 
 export type ConversationContract = z.infer<typeof ConversationSchema>;
@@ -75,7 +81,7 @@ export type ConversationContract = z.infer<typeof ConversationSchema>;
 export const SendMessageRequestSchema = z.object({
   senderId: z.string(),
   receiverId: z.string(),
-  content: z.string(),
+  content: z.string().max(10000),
   attachmentUrl: z.string().optional(),
 });
 
@@ -95,4 +101,6 @@ export const UnreadCountsSchema = z.object({
 export type UnreadCountsContract = z.infer<typeof UnreadCountsSchema>;
 
 /** Type-safe unread counts using MessagingRecipientRole keys */
-export type TypedUnreadCounts = Record<MessagingRecipientRole, number> & { total?: number };
+export type TypedUnreadCounts = Record<MessagingRecipientRole, number> & {
+  total?: number;
+};

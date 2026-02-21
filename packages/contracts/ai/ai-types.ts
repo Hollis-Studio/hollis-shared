@@ -14,7 +14,6 @@
  */
 
 import { type AINoteCategory } from '../domain/ai-notes';
-import { type GoalMetricKey } from '../domain/goal-metrics';
 import { type StrategyGenerationPhase } from '../domain/training';
 import { type WorkoutSectionType } from '../domain/workouts';
 import { type VolumeLevel } from '../primitives';
@@ -252,7 +251,8 @@ export type StrategyGenerationProgressCallback = (progress: StrategyGenerationPr
  * Goal draft for strategy generation
  */
 export interface StrategyGoalDraft {
-  goalMetric: GoalMetricKey;
+  /** MetricDefinition code string (previously GoalMetricKey) */
+  goalMetric: string;
   goalTarget: number;
   linkedExerciseId?: string;
   weight?: number;

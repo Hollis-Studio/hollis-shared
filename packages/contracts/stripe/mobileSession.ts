@@ -7,7 +7,7 @@
  * deps: zod | consumers: server routes, web-admin
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // MOBILE SESSION BALANCE
@@ -18,8 +18,8 @@ export interface MobileSessionBalanceContract {
 
   // Free sessions (CONCIERGE only)
   freeAllocationPerMonth: number; // 2 for CONCIERGE, 0 for others
-  freeAvailable: number;          // Current available (max 4)
-  freeMaxRollover: number;        // 4
+  freeAvailable: number; // Current available (max 4)
+  freeMaxRollover: number; // 4
 
   // Paid sessions (never expire)
   paidBalance: number;
@@ -31,7 +31,8 @@ export interface MobileSessionBalanceContract {
 }
 
 export const MobileSessionBalanceSchema = z.object({
-  userId: z.string().uuid(),
+  /** userId uses HH-XXXXXX barcode format, not UUID */
+  userId: z.string().min(1),
   freeAllocationPerMonth: z.number().int(),
   freeAvailable: z.number().int(),
   freeMaxRollover: z.number().int(),
@@ -44,7 +45,10 @@ export const MobileSessionBalanceSchema = z.object({
 // MOBILE SESSION USAGE
 // ============================================================================
 
-export const MOBILE_SESSION_SOURCES = ['TIER_ALLOCATION', 'A_LA_CARTE'] as const;
+export const MOBILE_SESSION_SOURCES = [
+  "TIER_ALLOCATION",
+  "A_LA_CARTE",
+] as const;
 
 export type MobileSessionSource = (typeof MOBILE_SESSION_SOURCES)[number];
 
@@ -59,7 +63,8 @@ export interface MobileSessionUsageContract {
 
 export const MobileSessionUsageSchema = z.object({
   id: z.string().uuid(),
-  userId: z.string().uuid(),
+  /** userId uses HH-XXXXXX barcode format, not UUID */
+  userId: z.string().min(1),
   source: z.enum(MOBILE_SESSION_SOURCES),
   usedAt: z.string(),
   appointmentId: z.string().nullable(),
@@ -86,14 +91,15 @@ export interface MobileSessionPurchaseContract {
   id: string;
   userId: string;
   quantity: number;
-  unitPriceInCents: number;  // $80 = 8000
+  unitPriceInCents: number; // $80 = 8000
   totalInCents: number;
   purchasedAt: string;
 }
 
 export const MobileSessionPurchaseSchema = z.object({
   id: z.string().uuid(),
-  userId: z.string().uuid(),
+  /** userId uses HH-XXXXXX barcode format, not UUID */
+  userId: z.string().min(1),
   quantity: z.number().int().positive(),
   unitPriceInCents: z.number().int(),
   totalInCents: z.number().int(),

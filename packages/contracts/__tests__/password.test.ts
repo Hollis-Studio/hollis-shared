@@ -112,7 +112,7 @@ describe('passwordSchema (basic validation)', () => {
       const result = passwordSchema.safeParse('short123');
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0]?.message).toContain('at least 10');
+        expect(result.error.issues[0]?.message).toContain('at least 10');
       }
     });
 
@@ -139,7 +139,7 @@ describe('passwordSchema (basic validation)', () => {
       const result = passwordSchema.safeParse(password);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.errors[0]?.message).toContain('at most 128');
+        expect(result.error.issues[0]?.message).toContain('at most 128');
       }
     });
 

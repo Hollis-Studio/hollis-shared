@@ -18,41 +18,47 @@
  * consumers: mobile app, server, web-admin
  */
 
-import { z } from 'zod';
-import { baseDocumentSchema, isoDateSchema } from './common';
+import { z } from "zod";
+import { VolumeLevelSchema } from "../primitives";
+import { baseDocumentSchema, isoDateSchema } from "./common";
+import { MetricDefinitionSummarySchema } from "./metric-definition";
 import {
     GoalCategorySchema,
     GoalDataSourceSchema,
     GoalDirectionSchema,
     StrategyStatusSchema,
     StrategyTypeSchema,
-} from './training';
-import { VolumeLevelSchema } from '../primitives';
-import { GoalMetricKeySchema } from './goal-metrics';
+} from "./training";
 
 // ============================================================================
 // VOLUME LEVEL ALIASES (Backward Compatibility)
 // ============================================================================
 
 // Re-export volume level types for consumers that import from this module
-export { VOLUME_LEVEL, VOLUME_LEVEL_LABELS, VOLUME_LEVELS, VolumeLevelSchema, type VolumeLevel } from '../primitives';
+export {
+    VOLUME_LEVEL,
+    VOLUME_LEVEL_LABELS,
+    VOLUME_LEVELS,
+    VolumeLevelSchema,
+    type VolumeLevel
+} from "../primitives";
 
-/** @deprecated Use VolumeLevelSchema (PascalCase) from primitives */
+/** @deprecated Use VolumeLevelSchema (PascalCase) from primitives. Remove after 2026-05-01 */
 export const volumeLevelSchema = VolumeLevelSchema;
 
 // ============================================================================
 // CAMELCASE SCHEMA ALIASES (Backward Compatibility)
 // ============================================================================
 
-/** @deprecated Use StrategyTypeSchema (PascalCase) from training */
+/** @deprecated Use StrategyTypeSchema (PascalCase) from training. Remove after 2026-05-01 */
 export const strategyTypeSchema = StrategyTypeSchema;
-/** @deprecated Use StrategyStatusSchema (PascalCase) from training */
+/** @deprecated Use StrategyStatusSchema (PascalCase) from training. Remove after 2026-05-01 */
 export const strategyStatusSchema = StrategyStatusSchema;
-/** @deprecated Use GoalCategorySchema (PascalCase) from training */
+/** @deprecated Use GoalCategorySchema (PascalCase) from training. Remove after 2026-05-01 */
 export const goalCategorySchema = GoalCategorySchema;
-/** @deprecated Use GoalDataSourceSchema (PascalCase) from training */
+/** @deprecated Use GoalDataSourceSchema (PascalCase) from training. Remove after 2026-05-01 */
 export const goalDataSourceSchema = GoalDataSourceSchema;
-/** @deprecated Use GoalDirectionSchema (PascalCase) from training */
+/** @deprecated Use GoalDirectionSchema (PascalCase) from training. Remove after 2026-05-01 */
 export const goalDirectionSchema = GoalDirectionSchema;
 
 // ============================================================================
@@ -62,7 +68,7 @@ export const goalDirectionSchema = GoalDirectionSchema;
 export const DetailedStrategyGoalSchema = z.object({
   id: z.string().uuid(),
   strategyId: z.string().uuid(),
-  goalMetric: GoalMetricKeySchema,
+  goalMetric: z.string().min(1),
   goalCategory: GoalCategorySchema,
   goalUnit: z.string(),
   goalDirection: GoalDirectionSchema,
@@ -77,6 +83,7 @@ export const DetailedStrategyGoalSchema = z.object({
   progressPercent: z.number().min(0).max(100),
   createdAt: z.string(),
   updatedAt: z.string(),
+  metricDefinition: MetricDefinitionSummarySchema.nullable().optional(),
 });
 
 /**
@@ -87,7 +94,9 @@ export const DetailedStrategyGoalSchema = z.object({
  * goalDirection, dataSource, etc.). For the simpler version, see StrategyGoalContract
  * in ./training.ts.
  */
-export type DetailedStrategyGoalContract = z.infer<typeof DetailedStrategyGoalSchema>;
+export type DetailedStrategyGoalContract = z.infer<
+  typeof DetailedStrategyGoalSchema
+>;
 
 // ============================================================================
 // DETAILED TRAINING PHASE CONTRACT
@@ -115,7 +124,9 @@ export const DetailedTrainingPhaseSchema = baseDocumentSchema.extend({
  * Uses baseDocumentSchema for timestamp validation (ISO format enforcement).
  * For the simpler version, see TrainingPhaseContract in ./training.ts.
  */
-export type DetailedTrainingPhaseContract = z.infer<typeof DetailedTrainingPhaseSchema>;
+export type DetailedTrainingPhaseContract = z.infer<
+  typeof DetailedTrainingPhaseSchema
+>;
 
 // ============================================================================
 // DETAILED TRAINING STRATEGY CONTRACT
@@ -143,42 +154,47 @@ export const DetailedTrainingStrategySchema = baseDocumentSchema.extend({
  * Uses `type` field for strategy type (vs `strategyType` in the base version).
  * For the simpler version, see TrainingStrategyContract in ./training.ts.
  */
-export type DetailedTrainingStrategyContract = z.infer<typeof DetailedTrainingStrategySchema>;
+export type DetailedTrainingStrategyContract = z.infer<
+  typeof DetailedTrainingStrategySchema
+>;
 
 // ============================================================================
 // CREATE/UPDATE SCHEMAS
 // ============================================================================
 
-export const CreateDetailedStrategyGoalSchema = DetailedStrategyGoalSchema.omit({
-  id: true,
-  strategyId: true,
-  progressPercent: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const CreateDetailedStrategyGoalSchema = DetailedStrategyGoalSchema.omit(
+  {
+    id: true,
+    strategyId: true,
+    progressPercent: true,
+    createdAt: true,
+    updatedAt: true,
+  },
+);
 
-export const CreateDetailedTrainingPhaseSchema = DetailedTrainingPhaseSchema.omit({
-  id: true,
-  strategyId: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export const CreateDetailedTrainingPhaseSchema =
+  DetailedTrainingPhaseSchema.omit({
+    id: true,
+    strategyId: true,
+    createdAt: true,
+    updatedAt: true,
+  });
 
-export const CreateDetailedTrainingStrategySchema = DetailedTrainingStrategySchema
-  .omit({
+export const CreateDetailedTrainingStrategySchema =
+  DetailedTrainingStrategySchema.omit({
     id: true,
     createdAt: true,
     updatedAt: true,
     phases: true,
     goals: true,
     overallProgress: true,
-  })
-  .extend({
+  }).extend({
     phases: z.array(CreateDetailedTrainingPhaseSchema).optional(),
     goals: z.array(CreateDetailedStrategyGoalSchema).optional(),
   });
 
-export const UpdateDetailedTrainingStrategySchema = CreateDetailedTrainingStrategySchema.partial();
+export const UpdateDetailedTrainingStrategySchema =
+  CreateDetailedTrainingStrategySchema.partial();
 
 // ============================================================================
 // GOAL SYNC RESULT TYPES
@@ -188,16 +204,16 @@ export const UpdateDetailedTrainingStrategySchema = CreateDetailedTrainingStrate
  * Sync error codes for goal sync failures.
  */
 export const GOAL_SYNC_ERROR_CODES = [
-  'NO_DATA',
-  'MISSING_EXERCISE_LINK',
-  'UNKNOWN_DATA_SOURCE',
-  'FETCH_FAILED',
+  "NO_DATA",
+  "MISSING_EXERCISE_LINK",
+  "UNKNOWN_DATA_SOURCE",
+  "FETCH_FAILED",
 ] as const;
 export type GoalSyncErrorCode = (typeof GOAL_SYNC_ERROR_CODES)[number];
 
 export const GoalSyncResultSchema = z.object({
   goalId: z.string().uuid(),
-  goalMetric: GoalMetricKeySchema,
+  goalMetric: z.string().min(1),
   success: z.boolean(),
   error: z.string().optional(),
   previousValue: z.number().nullable().optional(),
@@ -224,14 +240,16 @@ export const SyncAllGoalsResultSchema = z.object({
 /**
  * Aggregate result of syncing all goals for a strategy.
  */
-export type SyncAllGoalsResultContract = z.infer<typeof SyncAllGoalsResultSchema>;
+export type SyncAllGoalsResultContract = z.infer<
+  typeof SyncAllGoalsResultSchema
+>;
 
 // ============================================================================
 // DRAFT SCHEMAS (for AI generation)
 // ============================================================================
 
 export const StrategyGoalDraftSchema = z.object({
-  goalMetric: GoalMetricKeySchema,
+  goalMetric: z.string().min(1),
   goalTarget: z.number().finite(),
   baselineValue: z.number().finite().optional(),
   weight: z.number().finite().optional(),
@@ -254,7 +272,9 @@ export const TrainingPhaseDraftSchema = z.object({
   isCompleted: z.boolean(),
 });
 
-export type TrainingPhaseDraftContract = z.infer<typeof TrainingPhaseDraftSchema>;
+export type TrainingPhaseDraftContract = z.infer<
+  typeof TrainingPhaseDraftSchema
+>;
 
 export const StrategyDraftSchema = z.object({
   name: z.string().min(1),
@@ -282,7 +302,15 @@ export interface StrategyGenerationActivityContract {
   /** Timestamp of the activity */
   timestamp: string;
   /** Type of activity */
-  type: 'search' | 'create' | 'select' | 'plan' | 'note' | 'thinking' | 'complete' | 'analyze';
+  type:
+    | "search"
+    | "create"
+    | "select"
+    | "plan"
+    | "note"
+    | "thinking"
+    | "complete"
+    | "analyze";
   /** Short description of the activity */
   message: string;
   /** Optional additional data */
@@ -291,9 +319,29 @@ export interface StrategyGenerationActivityContract {
 
 export const StrategyGenerationActivitySchema = z.object({
   timestamp: z.string(),
-  type: z.enum(['search', 'create', 'select', 'plan', 'note', 'thinking', 'complete', 'analyze']),
+  type: z.enum([
+    "search",
+    "create",
+    "select",
+    "plan",
+    "note",
+    "thinking",
+    "complete",
+    "analyze",
+  ]),
   message: z.string(),
-  data: z.record(z.unknown()).optional(),
+  data: z
+    .record(
+      z.string(),
+      z.union([
+        z.string(),
+        z.number(),
+        z.boolean(),
+        z.null(),
+        z.array(z.string()),
+      ]),
+    )
+    .optional(),
 });
 
 export const StrategyGenerationProgressSchema = z.object({
@@ -304,15 +352,19 @@ export const StrategyGenerationProgressSchema = z.object({
   turn: z.number().int().min(0).optional(),
   maxTurns: z.number().int().positive().optional(),
   activities: z.array(StrategyGenerationActivitySchema).optional(),
-  stats: z.object({
-    goalsIdentified: z.number().int().min(0).optional(),
-    phasesCreated: z.number().int().min(0).optional(),
-    exercisesSearched: z.number().int().min(0).optional(),
-    exercisesCreated: z.number().int().min(0).optional(),
-  }).optional(),
+  stats: z
+    .object({
+      goalsIdentified: z.number().int().min(0).optional(),
+      phasesCreated: z.number().int().min(0).optional(),
+      exercisesSearched: z.number().int().min(0).optional(),
+      exercisesCreated: z.number().int().min(0).optional(),
+    })
+    .optional(),
 });
 
-export type StrategyGenerationProgressContract = z.infer<typeof StrategyGenerationProgressSchema>;
+export type StrategyGenerationProgressContract = z.infer<
+  typeof StrategyGenerationProgressSchema
+>;
 
 // ============================================================================
 // AI STRATEGY GENERATION RESULT CONTRACTS
@@ -324,23 +376,40 @@ export const StrategyGenerationResultSchema = z.object({
   reasoning: z.string(),
 });
 
-export type StrategyGenerationResultContract = z.infer<typeof StrategyGenerationResultSchema>;
+export type StrategyGenerationResultContract = z.infer<
+  typeof StrategyGenerationResultSchema
+>;
 
 export const StrategyClarificationNeededSchema = z.object({
   needsClarification: z.literal(true),
   questions: z.array(z.string().min(1)),
   requestId: z.string(),
-  partialContext: z.unknown().optional(),
+  partialContext: z
+    .record(
+      z.string(),
+      z.union([
+        z.string(),
+        z.number(),
+        z.boolean(),
+        z.null(),
+        z.array(z.string()),
+      ]),
+    )
+    .optional(),
 });
 
-export type StrategyClarificationNeededContract = z.infer<typeof StrategyClarificationNeededSchema>;
+export type StrategyClarificationNeededContract = z.infer<
+  typeof StrategyClarificationNeededSchema
+>;
 
 export const StrategyGenerationResponseSchema = z.union([
   StrategyGenerationResultSchema,
   StrategyClarificationNeededSchema,
 ]);
 
-export type StrategyGenerationResponseContract = z.infer<typeof StrategyGenerationResponseSchema>;
+export type StrategyGenerationResponseContract = z.infer<
+  typeof StrategyGenerationResponseSchema
+>;
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -353,7 +422,9 @@ export type StrategyGenerationResponseContract = z.infer<typeof StrategyGenerati
  * - 'lower_better': Progress measured by value decrease (e.g., body fat %, A1C)
  * - 'context': Direction inferred from baseline vs target relationship
  */
-export function calculateGoalProgress(goal: DetailedStrategyGoalContract): number {
+export function calculateGoalProgress(
+  goal: DetailedStrategyGoalContract,
+): number {
   // Guard against null/undefined values
   if (goal.baselineValue == null || goal.currentValue == null) {
     return 0;
@@ -367,9 +438,9 @@ export function calculateGoalProgress(goal: DetailedStrategyGoalContract): numbe
   // - Explicit 'higher_better' or 'lower_better' is used directly
   // - 'context' (or any other value) infers direction from baseline vs target
   let isHigherBetter: boolean;
-  if (goal.goalDirection === 'higher_better') {
+  if (goal.goalDirection === "higher_better") {
     isHigherBetter = true;
-  } else if (goal.goalDirection === 'lower_better') {
+  } else if (goal.goalDirection === "lower_better") {
     isHigherBetter = false;
   } else {
     // 'context' or unknown: infer from baseline/target relationship
@@ -394,7 +465,9 @@ export function calculateGoalProgress(goal: DetailedStrategyGoalContract): numbe
 /**
  * Calculate overall strategy progress as weighted average of goal progresses.
  */
-export function calculateStrategyProgress(strategy: DetailedTrainingStrategyContract): number {
+export function calculateStrategyProgress(
+  strategy: DetailedTrainingStrategyContract,
+): number {
   if (strategy.goals.length === 0) {
     return 0;
   }
@@ -432,19 +505,19 @@ export function getCurrentPhase(
 // ============================================================================
 
 const nowIso = () => new Date().toISOString();
-const todayIso = () => new Date().toISOString().split('T')[0];
+const todayIso = () => new Date().toISOString().split("T")[0];
 
 export const createMockDetailedTrainingPhase = (
   overrides: Partial<DetailedTrainingPhaseContract> = {},
 ): DetailedTrainingPhaseContract => ({
   id: overrides.id ?? crypto.randomUUID(),
   strategyId: overrides.strategyId ?? crypto.randomUUID(),
-  name: overrides.name ?? 'Accumulation',
+  name: overrides.name ?? "Accumulation",
   order: overrides.order ?? 0,
   weekCount: overrides.weekCount ?? 4,
-  intensityRange: overrides.intensityRange ?? '65-75% 1RM',
-  volumeLevel: overrides.volumeLevel ?? 'high',
-  focusAreas: overrides.focusAreas ?? ['hypertrophy', 'technique'],
+  intensityRange: overrides.intensityRange ?? "65-75% 1RM",
+  volumeLevel: overrides.volumeLevel ?? "high",
+  focusAreas: overrides.focusAreas ?? ["hypertrophy", "technique"],
   isActive: overrides.isActive ?? false,
   isCompleted: overrides.isCompleted ?? false,
   createdAt: overrides.createdAt ?? nowIso(),
@@ -457,18 +530,18 @@ export const createMockDetailedStrategyGoal = (
 ): DetailedStrategyGoalContract => ({
   id: overrides.id ?? crypto.randomUUID(),
   strategyId: overrides.strategyId ?? crypto.randomUUID(),
-  goalMetric: overrides.goalMetric ?? 'squat_1rm',
-  goalCategory: overrides.goalCategory ?? 'fitness',
-  goalUnit: overrides.goalUnit ?? 'lbs',
-  goalDirection: overrides.goalDirection ?? 'higher_better',
+  goalMetric: overrides.goalMetric ?? "squat_1rm",
+  goalCategory: overrides.goalCategory ?? "fitness",
+  goalUnit: overrides.goalUnit ?? "lbs",
+  goalDirection: overrides.goalDirection ?? "higher_better",
   linkedExerciseId: overrides.linkedExerciseId,
   linkedExerciseName: overrides.linkedExerciseName,
   baselineValue: overrides.baselineValue ?? 275,
   currentValue: overrides.currentValue ?? 295,
   goalTarget: overrides.goalTarget ?? 315,
   weight: overrides.weight ?? 1,
-  dataSource: overrides.dataSource ?? 'manual',
-  dataKey: overrides.dataKey ?? 'squat_1rm',
+  dataSource: overrides.dataSource ?? "manual",
+  dataKey: overrides.dataKey ?? "squat_1rm",
   progressPercent: overrides.progressPercent ?? 50,
   createdAt: overrides.createdAt ?? nowIso(),
   updatedAt: overrides.updatedAt ?? nowIso(),
@@ -479,55 +552,71 @@ export const createMockDetailedTrainingStrategy = (
   overrides: Partial<DetailedTrainingStrategyContract> = {},
 ): DetailedTrainingStrategyContract => {
   const strategyId = overrides.id ?? crypto.randomUUID();
-  const goals =
-    overrides.goals ??
-    [
-      createMockDetailedStrategyGoal({
-        strategyId,
-        goalMetric: 'squat_1rm',
-        goalCategory: 'fitness',
-        goalUnit: 'lbs',
-        goalDirection: 'higher_better',
-        baselineValue: 275,
-        currentValue: 295,
-        goalTarget: 315,
-        weight: 0.5,
-        dataSource: 'manual',
-        dataKey: 'squat_1rm',
-        progressPercent: 50,
-      }),
-      createMockDetailedStrategyGoal({
-        strategyId,
-        goalMetric: 'body_fat_percent',
-        goalCategory: 'body_composition',
-        goalUnit: '%',
-        goalDirection: 'lower_better',
-        baselineValue: 20,
-        currentValue: 18,
-        goalTarget: 15,
-        weight: 0.5,
-        dataSource: 'biometric',
-        dataKey: 'BodyFatPercentage',
-        progressPercent: 40,
-      }),
-    ];
+  const goals = overrides.goals ?? [
+    createMockDetailedStrategyGoal({
+      strategyId,
+      goalMetric: "squat_1rm",
+      goalCategory: "fitness",
+      goalUnit: "lbs",
+      goalDirection: "higher_better",
+      baselineValue: 275,
+      currentValue: 295,
+      goalTarget: 315,
+      weight: 0.5,
+      dataSource: "manual",
+      dataKey: "squat_1rm",
+      progressPercent: 50,
+    }),
+    createMockDetailedStrategyGoal({
+      strategyId,
+      goalMetric: "body_fat_percent",
+      goalCategory: "body_composition",
+      goalUnit: "%",
+      goalDirection: "lower_better",
+      baselineValue: 20,
+      currentValue: 18,
+      goalTarget: 15,
+      weight: 0.5,
+      dataSource: "biometric",
+      dataKey: "BodyFatPercentage",
+      progressPercent: 40,
+    }),
+  ];
 
   return {
     id: strategyId,
-    userId: overrides.userId ?? 'mock-user',
-    name: overrides.name ?? '12-Week Strength Block',
-    type: overrides.type ?? 'block_periodization',
-    goal: overrides.goal ?? 'Increase squat 1RM to 315lbs while reducing body fat',
-    description: overrides.description ?? 'Progressive strength program with body composition focus',
+    userId: overrides.userId ?? "mock-user",
+    name: overrides.name ?? "12-Week Strength Block",
+    type: overrides.type ?? "BLOCK",
+    goal:
+      overrides.goal ?? "Increase squat 1RM to 315lbs while reducing body fat",
+    description:
+      overrides.description ??
+      "Progressive strength program with body composition focus",
     startDate: overrides.startDate ?? todayIso(),
-    status: overrides.status ?? 'active',
+    status: overrides.status ?? "ACTIVE",
     goals,
     overallProgress: overrides.overallProgress ?? 45,
     phases: overrides.phases ?? [
-      createMockDetailedTrainingPhase({ strategyId, name: 'Accumulation', order: 0, isCompleted: true }),
-      createMockDetailedTrainingPhase({ strategyId, name: 'Intensification', order: 1, isActive: true }),
-      createMockDetailedTrainingPhase({ strategyId, name: 'Peak', order: 2 }),
-      createMockDetailedTrainingPhase({ strategyId, name: 'Deload', order: 3, weekCount: 1 }),
+      createMockDetailedTrainingPhase({
+        strategyId,
+        name: "Accumulation",
+        order: 0,
+        isCompleted: true,
+      }),
+      createMockDetailedTrainingPhase({
+        strategyId,
+        name: "Intensification",
+        order: 1,
+        isActive: true,
+      }),
+      createMockDetailedTrainingPhase({ strategyId, name: "Peak", order: 2 }),
+      createMockDetailedTrainingPhase({
+        strategyId,
+        name: "Deload",
+        order: 3,
+        weekCount: 1,
+      }),
     ],
     createdAt: overrides.createdAt ?? nowIso(),
     updatedAt: overrides.updatedAt ?? nowIso(),
@@ -538,7 +627,7 @@ export const createMockDetailedTrainingStrategy = (
 export const createMockStrategyGoalDraft = (
   overrides: Partial<StrategyGoalDraftContract> = {},
 ): StrategyGoalDraftContract => ({
-  goalMetric: overrides.goalMetric ?? 'squat_1rm',
+  goalMetric: overrides.goalMetric ?? "squat_1rm",
   goalTarget: overrides.goalTarget ?? 315,
   baselineValue: overrides.baselineValue ?? 275,
   weight: overrides.weight ?? 1,
@@ -548,12 +637,12 @@ export const createMockStrategyGoalDraft = (
 export const createMockTrainingPhaseDraft = (
   overrides: Partial<TrainingPhaseDraftContract> = {},
 ): TrainingPhaseDraftContract => ({
-  name: overrides.name ?? 'Accumulation',
+  name: overrides.name ?? "Accumulation",
   order: overrides.order ?? 0,
   weekCount: overrides.weekCount ?? 4,
-  intensityRange: overrides.intensityRange ?? '65-75% 1RM',
-  volumeLevel: overrides.volumeLevel ?? 'moderate',
-  focusAreas: overrides.focusAreas ?? ['hypertrophy', 'technique'],
+  intensityRange: overrides.intensityRange ?? "65-75% 1RM",
+  volumeLevel: overrides.volumeLevel ?? "moderate",
+  focusAreas: overrides.focusAreas ?? ["hypertrophy", "technique"],
   notes: overrides.notes,
   startDate: overrides.startDate ?? todayIso(),
   endDate: overrides.endDate,
@@ -564,13 +653,13 @@ export const createMockTrainingPhaseDraft = (
 export const createMockStrategyDraft = (
   overrides: Partial<StrategyDraftContract> = {},
 ): StrategyDraftContract => ({
-  name: overrides.name ?? '12-Week Strength Block',
-  type: overrides.type ?? 'block_periodization',
-  goal: overrides.goal ?? 'Increase squat 1RM',
-  description: overrides.description ?? 'Focused block for maximal strength',
+  name: overrides.name ?? "12-Week Strength Block",
+  type: overrides.type ?? "BLOCK",
+  goal: overrides.goal ?? "Increase squat 1RM",
+  description: overrides.description ?? "Focused block for maximal strength",
   startDate: overrides.startDate ?? todayIso(),
   endDate: overrides.endDate,
-  status: overrides.status ?? 'active',
+  status: overrides.status ?? "ACTIVE",
   goals: overrides.goals ?? [createMockStrategyGoalDraft()],
   phases: overrides.phases ?? [createMockTrainingPhaseDraft()],
 });
@@ -580,8 +669,8 @@ export const createMockStrategyGenerationProgress = (
 ): StrategyGenerationProgressContract => ({
   step: overrides.step ?? 1,
   totalSteps: overrides.totalSteps ?? 4,
-  phase: overrides.phase ?? 'analyzing_context',
-  detail: overrides.detail ?? 'Analyzing client context',
+  phase: overrides.phase ?? "analyzing_context",
+  detail: overrides.detail ?? "Analyzing client context",
 });
 
 export const createMockStrategyGenerationResult = (
@@ -589,14 +678,18 @@ export const createMockStrategyGenerationResult = (
 ): StrategyGenerationResultContract => ({
   needsClarification: false,
   strategy: overrides.strategy ?? createMockStrategyDraft(),
-  reasoning: overrides.reasoning ?? 'Strategy generated based on client goals and context.',
+  reasoning:
+    overrides.reasoning ??
+    "Strategy generated based on client goals and context.",
 });
 
 export const createMockStrategyClarificationNeeded = (
   overrides: Partial<StrategyClarificationNeededContract> = {},
 ): StrategyClarificationNeededContract => ({
   needsClarification: true,
-  questions: overrides.questions ?? ['What is your primary performance goal for the next 12 weeks?'],
+  questions: overrides.questions ?? [
+    "What is your primary performance goal for the next 12 weeks?",
+  ],
   requestId: overrides.requestId ?? crypto.randomUUID(),
   partialContext: overrides.partialContext,
 });

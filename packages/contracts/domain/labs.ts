@@ -10,14 +10,19 @@
  * deps: zod | consumers: all codebases
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // LAB RESULT STATUS (Domain Constants Pattern)
 // ============================================================================
 
-/** Tuple of valid lab result status values (source of truth) */
-export const LAB_RESULT_STATUSES = ['preliminary', 'final', 'corrected', 'cancelled'] as const;
+/** Tuple of valid lab result status values (source of truth). UPPER_CASE to match Prisma LabResultStatus enum. */
+export const LAB_RESULT_STATUSES = [
+  "PRELIMINARY",
+  "FINAL",
+  "CORRECTED",
+  "CANCELLED",
+] as const;
 export type LabResultStatus = (typeof LAB_RESULT_STATUSES)[number];
 
 /** Zod schema for lab result status - derived from tuple */
@@ -25,18 +30,18 @@ export const LabResultStatusSchema = z.enum(LAB_RESULT_STATUSES);
 
 /** Constant object for lab result status comparisons */
 export const LAB_RESULT_STATUS = {
-  PRELIMINARY: 'preliminary' as LabResultStatus,
-  FINAL: 'final' as LabResultStatus,
-  CORRECTED: 'corrected' as LabResultStatus,
-  CANCELLED: 'cancelled' as LabResultStatus,
-} as const;
+  PRELIMINARY: "PRELIMINARY",
+  FINAL: "FINAL",
+  CORRECTED: "CORRECTED",
+  CANCELLED: "CANCELLED",
+} as const satisfies Record<LabResultStatus, LabResultStatus>;
 
 /** Human-readable labels for lab result statuses */
 export const LAB_RESULT_STATUS_LABELS: Record<LabResultStatus, string> = {
-  preliminary: 'Preliminary',
-  final: 'Final',
-  corrected: 'Corrected',
-  cancelled: 'Cancelled',
+  PRELIMINARY: "Preliminary",
+  FINAL: "Final",
+  CORRECTED: "Corrected",
+  CANCELLED: "Cancelled",
 };
 
 /**
@@ -51,7 +56,13 @@ export function isLabResultStatus(value: string): value is LabResultStatus {
 // ============================================================================
 
 /** Tuple of valid lab result flag values (source of truth) */
-export const LAB_RESULT_FLAGS = ['normal', 'low', 'high', 'critical_low', 'critical_high'] as const;
+export const LAB_RESULT_FLAGS = [
+  "normal",
+  "low",
+  "high",
+  "critical_low",
+  "critical_high",
+] as const;
 export type LabResultFlag = (typeof LAB_RESULT_FLAGS)[number];
 
 /** Zod schema for lab result flag - derived from tuple */
@@ -59,20 +70,20 @@ export const LabResultFlagSchema = z.enum(LAB_RESULT_FLAGS);
 
 /** Constant object for lab result flag comparisons */
 export const LAB_RESULT_FLAG = {
-  NORMAL: 'normal' as LabResultFlag,
-  LOW: 'low' as LabResultFlag,
-  HIGH: 'high' as LabResultFlag,
-  CRITICAL_LOW: 'critical_low' as LabResultFlag,
-  CRITICAL_HIGH: 'critical_high' as LabResultFlag,
+  NORMAL: "normal" as LabResultFlag,
+  LOW: "low" as LabResultFlag,
+  HIGH: "high" as LabResultFlag,
+  CRITICAL_LOW: "critical_low" as LabResultFlag,
+  CRITICAL_HIGH: "critical_high" as LabResultFlag,
 } as const;
 
 /** Human-readable labels for lab result flags */
 export const LAB_RESULT_FLAG_LABELS: Record<LabResultFlag, string> = {
-  normal: 'Normal',
-  low: 'Low',
-  high: 'High',
-  critical_low: 'Critical Low',
-  critical_high: 'Critical High',
+  normal: "Normal",
+  low: "Low",
+  high: "High",
+  critical_low: "Critical Low",
+  critical_high: "Critical High",
 };
 
 /**
@@ -86,8 +97,16 @@ export function isLabResultFlag(value: string): value is LabResultFlag {
 // LAB MAPPING STATUS (Canonicalization)
 // ============================================================================
 
-/** Tuple of valid lab mapping status values (source of truth) */
-export const LAB_MAPPING_STATUSES = ['matched', 'created', 'review_needed', 'manual_override'] as const;
+/**
+ * Tuple of valid lab mapping status values (source of truth).
+ * UPPER_CASE to match Prisma LabMappingStatus enum.
+ */
+export const LAB_MAPPING_STATUSES = [
+  "MATCHED",
+  "CREATED",
+  "REVIEW_NEEDED",
+  "MANUAL_OVERRIDE",
+] as const;
 export type LabMappingStatus = (typeof LAB_MAPPING_STATUSES)[number];
 
 /** Zod schema for lab mapping status */
@@ -95,45 +114,56 @@ export const LabMappingStatusSchema = z.enum(LAB_MAPPING_STATUSES);
 
 /** Constant object for lab mapping status comparisons */
 export const LAB_MAPPING_STATUS = {
-  MATCHED: 'matched' as LabMappingStatus,
-  CREATED: 'created' as LabMappingStatus,
-  REVIEW_NEEDED: 'review_needed' as LabMappingStatus,
-  MANUAL_OVERRIDE: 'manual_override' as LabMappingStatus,
-} as const;
+  MATCHED: "MATCHED",
+  CREATED: "CREATED",
+  REVIEW_NEEDED: "REVIEW_NEEDED",
+  MANUAL_OVERRIDE: "MANUAL_OVERRIDE",
+} as const satisfies Record<LabMappingStatus, LabMappingStatus>;
 
 /** Human-readable labels for lab mapping statuses */
 export const LAB_MAPPING_STATUS_LABELS: Record<LabMappingStatus, string> = {
-  matched: 'Matched',
-  created: 'Created',
-  review_needed: 'Review Needed',
-  manual_override: 'Manual Override',
+  MATCHED: "Matched",
+  CREATED: "Created",
+  REVIEW_NEEDED: "Review Needed",
+  MANUAL_OVERRIDE: "Manual Override",
 };
 
 // ============================================================================
 // LAB METRIC DIRECTIONALITY
 // ============================================================================
 
-/** Tuple of valid lab metric directionality values (source of truth) */
-export const LAB_METRIC_DIRECTIONALITIES = ['lower_is_better', 'higher_is_better', 'optimal_zone', 'decision_limit'] as const;
-export type LabMetricDirectionality = (typeof LAB_METRIC_DIRECTIONALITIES)[number];
+/** Tuple of valid lab metric directionality values (source of truth). UPPER_CASE to match Prisma enum. */
+export const LAB_METRIC_DIRECTIONALITIES = [
+  "LOWER_IS_BETTER",
+  "HIGHER_IS_BETTER",
+  "OPTIMAL_ZONE",
+  "DECISION_LIMIT",
+] as const;
+export type LabMetricDirectionality =
+  (typeof LAB_METRIC_DIRECTIONALITIES)[number];
 
 /** Zod schema for lab metric directionality */
-export const LabMetricDirectionalitySchema = z.enum(LAB_METRIC_DIRECTIONALITIES);
+export const LabMetricDirectionalitySchema = z.enum(
+  LAB_METRIC_DIRECTIONALITIES,
+);
 
 /** Constant object for lab metric directionality comparisons */
 export const LAB_METRIC_DIRECTIONALITY = {
-  LOWER_IS_BETTER: 'lower_is_better' as LabMetricDirectionality,
-  HIGHER_IS_BETTER: 'higher_is_better' as LabMetricDirectionality,
-  OPTIMAL_ZONE: 'optimal_zone' as LabMetricDirectionality,
-  DECISION_LIMIT: 'decision_limit' as LabMetricDirectionality,
-} as const;
+  LOWER_IS_BETTER: "LOWER_IS_BETTER",
+  HIGHER_IS_BETTER: "HIGHER_IS_BETTER",
+  OPTIMAL_ZONE: "OPTIMAL_ZONE",
+  DECISION_LIMIT: "DECISION_LIMIT",
+} as const satisfies Record<LabMetricDirectionality, LabMetricDirectionality>;
 
 /** Human-readable labels for lab metric directionality */
-export const LAB_METRIC_DIRECTIONALITY_LABELS: Record<LabMetricDirectionality, string> = {
-  lower_is_better: 'Lower Is Better',
-  higher_is_better: 'Higher Is Better',
-  optimal_zone: 'Optimal Zone',
-  decision_limit: 'Decision Limit',
+export const LAB_METRIC_DIRECTIONALITY_LABELS: Record<
+  LabMetricDirectionality,
+  string
+> = {
+  LOWER_IS_BETTER: "Lower Is Better",
+  HIGHER_IS_BETTER: "Higher Is Better",
+  OPTIMAL_ZONE: "Optimal Zone",
+  DECISION_LIMIT: "Decision Limit",
 };
 
 // ============================================================================
@@ -141,7 +171,11 @@ export const LAB_METRIC_DIRECTIONALITY_LABELS: Record<LabMetricDirectionality, s
 // ============================================================================
 
 /** Tuple of valid change significance values (source of truth) */
-export const LAB_CHANGE_SIGNIFICANCES = ['not_enough_data', 'no_meaningful_change', 'meaningful_change'] as const;
+export const LAB_CHANGE_SIGNIFICANCES = [
+  "not_enough_data",
+  "no_meaningful_change",
+  "meaningful_change",
+] as const;
 export type LabChangeSignificance = (typeof LAB_CHANGE_SIGNIFICANCES)[number];
 
 /** Zod schema for change significance */
@@ -149,16 +183,19 @@ export const LabChangeSignificanceSchema = z.enum(LAB_CHANGE_SIGNIFICANCES);
 
 /** Constant object for change significance comparisons */
 export const LAB_CHANGE_SIGNIFICANCE = {
-  NOT_ENOUGH_DATA: 'not_enough_data' as LabChangeSignificance,
-  NO_MEANINGFUL_CHANGE: 'no_meaningful_change' as LabChangeSignificance,
-  MEANINGFUL_CHANGE: 'meaningful_change' as LabChangeSignificance,
+  NOT_ENOUGH_DATA: "not_enough_data" as LabChangeSignificance,
+  NO_MEANINGFUL_CHANGE: "no_meaningful_change" as LabChangeSignificance,
+  MEANINGFUL_CHANGE: "meaningful_change" as LabChangeSignificance,
 } as const;
 
 /** Human-readable labels for change significance */
-export const LAB_CHANGE_SIGNIFICANCE_LABELS: Record<LabChangeSignificance, string> = {
-  not_enough_data: 'Not Enough Data',
-  no_meaningful_change: 'No Meaningful Change',
-  meaningful_change: 'Meaningful Change',
+export const LAB_CHANGE_SIGNIFICANCE_LABELS: Record<
+  LabChangeSignificance,
+  string
+> = {
+  not_enough_data: "Not Enough Data",
+  no_meaningful_change: "No Meaningful Change",
+  meaningful_change: "Meaningful Change",
 };
 
 // ============================================================================
@@ -166,7 +203,12 @@ export const LAB_CHANGE_SIGNIFICANCE_LABELS: Record<LabChangeSignificance, strin
 // ============================================================================
 
 /** Tuple of valid clinical direction values (source of truth) */
-export const LAB_CLINICAL_DIRECTIONS = ['improving', 'worsening', 'stable', 'not_applicable'] as const;
+export const LAB_CLINICAL_DIRECTIONS = [
+  "improving",
+  "worsening",
+  "stable",
+  "not_applicable",
+] as const;
 export type LabClinicalDirection = (typeof LAB_CLINICAL_DIRECTIONS)[number];
 
 /** Zod schema for clinical direction */
@@ -174,18 +216,21 @@ export const LabClinicalDirectionSchema = z.enum(LAB_CLINICAL_DIRECTIONS);
 
 /** Constant object for clinical direction comparisons */
 export const LAB_CLINICAL_DIRECTION = {
-  IMPROVING: 'improving' as LabClinicalDirection,
-  WORSENING: 'worsening' as LabClinicalDirection,
-  STABLE: 'stable' as LabClinicalDirection,
-  NOT_APPLICABLE: 'not_applicable' as LabClinicalDirection,
+  IMPROVING: "improving" as LabClinicalDirection,
+  WORSENING: "worsening" as LabClinicalDirection,
+  STABLE: "stable" as LabClinicalDirection,
+  NOT_APPLICABLE: "not_applicable" as LabClinicalDirection,
 } as const;
 
 /** Human-readable labels for clinical direction */
-export const LAB_CLINICAL_DIRECTION_LABELS: Record<LabClinicalDirection, string> = {
-  improving: 'Improving',
-  worsening: 'Worsening',
-  stable: 'Stable',
-  not_applicable: 'Not Applicable',
+export const LAB_CLINICAL_DIRECTION_LABELS: Record<
+  LabClinicalDirection,
+  string
+> = {
+  improving: "Improving",
+  worsening: "Worsening",
+  stable: "Stable",
+  not_applicable: "Not Applicable",
 };
 
 // ============================================================================
@@ -193,7 +238,12 @@ export const LAB_CLINICAL_DIRECTION_LABELS: Record<LabClinicalDirection, string>
 // ============================================================================
 
 /** Tuple of valid lab range status values (source of truth) */
-export const LAB_RANGE_STATUSES = ['in_range', 'low', 'high', 'not_computable'] as const;
+export const LAB_RANGE_STATUSES = [
+  "in_range",
+  "low",
+  "high",
+  "not_computable",
+] as const;
 export type LabRangeStatus = (typeof LAB_RANGE_STATUSES)[number];
 
 /** Zod schema for lab range status */
@@ -201,18 +251,18 @@ export const LabRangeStatusSchema = z.enum(LAB_RANGE_STATUSES);
 
 /** Constant object for lab range status comparisons */
 export const LAB_RANGE_STATUS = {
-  IN_RANGE: 'in_range' as LabRangeStatus,
-  LOW: 'low' as LabRangeStatus,
-  HIGH: 'high' as LabRangeStatus,
-  NOT_COMPUTABLE: 'not_computable' as LabRangeStatus,
+  IN_RANGE: "in_range" as LabRangeStatus,
+  LOW: "low" as LabRangeStatus,
+  HIGH: "high" as LabRangeStatus,
+  NOT_COMPUTABLE: "not_computable" as LabRangeStatus,
 } as const;
 
 /** Human-readable labels for lab range status */
 export const LAB_RANGE_STATUS_LABELS: Record<LabRangeStatus, string> = {
-  in_range: 'In Range',
-  low: 'Low',
-  high: 'High',
-  not_computable: 'Not Computable',
+  in_range: "In Range",
+  low: "Low",
+  high: "High",
+  not_computable: "Not Computable",
 };
 
 // ============================================================================
@@ -221,15 +271,15 @@ export const LAB_RANGE_STATUS_LABELS: Record<LabRangeStatus, string> = {
 
 /** Tuple of valid lab metric categories (source of truth) */
 export const LAB_METRIC_CATEGORIES = [
-  'body_composition',
-  'cardiovascular',
-  'metabolic',
-  'hormonal',
-  'performance',
-  'hematology',
-  'inflammatory',
-  'nutritional',
-  'uncategorized',
+  "body_composition",
+  "cardiovascular",
+  "metabolic",
+  "hormonal",
+  "performance",
+  "hematology",
+  "inflammatory",
+  "nutritional",
+  "uncategorized",
 ] as const;
 export type LabMetricCategory = (typeof LAB_METRIC_CATEGORIES)[number];
 
@@ -238,15 +288,15 @@ export const LabMetricCategorySchema = z.enum(LAB_METRIC_CATEGORIES);
 
 /** Human-readable labels for lab metric categories */
 export const LAB_METRIC_CATEGORY_LABELS: Record<LabMetricCategory, string> = {
-  body_composition: 'Body Composition',
-  cardiovascular: 'Cardiovascular',
-  metabolic: 'Metabolic',
-  hormonal: 'Hormonal',
-  performance: 'Performance',
-  hematology: 'Hematology',
-  inflammatory: 'Inflammatory',
-  nutritional: 'Nutritional',
-  uncategorized: 'Uncategorized',
+  body_composition: "Body Composition",
+  cardiovascular: "Cardiovascular",
+  metabolic: "Metabolic",
+  hormonal: "Hormonal",
+  performance: "Performance",
+  hematology: "Hematology",
+  inflammatory: "Inflammatory",
+  nutritional: "Nutritional",
+  uncategorized: "Uncategorized",
 };
 
 // ============================================================================
@@ -254,7 +304,12 @@ export const LAB_METRIC_CATEGORY_LABELS: Record<LabMetricCategory, string> = {
 // ============================================================================
 
 /** Tuple of valid metric approval status values (source of truth) */
-export const METRIC_APPROVAL_STATUSES = ['PENDING', 'APPROVED', 'REJECTED', 'MERGED'] as const;
+export const METRIC_APPROVAL_STATUSES = [
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+  "MERGED",
+] as const;
 export type MetricApprovalStatus = (typeof METRIC_APPROVAL_STATUSES)[number];
 
 /** Zod schema for metric approval status */
@@ -262,24 +317,29 @@ export const MetricApprovalStatusSchema = z.enum(METRIC_APPROVAL_STATUSES);
 
 /** Constant object for metric approval status comparisons */
 export const METRIC_APPROVAL_STATUS = {
-  PENDING: 'PENDING' as MetricApprovalStatus,
-  APPROVED: 'APPROVED' as MetricApprovalStatus,
-  REJECTED: 'REJECTED' as MetricApprovalStatus,
-  MERGED: 'MERGED' as MetricApprovalStatus,
+  PENDING: "PENDING" as MetricApprovalStatus,
+  APPROVED: "APPROVED" as MetricApprovalStatus,
+  REJECTED: "REJECTED" as MetricApprovalStatus,
+  MERGED: "MERGED" as MetricApprovalStatus,
 } as const;
 
 /** Human-readable labels for metric approval statuses */
-export const METRIC_APPROVAL_STATUS_LABELS: Record<MetricApprovalStatus, string> = {
-  PENDING: 'Pending Review',
-  APPROVED: 'Approved',
-  REJECTED: 'Rejected',
-  MERGED: 'Merged',
+export const METRIC_APPROVAL_STATUS_LABELS: Record<
+  MetricApprovalStatus,
+  string
+> = {
+  PENDING: "Pending Review",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
+  MERGED: "Merged",
 };
 
 /**
  * Type guard to check if a string is a valid metric approval status
  */
-export function isMetricApprovalStatus(value: string): value is MetricApprovalStatus {
+export function isMetricApprovalStatus(
+  value: string,
+): value is MetricApprovalStatus {
   return (METRIC_APPROVAL_STATUSES as readonly string[]).includes(value);
 }
 
@@ -289,10 +349,10 @@ export function isMetricApprovalStatus(value: string): value is MetricApprovalSt
 
 /** Tuple of valid clinician goal status values (source of truth) */
 export const CLINICIAN_GOAL_STATUSES = [
-  'at-goal',
-  'above-goal',
-  'below-goal',
-  'no-goal-set',
+  "at-goal",
+  "above-goal",
+  "below-goal",
+  "no-goal-set",
 ] as const;
 export type ClinicianGoalStatus = (typeof CLINICIAN_GOAL_STATUSES)[number];
 
@@ -301,22 +361,28 @@ export const ClinicianGoalStatusSchema = z.enum(CLINICIAN_GOAL_STATUSES);
 
 /** Constant object for clinician goal status comparisons */
 export const CLINICIAN_GOAL_STATUS = {
-  AT_GOAL: 'at-goal' as ClinicianGoalStatus,
-  ABOVE_GOAL: 'above-goal' as ClinicianGoalStatus,
-  BELOW_GOAL: 'below-goal' as ClinicianGoalStatus,
-  NO_GOAL_SET: 'no-goal-set' as ClinicianGoalStatus,
+  AT_GOAL: "at-goal" as ClinicianGoalStatus,
+  ABOVE_GOAL: "above-goal" as ClinicianGoalStatus,
+  BELOW_GOAL: "below-goal" as ClinicianGoalStatus,
+  NO_GOAL_SET: "no-goal-set" as ClinicianGoalStatus,
 } as const;
 
 /** Human-readable labels for clinician goal status */
-export const CLINICIAN_GOAL_STATUS_LABELS: Record<ClinicianGoalStatus, string> = {
-  'at-goal': 'At Goal',
-  'above-goal': 'Above Goal',
-  'below-goal': 'Below Goal',
-  'no-goal-set': 'No Goal Set',
-};
+export const CLINICIAN_GOAL_STATUS_LABELS: Record<ClinicianGoalStatus, string> =
+  {
+    "at-goal": "At Goal",
+    "above-goal": "Above Goal",
+    "below-goal": "Below Goal",
+    "no-goal-set": "No Goal Set",
+  };
 
 /** Target direction for clinician goals */
-export const GOAL_TARGET_DIRECTIONS = ['below', 'above', 'at', 'range'] as const;
+export const GOAL_TARGET_DIRECTIONS = [
+  "below",
+  "above",
+  "at",
+  "range",
+] as const;
 export type GoalTargetDirection = (typeof GOAL_TARGET_DIRECTIONS)[number];
 
 /** Zod schema for goal target direction */
@@ -339,7 +405,7 @@ export interface LabObservationContract {
    */
   userId: string;
   reportId: string;
-  metricDefinitionId?: string | null;
+  metricDefinitionId: string;
   observedAt: string; // IsoTimestampString
   rawAnalyteName: string;
   rawValueText?: string | null;
@@ -365,35 +431,40 @@ export interface LabObservationContract {
   updatedAt: string; // IsoTimestampString
 }
 
-export const LabObservationSchema: z.ZodType<LabObservationContract> = z.object({
-  id: z.string(),
-  userId: z.string(),
-  reportId: z.string(),
-  metricDefinitionId: z.string().nullable().optional(),
-  observedAt: z.string(),
-  rawAnalyteName: z.string(),
-  rawValueText: z.string().nullable().optional(),
-  rawValueNumber: z.number().nullable().optional(),
-  rawUnit: z.string().nullable().optional(),
-  rawReferenceIntervalText: z.string().nullable().optional(),
-  rawReferenceIntervalLow: z.number().nullable().optional(),
-  rawReferenceIntervalHigh: z.number().nullable().optional(),
-  rawFlag: z.string().nullable().optional(),
-  canonicalValue: z.number().nullable().optional(),
-  canonicalUnit: z.string().nullable().optional(),
-  labReferenceIntervalLow: z.number().nullable().optional(),
-  labReferenceIntervalHigh: z.number().nullable().optional(),
-  labReferenceIntervalText: z.string().nullable().optional(),
-  labFlag: z.string().nullable().optional(),
-  mappingStatus: LabMappingStatusSchema,
-  mappingConfidence: z.number().min(0).max(1).nullable().optional(),
-  notes: z.string().nullable().optional(),
-  tags: z.array(z.string()).nullable().optional(),
-  extractionConfidences: z.record(z.string(), z.number()).nullable().optional(),
-  extractionFragments: z.record(z.string(), z.string()).nullable().optional(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-});
+export const LabObservationSchema: z.ZodType<LabObservationContract> = z.object(
+  {
+    id: z.string(),
+    userId: z.string(),
+    reportId: z.string(),
+    metricDefinitionId: z.string().min(1),
+    observedAt: z.string(),
+    rawAnalyteName: z.string(),
+    rawValueText: z.string().nullable().optional(),
+    rawValueNumber: z.number().nullable().optional(),
+    rawUnit: z.string().nullable().optional(),
+    rawReferenceIntervalText: z.string().nullable().optional(),
+    rawReferenceIntervalLow: z.number().nullable().optional(),
+    rawReferenceIntervalHigh: z.number().nullable().optional(),
+    rawFlag: z.string().nullable().optional(),
+    canonicalValue: z.number().nullable().optional(),
+    canonicalUnit: z.string().nullable().optional(),
+    labReferenceIntervalLow: z.number().nullable().optional(),
+    labReferenceIntervalHigh: z.number().nullable().optional(),
+    labReferenceIntervalText: z.string().nullable().optional(),
+    labFlag: z.string().nullable().optional(),
+    mappingStatus: LabMappingStatusSchema,
+    mappingConfidence: z.number().min(0).max(1).nullable().optional(),
+    notes: z.string().nullable().optional(),
+    tags: z.array(z.string()).nullable().optional(),
+    extractionConfidences: z
+      .record(z.string(), z.number())
+      .nullable()
+      .optional(),
+    extractionFragments: z.record(z.string(), z.string()).nullable().optional(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+  },
+);
 
 // ============================================================================
 // LAB REPORT CONTRACT
@@ -457,18 +528,19 @@ export const createMockLabObservation = (
 ): LabObservationContract => {
   const timestamp = nowIso();
   return {
-    id: 'mock-observation-id',
-    userId: 'HH-ABC123',
-    reportId: 'mock-report-id',
+    id: "mock-observation-id",
+    userId: "HH-ABC123",
+    reportId: "mock-report-id",
     observedAt: timestamp,
-    rawAnalyteName: 'Glucose',
+    rawAnalyteName: "Glucose",
     rawValueNumber: 95,
-    rawUnit: 'mg/dL',
+    rawUnit: "mg/dL",
     rawReferenceIntervalLow: 70,
     rawReferenceIntervalHigh: 100,
     canonicalValue: 95,
-    canonicalUnit: 'mg/dL',
-    mappingStatus: 'matched',
+    canonicalUnit: "mg/dL",
+    metricDefinitionId: "mock-metric-definition-id",
+    mappingStatus: "MATCHED",
     mappingConfidence: 0.95,
     createdAt: timestamp,
     updatedAt: timestamp,
@@ -481,11 +553,11 @@ export const createMockLabReport = (
 ): LabReportContract => {
   const timestamp = nowIso();
   return {
-    id: 'mock-report-id',
-    userId: 'HH-ABC123',
+    id: "mock-report-id",
+    userId: "HH-ABC123",
     reportDate: timestamp,
-    labName: 'Quest Diagnostics',
-    panelName: 'Comprehensive Metabolic Panel',
+    labName: "Quest Diagnostics",
+    panelName: "Comprehensive Metabolic Panel",
     observations: [createMockLabObservation()],
     createdAt: timestamp,
     updatedAt: timestamp,

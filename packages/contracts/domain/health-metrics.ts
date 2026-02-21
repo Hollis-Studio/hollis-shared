@@ -2,184 +2,57 @@
  * @ai-context Health Metrics Unified Exports | centralized health metric types, utilities, and schemas
  *
  * This module provides a unified export surface for health metric functionality,
- * consolidating types and utilities that were previously scattered across:
- * - goal-metrics.ts (GOAL_METRIC_DEFINITIONS, GoalMetricKey)
- * - health-progress.ts (trends, data quality)
- * - training.ts (HealthMetricDirection, HealthMetricCategory)
+ * including contract types for health progress, goals, wearables, and daily summaries.
  *
- * NOTE: This module uses GoalMetricKey from goal-metrics.ts for type references.
- * The health-progress.ts module has a separate HealthMetricKey type using camelCase
- * for biometric/lab data mapping. These are intentionally different types.
- *
- * For goal metric definitions and keys, import directly from goal-metrics.ts:
- * - GOAL_METRIC_DEFINITIONS
- * - GOAL_METRIC_KEYS
- * - GoalMetricKey
- * - GoalMetricKeySchema
+ * NOTE: GoalMetricKey and the static GOAL_METRIC_DEFINITIONS registry were removed in
+ * Phase 6 of the Unified MetricDefinition Migration. Metric identity is now authoritative
+ * in the MetricDefinition database table. All metric fields that previously used
+ * GoalMetricKey now use string.
  *
  * deps: zod | consumers: all codebases
  */
 
-import { z } from 'zod';
+import { z } from "zod";
+import { type BiometricSource, BiometricSourceSchema } from "./clinical";
+import { dailyMetricsSchema } from "./daily-metrics";
 import {
-    type BiometricSource,
-    BiometricSourceSchema,
-} from './clinical';
+  type DataQualityLevel,
+  DataQualityLevelSchema,
+  type HealthTrend,
+  HealthTrendSchema,
+} from "./health-progress";
+import { journalEntrySchema } from "./journal";
 import {
-    GOAL_METRIC_DEFINITIONS,
-    GOAL_METRIC_KEYS,
-    type GoalMetricKey,
-    GoalMetricKeySchema,
-} from './goal-metrics';
+  type MetricDefinitionSummary,
+  MetricDefinitionSummarySchema,
+} from "./metric-definition";
+import { DailyNutritionLogSchema } from "./nutrition";
 import {
-    type DataQualityLevel,
-    DataQualityLevelSchema,
-    HEALTH_TREND,
-    type HealthTrend,
-    HealthTrendSchema
-} from './health-progress';
-import { journalEntrySchema } from './journal';
-import { DailyNutritionLogSchema } from './nutrition';
-import { dailyMetricsSchema } from './daily-metrics';
-import {
-    type HealthMetricCategory,
-    type HealthMetricDirection,
-    HealthMetricDirectionSchema,
-} from './training';
+  type HealthMetricCategory,
+  type HealthMetricDirection,
+  HealthMetricDirectionSchema,
+} from "./training";
+import { type BiologicalSex, BiologicalSexSchema } from "./user";
 
 // ============================================================================
-// SOURCE WEIGHTS (Data Quality Weighting)
+// SOURCE WEIGHTS & DATA POINT WEIGHTING (canonical: health-progress.ts)
 // ============================================================================
 
-export const SOURCE_WEIGHTS: Record<BiometricSource, number> = {
-  LAB_REPORT: 1.0,
-  CLINICIAN_ENTRY: 1.0,
-  DERIVED: 0.9,
-  APPLE_HEALTH: 0.8,
-  OURA: 0.75,
-  WHOOP: 0.75,
-  GOOGLE_FIT: 0.7,
-  DEVICE: 0.7,
-  USER_LOG: 0.6,
-};
-
-export const VERIFICATION_MULTIPLIER = {
-  verified: 1.0,
-  unverified: 0.7,
-} as const;
-
-// ============================================================================
-// UTILITY FUNCTIONS
-// ============================================================================
+export {
+  getDataPointWeight,
+  SOURCE_WEIGHTS,
+  VERIFICATION_MULTIPLIER
+} from "./health-progress";
 
 /**
- * Returns the weight for a data point based on source and verification status.
- */
-export function getDataPointWeight(source: BiometricSource, isVerified: boolean): number {
-  const base = SOURCE_WEIGHTS[source];
-  const verification = isVerified ? VERIFICATION_MULTIPLIER.verified : VERIFICATION_MULTIPLIER.unverified;
-  return Math.min(1, Math.max(0, base * verification));
-}
-
-/**
- * Gets the category for a health/goal metric.
- * @param metricKey - The metric key
- * @returns The category or 'metabolic' as default
- */
-export function getMetricCategory(metricKey: GoalMetricKey): HealthMetricCategory {
-  return GOAL_METRIC_DEFINITIONS[metricKey].category as HealthMetricCategory;
-}
-
-/**
- * Gets the improvement direction for a health metric.
- * @param metricKey - The metric key
- * @returns The direction ('lower_better', 'higher_better', or 'context')
- */
-export function getMetricDirection(metricKey: GoalMetricKey): HealthMetricDirection {
-  return GOAL_METRIC_DEFINITIONS[metricKey].direction;
-}
-
-/**
- * Determines the health trend based on percent change and metric direction.
- * A change of less than 3% in either direction is considered stable.
- *
- * @param metricKey - The health metric key
- * @param percentChange - The percent change (can be negative)
- * @returns The health trend
- */
-export function determineTrend(metricKey: GoalMetricKey, percentChange: number | null): HealthTrend {
-  if (percentChange === null) {
-    return HEALTH_TREND.STABLE;
-  }
-
-  const STABILITY_THRESHOLD = 3; // ±3% is considered stable
-  const direction = getMetricDirection(metricKey);
-
-  if (Math.abs(percentChange) < STABILITY_THRESHOLD) {
-    return HEALTH_TREND.STABLE;
-  }
-
-  // For context-dependent metrics, we can't determine improvement without more info
-  if (direction === 'context') {
-    return HEALTH_TREND.STABLE;
-  }
-
-  const isIncreasing = percentChange > 0;
-
-  if (direction === 'higher_better') {
-    return isIncreasing ? HEALTH_TREND.IMPROVING : HEALTH_TREND.DECLINING;
-  } else {
-    // lower_better
-    return isIncreasing ? HEALTH_TREND.DECLINING : HEALTH_TREND.IMPROVING;
-  }
-}
-
-/**
- * Checks if a value is within the normal range for a metric.
- * Uses the normalRange from goal metric definitions if available.
- *
- * @deprecated Use isWithinClinicalRange for patient-aware range checking
- * @param _metricKey - The health metric key (unused, for interface consistency)
- * @param _value - The value to check (unused, for interface consistency)
- * @returns true if within range or no range defined
- */
-export function isWithinNormalRange(_metricKey: GoalMetricKey, _value: number): boolean {
-  // Goal metrics don't have normalRange, but some derived definitions might
-  // Default to true if no range is defined
-  return true;
-}
-
-/**
- * Gets the default reference range for a metric based on standard guidelines.
- * This is a simplified version - for full clinical ranges, use the
- * referenceRanges module with patient context.
- *
- * @param metricKey - The metric key
- * @returns Object with low/high bounds or null if not defined
+ * @deprecated Post-migration, reference ranges live in MetricDefinition records.
+ * Use metricDefinitionLookup.getReferenceRanges(code) instead.
+ * @returns null (no static ranges available)
  */
 export function getDefaultReferenceRange(
-  metricKey: GoalMetricKey
+  _metricKey: string,
 ): { low: number; high: number } | null {
-  // Common reference ranges based on clinical guidelines
-  const ranges: Partial<Record<GoalMetricKey, { low: number; high: number }>> = {
-    weight: { low: 40, high: 136 },
-    body_fat_percent: { low: 8, high: 35 },
-    resting_hr: { low: 60, high: 100 },
-    blood_pressure_systolic: { low: 90, high: 120 },
-    blood_pressure_diastolic: { low: 60, high: 80 },
-    vo2_max: { low: 30, high: 60 },
-    hba1c: { low: 4.0, high: 5.6 },
-    fasting_glucose: { low: 70, high: 99 },
-    total_cholesterol: { low: 0, high: 200 },
-    ldl_cholesterol: { low: 0, high: 100 },
-    hdl_cholesterol: { low: 40, high: 999 },
-    triglycerides: { low: 0, high: 150 },
-    vitamin_d: { low: 30, high: 100 },
-    testosterone_total: { low: 200, high: 1000 },
-    grip_strength: { low: 20, high: 60 },
-  };
-
-  return ranges[metricKey] ?? null;
+  return null;
 }
 
 /**
@@ -194,7 +67,7 @@ export function getDefaultReferenceRange(
 export function calculateInRangeScore(
   value: number,
   rangeLow: number | null,
-  rangeHigh: number | null
+  rangeHigh: number | null,
 ): number {
   if (rangeLow == null || rangeHigh == null) {
     return 0;
@@ -216,10 +89,12 @@ export function calculateInRangeScore(
     return Math.round((1 - normalized * 0.2) * 100);
   }
 
-  // Outside range: penalize more aggressively with capped floor at 0
+  // Outside range: continues from 80 at the edge, tapering to 0
+  // Uses the same 80-point ceiling as the inside edge for continuity
   const distanceBeyond = value < low ? low - value : value - high;
-  const normalizedOutside = Math.min(distanceBeyond / span, 1.5);
-  return Math.max(0, Math.round((1 - normalizedOutside) * 80));
+  const normalizedOutside = distanceBeyond / span;
+  if (normalizedOutside >= 1) return 0;
+  return Math.max(0, Math.round(80 * (1 - normalizedOutside)));
 }
 
 // ============================================================================
@@ -228,9 +103,11 @@ export function calculateInRangeScore(
 
 /**
  * Tracks change in a single health metric over a period.
+ * The metric field is a string (MetricDefinition.code) post-migration.
  */
 export interface MetricChange {
-  metric: GoalMetricKey;
+  /** MetricDefinition code string (previously GoalMetricKey) */
+  metric: string;
   unit: string;
   startValue: number | null;
   endValue: number | null;
@@ -242,7 +119,7 @@ export interface MetricChange {
 }
 
 export const MetricChangeSchema = z.object({
-  metric: GoalMetricKeySchema,
+  metric: z.string().min(1),
   unit: z.string().min(1),
   startValue: z.number().nullable(),
   endValue: z.number().nullable(),
@@ -261,12 +138,13 @@ export const MetricChangeSchema = z.object({
  * Area of concern showing which metrics have declining patients.
  */
 export interface ConcernArea {
-  metric: GoalMetricKey;
+  /** MetricDefinition code string (previously GoalMetricKey) */
+  metric: string;
   patientsDeclined: number;
 }
 
 export const ConcernAreaSchema = z.object({
-  metric: GoalMetricKeySchema,
+  metric: z.string().min(1),
   patientsDeclined: z.number().int().min(0),
 });
 
@@ -278,12 +156,13 @@ export const ConcernAreaSchema = z.object({
  * Metric with average change across patients.
  */
 export interface MetricAggregate {
-  metric: GoalMetricKey;
+  /** MetricDefinition code string (previously GoalMetricKey) */
+  metric: string;
   avgChange: number;
 }
 
 export const MetricAggregateSchema = z.object({
-  metric: GoalMetricKeySchema,
+  metric: z.string().min(1),
   avgChange: z.number(),
 });
 
@@ -444,8 +323,8 @@ export const PatientHealthProgressSchema = z.object({
  * Patient context for clinical reference range lookup.
  */
 export interface PatientClinicalContext {
-  /** Biological sex (male/female) */
-  sex?: 'male' | 'female' | null;
+  /** Biological sex */
+  sex?: BiologicalSex | null;
   /** Age in years */
   age?: number | null;
   /** Pregnancy status */
@@ -453,7 +332,7 @@ export interface PatientClinicalContext {
 }
 
 export const PatientClinicalContextSchema = z.object({
-  sex: z.enum(['male', 'female']).nullable().optional(),
+  sex: BiologicalSexSchema.nullable().optional(),
   age: z.number().int().min(0).max(150).nullable().optional(),
   pregnancyStatus: z.string().nullable().optional(),
 });
@@ -485,7 +364,8 @@ export interface RangeDerivation {
 }
 
 export interface HealthMetricGoalContract {
-  metric: GoalMetricKey;
+  /** MetricDefinition code string (previously GoalMetricKey) */
+  metric: string;
   targetValue: number | null;
   targetDirection: HealthMetricDirection;
   referenceRangeLow: number | null;
@@ -504,8 +384,16 @@ export interface HealthMetricGoalContract {
   isDerivedRange: boolean;
   /** True if the reference range was adjusted for pregnancy (trimester-specific) */
   isPregnancyAdjusted: boolean;
-  rangeSource: 'guideline' | 'custom' | 'derived' | 'missing' | 'dynamic-db' | 'lab';
+  rangeSource:
+    | "guideline"
+    | "custom"
+    | "derived"
+    | "missing"
+    | "dynamic-db"
+    | "lab";
   rangeDerivation: RangeDerivation | null;
+  /** MetricDefinition metadata (server-enriched) */
+  metricDefinition?: MetricDefinitionSummary;
 }
 
 export const RangeDerivationStepSchema = z.object({
@@ -531,7 +419,7 @@ export const RangeDerivationSchema = z.object({
 });
 
 export const HealthMetricGoalSchema = z.object({
-  metric: GoalMetricKeySchema,
+  metric: z.string().min(1),
   targetValue: z.number().nullable(),
   targetDirection: HealthMetricDirectionSchema,
   referenceRangeLow: z.number().nullable(),
@@ -549,8 +437,16 @@ export const HealthMetricGoalSchema = z.object({
   hasMissingRange: z.boolean(),
   isDerivedRange: z.boolean(),
   isPregnancyAdjusted: z.boolean(),
-  rangeSource: z.enum(['guideline', 'custom', 'derived', 'missing', 'dynamic-db', 'lab']),
+  rangeSource: z.enum([
+    "guideline",
+    "custom",
+    "derived",
+    "missing",
+    "dynamic-db",
+    "lab",
+  ]),
   rangeDerivation: RangeDerivationSchema.nullable(),
+  metricDefinition: MetricDefinitionSummarySchema.optional(),
 });
 
 export const HealthMetricGoalUpsertSchema = z.object({
@@ -560,7 +456,9 @@ export const HealthMetricGoalUpsertSchema = z.object({
   referenceRangeHigh: z.number().optional().nullable(),
 });
 
-export type HealthMetricGoalUpsert = z.infer<typeof HealthMetricGoalUpsertSchema>;
+export type HealthMetricGoalUpsert = z.infer<
+  typeof HealthMetricGoalUpsertSchema
+>;
 
 // ============================================================================
 // WEARABLES DATA CONTRACT
@@ -581,17 +479,17 @@ export interface WearablesDataContract {
   syncedAt?: string;
   rawSources?: {
     source: BiometricSource;
-    data?: Record<string, unknown> | null;
+    data?: Record<string, string | number | boolean | null> | null;
     isVerified: boolean;
   }[];
 }
 
 export const WearablesDataSchema = z.object({
-  steps: z.number().optional(),
+  steps: z.number().int().optional(),
   sleepHours: z.number().optional(),
-  restingHeartRate: z.number().optional(),
-  activeCalories: z.number().optional(),
-  flightsClimbed: z.number().optional(),
+  restingHeartRate: z.number().int().optional(),
+  activeCalories: z.number().int().optional(),
+  flightsClimbed: z.number().int().optional(),
   weight: z.number().optional(),
   heartRateVariability: z.number().optional(),
   oxygenSaturation: z.number().optional(),
@@ -599,11 +497,21 @@ export const WearablesDataSchema = z.object({
   source: BiometricSourceSchema.optional(),
   isVerified: z.boolean(),
   syncedAt: z.string().optional(),
-  rawSources: z.array(z.object({
-    source: BiometricSourceSchema,
-    data: z.record(z.string(), z.unknown()).nullable().optional(),
-    isVerified: z.boolean(),
-  })).optional(),
+  rawSources: z
+    .array(
+      z.object({
+        source: BiometricSourceSchema,
+        data: z
+          .record(
+            z.string(),
+            z.union([z.string(), z.number(), z.boolean(), z.null()]),
+          )
+          .nullable()
+          .optional(),
+        isVerified: z.boolean(),
+      }),
+    )
+    .optional(),
 });
 
 // ============================================================================
@@ -620,15 +528,14 @@ export const DailySummarySchema = z.object({
   nutrition: DailyNutritionLogSchema,
   journal: journalEntrySchema.optional(),
   metrics: dailyMetricsSchema.optional(),
-  documents: z.array(z.record(z.string(), z.unknown())),
+  documents: z.array(
+    z.object({
+      id: z.string(),
+      category: z.string(),
+      title: z.string().optional(),
+      uploadedAt: z.string().optional(),
+    }),
+  ),
 });
 
 export type DailySummaryContract = z.infer<typeof DailySummarySchema>;
-
-// ============================================================================
-// HEALTH METRIC LABELS (derived from goal metrics)
-// ============================================================================
-
-export const HEALTH_METRIC_LABELS: Record<GoalMetricKey, string> = Object.fromEntries(
-  GOAL_METRIC_KEYS.map((key) => [key, GOAL_METRIC_DEFINITIONS[key].label])
-) as Record<GoalMetricKey, string>;

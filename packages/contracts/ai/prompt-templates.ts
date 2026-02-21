@@ -27,9 +27,9 @@ Generate personalized weekly workout plans that align with client goals, account
 </mission>
 
 <critical_rules>
-1. EVERY exercise MUST have an exerciseId (from search results or create_exercise)
-2. Search the library FIRST using batch_search_exercises before generating the plan
-3. Only create new exercises if no suitable match exists
+1. EVERY exercise MUST have an exerciseId (from list_and_select_exercise or create_exercise)
+2. Retrieve the FULL library FIRST using list_and_select_exercise before generating the plan
+3. Only create new exercises if no suitable match exists in the list
 4. RARELY use save_permanent_note - only for significant discoveries (injuries, strong aversions, permanent limitations). Most plans need ZERO notes.
 </critical_rules>
 
@@ -44,16 +44,16 @@ The context includes BOTH historical workouts (completed and planned from past 4
 
 <workflow>
 1. ANALYZE: Extract goals, PRs, injuries, compliance AND review recent workout history
-2. SEARCH: Use batch_search_exercises to find exercises by movement pattern/muscle
-3. SELECT: Choose exercises matching equipment, experience, avoiding injuries
-4. CREATE: Only if search yields no match (include full metadata)
+2. LIST: Use list_and_select_exercise to retrieve the full exercise library
+3. SELECT: Choose exercises from the list matching equipment, experience, avoiding injuries
+4. CREATE: Only if no suitable match exists in the list (include full metadata)
 5. GENERATE: Call generate_workout_plan with all 7 days
 </workflow>
 
 <example>
 Client: Intermediate, ACL history, goal=hypertrophy
-→ batch_search_exercises: push/pull/hinge patterns (avoiding deep squat)
-→ Select: bench variations, rows, RDLs, leg press (knee-friendly)
+→ list_and_select_exercise: retrieve full library
+→ Select: bench variations, rows, RDLs, leg press (knee-friendly) from the list
 → generate_workout_plan: 4 training days + 3 rest, RPE 7-8, 12-15 rep ranges
 </example>
 
@@ -231,7 +231,7 @@ The tool uses semantic search, so use descriptive phrases rather than exact key 
 Each result includes the metric key, category, unit, description, and validation rules.
 
 For performance-based goals (1RM, max reps, etc.), you MUST also link to specific exercises:
-1. Use batch_search_exercises to find the exercise in the library
+1. Use list_and_select_exercise to retrieve the full library and find the exercise
 2. Include the exercise UUID as linkedExerciseId in the goal
 3. This enables automatic progress tracking from workout logs
 </goal_metrics>
@@ -240,23 +240,15 @@ For performance-based goals (1RM, max reps, etc.), you MUST also link to specifi
 When creating performance-based goals (1RM targets, max reps, etc.):
 
 REQUIRED WORKFLOW:
-1. Call batch_search_exercises to find exercises matching the goals
-   Example for SBD (Squat/Bench/Deadlift) strategy:
-   {
-     "searches": [
-       { "label": "squat", "searchTerm": "barbell back squat", "limit": 5 },
-       { "label": "bench", "searchTerm": "barbell bench press", "limit": 5 },
-       { "label": "deadlift", "searchTerm": "conventional deadlift", "limit": 5 }
-     ]
-   }
-
-2. Review results and select the most appropriate exercise for each goal
+1. Call list_and_select_exercise to retrieve the full exercise library
+2. Review the list and select the most appropriate exercise for each goal
 3. Use the exercise's 'id' field as linkedExerciseId in the goal
+4. If no suitable match exists in the list, use create_exercise as last resort
 
-SEARCH TIPS:
-- Use specific search terms: "barbell back squat" not just "squat"
-- For compound lifts, filter by movementPattern: "squat", "hinge", "push", "pull"
-- If no results, try broader terms or create_exercise as last resort
+SELECTION TIPS:
+- Scan by name: look for "Barbell Back Squat", "Barbell Bench Press", "Conventional Deadlift"
+- If no exact match, select the closest equivalent from the list
+- Only call create_exercise if truly no suitable match exists
 
 CLARIFICATION NEEDED:
 If the admin requests performance goals but did NOT specify baseline or target values:
@@ -298,13 +290,9 @@ EXAMPLE 2: Body Recomposition Strategy (12-week strength + body composition)
      ]
    }
 
-2. Call batch_search_exercises for performance tracking:
-   {
-     "searches": [
-       { "label": "squat", "searchTerm": "barbell back squat", "limit": 5 },
-       { "label": "deadlift", "searchTerm": "conventional deadlift", "limit": 5 }
-     ]
-   }
+2. Call list_and_select_exercise to find exercises for performance tracking:
+   - Scan the returned list for "Barbell Back Squat" and "Conventional Deadlift" (or closest matches)
+   - Use the exercise's 'id' field as linkedExerciseId
 
 3. Link metrics AND exercises in goals:
    goals: [
@@ -319,14 +307,14 @@ This enables both health biomarker tracking AND automatic workout performance tr
 
 <periodization_guidelines>
 Strategy Types:
-- linear_progression: Simple week-over-week increases, best for beginners
-- undulating: Daily variation in volume/intensity, good for intermediate
-- block_periodization: Focused mesocycles (accumulation → intensification → peak), best for advanced
-- mesocycle: Single focused training block
-- deload: Recovery period with reduced volume/intensity
-- custom: Non-standard periodization
+- LINEAR_PROGRESSION: Simple week-over-week increases, best for beginners
+- UNDULATING: Daily variation in volume/intensity, good for intermediate
+- BLOCK: Focused mesocycles (accumulation → intensification → peak), best for advanced
+- MESOCYCLE: Single focused training block
+- DELOAD: Recovery period with reduced volume/intensity
+- CUSTOM: Non-standard periodization
 
-Phase Structure (for block_periodization):
+Phase Structure (for BLOCK periodization):
 1. Accumulation (3-4 weeks): High volume, moderate intensity (65-75% 1RM)
 2. Intensification (3-4 weeks): Moderate volume, high intensity (75-85% 1RM)
 3. Peak/Realization (2-3 weeks): Low volume, maximum intensity (85-95%+ 1RM)
@@ -346,7 +334,7 @@ Set phase dates by calculating from startDate using weekCount:
 1. ANALYZE: Review client profile, permanent notes, active strategies, PRs
 2. CHECK: Identify any conflicts between goals and medical/injury notes
 3. CLARIFY: If conflicts exist, call request_clarification with specific questions
-4. SEARCH EXERCISES: For performance goals, call batch_search_exercises to find exercise UUIDs
+4. SEARCH EXERCISES: For performance goals, call list_and_select_exercise to find exercise UUIDs
 5. SEARCH METRICS: For health/body composition/lab goals, call batch_search_metrics to find metric codes
    - Use semantic search for terms like "cholesterol", "blood sugar", "HbA1c", "body composition"
    - Search broadly: batch queries for lipids, glucose markers, hormones, body comp
@@ -395,10 +383,10 @@ When in doubt, DO NOT create a note. The bar is HIGH - most workout generations 
 /**
  * Description for the generate_workout_plan tool.
  */
-export const GENERATE_WORKOUT_PLAN_TOOL_DESCRIPTION = `Generate the final weekly workout plan. Call this AFTER searching the exercise library and optionally creating new exercises.
+export const GENERATE_WORKOUT_PLAN_TOOL_DESCRIPTION = `Generate the final weekly workout plan. Call this AFTER selecting exercises from the library and optionally creating new exercises.
 
 CRITICAL: Every exercise MUST have an exerciseId from either:
-1. search_exercise_library results
+1. list_and_select_exercise results
 2. create_exercise results (for newly created exercises)
 
 This enables proper performance tracking and progressive overload calculations.`;
@@ -468,7 +456,7 @@ export function buildWorkoutUserPrompt(
   formattedContext: string,
   weekStartDate: string,
   customPrompt?: string,
-  _overwriteMode?: string
+  _overwriteMode?: string,
 ): string {
   let prompt = `Here is the client context for the week starting ${weekStartDate}:\n\n${formattedContext}`;
 
@@ -476,7 +464,8 @@ export function buildWorkoutUserPrompt(
     prompt += `\n\n## Additional Instructions from Staff:\n${customPrompt}`;
   }
 
-  prompt += '\n\nPlease analyze this client context and generate an appropriate workout plan.';
+  prompt +=
+    "\n\nPlease analyze this client context and generate an appropriate workout plan.";
 
   return prompt;
 }
@@ -492,7 +481,7 @@ export function buildWorkoutUserPrompt(
 export function buildNutritionUserPrompt(
   formattedContext: string,
   weekStartDate: string,
-  customPrompt?: string
+  customPrompt?: string,
 ): string {
   let prompt = `Here is the client context for the week starting ${weekStartDate}:\n\n${formattedContext}`;
 
@@ -500,7 +489,8 @@ export function buildNutritionUserPrompt(
     prompt += `\n\n## Additional Instructions from Staff:\n${customPrompt}`;
   }
 
-  prompt += '\n\nPlease analyze this client context and generate appropriate nutrition targets.';
+  prompt +=
+    "\n\nPlease analyze this client context and generate appropriate nutrition targets.";
 
   return prompt;
 }
@@ -514,11 +504,12 @@ export function buildNutritionUserPrompt(
  */
 export function buildStrategyUserPrompt(
   formattedContext: string,
-  customPrompt: string
+  customPrompt: string,
 ): string {
   let prompt = `Here is the client context:\n\n${formattedContext}`;
   prompt += `\n\n## Strategy Request:\n${customPrompt}`;
-  prompt += '\n\nPlease analyze this client context, check for any conflicts with injuries or limitations, and generate an appropriate training strategy.';
+  prompt +=
+    "\n\nPlease analyze this client context, check for any conflicts with injuries or limitations, and generate an appropriate training strategy.";
 
   return prompt;
 }
@@ -530,9 +521,9 @@ export function buildStrategyUserPrompt(
  * @returns Continuation prompt for AI
  */
 export function buildClarificationAnswerPrompt(
-  clarificationAnswers: string[]
+  clarificationAnswers: string[],
 ): string {
-  return `Here are the answers to your clarification questions:\n\n${clarificationAnswers.map((a, i) => `${i + 1}. ${a}`).join('\n')}\n\nPlease proceed with generating the training strategy based on this additional information.`;
+  return `Here are the answers to your clarification questions:\n\n${clarificationAnswers.map((a, i) => `${i + 1}. ${a}`).join("\n")}\n\nPlease proceed with generating the training strategy based on this additional information.`;
 }
 
 // ============================================================================

@@ -1,6 +1,9 @@
 /**
  * @ai-context Shared Contracts Module | Single source of truth for all contracts across the monorepo
  *
+ * CONVENTION: All domain enums use UPPER_CASE values to match Prisma enum definitions.
+ * This is the canonical import alias: `@contracts` (or `@hollis/contracts`).
+ *
  * This module provides:
  * - API route definitions and types
  * - Domain contracts (types, schemas, constants)
@@ -24,35 +27,50 @@
  */
 
 // Primitives (exported first to avoid circular dependencies)
-export * from './primitives';
+export * from "./primitives";
 
 // API Routes
-export * from './api';
+export * from "./api";
 
 // Domain contracts (includes units, user, appointments, nutrition, training, clinical, etc.)
-export * from './domain';
+export * from "./domain";
 
 // Zod schemas
-export * from './schemas';
+export * from "./schemas";
 
 // Constants
-export * from './constants';
+export * from "./constants";
 
 // Admin contracts (types, routes, schemas)
-export * from './admin';
+export * from "./admin";
 
 // AI contracts (types, validation, prompts)
-export * from './ai';
+export * from "./ai";
 
 // Public contracts (contact forms, public API)
-export * from './public';
+export * from "./public";
 
 // Stripe contracts (products, payment links)
-export * from './stripe';
+export * from "./stripe";
 
 // Password contracts (validation, policies, reset)
 // NOTE: Explicitly re-export passwordSchema from password module to resolve ambiguity
-export { PASSWORD_POLICY, ZXCVBN_SCORE_LABELS, checkPasswordBreached, passwordLengthSchema, passwordSchema, validatePassword, validatePasswordStrength, type PasswordValidationResult } from './password';
+export {
+    PASSWORD_POLICY,
+    ZXCVBN_SCORE_LABELS,
+    checkPasswordBreached,
+    passwordLengthSchema,
+    passwordSchema,
+    validatePassword,
+    validatePasswordStrength,
+    type PasswordValidationResult
+} from "./password";
 
 // Error sanitization (PHI protection)
-export { REDACTION_PLACEHOLDERS, containsPotentialPhi, sanitizeErrorMessage, sanitizeErrorObject } from './errorSanitization';
+export {
+    REDACTION_PLACEHOLDERS,
+    containsPotentialPhi,
+    sanitizeErrorMessage,
+    sanitizeErrorObject
+} from "./errorSanitization";
+

@@ -10,14 +10,14 @@
  * deps: zod, domain types | consumers: web-admin/*, server/src/routes/admin/*
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 import {
     AccountStatusSchema,
     ActivityLevelSchema,
     BiologicalSexSchema,
     FitnessExperienceSchema,
     GoalDataSourceSchema,
-    GoalMetricKeySchema,
+    LegacyGoalDataSourceSchema,
     PregnancyStatusSchema,
     PrimaryGoalSchema,
     StrategyStatusSchema,
@@ -25,8 +25,14 @@ import {
     UserRoleSchema,
     UserTierSchema,
     isoDateSchema,
-} from '../domain';
-import { LabMappingStatusSchema, LabMetricCategorySchema, LabMetricDirectionalitySchema, MetricApprovalStatusSchema } from '../domain/labs';
+    normalizeGoalDataSource,
+} from "../domain";
+import {
+    LabMappingStatusSchema,
+    LabMetricCategorySchema,
+    LabMetricDirectionalitySchema,
+    MetricApprovalStatusSchema,
+} from "../domain/labs";
 
 // ============================================================================
 // ADMIN-SPECIFIC ENUMS
@@ -35,27 +41,42 @@ import { LabMappingStatusSchema, LabMetricCategorySchema, LabMetricDirectionalit
 /**
  * Admin compliance status schema.
  */
-export const adminComplianceStatusSchema = z.enum(['excellent', 'good', 'at-risk', 'non-compliant']);
+export const adminComplianceStatusSchema = z.enum([
+  "excellent",
+  "good",
+  "at-risk",
+  "non-compliant",
+]);
 
 /**
  * Volume level schema for training phases.
  */
-export const volumeLevelSchema = z.enum(['low', 'moderate', 'high']);
+export const volumeLevelSchema = z.enum(["low", "moderate", "high"]);
 
 /**
  * Limitation severity schema.
  */
-export const limitationSeveritySchema = z.enum(['mild', 'moderate', 'severe']);
+export const limitationSeveritySchema = z.enum(["mild", "moderate", "severe"]);
 
 /**
  * Injury recovery status schema.
  */
-export const injuryRecoveryStatusSchema = z.enum(['active', 'recovering', 'healed', 'chronic']);
+export const injuryRecoveryStatusSchema = z.enum([
+  "active",
+  "recovering",
+  "healed",
+  "chronic",
+]);
 
 /**
  * Medical condition status schema.
  */
-export const medicalConditionStatusSchema = z.enum(['active', 'managed', 'resolved', 'monitoring']);
+export const medicalConditionStatusSchema = z.enum([
+  "active",
+  "managed",
+  "resolved",
+  "monitoring",
+]);
 
 // ============================================================================
 // PATIENT MANAGEMENT SCHEMAS
@@ -248,10 +269,13 @@ export const registeredUserSchema = z.object({
   isRegistered: z.boolean(),
   registrationExpiresAt: z.string(),
   createdAt: z.string(),
-  registeredBy: z.object({
-    id: z.string(),
-    email: z.string().email(),
-  }).nullable().optional(),
+  registeredBy: z
+    .object({
+      id: z.string(),
+      email: z.string().email(),
+    })
+    .nullable()
+    .optional(),
 });
 
 /**
@@ -287,11 +311,26 @@ export const createPhaseInputSchema = z.object({
  * Create goal input schema.
  */
 export const createGoalInputSchema = z.object({
-  goalMetric: GoalMetricKeySchema,
+  goalMetric: z.string().min(1),
   goalTarget: z.number(),
   baselineValue: z.number().optional(),
   weight: z.number().min(0).max(1).optional(),
   linkedExerciseId: z.string().optional(),
+  dataSource: z
+    .union([GoalDataSourceSchema, LegacyGoalDataSourceSchema])
+    .transform(normalizeGoalDataSource)
+    .optional(),
+  dataKey: z.string().min(1).optional(),
+  dynamicMetricDefinition: z
+    .object({
+      dataSource: z.enum(["lab", "biometric"]),
+      dataKey: z.string().min(1),
+      label: z.string().min(1),
+      unit: z.string().min(1),
+      direction: z.string().min(1),
+      category: z.string().min(1),
+    })
+    .optional(),
 });
 
 /**
@@ -323,7 +362,9 @@ export const createStrategyInputSchema = z.object({
  * Fetch value request schema.
  */
 export const fetchValueRequestSchema = z.object({
-  dataSource: GoalDataSourceSchema,
+  dataSource: z
+    .union([GoalDataSourceSchema, LegacyGoalDataSourceSchema])
+    .transform(normalizeGoalDataSource),
   dataKey: z.string().min(1),
   linkedExerciseId: z.string().optional(),
 });
@@ -346,9 +387,18 @@ export const fetchValueResponseSchema = z.object({
  */
 export const smartAssistActivitySchema = z.object({
   timestamp: z.string(),
-  type: z.enum(['search', 'create', 'select', 'plan', 'note', 'thinking', 'complete', 'analyze']),
+  type: z.enum([
+    "search",
+    "create",
+    "select",
+    "plan",
+    "note",
+    "thinking",
+    "complete",
+    "analyze",
+  ]),
   message: z.string(),
-  data: z.record(z.unknown()).optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**
@@ -362,14 +412,16 @@ export const smartAssistProgressSchema = z.object({
   turn: z.number().optional(),
   maxTurns: z.number().optional(),
   activities: z.array(smartAssistActivitySchema).optional(),
-  stats: z.object({
-    exercisesSearched: z.number().optional(),
-    exercisesCreated: z.number().optional(),
-    exercisesSelected: z.number().optional(),
-    notesCreated: z.number().optional(),
-    goalsIdentified: z.number().optional(),
-    phasesCreated: z.number().optional(),
-  }).optional(),
+  stats: z
+    .object({
+      exercisesSearched: z.number().optional(),
+      exercisesCreated: z.number().optional(),
+      exercisesSelected: z.number().optional(),
+      notesCreated: z.number().optional(),
+      goalsIdentified: z.number().optional(),
+      phasesCreated: z.number().optional(),
+    })
+    .optional(),
 });
 
 /** @deprecated Use smartAssistActivitySchema instead */
@@ -384,7 +436,7 @@ export const workoutPlanGenerationParamsSchema = z.object({
   userId: z.string(),
   weekStartDate: isoDateSchema,
   customPrompt: z.string().max(5000).optional(),
-  overwriteMode: z.enum(['overwrite', 'fillEmpty']).optional(),
+  overwriteMode: z.enum(["overwrite", "fillEmpty"]).optional(),
 });
 
 // ============================================================================
@@ -439,7 +491,9 @@ export const labMetricDefinitionSummarySchema = z.object({
 });
 
 /** Population qualifier for race/ethnicity/sex-specific lab results */
-export const LabPopulationQualifierSchema = z.enum(['african', 'non_african', 'male', 'female']).nullable();
+export const LabPopulationQualifierSchema = z
+  .enum(["african", "non_african", "male", "female"])
+  .nullable();
 
 export const extractedLabObservationSchema = z.object({
   // Core raw fields
@@ -539,21 +593,19 @@ export const createLabReportPayloadSchema = z.object({
 export const intakeQuestionnaireResponseSchema = z.object({
   userId: z.string(),
   completedAt: z.string().optional(),
-  responses: z.record(z.string(), z.union([
+  responses: z.record(
     z.string(),
-    z.number(),
-    z.boolean(),
-    z.array(z.string()),
-  ])),
+    z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]),
+  ),
 });
 
 /**
  * Client intake payload schema.
- * 
+ *
  * Supports both:
  * - Structured data (arrays of objects) - preferred for new submissions
  * - String data (semicolon-separated) - legacy format for backwards compatibility
- * 
+ *
  * Baseline metrics (height, weight, DOB, sex) update ClinicalProfile directly.
  */
 export const clientIntakePayloadSchema = z.object({
@@ -564,44 +616,64 @@ export const clientIntakePayloadSchema = z.object({
   customPreferences: z.string().max(5000).optional(), // Free-form custom preferences
 
   // Baseline Metrics (stored in ClinicalProfile)
-  baselineMetrics: z.object({
-    heightCm: z.number().positive().optional(),
-    weightKg: z.number().positive().optional(),
-    dateOfBirth: z.string().optional(), // ISO date
-    biologicalSex: BiologicalSexSchema.optional(),
-  }).optional(),
+  baselineMetrics: z
+    .object({
+      heightCm: z.number().positive().optional(),
+      weightKg: z.number().positive().optional(),
+      dateOfBirth: z.string().optional(), // ISO date
+      biologicalSex: BiologicalSexSchema.optional(),
+    })
+    .optional(),
 
   // Clinical Data - supports both structured arrays and legacy string format
   // Structured format (preferred)
-  medicationsData: z.array(z.object({
-    id: z.string(),
-    name: z.string().min(1).max(200),
-    dosage: z.string().min(1).max(100),
-    frequency: z.string().min(1).max(200),
-    notes: z.string().max(5000).optional(),
-  })).optional(),
-  limitationsData: z.array(z.object({
-    id: z.string(),
-    description: z.string().min(1).max(500),
-    severity: z.enum(['mild', 'moderate', 'severe']).optional(),
-    notes: z.string().max(5000).optional(),
-  })).optional(),
-  injuriesData: z.array(z.object({
-    id: z.string(),
-    description: z.string().min(1).max(500),
-    bodyPart: z.string().max(100).optional(),
-    occurredAt: z.string().optional(),
-    severity: z.enum(['mild', 'moderate', 'severe']).optional(),
-    recoveryStatus: z.enum(['active', 'recovering', 'healed', 'chronic']).optional(),
-    notes: z.string().max(5000).optional(),
-  })).optional(),
-  medicalConditionsData: z.array(z.object({
-    id: z.string(),
-    name: z.string().min(1).max(200),
-    status: z.enum(['active', 'managed', 'resolved', 'monitoring']),
-    diagnosisDate: z.string().optional(),
-    notes: z.string().max(5000).optional(),
-  })).optional(),
+  medicationsData: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string().min(1).max(200),
+        dosage: z.string().min(1).max(100),
+        frequency: z.string().min(1).max(200),
+        notes: z.string().max(5000).optional(),
+      }),
+    )
+    .optional(),
+  limitationsData: z
+    .array(
+      z.object({
+        id: z.string(),
+        description: z.string().min(1).max(500),
+        severity: z.enum(["mild", "moderate", "severe"]).optional(),
+        notes: z.string().max(5000).optional(),
+      }),
+    )
+    .optional(),
+  injuriesData: z
+    .array(
+      z.object({
+        id: z.string(),
+        description: z.string().min(1).max(500),
+        bodyPart: z.string().max(100).optional(),
+        occurredAt: z.string().optional(),
+        severity: z.enum(["mild", "moderate", "severe"]).optional(),
+        recoveryStatus: z
+          .enum(["active", "recovering", "healed", "chronic"])
+          .optional(),
+        notes: z.string().max(5000).optional(),
+      }),
+    )
+    .optional(),
+  medicalConditionsData: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string().min(1).max(200),
+        status: z.enum(["active", "managed", "resolved", "monitoring"]),
+        diagnosisDate: z.string().optional(),
+        notes: z.string().max(5000).optional(),
+      }),
+    )
+    .optional(),
 
   // Legacy string format (for backwards compatibility)
   injuries: z.string().max(5000).optional(),
@@ -664,12 +736,16 @@ export const pendingMetricReviewSchema = z.object({
   createdBy: z.string().nullable(),
   createdAt: z.string(),
   observationCount: z.number().min(0),
-  suggestedMergeTargets: z.array(z.object({
-    id: z.string(),
-    code: z.string(),
-    name: z.string(),
-    similarity: z.number().min(0).max(1),
-  })).optional(),
+  suggestedMergeTargets: z
+    .array(
+      z.object({
+        id: z.string(),
+        code: z.string(),
+        name: z.string(),
+        similarity: z.number().min(0).max(1),
+      }),
+    )
+    .optional(),
 });
 
 /**
@@ -693,7 +769,7 @@ export const suggestedNewMetricSchema = z.object({
  * Metric governance action schema - approve/reject a pending metric.
  */
 export const metricGovernanceActionSchema = z.object({
-  action: z.enum(['approve', 'reject']),
+  action: z.enum(["approve", "reject"]),
   reviewNotes: z.string().max(2000).optional(),
   setAsCanonical: z.boolean().optional(),
 });
@@ -714,7 +790,7 @@ export const mergeMetricsPayloadSchema = z.object({
 export const metricGovernanceResultSchema = z.object({
   success: z.boolean(),
   metricId: z.string(),
-  action: z.enum(['approved', 'rejected', 'merged']),
+  action: z.enum(["approved", "rejected", "merged"]),
   observationsMigrated: z.number().optional(),
   message: z.string().optional(),
 });

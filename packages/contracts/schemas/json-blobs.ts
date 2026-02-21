@@ -37,7 +37,7 @@
  * deps: zod | consumers: server validation, client validation, type safety
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // STRING ARRAY SCHEMAS (Simple JSON Arrays)
@@ -95,7 +95,9 @@ export type MetricsNotesArrayContract = z.infer<typeof metricsNotesArraySchema>;
  * @prisma DailyMetrics.recommendations
  */
 export const metricsRecommendationsArraySchema = stringArraySchema;
-export type MetricsRecommendationsArrayContract = z.infer<typeof metricsRecommendationsArraySchema>;
+export type MetricsRecommendationsArrayContract = z.infer<
+  typeof metricsRecommendationsArraySchema
+>;
 
 /**
  * Schema for UserPreferences.dashboardCardOrder JSON field.
@@ -104,7 +106,9 @@ export type MetricsRecommendationsArrayContract = z.infer<typeof metricsRecommen
  * @prisma UserPreferences.dashboardCardOrder
  */
 export const dashboardCardOrderSchema = z.array(z.string());
-export type DashboardCardOrderContract = z.infer<typeof dashboardCardOrderSchema>;
+export type DashboardCardOrderContract = z.infer<
+  typeof dashboardCardOrderSchema
+>;
 
 // ============================================================================
 // PROVIDER AVAILABILITY SLOTS (Prisma-compatible format)
@@ -113,7 +117,7 @@ export type DashboardCardOrderContract = z.infer<typeof dashboardCardOrderSchema
 /**
  * Schema for a single availability slot in Prisma ProviderAvailability model.
  * Uses hour numbers (0-23/24) instead of HH:MM time strings.
- * 
+ *
  * Note: admin/admin-schemas.ts has availabilitySlotSchema with HH:MM strings
  * for API payloads. This schema matches the Prisma storage format.
  *
@@ -129,7 +133,9 @@ export const prismaAvailabilitySlotSchema = z.object({
   endHour: z.number().int().min(0).max(24),
 });
 
-export type PrismaAvailabilitySlotContract = z.infer<typeof prismaAvailabilitySlotSchema>;
+export type PrismaAvailabilitySlotContract = z.infer<
+  typeof prismaAvailabilitySlotSchema
+>;
 
 /**
  * Schema for ProviderAvailability.slots JSON field.
@@ -137,8 +143,12 @@ export type PrismaAvailabilitySlotContract = z.infer<typeof prismaAvailabilitySl
  *
  * @prisma ProviderAvailability.slots
  */
-export const prismaAvailabilitySlotsArraySchema = z.array(prismaAvailabilitySlotSchema);
-export type PrismaAvailabilitySlotsArrayContract = z.infer<typeof prismaAvailabilitySlotsArraySchema>;
+export const prismaAvailabilitySlotsArraySchema = z.array(
+  prismaAvailabilitySlotSchema,
+);
+export type PrismaAvailabilitySlotsArrayContract = z.infer<
+  typeof prismaAvailabilitySlotsArraySchema
+>;
 
 // ============================================================================
 // FLEXIBLE RECORD SCHEMAS (Extensible JSON Objects)
@@ -151,17 +161,47 @@ export type PrismaAvailabilitySlotsArrayContract = z.infer<typeof prismaAvailabi
  *
  * @prisma UserEvent.metadata
  */
-export const eventMetadataSchema = z.record(z.unknown());
+export const eventMetadataSchema = z.record(
+  z.string(),
+  z.union([z.string(), z.number(), z.boolean(), z.null()]),
+);
 export type EventMetadataContract = z.infer<typeof eventMetadataSchema>;
 
 /**
+ * Structured schema for extracted lab report data.
+ * Uses `.passthrough()` to allow extra fields from different extraction pipelines.
+ *
+ * @prisma PatientDocument.extractedData (when document is a lab result)
+ */
+export const extractedLabDataSchema = z
+  .object({
+    panelName: z.string().optional(),
+    observations: z
+      .array(
+        z.object({
+          name: z.string(),
+          value: z.union([z.string(), z.number()]).optional(),
+          unit: z.string().optional(),
+          referenceRange: z.string().optional(),
+          flag: z.string().optional(),
+        }),
+      )
+      .optional(),
+    reportDate: z.string().optional(),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+
+export type ExtractedLabDataContract = z.infer<typeof extractedLabDataSchema>;
+
+/**
  * Schema for PatientDocument.extractedData JSON field.
- * Flexible key-value object for data extracted from uploaded documents.
- * Shape varies by document type (lab reports, imaging, etc.).
+ * Accepts structured lab data shape.
+ * Other document types should use the extractedLabDataSchema with passthrough.
  *
  * @prisma PatientDocument.extractedData
  */
-export const extractedDataSchema = z.record(z.unknown());
+export const extractedDataSchema = extractedLabDataSchema.nullable();
 export type ExtractedDataContract = z.infer<typeof extractedDataSchema>;
 
 // ============================================================================
@@ -171,10 +211,10 @@ export type ExtractedDataContract = z.infer<typeof extractedDataSchema>;
 /**
  * Note: The canonical prefilledProfileSchema is defined in admin/admin-schemas.ts
  * and should be used for User.prefilledProfile validation.
- * 
+ *
  * The schema defines: firstName, lastName, phone, heightCm, weightKg,
  * dateOfBirth, sex (BiologicalSex), and goals.
- * 
+ *
  * Import from '@contracts/admin' or '@shared/contracts/admin'.
  */
 
@@ -216,7 +256,7 @@ export const foodLogEntrySchema = z.object({
   /** When the food was consumed (ISO timestamp, optional) */
   consumedAt: z.string().optional(),
   /** How the food was logged */
-  source: z.enum(['search', 'barcode', 'custom', 'manual']).optional(),
+  source: z.enum(["search", "barcode", "custom", "manual"]).optional(),
   /** Sugar in grams (optional) */
   sugar: z.number().min(0).optional(),
   /** Sodium in mg (optional) */
@@ -240,7 +280,10 @@ export type FoodLogEntryContract = z.infer<typeof foodLogEntrySchema>;
  * @prisma DailyLog.foodEntries
  * @example { "08": [{ id: "...", name: "Oatmeal", ... }], "12": [...] }
  */
-export const foodEntriesRecordSchema = z.record(z.array(foodLogEntrySchema));
+export const foodEntriesRecordSchema = z.record(
+  z.string(),
+  z.array(foodLogEntrySchema),
+);
 export type FoodEntriesRecordContract = z.infer<typeof foodEntriesRecordSchema>;
 
 // ============================================================================

@@ -7,7 +7,7 @@
  * deps: zod | consumers: health-progress.ts, health-metric-definitions.ts
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // HEALTH METRIC DIRECTION
@@ -19,8 +19,13 @@ import { z } from 'zod';
  * - higher_better: Increasing value = improvement (e.g., HDL, grip strength)
  * - context: Direction depends on individual (e.g., weight, testosterone)
  */
-export const HEALTH_METRIC_DIRECTIONS = ['lower_better', 'higher_better', 'context'] as const;
+export const HEALTH_METRIC_DIRECTIONS = [
+  "lower_better",
+  "higher_better",
+  "context",
+] as const;
 export type HealthMetricDirection = (typeof HEALTH_METRIC_DIRECTIONS)[number];
+export const HealthMetricDirectionSchema = z.enum(HEALTH_METRIC_DIRECTIONS);
 
 // ============================================================================
 // HEALTH METRIC CATEGORY
@@ -28,27 +33,31 @@ export type HealthMetricDirection = (typeof HEALTH_METRIC_DIRECTIONS)[number];
 
 /** Health metric categories for grouping and scoring */
 export const HEALTH_METRIC_CATEGORIES = [
-  'body_composition',
-  'cardiovascular',
-  'metabolic',
-  'hormonal',
-  'performance',
-  'hematology',
-  'inflammatory',
-  'nutritional',
+  "body_composition",
+  "cardiovascular",
+  "metabolic",
+  "hormonal",
+  "performance",
+  "hematology",
+  "inflammatory",
+  "nutritional",
 ] as const;
 export type HealthMetricCategory = (typeof HEALTH_METRIC_CATEGORIES)[number];
+export const HealthMetricCategorySchema = z.enum(HEALTH_METRIC_CATEGORIES);
 
 /** Human-readable category labels */
-export const HEALTH_METRIC_CATEGORY_LABELS: Record<HealthMetricCategory, string> = {
-  body_composition: 'Body Composition',
-  cardiovascular: 'Cardiovascular',
-  metabolic: 'Metabolic',
-  hormonal: 'Hormonal',
-  performance: 'Performance',
-  hematology: 'Hematology',
-  inflammatory: 'Inflammatory',
-  nutritional: 'Nutritional',
+export const HEALTH_METRIC_CATEGORY_LABELS: Record<
+  HealthMetricCategory,
+  string
+> = {
+  body_composition: "Body Composition",
+  cardiovascular: "Cardiovascular",
+  metabolic: "Metabolic",
+  hormonal: "Hormonal",
+  performance: "Performance",
+  hematology: "Hematology",
+  inflammatory: "Inflammatory",
+  nutritional: "Nutritional",
 };
 
 // ============================================================================
@@ -68,12 +77,12 @@ export const HEALTH_METRIC_CATEGORY_LABELS: Record<HealthMetricCategory, string>
  * - COMPUTED: Derived/calculated metrics (health score, training load, etc.)
  */
 export const METRIC_CATEGORIES = [
-  'LAB',
-  'EXERCISE',
-  'BIOMETRIC',
-  'NUTRITION',
-  'WEARABLE',
-  'COMPUTED',
+  "LAB",
+  "EXERCISE",
+  "BIOMETRIC",
+  "NUTRITION",
+  "WEARABLE",
+  "COMPUTED",
 ] as const;
 
 export type MetricCategory = (typeof METRIC_CATEGORIES)[number];
@@ -82,22 +91,22 @@ export const MetricCategorySchema = z.enum(METRIC_CATEGORIES);
 
 /** Centralized metric category constants for equality checks */
 export const METRIC_CATEGORY = {
-  LAB: 'LAB' as MetricCategory,
-  EXERCISE: 'EXERCISE' as MetricCategory,
-  BIOMETRIC: 'BIOMETRIC' as MetricCategory,
-  NUTRITION: 'NUTRITION' as MetricCategory,
-  WEARABLE: 'WEARABLE' as MetricCategory,
-  COMPUTED: 'COMPUTED' as MetricCategory,
+  LAB: "LAB" as MetricCategory,
+  EXERCISE: "EXERCISE" as MetricCategory,
+  BIOMETRIC: "BIOMETRIC" as MetricCategory,
+  NUTRITION: "NUTRITION" as MetricCategory,
+  WEARABLE: "WEARABLE" as MetricCategory,
+  COMPUTED: "COMPUTED" as MetricCategory,
 } as const;
 
 /** Human-readable labels for metric categories */
 export const METRIC_CATEGORY_LABELS: Record<MetricCategory, string> = {
-  LAB: 'Lab',
-  EXERCISE: 'Exercise',
-  BIOMETRIC: 'Biometric',
-  NUTRITION: 'Nutrition',
-  WEARABLE: 'Wearable',
-  COMPUTED: 'Computed',
+  LAB: "Lab",
+  EXERCISE: "Exercise",
+  BIOMETRIC: "Biometric",
+  NUTRITION: "Nutrition",
+  WEARABLE: "Wearable",
+  COMPUTED: "Computed",
 };
 
 /**
@@ -122,12 +131,12 @@ export function isMetricCategory(value: string): value is MetricCategory {
  * - SCORE: Computed scores (health score, recovery score)
  */
 export const METRIC_VALUE_TYPES = [
-  'SCALAR',
-  'COMPOUND',
-  'DURATION',
-  'RATE',
-  'PERCENTAGE',
-  'SCORE',
+  "SCALAR",
+  "COMPOUND",
+  "DURATION",
+  "RATE",
+  "PERCENTAGE",
+  "SCORE",
 ] as const;
 
 export type MetricValueType = (typeof METRIC_VALUE_TYPES)[number];
@@ -136,22 +145,22 @@ export const MetricValueTypeSchema = z.enum(METRIC_VALUE_TYPES);
 
 /** Centralized metric value type constants for equality checks */
 export const METRIC_VALUE_TYPE = {
-  SCALAR: 'SCALAR' as MetricValueType,
-  COMPOUND: 'COMPOUND' as MetricValueType,
-  DURATION: 'DURATION' as MetricValueType,
-  RATE: 'RATE' as MetricValueType,
-  PERCENTAGE: 'PERCENTAGE' as MetricValueType,
-  SCORE: 'SCORE' as MetricValueType,
+  SCALAR: "SCALAR" as MetricValueType,
+  COMPOUND: "COMPOUND" as MetricValueType,
+  DURATION: "DURATION" as MetricValueType,
+  RATE: "RATE" as MetricValueType,
+  PERCENTAGE: "PERCENTAGE" as MetricValueType,
+  SCORE: "SCORE" as MetricValueType,
 } as const;
 
 /** Human-readable labels for metric value types */
 export const METRIC_VALUE_TYPE_LABELS: Record<MetricValueType, string> = {
-  SCALAR: 'Scalar',
-  COMPOUND: 'Compound',
-  DURATION: 'Duration',
-  RATE: 'Rate',
-  PERCENTAGE: 'Percentage',
-  SCORE: 'Score',
+  SCALAR: "Scalar",
+  COMPOUND: "Compound",
+  DURATION: "Duration",
+  RATE: "Rate",
+  PERCENTAGE: "Percentage",
+  SCORE: "Score",
 };
 
 /**
@@ -173,9 +182,9 @@ export function isMetricValueType(value: string): value is MetricValueType {
  * - TARGET_BETTER: Optimize toward a target range (blood pressure, glucose)
  */
 export const TREND_DIRECTIONS = [
-  'HIGHER_BETTER',
-  'LOWER_BETTER',
-  'TARGET_BETTER',
+  "HIGHER_BETTER",
+  "LOWER_BETTER",
+  "TARGET_BETTER",
 ] as const;
 
 export type TrendDirection = (typeof TREND_DIRECTIONS)[number];
@@ -184,16 +193,16 @@ export const TrendDirectionSchema = z.enum(TREND_DIRECTIONS);
 
 /** Centralized trend direction constants for equality checks */
 export const TREND_DIRECTION = {
-  HIGHER_BETTER: 'HIGHER_BETTER' as TrendDirection,
-  LOWER_BETTER: 'LOWER_BETTER' as TrendDirection,
-  TARGET_BETTER: 'TARGET_BETTER' as TrendDirection,
+  HIGHER_BETTER: "HIGHER_BETTER" as TrendDirection,
+  LOWER_BETTER: "LOWER_BETTER" as TrendDirection,
+  TARGET_BETTER: "TARGET_BETTER" as TrendDirection,
 } as const;
 
 /** Human-readable labels for trend directions */
 export const TREND_DIRECTION_LABELS: Record<TrendDirection, string> = {
-  HIGHER_BETTER: 'Higher is Better',
-  LOWER_BETTER: 'Lower is Better',
-  TARGET_BETTER: 'Target Range is Better',
+  HIGHER_BETTER: "Higher is Better",
+  LOWER_BETTER: "Lower is Better",
+  TARGET_BETTER: "Target Range is Better",
 };
 
 /**

@@ -26,7 +26,6 @@ import type {
     BiologicalSex,
     FitnessExperience,
     GoalDataSource,
-    GoalMetricKey,
     InjuryRecoveryStatus,
     LabMappingStatus,
     LabMetricCategory,
@@ -270,11 +269,14 @@ export interface CreatePhaseInput {
  * Input for creating a strategy goal.
  */
 export interface CreateGoalInput {
-  goalMetric: GoalMetricKey;
+  /** MetricDefinition code string (previously GoalMetricKey) */
+  goalMetric: string;
   goalTarget: number;
   baselineValue?: number;
   weight?: number;
   linkedExerciseId?: string;
+  dataSource?: GoalDataSource;
+  dataKey?: string;
   /** For non-hardcoded metrics (lab:/bio: prefix), store definition for reconstruction */
   dynamicMetricDefinition?: {
     dataSource: 'lab' | 'biometric';
@@ -733,6 +735,8 @@ export interface MetricGovernanceAction {
   action: 'approve' | 'reject';
   reviewNotes?: string;
   setAsCanonical?: boolean;
+  /** Optional: When rejecting a metric with linked records, re-link them to this APPROVED metric first */
+  replacementMetricId?: string;
 }
 
 /**
@@ -752,7 +756,7 @@ export interface MergeMetricsPayload {
 export interface MetricGovernanceResult {
   success: boolean;
   metricId: string;
-  action: 'approved' | 'rejected' | 'merged';
+  action: 'approved' | 'rejected' | 'merged' | 'promoted';
   observationsMigrated?: number;
   message?: string;
 }
