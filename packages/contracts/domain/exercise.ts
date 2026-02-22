@@ -29,8 +29,8 @@ export const EXERCISE_CATEGORIES = [
   "MOBILITY",
   "PLYOMETRIC",
 ] as const;
-export type ExerciseCategory = (typeof EXERCISE_CATEGORIES)[number];
 export const ExerciseCategorySchema = z.enum(EXERCISE_CATEGORIES);
+export type ExerciseCategory = z.infer<typeof ExerciseCategorySchema>;
 
 export const EXERCISE_CATEGORY = {
   COMPOUND: "COMPOUND",
@@ -65,8 +65,8 @@ export const MOVEMENT_PATTERNS = [
   "rotation",
   "lunge",
 ] as const;
-export type MovementPattern = (typeof MOVEMENT_PATTERNS)[number];
 export const MovementPatternSchema = z.enum(MOVEMENT_PATTERNS);
+export type MovementPattern = z.infer<typeof MovementPatternSchema>;
 
 export const MOVEMENT_PATTERN = {
   SQUAT: "squat" as MovementPattern,
@@ -105,8 +105,8 @@ export const MUSCLE_GROUPS = [
   "core",
   "forearms",
 ] as const;
-export type MuscleGroup = (typeof MUSCLE_GROUPS)[number];
 export const MuscleGroupSchema = z.enum(MUSCLE_GROUPS);
+export type MuscleGroup = z.infer<typeof MuscleGroupSchema>;
 
 export const MUSCLE_GROUP = {
   CHEST: "chest" as MuscleGroup,
@@ -152,8 +152,8 @@ export const EQUIPMENT_TYPES = [
   "bench",
   "pull_up_bar",
 ] as const;
-export type EquipmentType = (typeof EQUIPMENT_TYPES)[number];
 export const EquipmentTypeSchema = z.enum(EQUIPMENT_TYPES);
+export type EquipmentType = z.infer<typeof EquipmentTypeSchema>;
 
 export const EQUIPMENT_TYPE = {
   BARBELL: "barbell" as EquipmentType,
@@ -191,8 +191,8 @@ export const DIFFICULTY_LEVELS = [
   "ADVANCED",
   "EXPERT",
 ] as const;
-export type DifficultyLevel = (typeof DIFFICULTY_LEVELS)[number];
 export const DifficultyLevelSchema = z.enum(DIFFICULTY_LEVELS);
+export type DifficultyLevel = z.infer<typeof DifficultyLevelSchema>;
 
 export const DIFFICULTY_LEVEL = {
   BEGINNER: "BEGINNER",
@@ -213,8 +213,8 @@ export const DIFFICULTY_LEVEL_LABELS: Record<DifficultyLevel, string> = {
 // ============================================================================
 
 export const TRACKING_TYPES = ["REPS", "TIME", "DISTANCE"] as const;
-export type TrackingType = (typeof TRACKING_TYPES)[number];
 export const TrackingTypeSchema = z.enum(TRACKING_TYPES);
+export type TrackingType = z.infer<typeof TrackingTypeSchema>;
 
 export const TRACKING_TYPE = {
   REPS: "REPS",
@@ -315,35 +315,44 @@ export const createExerciseSchema = exerciseSchema.omit({
   createdAt: true,
   updatedAt: true,
 });
+export type CreateExercise = z.infer<typeof createExerciseSchema>;
 
 export const updateExerciseSchema = createExerciseSchema.partial();
+export type UpdateExercise = z.infer<typeof updateExerciseSchema>;
 
 export const createExerciseLogSchema = exerciseLogSchema.omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
+export type CreateExerciseLog = z.infer<typeof createExerciseLogSchema>;
 
 // ============================================================================
 // SCHEMA ALIASES (backwards compatibility with camelCase names)
 // ============================================================================
 
 /** @deprecated Use ExerciseCategorySchema instead. Remove after 2026-05-01 */
+// zod-manual: deprecated alias — type exported from PascalCase schema
 export const exerciseCategorySchema = ExerciseCategorySchema;
 
 /** @deprecated Use MovementPatternSchema instead. Remove after 2026-05-01 */
+// zod-manual: deprecated alias — type exported from PascalCase schema
 export const movementPatternSchema = MovementPatternSchema;
 
 /** @deprecated Use MuscleGroupSchema instead. Remove after 2026-05-01 */
+// zod-manual: deprecated alias — type exported from PascalCase schema
 export const muscleGroupSchema = MuscleGroupSchema;
 
 /** @deprecated Use EquipmentTypeSchema instead. Remove after 2026-05-01 */
+// zod-manual: deprecated alias — type exported from PascalCase schema
 export const equipmentTypeSchema = EquipmentTypeSchema;
 
 /** @deprecated Use DifficultyLevelSchema instead. Remove after 2026-05-01 */
+// zod-manual: deprecated alias — type exported from PascalCase schema
 export const difficultyLevelSchema = DifficultyLevelSchema;
 
 /** @deprecated Use TrackingTypeSchema instead. Remove after 2026-05-01 */
+// zod-manual: deprecated alias — type exported from PascalCase schema
 export const trackingTypeSchema = TrackingTypeSchema;
 
 // ============================================================================

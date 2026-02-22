@@ -51,6 +51,7 @@ export const MRRSchema = z.object({
   pastDueSubscriptions: z.number().int(),
   asOfDate: z.string(),
 });
+export type MRR = z.infer<typeof MRRSchema>;
 
 // ============================================================================
 // CHURN METRICS
@@ -91,6 +92,7 @@ export const ChurnMetricsSchema = z.object({
     count: z.number().int(),
   })),
 });
+export type ChurnMetrics = z.infer<typeof ChurnMetricsSchema>;
 
 // ============================================================================
 // LIFETIME VALUE
@@ -120,6 +122,7 @@ export const LTVSchema = z.object({
   overallAverageLTVCents: z.number().int(),
   overallAverageLifetimeMonths: z.number(),
 });
+export type LTV = z.infer<typeof LTVSchema>;
 
 // ============================================================================
 // INVENTORY ANALYTICS
@@ -172,3 +175,4 @@ export const InventoryAnalyticsSchema = z.object({
     revenueCents: z.number().int(),
   })),
 });
+export type InventoryAnalytics = z.infer<typeof InventoryAnalyticsSchema>;

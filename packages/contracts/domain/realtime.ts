@@ -84,9 +84,11 @@ export const SSE_EVENT_TYPE = {
 } as const;
 
 export const sseEventTypeSchema = z.enum(SSE_EVENT_TYPES);
+export type SseEventType = z.infer<typeof sseEventTypeSchema>;
 
 // ============================================================================
 // Zod Schema (derived from tuple for single source of truth)
 // ============================================================================
 
 export const sseResourceTypeSchema = z.enum(SSE_RESOURCE_TYPES);
+export type SseResourceType = z.infer<typeof sseResourceTypeSchema>;

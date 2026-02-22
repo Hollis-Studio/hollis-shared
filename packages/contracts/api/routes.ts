@@ -93,7 +93,7 @@ export const USER_ROUTES = {
   get: (userId: string) => `/users/${userId}` as const,
 
   /**
-   * PATCH /users/:userId/profile - Update user profile
+   * PUT /users/:userId/profile - Update user profile
    * @param userId - User's unique identifier
    */
   updateProfile: (userId: string) => `/users/${userId}/profile` as const,
@@ -105,7 +105,7 @@ export const USER_ROUTES = {
   updatePreferences: (userId: string) => `/users/${userId}/preferences` as const,
 
   /**
-   * PATCH /users/:userId/goals - Update user goals
+   * PUT /users/:userId/goals - Update user goals
    * @param userId - User's unique identifier
    */
   updateGoals: (userId: string) => `/users/${userId}/goals` as const,

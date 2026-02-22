@@ -8,7 +8,7 @@
  * deps: zod | consumers: server, web-admin
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // BILLING STATUS
@@ -22,30 +22,30 @@ import { z } from 'zod';
  * - COLLECTIONS: Sent to collections agency
  */
 export const BILLING_STATUSES = [
-  'GOOD_STANDING',
-  'PAST_DUE',
-  'DELINQUENT',
-  'COLLECTIONS',
+  "GOOD_STANDING",
+  "PAST_DUE",
+  "DELINQUENT",
+  "COLLECTIONS",
 ] as const;
 
-export type BillingStatus = (typeof BILLING_STATUSES)[number];
+export type BillingStatus = z.infer<typeof BillingStatusSchema>;
 
 export const BillingStatusSchema = z.enum(BILLING_STATUSES);
 
 /** Centralized billing status constants for equality checks */
 export const BILLING_STATUS = {
-  GOOD_STANDING: 'GOOD_STANDING' as BillingStatus,
-  PAST_DUE: 'PAST_DUE' as BillingStatus,
-  DELINQUENT: 'DELINQUENT' as BillingStatus,
-  COLLECTIONS: 'COLLECTIONS' as BillingStatus,
+  GOOD_STANDING: "GOOD_STANDING" as BillingStatus,
+  PAST_DUE: "PAST_DUE" as BillingStatus,
+  DELINQUENT: "DELINQUENT" as BillingStatus,
+  COLLECTIONS: "COLLECTIONS" as BillingStatus,
 } as const;
 
 /** Human-readable labels for billing statuses */
 export const BILLING_STATUS_LABELS: Record<BillingStatus, string> = {
-  GOOD_STANDING: 'Good Standing',
-  PAST_DUE: 'Past Due',
-  DELINQUENT: 'Delinquent',
-  COLLECTIONS: 'In Collections',
+  GOOD_STANDING: "Good Standing",
+  PAST_DUE: "Past Due",
+  DELINQUENT: "Delinquent",
+  COLLECTIONS: "In Collections",
 };
 
 /**
@@ -67,30 +67,30 @@ export function isBillingStatus(value: string): value is BillingStatus {
  * - LOST: Dispute lost, funds reversed
  */
 export const DISPUTE_STATUSES = [
-  'NEEDS_RESPONSE',
-  'UNDER_REVIEW',
-  'WON',
-  'LOST',
+  "NEEDS_RESPONSE",
+  "UNDER_REVIEW",
+  "WON",
+  "LOST",
 ] as const;
 
-export type DisputeStatus = (typeof DISPUTE_STATUSES)[number];
+export type DisputeStatus = z.infer<typeof DisputeStatusSchema>;
 
 export const DisputeStatusSchema = z.enum(DISPUTE_STATUSES);
 
 /** Centralized dispute status constants for equality checks */
 export const DISPUTE_STATUS = {
-  NEEDS_RESPONSE: 'NEEDS_RESPONSE' as DisputeStatus,
-  UNDER_REVIEW: 'UNDER_REVIEW' as DisputeStatus,
-  WON: 'WON' as DisputeStatus,
-  LOST: 'LOST' as DisputeStatus,
+  NEEDS_RESPONSE: "NEEDS_RESPONSE" as DisputeStatus,
+  UNDER_REVIEW: "UNDER_REVIEW" as DisputeStatus,
+  WON: "WON" as DisputeStatus,
+  LOST: "LOST" as DisputeStatus,
 } as const;
 
 /** Human-readable labels for dispute statuses */
 export const DISPUTE_STATUS_LABELS: Record<DisputeStatus, string> = {
-  NEEDS_RESPONSE: 'Needs Response',
-  UNDER_REVIEW: 'Under Review',
-  WON: 'Won',
-  LOST: 'Lost',
+  NEEDS_RESPONSE: "Needs Response",
+  UNDER_REVIEW: "Under Review",
+  WON: "Won",
+  LOST: "Lost",
 };
 
 /**

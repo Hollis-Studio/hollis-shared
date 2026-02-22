@@ -16,39 +16,33 @@
  * deps: zod | consumers: web-admin/*, server/src/*
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // ADMIN PORTAL REALTIME NOTIFICATIONS (SSE-triggered)
 // ============================================================================
 
 export const ADMIN_REALTIME_NOTIFICATION_KINDS = [
-  'appointment-booked',
-  'appointment-cancelled',
-  'appointment-modified',
-  'patient-assigned',
+  "appointment-booked",
+  "appointment-cancelled",
+  "appointment-modified",
+  "patient-assigned",
 ] as const;
 
-export type AdminRealtimeNotificationKind = (typeof ADMIN_REALTIME_NOTIFICATION_KINDS)[number];
+export const adminRealtimeNotificationKindSchema = z.enum(
+  ADMIN_REALTIME_NOTIFICATION_KINDS,
+);
+export type AdminRealtimeNotificationKind = z.infer<
+  typeof adminRealtimeNotificationKindSchema
+>;
 
 export const ADMIN_REALTIME_NOTIFICATION_KIND = {
-  APPOINTMENT_BOOKED: 'appointment-booked' as AdminRealtimeNotificationKind,
-  APPOINTMENT_CANCELLED: 'appointment-cancelled' as AdminRealtimeNotificationKind,
-  APPOINTMENT_MODIFIED: 'appointment-modified' as AdminRealtimeNotificationKind,
-  PATIENT_ASSIGNED: 'patient-assigned' as AdminRealtimeNotificationKind,
+  APPOINTMENT_BOOKED: "appointment-booked" as AdminRealtimeNotificationKind,
+  APPOINTMENT_CANCELLED:
+    "appointment-cancelled" as AdminRealtimeNotificationKind,
+  APPOINTMENT_MODIFIED: "appointment-modified" as AdminRealtimeNotificationKind,
+  PATIENT_ASSIGNED: "patient-assigned" as AdminRealtimeNotificationKind,
 } as const;
-
-export const adminRealtimeNotificationKindSchema = z.enum(ADMIN_REALTIME_NOTIFICATION_KINDS);
-
-export interface AdminRealtimeNotificationEventData {
-  kind: AdminRealtimeNotificationKind;
-  /** The user who triggered the action (used to filter "not by me"). */
-  actorUserId?: string;
-  /** Patient/user ID the event relates to. */
-  patientId?: string;
-  /** Appointment ID (when applicable). */
-  appointmentId?: string;
-}
 
 export const adminRealtimeNotificationEventDataSchema = z
   .object({
@@ -58,3 +52,6 @@ export const adminRealtimeNotificationEventDataSchema = z
     appointmentId: z.string().optional(),
   })
   .strict();
+export type AdminRealtimeNotificationEventData = z.infer<
+  typeof adminRealtimeNotificationEventDataSchema
+>;

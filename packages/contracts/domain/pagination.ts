@@ -50,6 +50,7 @@ export const paginationMetaSchema = z.object({
 /**
  * Factory for strongly typed paginated list schemas.
  */
+// zod-manual: generic factory function
 export const createPaginatedListSchema = <T extends z.ZodTypeAny>(
   itemSchema: T,
 ) =>

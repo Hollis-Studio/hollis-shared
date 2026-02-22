@@ -47,20 +47,22 @@ export const adminComplianceStatusSchema = z.enum([
   "at-risk",
   "non-compliant",
 ]);
+export type AdminComplianceStatus = z.infer<typeof adminComplianceStatusSchema>;
 
 /**
  * Volume level schema for training phases.
  */
-export const volumeLevelSchema = z.enum(["low", "moderate", "high"]);
+export const volumeLevelSchema = z.enum(["low", "moderate", "high"]); // zod-manual: type exported from primitives/volume-level.ts
 
 /**
  * Limitation severity schema.
  */
-export const limitationSeveritySchema = z.enum(["mild", "moderate", "severe"]);
+export const limitationSeveritySchema = z.enum(["mild", "moderate", "severe"]); // zod-manual: type exported from domain/clinical.ts
 
 /**
  * Injury recovery status schema.
  */
+// zod-manual: type exported from domain/clinical.ts
 export const injuryRecoveryStatusSchema = z.enum([
   "active",
   "recovering",
@@ -71,6 +73,7 @@ export const injuryRecoveryStatusSchema = z.enum([
 /**
  * Medical condition status schema.
  */
+// zod-manual: type exported from domain/clinical.ts
 export const medicalConditionStatusSchema = z.enum([
   "active",
   "managed",
@@ -94,6 +97,7 @@ export const patientSummarySchema = z.object({
   complianceScore: z.number().min(0).max(100),
   lastLog: z.string(),
 });
+export type PatientSummary = z.infer<typeof patientSummarySchema>;
 
 /**
  * Admin medication schema.
@@ -105,6 +109,7 @@ export const adminMedicationSchema = z.object({
   frequency: z.string().min(1).max(200),
   notes: z.string().max(5000).optional(),
 });
+export type AdminMedication = z.infer<typeof adminMedicationSchema>;
 
 /**
  * Admin limitation schema.
@@ -115,6 +120,7 @@ export const adminLimitationSchema = z.object({
   severity: limitationSeveritySchema.optional(),
   notes: z.string().max(5000).optional(),
 });
+export type AdminLimitation = z.infer<typeof adminLimitationSchema>;
 
 /**
  * Admin injury schema.
@@ -128,6 +134,7 @@ export const adminInjurySchema = z.object({
   recoveryStatus: injuryRecoveryStatusSchema.optional(),
   notes: z.string().max(5000).optional(),
 });
+export type AdminInjury = z.infer<typeof adminInjurySchema>;
 
 /**
  * Admin medical condition schema.
@@ -139,6 +146,7 @@ export const adminMedicalConditionSchema = z.object({
   diagnosisDate: isoDateSchema.optional(),
   notes: z.string().max(5000).optional(),
 });
+export type AdminMedicalCondition = z.infer<typeof adminMedicalConditionSchema>;
 
 /**
  * Patient profile update payload schema.
@@ -163,6 +171,9 @@ export const patientProfileUpdatePayloadSchema = z.object({
   injuries: z.array(adminInjurySchema).optional(),
   medicalConditions: z.array(adminMedicalConditionSchema).optional(),
 });
+export type PatientProfileUpdatePayload = z.infer<
+  typeof patientProfileUpdatePayloadSchema
+>;
 
 /**
  * Patient goals update payload schema.
@@ -176,6 +187,9 @@ export const patientGoalsUpdatePayloadSchema = z.object({
   sleepHoursTarget: z.number().min(4).max(14).optional(),
   weeklyWeightChangeTarget: z.number().min(-5).max(5).optional(),
 });
+export type PatientGoalsUpdatePayload = z.infer<
+  typeof patientGoalsUpdatePayloadSchema
+>;
 
 /**
  * Patient admin controls payload schema.
@@ -188,6 +202,9 @@ export const patientAdminControlsPayloadSchema = z.object({
   accountStatus: AccountStatusSchema.optional(),
   timezone: z.string().nullable().optional(),
 });
+export type PatientAdminControlsPayload = z.infer<
+  typeof patientAdminControlsPayloadSchema
+>;
 
 // ============================================================================
 // CLINICIAN MANAGEMENT SCHEMAS
@@ -202,6 +219,7 @@ export const clinicianSummarySchema = z.object({
   role: UserRoleSchema,
   specialty: z.string(),
 });
+export type ClinicianSummary = z.infer<typeof clinicianSummarySchema>;
 
 /**
  * Availability slot schema.
@@ -212,6 +230,7 @@ export const availabilitySlotSchema = z.object({
   endTime: z.string().regex(/^\d{2}:\d{2}$/),
   isAvailable: z.boolean(),
 });
+export type AvailabilitySlot = z.infer<typeof availabilitySlotSchema>;
 
 /**
  * Clinician availability schema.
@@ -220,6 +239,7 @@ export const clinicianAvailabilitySchema = z.object({
   clinicianId: z.string(),
   slots: z.array(availabilitySlotSchema),
 });
+export type ClinicianAvailability = z.infer<typeof clinicianAvailabilitySchema>;
 
 /**
  * Provider schedule slot schema.
@@ -230,6 +250,7 @@ export const providerScheduleSlotSchema = z.object({
   endHour: z.number().min(0).max(24),
   isAvailable: z.boolean().optional(),
 });
+export type ProviderScheduleSlot = z.infer<typeof providerScheduleSlotSchema>;
 
 /**
  * Provider schedule data schema.
@@ -238,6 +259,7 @@ export const providerScheduleDataSchema = z.object({
   providerId: z.string(),
   slots: z.array(providerScheduleSlotSchema),
 });
+export type ProviderScheduleData = z.infer<typeof providerScheduleDataSchema>;
 
 // ============================================================================
 // REGISTRATION SCHEMAS
@@ -255,7 +277,12 @@ export const prefilledProfileSchema = z.object({
   dateOfBirth: isoDateSchema.optional(),
   sex: BiologicalSexSchema.optional(),
   goals: z.string().max(1000).optional(),
+  /** Set by admin when rejecting a registration */
+  rejectionReason: z.string().optional(),
+  /** ISO timestamp when admin rejected the registration */
+  rejectedAt: z.string().optional(),
 });
+export type PrefilledProfile = z.infer<typeof prefilledProfileSchema>;
 
 /**
  * Registered user schema.
@@ -277,6 +304,7 @@ export const registeredUserSchema = z.object({
     .nullable()
     .optional(),
 });
+export type RegisteredUser = z.infer<typeof registeredUserSchema>;
 
 /**
  * Create registration payload schema.
@@ -287,6 +315,9 @@ export const createRegistrationPayloadSchema = z.object({
   profile: prefilledProfileSchema.optional(),
   expiresInDays: z.number().positive().max(365).optional(),
 });
+export type CreateRegistrationPayload = z.infer<
+  typeof createRegistrationPayloadSchema
+>;
 
 // ============================================================================
 // TRAINING STRATEGY SCHEMAS
@@ -368,6 +399,7 @@ export const fetchValueRequestSchema = z.object({
   dataKey: z.string().min(1),
   linkedExerciseId: z.string().optional(),
 });
+export type FetchValueRequest = z.infer<typeof fetchValueRequestSchema>;
 
 /**
  * Fetch value response schema.
@@ -377,6 +409,7 @@ export const fetchValueResponseSchema = z.object({
   value: z.number().nullable(),
   date: z.string().nullable(),
 });
+export type FetchValueResponse = z.infer<typeof fetchValueResponseSchema>;
 
 // ============================================================================
 // SMART ASSIST PROGRESS SCHEMAS
@@ -400,6 +433,7 @@ export const smartAssistActivitySchema = z.object({
   message: z.string(),
   data: z.record(z.string(), z.unknown()).optional(),
 });
+export type SmartAssistActivity = z.infer<typeof smartAssistActivitySchema>;
 
 /**
  * Smart Assist progress schema with real-time agent activity.
@@ -423,10 +457,13 @@ export const smartAssistProgressSchema = z.object({
     })
     .optional(),
 });
+export type SmartAssistProgress = z.infer<typeof smartAssistProgressSchema>;
 
 /** @deprecated Use smartAssistActivitySchema instead */
+// zod-manual: deprecated alias
 export const workoutGenerationActivitySchema = smartAssistActivitySchema;
 /** @deprecated Use smartAssistProgressSchema instead */
+// zod-manual: deprecated alias
 export const workoutGenerationProgressSchema = smartAssistProgressSchema;
 
 /**
@@ -452,6 +489,7 @@ export const nutritionPreferencesSchema = z.object({
   mealCount: z.number().min(1).max(10).optional(),
   cuisinePreferences: z.array(z.string().max(100)).optional(),
 });
+export type NutritionPreferences = z.infer<typeof nutritionPreferencesSchema>;
 
 /**
  * Macro targets schema.
@@ -462,6 +500,7 @@ export const macroTargetsSchema = z.object({
   carbsGrams: z.number().positive().max(2000).optional(),
   fatGrams: z.number().positive().max(1000).optional(),
 });
+export type MacroTargets = z.infer<typeof macroTargetsSchema>;
 
 /**
  * Nutrition plan generation request schema.
@@ -474,6 +513,9 @@ export const nutritionPlanGenerationRequestSchema = z.object({
   preferences: nutritionPreferencesSchema.optional(),
   macroTargets: macroTargetsSchema.optional(),
 });
+export type NutritionPlanGenerationRequest = z.infer<
+  typeof nutritionPlanGenerationRequestSchema
+>;
 
 // ============================================================================
 // LAB RESULT SCHEMAS (Provenance-First)
@@ -489,11 +531,17 @@ export const labMetricDefinitionSummarySchema = z.object({
   isCanonical: z.boolean().optional(),
   approvalStatus: MetricApprovalStatusSchema.optional(),
 });
+export type LabMetricDefinitionSummary = z.infer<
+  typeof labMetricDefinitionSummarySchema
+>;
 
 /** Population qualifier for race/ethnicity/sex-specific lab results */
 export const LabPopulationQualifierSchema = z
   .enum(["african", "non_african", "male", "female"])
   .nullable();
+export type LabPopulationQualifier = z.infer<
+  typeof LabPopulationQualifierSchema
+>;
 
 export const extractedLabObservationSchema = z.object({
   // Core raw fields
@@ -525,6 +573,9 @@ export const extractedLabObservationSchema = z.object({
   mappingStatus: LabMappingStatusSchema,
   mappingConfidence: z.number().min(0).max(1).nullable().optional(),
 });
+export type ExtractedLabObservation = z.infer<
+  typeof extractedLabObservationSchema
+>;
 
 export const extractedLabReportSchema = z.object({
   reportDate: z.string().nullable().optional(),
@@ -540,11 +591,15 @@ export const extractedLabReportSchema = z.object({
   extractionConfidences: z.record(z.string(), z.number()).nullable().optional(),
   extractionFragments: z.record(z.string(), z.string()).nullable().optional(),
 });
+export type ExtractedLabReport = z.infer<typeof extractedLabReportSchema>;
 
 export const labDataExtractionResultSchema = z.object({
   report: extractedLabReportSchema,
   observations: z.array(extractedLabObservationSchema),
 });
+export type LabDataExtractionResult = z.infer<
+  typeof labDataExtractionResultSchema
+>;
 
 export const labObservationInputSchema = z.object({
   rawAnalyteName: z.string().min(1).max(200),
@@ -582,6 +637,9 @@ export const createLabReportPayloadSchema = z.object({
   notes: z.string().max(2000).nullable().optional(),
   observations: z.array(labObservationInputSchema).min(1),
 });
+export type CreateLabReportPayload = z.infer<
+  typeof createLabReportPayloadSchema
+>;
 
 // ============================================================================
 // INTAKE & QUESTIONNAIRE SCHEMAS
@@ -598,6 +656,9 @@ export const intakeQuestionnaireResponseSchema = z.object({
     z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]),
   ),
 });
+export type IntakeQuestionnaireResponse = z.infer<
+  typeof intakeQuestionnaireResponseSchema
+>;
 
 /**
  * Client intake payload schema.
@@ -681,6 +742,7 @@ export const clientIntakePayloadSchema = z.object({
   medications: z.string().max(5000).optional(),
   medicalConditions: z.string().max(5000).optional(),
 });
+export type ClientIntakePayload = z.infer<typeof clientIntakePayloadSchema>;
 
 // ============================================================================
 // EXERCISE FILTER SCHEMAS
@@ -715,6 +777,7 @@ export const adminAnalyticsDataSchema = z.object({
   appointmentsToday: z.number().min(0),
   pendingLabReviews: z.number().min(0),
 });
+export type AdminAnalyticsData = z.infer<typeof adminAnalyticsDataSchema>;
 
 // ============================================================================
 // METRIC GOVERNANCE SCHEMAS
@@ -747,6 +810,7 @@ export const pendingMetricReviewSchema = z.object({
     )
     .optional(),
 });
+export type PendingMetricReview = z.infer<typeof pendingMetricReviewSchema>;
 
 /**
  * Suggested new metric schema - proposed metric not yet persisted.
@@ -764,6 +828,7 @@ export const suggestedNewMetricSchema = z.object({
   isPopulationVariant: z.boolean().optional(),
   parentMetricCode: z.string().optional(),
 });
+export type SuggestedNewMetric = z.infer<typeof suggestedNewMetricSchema>;
 
 /**
  * Metric governance action schema - approve/reject a pending metric.
@@ -772,7 +837,12 @@ export const metricGovernanceActionSchema = z.object({
   action: z.enum(["approve", "reject"]),
   reviewNotes: z.string().max(2000).optional(),
   setAsCanonical: z.boolean().optional(),
+  /** When rejecting a metric with linked records, re-link them to this APPROVED metric first */
+  replacementMetricId: z.string().optional(),
 });
+export type MetricGovernanceAction = z.infer<
+  typeof metricGovernanceActionSchema
+>;
 
 /**
  * Merge metrics payload schema - merge source metrics into target.
@@ -783,6 +853,7 @@ export const mergeMetricsPayloadSchema = z.object({
   migrateObservations: z.boolean().default(true),
   reviewNotes: z.string().max(2000).optional(),
 });
+export type MergeMetricsPayload = z.infer<typeof mergeMetricsPayloadSchema>;
 
 /**
  * Metric governance result schema - response from governance actions.
@@ -790,7 +861,10 @@ export const mergeMetricsPayloadSchema = z.object({
 export const metricGovernanceResultSchema = z.object({
   success: z.boolean(),
   metricId: z.string(),
-  action: z.enum(["approved", "rejected", "merged"]),
+  action: z.enum(["approved", "rejected", "merged", "promoted"]),
   observationsMigrated: z.number().optional(),
   message: z.string().optional(),
 });
+export type MetricGovernanceResult = z.infer<
+  typeof metricGovernanceResultSchema
+>;

@@ -31,9 +31,8 @@ export const STRATEGY_TYPES = [
   "DELOAD",
   "CUSTOM",
 ] as const;
-export type StrategyType = (typeof STRATEGY_TYPES)[number];
-
 export const StrategyTypeSchema = z.enum(STRATEGY_TYPES);
+export type StrategyType = z.infer<typeof StrategyTypeSchema>;
 
 export const STRATEGY_TYPE = {
   LINEAR_PROGRESSION: "LINEAR_PROGRESSION",
@@ -71,9 +70,8 @@ export const STRATEGY_STATUSES = [
   "PAUSED",
   "CANCELLED",
 ] as const;
-export type StrategyStatus = (typeof STRATEGY_STATUSES)[number];
-
 export const StrategyStatusSchema = z.enum(STRATEGY_STATUSES);
+export type StrategyStatus = z.infer<typeof StrategyStatusSchema>;
 
 export const STRATEGY_STATUS = {
   ACTIVE: "ACTIVE",
@@ -113,9 +111,8 @@ export const GOAL_CATEGORIES = [
   "hormonal",
   "performance",
 ] as const;
-export type GoalCategory = (typeof GOAL_CATEGORIES)[number];
-
 export const GoalCategorySchema = z.enum(GOAL_CATEGORIES);
+export type GoalCategory = z.infer<typeof GoalCategorySchema>;
 
 /** Centralized goal category constants for equality checks */
 export const GOAL_CATEGORY = {
@@ -158,7 +155,8 @@ export const GOAL_DATA_SOURCES = [
   "exercise_log",
   "manual",
 ] as const;
-export type GoalDataSource = (typeof GOAL_DATA_SOURCES)[number];
+export const GoalDataSourceSchema = z.enum(GOAL_DATA_SOURCES);
+export type GoalDataSource = z.infer<typeof GoalDataSourceSchema>;
 
 /**
  * Legacy goal data-source values accepted for backward-compatible reads.
@@ -168,10 +166,8 @@ export const LEGACY_GOAL_DATA_SOURCES = [
   ...GOAL_DATA_SOURCES,
   "measurement",
 ] as const;
-export type LegacyGoalDataSource = (typeof LEGACY_GOAL_DATA_SOURCES)[number];
-
-export const GoalDataSourceSchema = z.enum(GOAL_DATA_SOURCES);
 export const LegacyGoalDataSourceSchema = z.enum(LEGACY_GOAL_DATA_SOURCES);
+export type LegacyGoalDataSource = z.infer<typeof LegacyGoalDataSourceSchema>;
 
 /** Centralized goal data source constants for equality checks */
 export const GOAL_DATA_SOURCE = {
@@ -241,9 +237,8 @@ export const WORKOUT_TYPES = [
   "flexibility",
   "sports",
 ] as const;
-export type WorkoutType = (typeof WORKOUT_TYPES)[number];
-
 export const WorkoutTypeSchema = z.enum(WORKOUT_TYPES);
+export type WorkoutType = z.infer<typeof WorkoutTypeSchema>;
 
 /** Centralized workout type constants for equality checks */
 export const WORKOUT_TYPE = {
@@ -457,10 +452,10 @@ export const STRATEGY_GENERATION_PHASES = [
   "optimizing",
   "complete",
 ] as const;
-export type StrategyGenerationPhase =
-  (typeof STRATEGY_GENERATION_PHASES)[number];
-
 export const strategyGenerationPhaseSchema = z.enum(STRATEGY_GENERATION_PHASES);
+export type StrategyGenerationPhase = z.infer<
+  typeof strategyGenerationPhaseSchema
+>;
 
 /** Constant object for strategy generation phase comparisons */
 export const STRATEGY_GENERATION_PHASE = {
@@ -493,6 +488,9 @@ export type StrategyGenerationEventType =
   (typeof STRATEGY_GENERATION_EVENTS)[number];
 
 export const strategyGenerationEventSchema = z.enum(STRATEGY_GENERATION_EVENTS);
+export type StrategyGenerationEvent = z.infer<
+  typeof strategyGenerationEventSchema
+>;
 
 /** Constant object for strategy generation event comparisons */
 export const STRATEGY_GENERATION_EVENT = {

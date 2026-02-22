@@ -57,8 +57,8 @@ export const PHI_RESOURCES = [
   "training_strategy",
   "exercise_logs",
 ] as const;
-export type PhiResource = (typeof PHI_RESOURCES)[number];
 export const PhiResourceSchema = z.enum(PHI_RESOURCES);
+export type PhiResource = z.infer<typeof PhiResourceSchema>;
 
 /**
  * Constant map for PHI resources to avoid magic strings
@@ -117,8 +117,8 @@ export const PHI_ACTIONS = [
   "DELETE",
   "LIST",
 ] as const;
-export type PhiAction = (typeof PHI_ACTIONS)[number];
 export const PhiActionSchema = z.enum(PHI_ACTIONS);
+export type PhiAction = z.infer<typeof PhiActionSchema>;
 
 /**
  * Constant map for PHI actions to avoid magic strings
@@ -149,8 +149,8 @@ export const PHI_ACCESS_REASONS = [
   "admin",
   "unspecified",
 ] as const;
-export type PhiAccessReason = (typeof PHI_ACCESS_REASONS)[number];
 export const PhiAccessReasonSchema = z.enum(PHI_ACCESS_REASONS);
+export type PhiAccessReason = z.infer<typeof PhiAccessReasonSchema>;
 
 /**
  * Labels for access reasons
@@ -185,10 +185,13 @@ export const PHI_ACCESS_REASON = {
 // ============================================================================
 
 /** @deprecated Use PhiResourceSchema instead */
+// zod-manual: deprecated alias
 export const phiResourceSchema = PhiResourceSchema;
 /** @deprecated Use PhiActionSchema instead */
+// zod-manual: deprecated alias
 export const phiActionSchema = PhiActionSchema;
 /** @deprecated Use PhiAccessReasonSchema instead */
+// zod-manual: deprecated alias
 export const phiAccessReasonSchema = PhiAccessReasonSchema;
 
 // ============================================================================

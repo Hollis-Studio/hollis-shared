@@ -24,8 +24,8 @@ export const HEALTH_METRIC_DIRECTIONS = [
   "higher_better",
   "context",
 ] as const;
-export type HealthMetricDirection = (typeof HEALTH_METRIC_DIRECTIONS)[number];
 export const HealthMetricDirectionSchema = z.enum(HEALTH_METRIC_DIRECTIONS);
+export type HealthMetricDirection = z.infer<typeof HealthMetricDirectionSchema>;
 
 // ============================================================================
 // HEALTH METRIC CATEGORY
@@ -42,8 +42,8 @@ export const HEALTH_METRIC_CATEGORIES = [
   "inflammatory",
   "nutritional",
 ] as const;
-export type HealthMetricCategory = (typeof HEALTH_METRIC_CATEGORIES)[number];
 export const HealthMetricCategorySchema = z.enum(HEALTH_METRIC_CATEGORIES);
+export type HealthMetricCategory = z.infer<typeof HealthMetricCategorySchema>;
 
 /** Human-readable category labels */
 export const HEALTH_METRIC_CATEGORY_LABELS: Record<
@@ -85,9 +85,9 @@ export const METRIC_CATEGORIES = [
   "COMPUTED",
 ] as const;
 
-export type MetricCategory = (typeof METRIC_CATEGORIES)[number];
-
 export const MetricCategorySchema = z.enum(METRIC_CATEGORIES);
+
+export type MetricCategory = z.infer<typeof MetricCategorySchema>;
 
 /** Centralized metric category constants for equality checks */
 export const METRIC_CATEGORY = {
@@ -139,9 +139,9 @@ export const METRIC_VALUE_TYPES = [
   "SCORE",
 ] as const;
 
-export type MetricValueType = (typeof METRIC_VALUE_TYPES)[number];
-
 export const MetricValueTypeSchema = z.enum(METRIC_VALUE_TYPES);
+
+export type MetricValueType = z.infer<typeof MetricValueTypeSchema>;
 
 /** Centralized metric value type constants for equality checks */
 export const METRIC_VALUE_TYPE = {
@@ -187,9 +187,9 @@ export const TREND_DIRECTIONS = [
   "TARGET_BETTER",
 ] as const;
 
-export type TrendDirection = (typeof TREND_DIRECTIONS)[number];
-
 export const TrendDirectionSchema = z.enum(TREND_DIRECTIONS);
+
+export type TrendDirection = z.infer<typeof TrendDirectionSchema>;
 
 /** Centralized trend direction constants for equality checks */
 export const TREND_DIRECTION = {

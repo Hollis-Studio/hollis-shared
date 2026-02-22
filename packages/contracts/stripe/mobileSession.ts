@@ -40,6 +40,7 @@ export const MobileSessionBalanceSchema = z.object({
   totalAvailable: z.number().int(),
   lastFreeResetDate: z.string().nullable(),
 });
+export type MobileSessionBalance = z.infer<typeof MobileSessionBalanceSchema>;
 
 // ============================================================================
 // MOBILE SESSION USAGE
@@ -70,18 +71,18 @@ export const MobileSessionUsageSchema = z.object({
   appointmentId: z.string().nullable(),
   notes: z.string().nullable(),
 });
+export type MobileSessionUsage = z.infer<typeof MobileSessionUsageSchema>;
 
 // ============================================================================
 // PURCHASE REQUEST
 // ============================================================================
 
-export interface PurchaseMobileSessionsRequest {
-  quantity: number;
-}
-
 export const PurchaseMobileSessionsRequestSchema = z.object({
   quantity: z.number().int().positive().max(10), // Max 10 at once
 });
+export type PurchaseMobileSessionsRequest = z.infer<
+  typeof PurchaseMobileSessionsRequestSchema
+>;
 
 // ============================================================================
 // PURCHASE RESPONSE
@@ -105,6 +106,7 @@ export const MobileSessionPurchaseSchema = z.object({
   totalInCents: z.number().int(),
   purchasedAt: z.string(),
 });
+export type MobileSessionPurchase = z.infer<typeof MobileSessionPurchaseSchema>;
 
 // ============================================================================
 // CONSTANTS

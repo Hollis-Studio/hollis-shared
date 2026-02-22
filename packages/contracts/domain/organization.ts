@@ -30,7 +30,7 @@ export const ORGANIZATION_STATUSES = [
   "ONBOARDING",
 ] as const;
 
-export type OrganizationStatus = (typeof ORGANIZATION_STATUSES)[number];
+export type OrganizationStatus = z.infer<typeof OrganizationStatusSchema>;
 
 /**
  * @deprecated Use ORGANIZATION_STATUSES array directly. Kept for backward compatibility.

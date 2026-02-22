@@ -20,9 +20,9 @@ import { DocumentCategorySchema } from "./documents";
 // ============================================================================
 
 export const LIMITATION_SEVERITIES = ["mild", "moderate", "severe"] as const;
-export type LimitationSeverity = (typeof LIMITATION_SEVERITIES)[number];
 
 export const LimitationSeveritySchema = z.enum(LIMITATION_SEVERITIES);
+export type LimitationSeverity = z.infer<typeof LimitationSeveritySchema>;
 
 export const LIMITATION_SEVERITY = {
   MILD: "mild" as LimitationSeverity,
@@ -61,9 +61,9 @@ export const BIOMETRIC_SOURCES = [
   "WHOOP",
   "DEVICE",
 ] as const;
-export type BiometricSource = (typeof BIOMETRIC_SOURCES)[number];
 
 export const BiometricSourceSchema = z.enum(BIOMETRIC_SOURCES);
+export type BiometricSource = z.infer<typeof BiometricSourceSchema>;
 
 export const BIOMETRIC_SOURCE = {
   LAB_REPORT: "LAB_REPORT",
@@ -100,9 +100,9 @@ export const INJURY_RECOVERY_STATUSES = [
   "healed",
   "chronic",
 ] as const;
-export type InjuryRecoveryStatus = (typeof INJURY_RECOVERY_STATUSES)[number];
 
 export const InjuryRecoveryStatusSchema = z.enum(INJURY_RECOVERY_STATUSES);
+export type InjuryRecoveryStatus = z.infer<typeof InjuryRecoveryStatusSchema>;
 
 export const INJURY_RECOVERY_STATUS = {
   ACTIVE: "active" as InjuryRecoveryStatus,
@@ -131,10 +131,11 @@ export const MEDICAL_CONDITION_STATUSES = [
   "resolved",
   "monitoring",
 ] as const;
-export type MedicalConditionStatus =
-  (typeof MEDICAL_CONDITION_STATUSES)[number];
 
 export const MedicalConditionStatusSchema = z.enum(MEDICAL_CONDITION_STATUSES);
+export type MedicalConditionStatus = z.infer<
+  typeof MedicalConditionStatusSchema
+>;
 
 export const MEDICAL_CONDITION_STATUS = {
   ACTIVE: "active" as MedicalConditionStatus,
@@ -168,6 +169,7 @@ export const medicationSchema = z.object({
 export type Medication = z.infer<typeof medicationSchema>;
 
 export const medicationsSchema = z.array(medicationSchema);
+export type Medications = z.infer<typeof medicationsSchema>;
 
 // ============================================================================
 // LIMITATION CONTRACT
@@ -183,6 +185,7 @@ export const limitationSchema = z.object({
 export type Limitation = z.infer<typeof limitationSchema>;
 
 export const limitationsSchema = z.array(limitationSchema);
+export type Limitations = z.infer<typeof limitationsSchema>;
 
 // ============================================================================
 // INJURY CONTRACT
@@ -201,6 +204,7 @@ export const injurySchema = z.object({
 export type Injury = z.infer<typeof injurySchema>;
 
 export const injuriesSchema = z.array(injurySchema);
+export type Injuries = z.infer<typeof injuriesSchema>;
 
 // ============================================================================
 // MEDICAL CONDITION CONTRACT
@@ -217,6 +221,7 @@ export const medicalConditionSchema = z.object({
 export type MedicalCondition = z.infer<typeof medicalConditionSchema>;
 
 export const medicalConditionsSchema = z.array(medicalConditionSchema);
+export type MedicalConditions = z.infer<typeof medicalConditionsSchema>;
 
 // ============================================================================
 // CARE TEAM ROLE
@@ -234,9 +239,9 @@ export const CARE_TEAM_ROLES = [
   "health_coach",
   "other",
 ] as const;
-export type CareTeamRole = (typeof CARE_TEAM_ROLES)[number];
 
 export const CareTeamRoleSchema = z.enum(CARE_TEAM_ROLES);
+export type CareTeamRole = z.infer<typeof CareTeamRoleSchema>;
 
 export const CARE_TEAM_ROLE = {
   PRIMARY_CARE: "primary_care" as CareTeamRole,
@@ -302,6 +307,7 @@ export const clinicalNoteSchema = baseDocumentSchema.extend({
   content: z.string().min(1),
   tags: z.array(z.string()),
 });
+export type ClinicalNote = z.infer<typeof clinicalNoteSchema>;
 
 export const patientDocumentSchema = baseDocumentSchema.extend({
   id: z.string().optional(),
@@ -313,6 +319,7 @@ export const patientDocumentSchema = baseDocumentSchema.extend({
   tags: z.array(z.string()),
   extractedData: extractedDataSchema.optional(),
 });
+export type PatientDocument = z.infer<typeof patientDocumentSchema>;
 
 // ============================================================================
 // MOCK FACTORIES

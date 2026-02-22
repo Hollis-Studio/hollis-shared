@@ -21,12 +21,12 @@ import { z } from "zod";
  * Note: Stored as plain string in Prisma (not a Prisma enum).
  */
 export const VOLUME_LEVELS = ["low", "moderate", "high"] as const;
-export type VolumeLevel = (typeof VOLUME_LEVELS)[number];
 
 /**
  * Zod schema for volume level validation
  */
 export const VolumeLevelSchema = z.enum(VOLUME_LEVELS);
+export type VolumeLevel = z.infer<typeof VolumeLevelSchema>;
 
 /**
  * Human-readable labels for volume levels

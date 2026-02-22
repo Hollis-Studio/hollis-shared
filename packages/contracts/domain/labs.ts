@@ -23,7 +23,7 @@ export const LAB_RESULT_STATUSES = [
   "CORRECTED",
   "CANCELLED",
 ] as const;
-export type LabResultStatus = (typeof LAB_RESULT_STATUSES)[number];
+export type LabResultStatus = z.infer<typeof LabResultStatusSchema>;
 
 /** Zod schema for lab result status - derived from tuple */
 export const LabResultStatusSchema = z.enum(LAB_RESULT_STATUSES);
@@ -63,7 +63,7 @@ export const LAB_RESULT_FLAGS = [
   "critical_low",
   "critical_high",
 ] as const;
-export type LabResultFlag = (typeof LAB_RESULT_FLAGS)[number];
+export type LabResultFlag = z.infer<typeof LabResultFlagSchema>;
 
 /** Zod schema for lab result flag - derived from tuple */
 export const LabResultFlagSchema = z.enum(LAB_RESULT_FLAGS);
@@ -107,7 +107,7 @@ export const LAB_MAPPING_STATUSES = [
   "REVIEW_NEEDED",
   "MANUAL_OVERRIDE",
 ] as const;
-export type LabMappingStatus = (typeof LAB_MAPPING_STATUSES)[number];
+export type LabMappingStatus = z.infer<typeof LabMappingStatusSchema>;
 
 /** Zod schema for lab mapping status */
 export const LabMappingStatusSchema = z.enum(LAB_MAPPING_STATUSES);
@@ -139,8 +139,9 @@ export const LAB_METRIC_DIRECTIONALITIES = [
   "OPTIMAL_ZONE",
   "DECISION_LIMIT",
 ] as const;
-export type LabMetricDirectionality =
-  (typeof LAB_METRIC_DIRECTIONALITIES)[number];
+export type LabMetricDirectionality = z.infer<
+  typeof LabMetricDirectionalitySchema
+>;
 
 /** Zod schema for lab metric directionality */
 export const LabMetricDirectionalitySchema = z.enum(
@@ -176,7 +177,7 @@ export const LAB_CHANGE_SIGNIFICANCES = [
   "no_meaningful_change",
   "meaningful_change",
 ] as const;
-export type LabChangeSignificance = (typeof LAB_CHANGE_SIGNIFICANCES)[number];
+export type LabChangeSignificance = z.infer<typeof LabChangeSignificanceSchema>;
 
 /** Zod schema for change significance */
 export const LabChangeSignificanceSchema = z.enum(LAB_CHANGE_SIGNIFICANCES);
@@ -209,7 +210,7 @@ export const LAB_CLINICAL_DIRECTIONS = [
   "stable",
   "not_applicable",
 ] as const;
-export type LabClinicalDirection = (typeof LAB_CLINICAL_DIRECTIONS)[number];
+export type LabClinicalDirection = z.infer<typeof LabClinicalDirectionSchema>;
 
 /** Zod schema for clinical direction */
 export const LabClinicalDirectionSchema = z.enum(LAB_CLINICAL_DIRECTIONS);
@@ -244,7 +245,7 @@ export const LAB_RANGE_STATUSES = [
   "high",
   "not_computable",
 ] as const;
-export type LabRangeStatus = (typeof LAB_RANGE_STATUSES)[number];
+export type LabRangeStatus = z.infer<typeof LabRangeStatusSchema>;
 
 /** Zod schema for lab range status */
 export const LabRangeStatusSchema = z.enum(LAB_RANGE_STATUSES);
@@ -281,7 +282,7 @@ export const LAB_METRIC_CATEGORIES = [
   "nutritional",
   "uncategorized",
 ] as const;
-export type LabMetricCategory = (typeof LAB_METRIC_CATEGORIES)[number];
+export type LabMetricCategory = z.infer<typeof LabMetricCategorySchema>;
 
 /** Zod schema for lab metric categories */
 export const LabMetricCategorySchema = z.enum(LAB_METRIC_CATEGORIES);
@@ -310,7 +311,7 @@ export const METRIC_APPROVAL_STATUSES = [
   "REJECTED",
   "MERGED",
 ] as const;
-export type MetricApprovalStatus = (typeof METRIC_APPROVAL_STATUSES)[number];
+export type MetricApprovalStatus = z.infer<typeof MetricApprovalStatusSchema>;
 
 /** Zod schema for metric approval status */
 export const MetricApprovalStatusSchema = z.enum(METRIC_APPROVAL_STATUSES);
@@ -354,7 +355,7 @@ export const CLINICIAN_GOAL_STATUSES = [
   "below-goal",
   "no-goal-set",
 ] as const;
-export type ClinicianGoalStatus = (typeof CLINICIAN_GOAL_STATUSES)[number];
+export type ClinicianGoalStatus = z.infer<typeof ClinicianGoalStatusSchema>;
 
 /** Zod schema for clinician goal status */
 export const ClinicianGoalStatusSchema = z.enum(CLINICIAN_GOAL_STATUSES);
@@ -383,7 +384,7 @@ export const GOAL_TARGET_DIRECTIONS = [
   "at",
   "range",
 ] as const;
-export type GoalTargetDirection = (typeof GOAL_TARGET_DIRECTIONS)[number];
+export type GoalTargetDirection = z.infer<typeof GoalTargetDirectionSchema>;
 
 /** Zod schema for goal target direction */
 export const GoalTargetDirectionSchema = z.enum(GOAL_TARGET_DIRECTIONS);

@@ -25,9 +25,8 @@ export const SUBSCRIPTION_STATUSES = [
   "SUSPENDED",
 ] as const;
 
-export type SubscriptionStatus = (typeof SUBSCRIPTION_STATUSES)[number];
-
 export const SubscriptionStatusSchema = z.enum(SUBSCRIPTION_STATUSES);
+export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
 
 /** Lookup object for subscription statuses (avoids magic strings) */
 export const SUBSCRIPTION_STATUS = {
@@ -75,9 +74,8 @@ export const STRIPE_SCHEDULE_STATUS = {
 
 export const CONTRACT_DURATIONS = ["MONTH_4", "MONTH_8", "MONTH_12"] as const;
 
-export type ContractDuration = (typeof CONTRACT_DURATIONS)[number];
-
 export const ContractDurationSchema = z.enum(CONTRACT_DURATIONS);
+export type ContractDuration = z.infer<typeof ContractDurationSchema>;
 
 /** Map duration to months */
 export const CONTRACT_DURATION_MONTHS: Record<ContractDuration, number> = {
@@ -99,9 +97,8 @@ export const CONTRACT_DURATION_DISCOUNTS: Record<ContractDuration, number> = {
 
 export const BILLING_SOURCES = ["DIRECT", "ORGANIZATION"] as const;
 
-export type BillingSource = (typeof BILLING_SOURCES)[number];
-
 export const BillingSourceSchema = z.enum(BILLING_SOURCES);
+export type BillingSource = z.infer<typeof BillingSourceSchema>;
 
 // ============================================================================
 // SUBSCRIPTION CONTRACT
@@ -201,15 +198,6 @@ export const SubscriptionSchema: z.ZodType<SubscriptionContract> = z.object({
 // CREATE SUBSCRIPTION REQUEST
 // ============================================================================
 
-export interface CreateSubscriptionRequest {
-  userId: string;
-  tier: UserTier;
-  contractDuration: ContractDuration;
-  billingSource?: BillingSource;
-  billingOrganizationId?: string;
-  paymentMethodId?: string; // If already have payment method
-}
-
 export const CreateSubscriptionRequestSchema = z.object({
   /** userId uses HH-XXXXXX barcode format, not UUID */
   userId: z.string().min(1),
@@ -219,6 +207,9 @@ export const CreateSubscriptionRequestSchema = z.object({
   billingOrganizationId: z.string().uuid().optional(),
   paymentMethodId: z.string().optional(),
 });
+export type CreateSubscriptionRequest = z.infer<
+  typeof CreateSubscriptionRequestSchema
+>;
 
 // ============================================================================
 // EARLY TERMINATION QUOTE
@@ -241,31 +232,26 @@ export const EarlyTerminationQuoteSchema = z.object({
   terminationFeeInCents: z.number().int(),
   effectiveImmediately: z.boolean(),
 });
+export type EarlyTerminationQuote = z.infer<typeof EarlyTerminationQuoteSchema>;
 
 // ============================================================================
 // PAUSE REQUEST
 // ============================================================================
 
-export interface PauseSubscriptionRequest {
-  pauseMonths: number; // 1-6, must not exceed remaining
-  reason?: string;
-}
-
 export const PauseSubscriptionRequestSchema = z.object({
   pauseMonths: z.number().int().min(1).max(6),
   reason: z.string().optional(),
 });
+export type PauseSubscriptionRequest = z.infer<
+  typeof PauseSubscriptionRequestSchema
+>;
 
 // ============================================================================
 // TIER CHANGE REQUEST
 // ============================================================================
 
-export interface TierChangeRequest {
-  newTier: UserTier;
-  effectiveDate?: string; // For downgrades, must be at least 7 days before billing
-}
-
 export const TierChangeRequestSchema = z.object({
   newTier: z.enum(USER_TIERS),
   effectiveDate: z.string().optional(),
 });
+export type TierChangeRequest = z.infer<typeof TierChangeRequestSchema>;

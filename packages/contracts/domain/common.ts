@@ -22,6 +22,7 @@ export type IsoTimestampString = string;
 export const isoTimestampSchema = z
   .string()
   .datetime({ offset: true, message: "Must be ISO 8601 timestamp" });
+export type IsoTimestamp = z.infer<typeof isoTimestampSchema>;
 
 export const isoDateSchema = z
   .string()
@@ -39,6 +40,7 @@ export const isoDateSchema = z
       date.getDate() === day
     );
   }, "Must be a valid date");
+export type IsoDate = z.infer<typeof isoDateSchema>;
 
 // ============================================================================
 // BASE DOCUMENT METADATA

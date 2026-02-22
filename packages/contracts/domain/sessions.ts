@@ -13,10 +13,10 @@
  * deps: zod, user.ts | consumers: all codebases
  */
 
-import { z } from 'zod';
-import { type AppointmentType } from './appointments';
-import { baseDocumentSchema, isoTimestampSchema } from './common';
-import { USER_TIERS, type UserTier } from './user';
+import { z } from "zod";
+import { type AppointmentType } from "./appointments";
+import { baseDocumentSchema, isoTimestampSchema } from "./common";
+import { USER_TIERS, type UserTier } from "./user";
 
 // ============================================================================
 // SESSION TYPES
@@ -26,42 +26,41 @@ import { USER_TIERS, type UserTier } from './user';
  * All bookable session types in the Hollis Health system
  */
 export const SESSION_TYPES = [
-  'FITNESS_SESSION',      // 1:1 Training sessions
-  'RECOVERY_SESSION',     // Sauna, Ice Bath, Red Light (unlimited in all tiers, but tracked)
-  'LABWORK',              // CMP + hormones blood panel
-  'CLINICIAN_INITIAL',    // Initial PCP/RN consultation
-  'CLINICIAN_FOLLOWUP',   // Regular PCP check-ins
-  'DXA_SCAN',             // Body composition DEXA scan
-  'SLEEP_SCREENING',      // Overnight O2/sleep health screening
-  'MOBILE_SESSION',       // Mobile/on-location sessions (CONCIERGE only)
+  "FITNESS_SESSION", // 1:1 Training sessions
+  "RECOVERY_SESSION", // Sauna, Ice Bath, Red Light (unlimited in all tiers, but tracked)
+  "LABWORK", // CMP + hormones blood panel
+  "CLINICIAN_INITIAL", // Initial PCP/RN consultation
+  "CLINICIAN_FOLLOWUP", // Regular PCP check-ins
+  "DXA_SCAN", // Body composition DEXA scan
+  "SLEEP_SCREENING", // Overnight O2/sleep health screening
+  "MOBILE_SESSION", // Mobile/on-location sessions (CONCIERGE only)
 ] as const;
 
-export type SessionType = (typeof SESSION_TYPES)[number];
-
 export const SessionTypeSchema = z.enum(SESSION_TYPES);
+export type SessionType = z.infer<typeof SessionTypeSchema>;
 
 /** Centralized session type constants for equality checks */
 export const SESSION_TYPE = {
-  FITNESS_SESSION: 'FITNESS_SESSION' as SessionType,
-  RECOVERY_SESSION: 'RECOVERY_SESSION' as SessionType,
-  LABWORK: 'LABWORK' as SessionType,
-  CLINICIAN_INITIAL: 'CLINICIAN_INITIAL' as SessionType,
-  CLINICIAN_FOLLOWUP: 'CLINICIAN_FOLLOWUP' as SessionType,
-  DXA_SCAN: 'DXA_SCAN' as SessionType,
-  SLEEP_SCREENING: 'SLEEP_SCREENING' as SessionType,
-  MOBILE_SESSION: 'MOBILE_SESSION' as SessionType,
+  FITNESS_SESSION: "FITNESS_SESSION" as SessionType,
+  RECOVERY_SESSION: "RECOVERY_SESSION" as SessionType,
+  LABWORK: "LABWORK" as SessionType,
+  CLINICIAN_INITIAL: "CLINICIAN_INITIAL" as SessionType,
+  CLINICIAN_FOLLOWUP: "CLINICIAN_FOLLOWUP" as SessionType,
+  DXA_SCAN: "DXA_SCAN" as SessionType,
+  SLEEP_SCREENING: "SLEEP_SCREENING" as SessionType,
+  MOBILE_SESSION: "MOBILE_SESSION" as SessionType,
 } as const;
 
 /** Human-readable labels for session types */
 export const SESSION_TYPE_LABELS: Record<SessionType, string> = {
-  FITNESS_SESSION: 'Fitness Session',
-  RECOVERY_SESSION: 'Recovery Session',
-  LABWORK: 'Lab Work',
-  CLINICIAN_INITIAL: 'Initial Consultation',
-  CLINICIAN_FOLLOWUP: 'Follow-up Check-in',
-  DXA_SCAN: 'DXA Scan',
-  SLEEP_SCREENING: 'Sleep Screening',
-  MOBILE_SESSION: 'Mobile Session',
+  FITNESS_SESSION: "Fitness Session",
+  RECOVERY_SESSION: "Recovery Session",
+  LABWORK: "Lab Work",
+  CLINICIAN_INITIAL: "Initial Consultation",
+  CLINICIAN_FOLLOWUP: "Follow-up Check-in",
+  DXA_SCAN: "DXA Scan",
+  SLEEP_SCREENING: "Sleep Screening",
+  MOBILE_SESSION: "Mobile Session",
 };
 
 /**
@@ -83,36 +82,36 @@ export function isSessionType(value: string): value is SessionType {
  * ANNUAL: Resets once per year from billing date
  */
 export const RESET_FREQUENCIES = [
-  'MONTHLY',
-  'QUARTERLY',
-  'BIANNUAL',
-  'ANNUAL',
+  "MONTHLY",
+  "QUARTERLY",
+  "BIANNUAL",
+  "ANNUAL",
 ] as const;
 
-export type ResetFrequency = (typeof RESET_FREQUENCIES)[number];
-
 export const ResetFrequencySchema = z.enum(RESET_FREQUENCIES);
+export type ResetFrequency = z.infer<typeof ResetFrequencySchema>;
 
 /** Centralized reset frequency constants for equality checks */
 export const RESET_FREQUENCY = {
-  MONTHLY: 'MONTHLY' as ResetFrequency,
-  QUARTERLY: 'QUARTERLY' as ResetFrequency,
-  BIANNUAL: 'BIANNUAL' as ResetFrequency,
-  ANNUAL: 'ANNUAL' as ResetFrequency,
+  MONTHLY: "MONTHLY" as ResetFrequency,
+  QUARTERLY: "QUARTERLY" as ResetFrequency,
+  BIANNUAL: "BIANNUAL" as ResetFrequency,
+  ANNUAL: "ANNUAL" as ResetFrequency,
 } as const;
 
 /** Human-readable labels for reset frequencies */
 export const RESET_FREQUENCY_LABELS: Record<ResetFrequency, string> = {
-  MONTHLY: 'Monthly',
-  QUARTERLY: 'Quarterly',
-  BIANNUAL: 'Biannual',
-  ANNUAL: 'Annual',
+  MONTHLY: "Monthly",
+  QUARTERLY: "Quarterly",
+  BIANNUAL: "Biannual",
+  ANNUAL: "Annual",
 };
 
 // ============================================================================
 // SESSION BALANCE
 // ============================================================================
 
+// zod-manual: type exported as SessionBalanceItemContract
 export const SessionBalanceItemSchema = z.object({
   sessionType: SessionTypeSchema,
   allocated: z.number().int().min(-1),
@@ -126,12 +125,15 @@ export const SessionBalanceItemSchema = z.object({
   nextResetDate: z.string(),
 });
 
-export type SessionBalanceItemContract = z.infer<typeof SessionBalanceItemSchema>;
+export type SessionBalanceItemContract = z.infer<
+  typeof SessionBalanceItemSchema
+>;
 
 // ============================================================================
 // USER SESSION BALANCE
 // ============================================================================
 
+// zod-manual: type exported as UserSessionBalanceContract
 export const UserSessionBalanceSchema = z.object({
   userId: z.string(),
   tier: z.enum(USER_TIERS),
@@ -140,7 +142,9 @@ export const UserSessionBalanceSchema = z.object({
   lastUpdated: z.string(),
 });
 
-export type UserSessionBalanceContract = z.infer<typeof UserSessionBalanceSchema>;
+export type UserSessionBalanceContract = z.infer<
+  typeof UserSessionBalanceSchema
+>;
 
 // ============================================================================
 // SESSION ALLOCATIONS
@@ -148,22 +152,25 @@ export type UserSessionBalanceContract = z.infer<typeof UserSessionBalanceSchema
 
 export const SessionAllocationSchema = z.object({
   sessionType: SessionTypeSchema,
-  quantity: z.number().int().min(-1),  // -1 = unlimited
+  quantity: z.number().int().min(-1), // -1 = unlimited
   resetFrequency: ResetFrequencySchema,
 });
 
 export type SessionAllocationContract = z.infer<typeof SessionAllocationSchema>;
 
+// zod-manual: type exported as TierSessionAllocationsContract
 export const TierSessionAllocationsSchema = z.object({
   tier: z.enum(USER_TIERS),
   allocations: z.array(SessionAllocationSchema),
 });
 
-export type TierSessionAllocationsContract = z.infer<typeof TierSessionAllocationsSchema>;
+export type TierSessionAllocationsContract = z.infer<
+  typeof TierSessionAllocationsSchema
+>;
 
 /**
  * Default tier allocations based on Hollis Health membership structure
- * 
+ *
  * ESSENTIALS ($799/mo):
  * - 4x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
@@ -172,7 +179,7 @@ export type TierSessionAllocationsContract = z.infer<typeof TierSessionAllocatio
  * - 1x Clinician Followup/year
  * - 2x DXA Scans/year (initial + 6mo)
  * - 2x Sleep Screenings/year (biannual)
- * 
+ *
  * CORE ($1199/mo):
  * - 8x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
@@ -181,7 +188,7 @@ export type TierSessionAllocationsContract = z.infer<typeof TierSessionAllocatio
  * - 2x Clinician Followups/year (biannual)
  * - 4x DXA Scans/year (quarterly)
  * - 2x Sleep Screenings/month
- * 
+ *
  * CONCIERGE ($1699/mo):
  * - 16x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
@@ -191,34 +198,125 @@ export type TierSessionAllocationsContract = z.infer<typeof TierSessionAllocatio
  * - 12x DXA Scans/year (monthly)
  * - 4x Sleep Screenings/month (weekly)
  */
-export const DEFAULT_TIER_ALLOCATIONS: Record<UserTier, SessionAllocationContract[]> = {
+export const DEFAULT_TIER_ALLOCATIONS: Record<
+  UserTier,
+  SessionAllocationContract[]
+> = {
   ESSENTIALS: [
-    { sessionType: SESSION_TYPE.FITNESS_SESSION, quantity: 4, resetFrequency: RESET_FREQUENCY.MONTHLY },
-    { sessionType: SESSION_TYPE.RECOVERY_SESSION, quantity: -1, resetFrequency: RESET_FREQUENCY.MONTHLY }, // Unlimited
-    { sessionType: SESSION_TYPE.LABWORK, quantity: 1, resetFrequency: RESET_FREQUENCY.BIANNUAL },
-    { sessionType: SESSION_TYPE.CLINICIAN_INITIAL, quantity: 1, resetFrequency: RESET_FREQUENCY.ANNUAL },
-    { sessionType: SESSION_TYPE.CLINICIAN_FOLLOWUP, quantity: 1, resetFrequency: RESET_FREQUENCY.ANNUAL },
-    { sessionType: SESSION_TYPE.DXA_SCAN, quantity: 1, resetFrequency: RESET_FREQUENCY.BIANNUAL },
-    { sessionType: SESSION_TYPE.SLEEP_SCREENING, quantity: 1, resetFrequency: RESET_FREQUENCY.BIANNUAL },
+    {
+      sessionType: SESSION_TYPE.FITNESS_SESSION,
+      quantity: 4,
+      resetFrequency: RESET_FREQUENCY.MONTHLY,
+    },
+    {
+      sessionType: SESSION_TYPE.RECOVERY_SESSION,
+      quantity: -1,
+      resetFrequency: RESET_FREQUENCY.MONTHLY,
+    }, // Unlimited
+    {
+      sessionType: SESSION_TYPE.LABWORK,
+      quantity: 1,
+      resetFrequency: RESET_FREQUENCY.BIANNUAL,
+    },
+    {
+      sessionType: SESSION_TYPE.CLINICIAN_INITIAL,
+      quantity: 1,
+      resetFrequency: RESET_FREQUENCY.ANNUAL,
+    },
+    {
+      sessionType: SESSION_TYPE.CLINICIAN_FOLLOWUP,
+      quantity: 1,
+      resetFrequency: RESET_FREQUENCY.ANNUAL,
+    },
+    {
+      sessionType: SESSION_TYPE.DXA_SCAN,
+      quantity: 1,
+      resetFrequency: RESET_FREQUENCY.BIANNUAL,
+    },
+    {
+      sessionType: SESSION_TYPE.SLEEP_SCREENING,
+      quantity: 1,
+      resetFrequency: RESET_FREQUENCY.BIANNUAL,
+    },
   ],
   CORE: [
-    { sessionType: SESSION_TYPE.FITNESS_SESSION, quantity: 8, resetFrequency: RESET_FREQUENCY.MONTHLY },
-    { sessionType: SESSION_TYPE.RECOVERY_SESSION, quantity: -1, resetFrequency: RESET_FREQUENCY.MONTHLY }, // Unlimited
-    { sessionType: SESSION_TYPE.LABWORK, quantity: 1, resetFrequency: RESET_FREQUENCY.QUARTERLY },
-    { sessionType: SESSION_TYPE.CLINICIAN_INITIAL, quantity: 1, resetFrequency: RESET_FREQUENCY.ANNUAL },
-    { sessionType: SESSION_TYPE.CLINICIAN_FOLLOWUP, quantity: 1, resetFrequency: RESET_FREQUENCY.BIANNUAL },
-    { sessionType: SESSION_TYPE.DXA_SCAN, quantity: 1, resetFrequency: RESET_FREQUENCY.QUARTERLY },
-    { sessionType: SESSION_TYPE.SLEEP_SCREENING, quantity: 2, resetFrequency: RESET_FREQUENCY.MONTHLY },
+    {
+      sessionType: SESSION_TYPE.FITNESS_SESSION,
+      quantity: 8,
+      resetFrequency: RESET_FREQUENCY.MONTHLY,
+    },
+    {
+      sessionType: SESSION_TYPE.RECOVERY_SESSION,
+      quantity: -1,
+      resetFrequency: RESET_FREQUENCY.MONTHLY,
+    }, // Unlimited
+    {
+      sessionType: SESSION_TYPE.LABWORK,
+      quantity: 1,
+      resetFrequency: RESET_FREQUENCY.QUARTERLY,
+    },
+    {
+      sessionType: SESSION_TYPE.CLINICIAN_INITIAL,
+      quantity: 1,
+      resetFrequency: RESET_FREQUENCY.ANNUAL,
+    },
+    {
+      sessionType: SESSION_TYPE.CLINICIAN_FOLLOWUP,
+      quantity: 1,
+      resetFrequency: RESET_FREQUENCY.BIANNUAL,
+    },
+    {
+      sessionType: SESSION_TYPE.DXA_SCAN,
+      quantity: 1,
+      resetFrequency: RESET_FREQUENCY.QUARTERLY,
+    },
+    {
+      sessionType: SESSION_TYPE.SLEEP_SCREENING,
+      quantity: 2,
+      resetFrequency: RESET_FREQUENCY.MONTHLY,
+    },
   ],
   CONCIERGE: [
-    { sessionType: SESSION_TYPE.FITNESS_SESSION, quantity: 16, resetFrequency: RESET_FREQUENCY.MONTHLY },
-    { sessionType: SESSION_TYPE.RECOVERY_SESSION, quantity: -1, resetFrequency: RESET_FREQUENCY.MONTHLY }, // Unlimited
-    { sessionType: SESSION_TYPE.LABWORK, quantity: 1, resetFrequency: RESET_FREQUENCY.MONTHLY },
-    { sessionType: SESSION_TYPE.CLINICIAN_INITIAL, quantity: 1, resetFrequency: RESET_FREQUENCY.ANNUAL },
-    { sessionType: SESSION_TYPE.CLINICIAN_FOLLOWUP, quantity: 1, resetFrequency: RESET_FREQUENCY.MONTHLY },
-    { sessionType: SESSION_TYPE.DXA_SCAN, quantity: 1, resetFrequency: RESET_FREQUENCY.MONTHLY },
-    { sessionType: SESSION_TYPE.SLEEP_SCREENING, quantity: 4, resetFrequency: RESET_FREQUENCY.MONTHLY },
-    { sessionType: SESSION_TYPE.MOBILE_SESSION, quantity: 2, resetFrequency: RESET_FREQUENCY.MONTHLY },
+    {
+      sessionType: SESSION_TYPE.FITNESS_SESSION,
+      quantity: 16,
+      resetFrequency: RESET_FREQUENCY.MONTHLY,
+    },
+    {
+      sessionType: SESSION_TYPE.RECOVERY_SESSION,
+      quantity: -1,
+      resetFrequency: RESET_FREQUENCY.MONTHLY,
+    }, // Unlimited
+    {
+      sessionType: SESSION_TYPE.LABWORK,
+      quantity: 1,
+      resetFrequency: RESET_FREQUENCY.MONTHLY,
+    },
+    {
+      sessionType: SESSION_TYPE.CLINICIAN_INITIAL,
+      quantity: 1,
+      resetFrequency: RESET_FREQUENCY.ANNUAL,
+    },
+    {
+      sessionType: SESSION_TYPE.CLINICIAN_FOLLOWUP,
+      quantity: 1,
+      resetFrequency: RESET_FREQUENCY.MONTHLY,
+    },
+    {
+      sessionType: SESSION_TYPE.DXA_SCAN,
+      quantity: 1,
+      resetFrequency: RESET_FREQUENCY.MONTHLY,
+    },
+    {
+      sessionType: SESSION_TYPE.SLEEP_SCREENING,
+      quantity: 4,
+      resetFrequency: RESET_FREQUENCY.MONTHLY,
+    },
+    {
+      sessionType: SESSION_TYPE.MOBILE_SESSION,
+      quantity: 2,
+      resetFrequency: RESET_FREQUENCY.MONTHLY,
+    },
   ],
 };
 
@@ -230,32 +328,38 @@ export const DEFAULT_TIER_ALLOCATIONS: Record<UserTier, SessionAllocationContrac
  * Sources for session usage records.
  * Tracks how sessions were consumed or credited.
  */
-export const SESSION_USAGE_SOURCES = ['BOOKING', 'ADMIN_DEDUCT', 'ADMIN_CREDIT', 'BILLING_RESET'] as const;
-
-export type SessionUsageSource = (typeof SESSION_USAGE_SOURCES)[number];
+export const SESSION_USAGE_SOURCES = [
+  "BOOKING",
+  "ADMIN_DEDUCT",
+  "ADMIN_CREDIT",
+  "BILLING_RESET",
+] as const;
 
 export const SessionUsageSourceSchema = z.enum(SESSION_USAGE_SOURCES);
+export type SessionUsageSource = z.infer<typeof SessionUsageSourceSchema>;
 
 /** Centralized session usage source constants for equality checks */
 export const SESSION_USAGE_SOURCE = {
-  BOOKING: 'BOOKING' as SessionUsageSource,
-  ADMIN_DEDUCT: 'ADMIN_DEDUCT' as SessionUsageSource,
-  ADMIN_CREDIT: 'ADMIN_CREDIT' as SessionUsageSource,
-  BILLING_RESET: 'BILLING_RESET' as SessionUsageSource,
+  BOOKING: "BOOKING" as SessionUsageSource,
+  ADMIN_DEDUCT: "ADMIN_DEDUCT" as SessionUsageSource,
+  ADMIN_CREDIT: "ADMIN_CREDIT" as SessionUsageSource,
+  BILLING_RESET: "BILLING_RESET" as SessionUsageSource,
 } as const;
 
 /** Human-readable labels for session usage sources */
 export const SESSION_USAGE_SOURCE_LABELS: Record<SessionUsageSource, string> = {
-  BOOKING: 'Appointment Booking',
-  ADMIN_DEDUCT: 'Admin Deduction',
-  ADMIN_CREDIT: 'Admin Credit',
-  BILLING_RESET: 'Billing Reset',
+  BOOKING: "Appointment Booking",
+  ADMIN_DEDUCT: "Admin Deduction",
+  ADMIN_CREDIT: "Admin Credit",
+  BILLING_RESET: "Billing Reset",
 };
 
 /**
  * Check if a string is a valid session usage source
  */
-export function isSessionUsageSource(value: string): value is SessionUsageSource {
+export function isSessionUsageSource(
+  value: string,
+): value is SessionUsageSource {
   return (SESSION_USAGE_SOURCES as readonly string[]).includes(value);
 }
 
@@ -268,55 +372,55 @@ export function isSessionUsageSource(value: string): value is SessionUsageSource
  * These codes are surfaced to clients for deterministic handling.
  */
 export const SESSION_ERROR_CODES = [
-  'INVALID_SESSION_TYPE',
-  'NO_SESSIONS_REMAINING',
-  'CANNOT_ADJUST_UNLIMITED',
-  'USER_NOT_FOUND',
-  'SAME_TIER',
-  'MEMBERSHIP_PAUSED',
+  "INVALID_SESSION_TYPE",
+  "NO_SESSIONS_REMAINING",
+  "CANNOT_ADJUST_UNLIMITED",
+  "USER_NOT_FOUND",
+  "SAME_TIER",
+  "MEMBERSHIP_PAUSED",
   // Access control error codes (billing/account status)
-  'ACCOUNT_INACTIVE',
-  'ACCOUNT_SUSPENDED',
-  'ORGANIZATION_SUSPENDED',
-  'ORGANIZATION_ARCHIVED',
-  'SUBSCRIPTION_NOT_ACTIVE',
-  'NO_ACTIVE_SUBSCRIPTION',
+  "ACCOUNT_INACTIVE",
+  "ACCOUNT_SUSPENDED",
+  "ORGANIZATION_SUSPENDED",
+  "ORGANIZATION_ARCHIVED",
+  "SUBSCRIPTION_NOT_ACTIVE",
+  "NO_ACTIVE_SUBSCRIPTION",
 ] as const;
 
-export type SessionErrorCode = (typeof SESSION_ERROR_CODES)[number];
 export const sessionErrorCodeSchema = z.enum(SESSION_ERROR_CODES);
+export type SessionErrorCode = z.infer<typeof sessionErrorCodeSchema>;
 
 export const SESSION_ERROR_CODE = {
-  INVALID_SESSION_TYPE: 'INVALID_SESSION_TYPE' as SessionErrorCode,
-  NO_SESSIONS_REMAINING: 'NO_SESSIONS_REMAINING' as SessionErrorCode,
-  CANNOT_ADJUST_UNLIMITED: 'CANNOT_ADJUST_UNLIMITED' as SessionErrorCode,
-  USER_NOT_FOUND: 'USER_NOT_FOUND' as SessionErrorCode,
-  SAME_TIER: 'SAME_TIER' as SessionErrorCode,
-  MEMBERSHIP_PAUSED: 'MEMBERSHIP_PAUSED' as SessionErrorCode,
+  INVALID_SESSION_TYPE: "INVALID_SESSION_TYPE" as SessionErrorCode,
+  NO_SESSIONS_REMAINING: "NO_SESSIONS_REMAINING" as SessionErrorCode,
+  CANNOT_ADJUST_UNLIMITED: "CANNOT_ADJUST_UNLIMITED" as SessionErrorCode,
+  USER_NOT_FOUND: "USER_NOT_FOUND" as SessionErrorCode,
+  SAME_TIER: "SAME_TIER" as SessionErrorCode,
+  MEMBERSHIP_PAUSED: "MEMBERSHIP_PAUSED" as SessionErrorCode,
   // Access control error codes (billing/account status)
-  ACCOUNT_INACTIVE: 'ACCOUNT_INACTIVE' as SessionErrorCode,
-  ACCOUNT_SUSPENDED: 'ACCOUNT_SUSPENDED' as SessionErrorCode,
-  ORGANIZATION_SUSPENDED: 'ORGANIZATION_SUSPENDED' as SessionErrorCode,
-  ORGANIZATION_ARCHIVED: 'ORGANIZATION_ARCHIVED' as SessionErrorCode,
-  SUBSCRIPTION_NOT_ACTIVE: 'SUBSCRIPTION_NOT_ACTIVE' as SessionErrorCode,
-  NO_ACTIVE_SUBSCRIPTION: 'NO_ACTIVE_SUBSCRIPTION' as SessionErrorCode,
+  ACCOUNT_INACTIVE: "ACCOUNT_INACTIVE" as SessionErrorCode,
+  ACCOUNT_SUSPENDED: "ACCOUNT_SUSPENDED" as SessionErrorCode,
+  ORGANIZATION_SUSPENDED: "ORGANIZATION_SUSPENDED" as SessionErrorCode,
+  ORGANIZATION_ARCHIVED: "ORGANIZATION_ARCHIVED" as SessionErrorCode,
+  SUBSCRIPTION_NOT_ACTIVE: "SUBSCRIPTION_NOT_ACTIVE" as SessionErrorCode,
+  NO_ACTIVE_SUBSCRIPTION: "NO_ACTIVE_SUBSCRIPTION" as SessionErrorCode,
 } as const;
 
 /** Human-friendly labels for displaying session errors */
 export const SESSION_ERROR_LABELS: Record<SessionErrorCode, string> = {
-  INVALID_SESSION_TYPE: 'Invalid session type',
-  NO_SESSIONS_REMAINING: 'No sessions remaining',
-  CANNOT_ADJUST_UNLIMITED: 'Cannot adjust unlimited session types',
-  USER_NOT_FOUND: 'User not found',
-  SAME_TIER: 'User is already on this tier',
-  MEMBERSHIP_PAUSED: 'Cannot use sessions while membership is paused',
+  INVALID_SESSION_TYPE: "Invalid session type",
+  NO_SESSIONS_REMAINING: "No sessions remaining",
+  CANNOT_ADJUST_UNLIMITED: "Cannot adjust unlimited session types",
+  USER_NOT_FOUND: "User not found",
+  SAME_TIER: "User is already on this tier",
+  MEMBERSHIP_PAUSED: "Cannot use sessions while membership is paused",
   // Access control error labels
-  ACCOUNT_INACTIVE: 'Your account is inactive',
-  ACCOUNT_SUSPENDED: 'Your account is suspended due to a billing dispute',
-  ORGANIZATION_SUSPENDED: 'Your organization account is suspended',
-  ORGANIZATION_ARCHIVED: 'Your organization account is no longer active',
-  SUBSCRIPTION_NOT_ACTIVE: 'Your subscription is not active',
-  NO_ACTIVE_SUBSCRIPTION: 'No active subscription found',
+  ACCOUNT_INACTIVE: "Your account is inactive",
+  ACCOUNT_SUSPENDED: "Your account is suspended due to a billing dispute",
+  ORGANIZATION_SUSPENDED: "Your organization account is suspended",
+  ORGANIZATION_ARCHIVED: "Your organization account is no longer active",
+  SUBSCRIPTION_NOT_ACTIVE: "Your subscription is not active",
+  NO_ACTIVE_SUBSCRIPTION: "No active subscription found",
 };
 
 // ============================================================================
@@ -327,10 +431,13 @@ export const SESSION_ERROR_LABELS: Record<SessionErrorCode, string> = {
  * Map AppointmentType to SessionType for booking integration.
  * Type-safe mapping ensures compile-time errors if new appointment types are added
  * without updating this map.
- * 
+ *
  * NOTE: ONBOARDING maps to null because onboarding doesn't consume session credits.
  */
-export const APPOINTMENT_TO_SESSION_MAP: Record<AppointmentType, SessionType | null> = {
+export const APPOINTMENT_TO_SESSION_MAP: Record<
+  AppointmentType,
+  SessionType | null
+> = {
   CHECK_IN: SESSION_TYPE.CLINICIAN_FOLLOWUP,
   CONSULTATION: SESSION_TYPE.CLINICIAN_INITIAL,
   TRAINING_SESSION: SESSION_TYPE.FITNESS_SESSION,
@@ -369,7 +476,9 @@ export const SessionAdjustmentPayloadSchema = z.object({
   reason: z.string().min(1),
 });
 
-export type SessionAdjustmentPayload = z.infer<typeof SessionAdjustmentPayloadSchema>;
+export type SessionAdjustmentPayload = z.infer<
+  typeof SessionAdjustmentPayloadSchema
+>;
 
 // ============================================================================
 // TIER CHANGE
@@ -393,19 +502,24 @@ export const BillingDateUpdatePayloadSchema = z.object({
   reason: z.string().optional(),
 });
 
-export type BillingDateUpdatePayload = z.infer<typeof BillingDateUpdatePayloadSchema>;
+export type BillingDateUpdatePayload = z.infer<
+  typeof BillingDateUpdatePayloadSchema
+>;
 
 // ============================================================================
 // SESSION SERVICE ERROR
 // ============================================================================
 
+// zod-manual: type exported as SessionServiceErrorContract
 export const sessionServiceErrorSchema = z.object({
   code: sessionErrorCodeSchema,
   message: z.string(),
   statusCode: z.number().int().positive().optional(),
 });
 
-export type SessionServiceErrorContract = z.infer<typeof sessionServiceErrorSchema>;
+export type SessionServiceErrorContract = z.infer<
+  typeof sessionServiceErrorSchema
+>;
 
 export const createMockSessionError = (
   overrides: Partial<SessionServiceErrorContract> = {},
@@ -422,7 +536,9 @@ export const createMockSessionError = (
 /**
  * Helper to check if a session type has sessions available
  */
-export function hasSessionsAvailable(balance: SessionBalanceItemContract): boolean {
+export function hasSessionsAvailable(
+  balance: SessionBalanceItemContract,
+): boolean {
   if (balance.allocated === -1) return true; // Unlimited
   return balance.remaining > 0;
 }
@@ -430,7 +546,9 @@ export function hasSessionsAvailable(balance: SessionBalanceItemContract): boole
 /**
  * Helper to calculate the effective remaining (includes adjustments)
  */
-export function getEffectiveRemaining(balance: SessionBalanceItemContract): number {
+export function getEffectiveRemaining(
+  balance: SessionBalanceItemContract,
+): number {
   if (balance.allocated === -1) return -1; // Unlimited
   return Math.max(0, balance.remaining + balance.adjustments);
 }

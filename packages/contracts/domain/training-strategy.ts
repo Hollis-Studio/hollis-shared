@@ -44,6 +44,7 @@ export {
 } from "../primitives";
 
 /** @deprecated Use VolumeLevelSchema (PascalCase) from primitives. Remove after 2026-05-01 */
+// zod-manual: deprecated alias
 export const volumeLevelSchema = VolumeLevelSchema;
 
 // ============================================================================
@@ -51,14 +52,19 @@ export const volumeLevelSchema = VolumeLevelSchema;
 // ============================================================================
 
 /** @deprecated Use StrategyTypeSchema (PascalCase) from training. Remove after 2026-05-01 */
+// zod-manual: deprecated alias
 export const strategyTypeSchema = StrategyTypeSchema;
 /** @deprecated Use StrategyStatusSchema (PascalCase) from training. Remove after 2026-05-01 */
+// zod-manual: deprecated alias
 export const strategyStatusSchema = StrategyStatusSchema;
 /** @deprecated Use GoalCategorySchema (PascalCase) from training. Remove after 2026-05-01 */
+// zod-manual: deprecated alias
 export const goalCategorySchema = GoalCategorySchema;
 /** @deprecated Use GoalDataSourceSchema (PascalCase) from training. Remove after 2026-05-01 */
+// zod-manual: deprecated alias
 export const goalDataSourceSchema = GoalDataSourceSchema;
 /** @deprecated Use GoalDirectionSchema (PascalCase) from training. Remove after 2026-05-01 */
+// zod-manual: deprecated alias
 export const goalDirectionSchema = GoalDirectionSchema;
 
 // ============================================================================
@@ -85,6 +91,7 @@ export const DetailedStrategyGoalSchema = z.object({
   updatedAt: z.string(),
   metricDefinition: MetricDefinitionSummarySchema.nullable().optional(),
 });
+export type DetailedStrategyGoal = z.infer<typeof DetailedStrategyGoalSchema>;
 
 /**
  * Individual goal within a training strategy.
@@ -117,6 +124,7 @@ export const DetailedTrainingPhaseSchema = baseDocumentSchema.extend({
   isActive: z.boolean(),
   isCompleted: z.boolean(),
 });
+export type DetailedTrainingPhase = z.infer<typeof DetailedTrainingPhaseSchema>;
 
 /**
  * Training phase within a strategy with full validation.
@@ -147,6 +155,9 @@ export const DetailedTrainingStrategySchema = baseDocumentSchema.extend({
   phases: z.array(DetailedTrainingPhaseSchema),
   createdBy: z.string().optional(),
 });
+export type DetailedTrainingStrategy = z.infer<
+  typeof DetailedTrainingStrategySchema
+>;
 
 /**
  * Complete training strategy with goals, phases, and progress tracking.
@@ -171,6 +182,9 @@ export const CreateDetailedStrategyGoalSchema = DetailedStrategyGoalSchema.omit(
     updatedAt: true,
   },
 );
+export type CreateDetailedStrategyGoal = z.infer<
+  typeof CreateDetailedStrategyGoalSchema
+>;
 
 export const CreateDetailedTrainingPhaseSchema =
   DetailedTrainingPhaseSchema.omit({
@@ -179,6 +193,9 @@ export const CreateDetailedTrainingPhaseSchema =
     createdAt: true,
     updatedAt: true,
   });
+export type CreateDetailedTrainingPhase = z.infer<
+  typeof CreateDetailedTrainingPhaseSchema
+>;
 
 export const CreateDetailedTrainingStrategySchema =
   DetailedTrainingStrategySchema.omit({
@@ -192,9 +209,15 @@ export const CreateDetailedTrainingStrategySchema =
     phases: z.array(CreateDetailedTrainingPhaseSchema).optional(),
     goals: z.array(CreateDetailedStrategyGoalSchema).optional(),
   });
+export type CreateDetailedTrainingStrategy = z.infer<
+  typeof CreateDetailedTrainingStrategySchema
+>;
 
 export const UpdateDetailedTrainingStrategySchema =
   CreateDetailedTrainingStrategySchema.partial();
+export type UpdateDetailedTrainingStrategy = z.infer<
+  typeof UpdateDetailedTrainingStrategySchema
+>;
 
 // ============================================================================
 // GOAL SYNC RESULT TYPES
@@ -236,6 +259,7 @@ export const SyncAllGoalsResultSchema = z.object({
   results: z.array(GoalSyncResultSchema),
   syncedAt: z.string(),
 });
+export type SyncAllGoalsResult = z.infer<typeof SyncAllGoalsResultSchema>;
 
 /**
  * Aggregate result of syncing all goals for a strategy.
@@ -271,6 +295,7 @@ export const TrainingPhaseDraftSchema = z.object({
   isActive: z.boolean(),
   isCompleted: z.boolean(),
 });
+export type TrainingPhaseDraft = z.infer<typeof TrainingPhaseDraftSchema>;
 
 export type TrainingPhaseDraftContract = z.infer<
   typeof TrainingPhaseDraftSchema
@@ -343,6 +368,9 @@ export const StrategyGenerationActivitySchema = z.object({
     )
     .optional(),
 });
+export type StrategyGenerationActivity = z.infer<
+  typeof StrategyGenerationActivitySchema
+>;
 
 export const StrategyGenerationProgressSchema = z.object({
   step: z.number().int().min(0),
@@ -361,6 +389,9 @@ export const StrategyGenerationProgressSchema = z.object({
     })
     .optional(),
 });
+export type StrategyGenerationProgress = z.infer<
+  typeof StrategyGenerationProgressSchema
+>;
 
 export type StrategyGenerationProgressContract = z.infer<
   typeof StrategyGenerationProgressSchema
@@ -375,6 +406,9 @@ export const StrategyGenerationResultSchema = z.object({
   strategy: StrategyDraftSchema,
   reasoning: z.string(),
 });
+export type StrategyGenerationResult = z.infer<
+  typeof StrategyGenerationResultSchema
+>;
 
 export type StrategyGenerationResultContract = z.infer<
   typeof StrategyGenerationResultSchema
@@ -397,6 +431,9 @@ export const StrategyClarificationNeededSchema = z.object({
     )
     .optional(),
 });
+export type StrategyClarificationNeeded = z.infer<
+  typeof StrategyClarificationNeededSchema
+>;
 
 export type StrategyClarificationNeededContract = z.infer<
   typeof StrategyClarificationNeededSchema
@@ -406,6 +443,9 @@ export const StrategyGenerationResponseSchema = z.union([
   StrategyGenerationResultSchema,
   StrategyClarificationNeededSchema,
 ]);
+export type StrategyGenerationResponse = z.infer<
+  typeof StrategyGenerationResponseSchema
+>;
 
 export type StrategyGenerationResponseContract = z.infer<
   typeof StrategyGenerationResponseSchema

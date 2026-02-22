@@ -37,7 +37,7 @@ export const MEAL_TYPES = [
   "other",
 ] as const;
 
-export type MealType = (typeof MEAL_TYPES)[number];
+export type MealType = z.infer<typeof MealTypeSchema>;
 
 export const MealTypeSchema = z.enum(MEAL_TYPES);
 
@@ -108,7 +108,7 @@ export const LOCATION_TYPES = [
   "travel",
   "social_event",
 ] as const;
-export type LocationType = (typeof LOCATION_TYPES)[number];
+export type LocationType = z.infer<typeof LocationTypeSchema>;
 
 export const LocationTypeSchema = z.enum(LOCATION_TYPES);
 
@@ -135,7 +135,7 @@ export const DIGESTION_QUALITIES = [
   "poor",
   "very_poor",
 ] as const;
-export type DigestionQuality = (typeof DIGESTION_QUALITIES)[number];
+export type DigestionQuality = z.infer<typeof DigestionQualitySchema>;
 
 export const DigestionQualitySchema = z.enum(DIGESTION_QUALITIES);
 
@@ -162,7 +162,7 @@ export const ENERGY_LEVELS = [
   "high",
   "very_high",
 ] as const;
-export type EnergyLevel = (typeof ENERGY_LEVELS)[number];
+export type EnergyLevel = z.infer<typeof EnergyLevelSchema>;
 
 export const EnergyLevelSchema = z.enum(ENERGY_LEVELS);
 
@@ -189,7 +189,7 @@ export const MOOD_LEVELS = [
   "positive",
   "very_positive",
 ] as const;
-export type MoodLevel = (typeof MOOD_LEVELS)[number];
+export type MoodLevel = z.infer<typeof MoodLevelSchema>;
 
 export const MoodLevelSchema = z.enum(MOOD_LEVELS);
 
@@ -218,7 +218,7 @@ export const PREPARATION_METHODS = [
   "steamed",
   "roasted",
 ] as const;
-export type PreparationMethod = (typeof PREPARATION_METHODS)[number];
+export type PreparationMethod = z.infer<typeof PreparationMethodSchema>;
 
 export const PreparationMethodSchema = z.enum(PREPARATION_METHODS);
 
@@ -250,7 +250,7 @@ export const FOOD_UNITS = [
   "milliliters",
   "liters",
 ] as const;
-export type FoodUnit = (typeof FOOD_UNITS)[number];
+export type FoodUnit = z.infer<typeof FoodUnitSchema>;
 
 export const FoodUnitSchema = z.enum(FOOD_UNITS);
 
@@ -539,12 +539,15 @@ export type AIAnalysisResult = z.infer<typeof aiAnalysisResultSchema>;
 // ============================================================================
 
 /** @deprecated Use NutritionMacroBreakdownSchema instead. Remove after 2026-05-01 */
+// zod-manual: deprecated alias
 export const macrosSchema = NutritionMacroBreakdownSchema;
 
 /** @deprecated Use MealContextSchema instead. Remove after 2026-05-01 */
+// zod-manual: deprecated alias
 export const mealContextSchema = MealContextSchema;
 
 /** @deprecated Use DailyNutritionLogSchema instead. Remove after 2026-05-01 */
+// zod-manual: deprecated alias
 export const dailyNutritionLogSchema = DailyNutritionLogSchema;
 
 // ============================================================================
