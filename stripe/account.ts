@@ -22,9 +22,11 @@ import {
 import {
   FulfillmentStatusSchema,
   OrderItemSchema,
+  OrderPaymentStatusSchema,
   ShippingAddressSchema,
   type FulfillmentStatus,
   type OrderItemContract,
+  type OrderPaymentStatus,
   type ShippingAddressContract,
   type OrderContract,
 } from './order';
@@ -105,6 +107,7 @@ export const CustomerPaymentMethodSchema = z.object({
   expYear: z.number().int(),
   isDefault: z.boolean(),
 });
+export type CustomerPaymentMethod = z.infer<typeof CustomerPaymentMethodSchema>;
 
 // ============================================================================
 // CUSTOMER ORDER (strips userId)
@@ -127,7 +130,7 @@ export interface CustomerOrderContract {
   carrier: string | null;
   shippedAt: string | null;
   deliveredAt: string | null;
-  paymentStatus: string;
+  paymentStatus: OrderPaymentStatus;
   paidAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -150,7 +153,7 @@ export const CustomerOrderSchema: z.ZodType<CustomerOrderContract> = z.object({
   carrier: z.string().nullable(),
   shippedAt: z.string().nullable(),
   deliveredAt: z.string().nullable(),
-  paymentStatus: z.string(),
+  paymentStatus: OrderPaymentStatusSchema,
   paidAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),

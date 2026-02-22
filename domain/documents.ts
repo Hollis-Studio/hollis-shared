@@ -34,7 +34,7 @@ export const DOCUMENT_CATEGORIES = [
 ] as const;
 
 /** Single document category type */
-export type DocumentCategory = (typeof DOCUMENT_CATEGORIES)[number];
+export type DocumentCategory = z.infer<typeof DocumentCategorySchema>;
 
 /** Zod schema for document category validation - derived from tuple */
 export const DocumentCategorySchema = z.enum(DOCUMENT_CATEGORIES);

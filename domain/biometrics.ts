@@ -53,22 +53,29 @@ export const biometricEntrySchema = baseDocumentSchema.extend({
   metricDefinition: MetricDefinitionSummarySchema.nullable().optional(),
 });
 
-export type BiometricEntryContract = z.infer<typeof biometricEntrySchema>;
+export type BiometricEntry = z.infer<typeof biometricEntrySchema>;
+
+export type BiometricEntryContract = z.infer<
+  typeof BiometricEntryContractSchema
+>;
 
 /**
  * Canonical paginated biometric list payload.
+ * Uses BiometricEntryContractSchema (required id) since list responses
+ * return persisted entries that always have server-assigned IDs.
  */
-export const biometricListPayloadSchema =
-  createPaginatedListSchema(biometricEntrySchema);
+export const biometricListPayloadSchema = createPaginatedListSchema(
+  BiometricEntryContractSchema,
+);
 
 /**
  * Backward-compatible biometric list payload:
  * - canonical paginated payload: { data, pagination }
- * - legacy array payload: BiometricEntry[]
+ * - legacy array payload: BiometricEntryContract[]
  */
 export const biometricListResponseSchema = z.union([
   biometricListPayloadSchema,
-  z.array(biometricEntrySchema),
+  z.array(BiometricEntryContractSchema),
 ]);
 
 export type BiometricListPayload = z.infer<typeof biometricListPayloadSchema>;

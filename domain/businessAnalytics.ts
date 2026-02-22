@@ -28,10 +28,10 @@ export const LAB_ORDER_STATUSES = [
   "RESULTS_PENDING",
   "RESULTS_REVIEWED",
 ] as const;
-export type LabOrderStatus = (typeof LAB_ORDER_STATUSES)[number];
 
 /** Zod schema for lab order status - derived from tuple */
 export const LabOrderStatusSchema = z.enum(LAB_ORDER_STATUSES);
+export type LabOrderStatus = z.infer<typeof LabOrderStatusSchema>;
 
 /** Constant object for lab order status comparisons */
 export const LAB_ORDER_STATUS = {
@@ -71,10 +71,10 @@ export const LEAD_STAGES = [
   "ACTIVE_MEMBER",
   "CHURNED",
 ] as const;
-export type LeadStage = (typeof LEAD_STAGES)[number];
 
 /** Zod schema for lead stage - derived from tuple */
 export const LeadStageSchema = z.enum(LEAD_STAGES);
+export type LeadStage = z.infer<typeof LeadStageSchema>;
 
 /** Constant object for lead stage comparisons */
 export const LEAD_STAGE = {
@@ -121,10 +121,10 @@ export const USER_EVENT_TYPES = [
   "BILLING_DATE_CHANGED",
   "TIER_CHANGED",
 ] as const;
-export type UserEventType = (typeof USER_EVENT_TYPES)[number];
 
 /** Zod schema for user event type - derived from tuple */
 export const UserEventTypeSchema = z.enum(USER_EVENT_TYPES);
+export type UserEventType = z.infer<typeof UserEventTypeSchema>;
 
 /** Constant object for user event type comparisons */
 export const USER_EVENT_TYPE = {
@@ -167,21 +167,6 @@ export function isUserEventType(value: string): value is UserEventType {
 // USER EVENT CONTRACT
 // ============================================================================
 
-/**
- * User event entry for analytics and timeline tracking.
- * Records significant user actions and system events.
- */
-export interface UserEventContract {
-  id: string;
-  userId: string;
-  type: UserEventType;
-  occurredAt: string;
-  source?: string;
-  metadata: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export const UserEventContractSchema = z.object({
   id: z.string(),
   userId: z.string(),
@@ -192,6 +177,12 @@ export const UserEventContractSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
 });
+
+/**
+ * User event entry for analytics and timeline tracking.
+ * Records significant user actions and system events.
+ */
+export type UserEventContract = z.infer<typeof UserEventContractSchema>;
 
 // ============================================================================
 // BUSINESS DAILY SNAPSHOT
@@ -425,9 +416,9 @@ export const RISK_FACTORS = [
   "no_wearable_sync",
   "low_nutrition_logging",
 ] as const;
-export type RiskFactor = (typeof RISK_FACTORS)[number];
 
 export const RiskFactorSchema = z.enum(RISK_FACTORS);
+export type RiskFactor = z.infer<typeof RiskFactorSchema>;
 
 /** Human-readable labels for risk factors */
 export const RISK_FACTOR_LABELS: Record<RiskFactor, string> = {
@@ -450,9 +441,9 @@ export const RISK_FACTOR_LABELS: Record<RiskFactor, string> = {
  * Churn risk levels
  */
 export const CHURN_RISK_LEVELS = ["LOW", "MEDIUM", "HIGH", "CRITICAL"] as const;
-export type ChurnRiskLevel = (typeof CHURN_RISK_LEVELS)[number];
 
 export const ChurnRiskLevelSchema = z.enum(CHURN_RISK_LEVELS);
+export type ChurnRiskLevel = z.infer<typeof ChurnRiskLevelSchema>;
 
 export const CHURN_RISK_LEVEL = {
   LOW: "LOW" as ChurnRiskLevel,
@@ -687,9 +678,9 @@ export const TRAINING_LIMITATIONS = [
   "medication", // Exercise timing around medications
   "other", // Other considerations
 ] as const;
-export type TrainingLimitation = (typeof TRAINING_LIMITATIONS)[number];
 
 export const TrainingLimitationSchema = z.enum(TRAINING_LIMITATIONS);
+export type TrainingLimitation = z.infer<typeof TrainingLimitationSchema>;
 
 /** Human-readable labels for training limitations */
 export const TRAINING_LIMITATION_LABELS: Record<TrainingLimitation, string> = {
@@ -864,8 +855,8 @@ export type AIQueryResponse = z.infer<typeof AIQueryResponseSchema>;
 
 /** Message role in AI chat — matches Prisma AIChatRole enum (USER | ASSISTANT) */
 export const AI_CHAT_ROLES = ["USER", "ASSISTANT"] as const;
-export type AIChatRole = (typeof AI_CHAT_ROLES)[number];
 export const AIChatRoleSchema = z.enum(AI_CHAT_ROLES);
+export type AIChatRole = z.infer<typeof AIChatRoleSchema>;
 
 /** Supported file types for AI chat attachments */
 export const AI_CHAT_FILE_TYPES = [

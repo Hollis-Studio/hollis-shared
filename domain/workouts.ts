@@ -14,9 +14,8 @@ import { WeightUnitSchema } from "./units";
  */
 export const WORKOUT_SECTION_TYPES = ["warmup", "working", "cooldown"] as const;
 
-export type WorkoutSectionType = (typeof WORKOUT_SECTION_TYPES)[number];
-
 export const WorkoutSectionTypeSchema = z.enum(WORKOUT_SECTION_TYPES);
+export type WorkoutSectionType = z.infer<typeof WorkoutSectionTypeSchema>;
 
 /** Centralized workout section type constants for equality checks */
 export const WORKOUT_SECTION_TYPE = {

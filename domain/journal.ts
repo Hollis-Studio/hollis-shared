@@ -25,7 +25,7 @@ export const JOURNAL_MOODS = [
   "positive",
   "very_positive",
 ] as const;
-export type JournalMood = (typeof JOURNAL_MOODS)[number];
+export type JournalMood = z.infer<typeof JournalMoodSchema>;
 export const JournalMoodSchema = z.enum(JOURNAL_MOODS);
 
 export const JOURNAL_MOOD_LABELS: Record<JournalMood, string> = {
@@ -43,7 +43,7 @@ export const JOURNAL_ENERGIES = [
   "high",
   "very_high",
 ] as const;
-export type JournalEnergy = (typeof JOURNAL_ENERGIES)[number];
+export type JournalEnergy = z.infer<typeof JournalEnergySchema>;
 export const JournalEnergySchema = z.enum(JOURNAL_ENERGIES);
 
 export const JOURNAL_ENERGY_LABELS: Record<JournalEnergy, string> = {
@@ -64,6 +64,7 @@ export const journalAIAssessmentSchema = z.object({
   sentimentScore: z.number().min(-1).max(1),
   recommendedActions: z.array(z.string()).optional(),
 });
+export type JournalAIAssessment = z.infer<typeof journalAIAssessmentSchema>;
 
 export type JournalAIAssessmentContract = z.infer<
   typeof journalAIAssessmentSchema

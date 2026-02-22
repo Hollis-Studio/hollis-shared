@@ -21,7 +21,7 @@ import { createPaginatedListSchema } from "./pagination";
 
 /** Tuple of valid sleep data source values — matches Prisma SleepSource enum */
 export const SLEEP_SOURCES = ["USER", "ADMIN_ENTERED", "WEARABLE"] as const;
-export type SleepSource = (typeof SLEEP_SOURCES)[number];
+export type SleepSource = z.infer<typeof SleepSourceSchema>;
 
 export const SleepSourceSchema = z.enum(SLEEP_SOURCES);
 

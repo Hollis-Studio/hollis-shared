@@ -37,9 +37,9 @@ import {
  * clinician and trainer access, assign ADMIN role or use assignment tables.
  */
 export const USER_ROLES = ["ADMIN", "CLINICIAN", "TRAINER", "CLIENT"] as const;
-export type UserRole = (typeof USER_ROLES)[number];
 
 export const UserRoleSchema = z.enum(USER_ROLES);
+export type UserRole = z.infer<typeof UserRoleSchema>;
 
 /** Centralized role constants for equality checks */
 export const USER_ROLE = {
@@ -231,9 +231,9 @@ export function getRoleBadge(
  * - CONCIERGE ($1699/mo): 16 fitness sessions, full clinical access
  */
 export const USER_TIERS = ["ESSENTIALS", "CORE", "CONCIERGE"] as const;
-export type UserTier = (typeof USER_TIERS)[number];
 
 export const UserTierSchema = z.enum(USER_TIERS);
+export type UserTier = z.infer<typeof UserTierSchema>;
 
 export const USER_TIER = {
   ESSENTIALS: "ESSENTIALS",
@@ -296,9 +296,9 @@ export const BIOLOGICAL_SEXES = [
   "intersex",
   "prefer_not_to_say",
 ] as const;
-export type BiologicalSex = (typeof BIOLOGICAL_SEXES)[number];
 
 export const BiologicalSexSchema = z.enum(BIOLOGICAL_SEXES);
+export type BiologicalSex = z.infer<typeof BiologicalSexSchema>;
 
 /** Centralized biological sex constants for equality checks */
 export const BIOLOGICAL_SEX = {
@@ -332,9 +332,9 @@ export const ACTIVITY_LEVELS = [
   "very_active",
   "athlete",
 ] as const;
-export type ActivityLevel = (typeof ACTIVITY_LEVELS)[number];
 
 export const ActivityLevelSchema = z.enum(ACTIVITY_LEVELS);
+export type ActivityLevel = z.infer<typeof ActivityLevelSchema>;
 
 /** Centralized activity level constants for equality checks */
 export const ACTIVITY_LEVEL = {
@@ -367,9 +367,9 @@ export const PRIMARY_GOALS = [
   "maintain",
   "improve_health",
 ] as const;
-export type PrimaryGoal = (typeof PRIMARY_GOALS)[number];
 
 export const PrimaryGoalSchema = z.enum(PRIMARY_GOALS);
+export type PrimaryGoal = z.infer<typeof PrimaryGoalSchema>;
 
 /** Centralized primary goal constants for equality checks */
 export const PRIMARY_GOAL = {
@@ -400,9 +400,9 @@ export const FITNESS_EXPERIENCES = [
   "advanced",
   "expert",
 ] as const;
-export type FitnessExperience = (typeof FITNESS_EXPERIENCES)[number];
 
 export const FitnessExperienceSchema = z.enum(FITNESS_EXPERIENCES);
+export type FitnessExperience = z.infer<typeof FitnessExperienceSchema>;
 
 /** Centralized fitness experience constants for equality checks */
 export const FITNESS_EXPERIENCE = {
@@ -434,9 +434,9 @@ export const NOTIFICATION_FREQUENCIES = [
   "monthly",
   "custom",
 ] as const;
-export type NotificationFrequency = (typeof NOTIFICATION_FREQUENCIES)[number];
 
 export const NotificationFrequencySchema = z.enum(NOTIFICATION_FREQUENCIES);
+export type NotificationFrequency = z.infer<typeof NotificationFrequencySchema>;
 
 /** Centralized notification frequency constants for equality checks */
 export const NOTIFICATION_FREQUENCY = {
@@ -475,9 +475,9 @@ export const WEEKDAYS = [
   "saturday",
   "sunday",
 ] as const;
-export type Weekday = (typeof WEEKDAYS)[number];
 
 export const WeekdaySchema = z.enum(WEEKDAYS);
+export type Weekday = z.infer<typeof WeekdaySchema>;
 
 /** Centralized weekday constants for equality checks */
 export const WEEKDAY = {
@@ -510,11 +510,11 @@ export const WEEKDAY_LABELS: Record<Weekday, string> = {
  * Maps to isActive boolean in DB: 'active' = true, others = false
  */
 export const ACCOUNT_STATUSES = ["active", "suspended", "inactive"] as const;
-export type AccountStatus = (typeof ACCOUNT_STATUSES)[number];
-/** Type alias for backwards compatibility */
-export type AccountStatusValue = AccountStatus;
 
 export const AccountStatusSchema = z.enum(ACCOUNT_STATUSES);
+export type AccountStatus = z.infer<typeof AccountStatusSchema>;
+/** Type alias for backwards compatibility */
+export type AccountStatusValue = AccountStatus;
 
 /** Constant object for account status comparisons */
 export const ACCOUNT_STATUS = {
@@ -544,9 +544,9 @@ export const PREGNANCY_STATUSES = [
   "trimester_3",
   "postpartum",
 ] as const;
-export type PregnancyStatus = (typeof PREGNANCY_STATUSES)[number];
 
 export const PregnancyStatusSchema = z.enum(PREGNANCY_STATUSES);
+export type PregnancyStatus = z.infer<typeof PregnancyStatusSchema>;
 
 /** Centralized pregnancy status constants for equality checks */
 export const PREGNANCY_STATUS = {
@@ -610,9 +610,11 @@ export const MESSAGE_RECIPIENT_ROLES = [
   "FITNESS_COORDINATOR",
   "CLINICIAN",
 ] as const;
-export type MessagingRecipientRole = (typeof MESSAGE_RECIPIENT_ROLES)[number];
 
 export const MessagingRecipientRoleSchema = z.enum(MESSAGE_RECIPIENT_ROLES);
+export type MessagingRecipientRole = z.infer<
+  typeof MessagingRecipientRoleSchema
+>;
 
 /** Centralized messaging recipient role constants for equality checks */
 export const MESSAGE_RECIPIENT_ROLE = {
@@ -974,6 +976,7 @@ export const createMockUserAccount = (
 export const timeOfDaySchema = z
   .string()
   .regex(/^([01]\d|2[0-3]):[0-5]\d$/u, "Must be HH:mm (24h) time string");
+export type TimeOfDay = z.infer<typeof timeOfDaySchema>;
 
 export const advancedUnitPreferencesSchema = z.object({
   weight: z.enum(["kg", "lbs"]),
@@ -988,12 +991,16 @@ export const advancedUnitPreferencesSchema = z.object({
   temperature: z.enum(["celsius", "fahrenheit"]),
   water: z.enum(["ml", "fl_oz", "cups", "l"]),
 });
+export type AdvancedUnitPreferences = z.infer<
+  typeof advancedUnitPreferencesSchema
+>;
 
 export const dashboardPreferencesSchema = z.object({
   sectionOrder: z.array(z.string()),
   hiddenSections: z.array(z.string()),
   pinnedSections: z.array(z.string()),
 });
+export type DashboardPreferences = z.infer<typeof dashboardPreferencesSchema>;
 
 export type DashboardPreferencesContract = z.infer<
   typeof dashboardPreferencesSchema
@@ -1028,6 +1035,7 @@ export const weeklyNotificationSchema = z.object({
     "sunday",
   ]),
 });
+export type WeeklyNotification = z.infer<typeof weeklyNotificationSchema>;
 
 export type WeeklyNotificationContract = z.infer<
   typeof weeklyNotificationSchema
@@ -1039,6 +1047,7 @@ export const frequencyNotificationSchema = z.object({
   frequency: z.enum(["daily", "weekly", "biweekly", "monthly", "custom"]),
   intelligentMode: z.boolean().optional(),
 });
+export type FrequencyNotification = z.infer<typeof frequencyNotificationSchema>;
 
 export type FrequencyNotificationContract = z.infer<
   typeof frequencyNotificationSchema
@@ -1050,6 +1059,7 @@ export const nutritionNotificationSchema = z.object({
   lunchTime: timeOfDaySchema,
   dinnerTime: timeOfDaySchema,
 });
+export type NutritionNotification = z.infer<typeof nutritionNotificationSchema>;
 
 export type NutritionNotificationContract = z.infer<
   typeof nutritionNotificationSchema
@@ -1061,6 +1071,9 @@ export const adminPortalNotificationPreferencesSchema = z.object({
   appointmentModifiedByOthers: z.boolean(),
   patientAssignedToMe: z.boolean(),
 });
+export type AdminPortalNotificationPreferences = z.infer<
+  typeof adminPortalNotificationPreferencesSchema
+>;
 
 export type AdminPortalNotificationPreferencesContract = z.infer<
   typeof adminPortalNotificationPreferencesSchema
@@ -1075,6 +1088,9 @@ export const notificationPreferencesSchema = z.object({
   nutritionCoaching: nutritionNotificationSchema,
   adminPortal: adminPortalNotificationPreferencesSchema,
 });
+export type NotificationPreferences = z.infer<
+  typeof notificationPreferencesSchema
+>;
 
 export type NotificationPreferencesContract = z.infer<
   typeof notificationPreferencesSchema

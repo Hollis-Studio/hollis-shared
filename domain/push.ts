@@ -10,26 +10,25 @@
  * deps: zod | consumers: all codebases
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // PUSH PLATFORMS
 // ============================================================================
 
 /** Supported native push token platforms */
-export const PUSH_PLATFORMS = ['IOS', 'ANDROID'] as const;
-export type PushPlatform = (typeof PUSH_PLATFORMS)[number];
-
+export const PUSH_PLATFORMS = ["IOS", "ANDROID"] as const;
 export const PushPlatformSchema = z.enum(PUSH_PLATFORMS);
+export type PushPlatform = z.infer<typeof PushPlatformSchema>;
 
 export const PUSH_PLATFORM = {
-  IOS: 'IOS' as PushPlatform,
-  ANDROID: 'ANDROID' as PushPlatform,
+  IOS: "IOS" as PushPlatform,
+  ANDROID: "ANDROID" as PushPlatform,
 } as const;
 
 export const PUSH_PLATFORM_LABELS: Record<PushPlatform, string> = {
-  IOS: 'iOS',
-  ANDROID: 'Android',
+  IOS: "iOS",
+  ANDROID: "Android",
 };
 
 /**
@@ -48,19 +47,18 @@ export function isPushPlatform(value: string): value is PushPlatform {
  * - 'CLIENT': patient-facing tabs
  * - 'ADMIN': staff/admin portal inside the mobile app
  */
-export const PUSH_APP_ROLES = ['CLIENT', 'ADMIN'] as const;
-export type PushAppRole = (typeof PUSH_APP_ROLES)[number];
-
+export const PUSH_APP_ROLES = ["CLIENT", "ADMIN"] as const;
 export const PushAppRoleSchema = z.enum(PUSH_APP_ROLES);
+export type PushAppRole = z.infer<typeof PushAppRoleSchema>;
 
 export const PUSH_APP_ROLE = {
-  CLIENT: 'CLIENT' as PushAppRole,
-  ADMIN: 'ADMIN' as PushAppRole,
+  CLIENT: "CLIENT" as PushAppRole,
+  ADMIN: "ADMIN" as PushAppRole,
 } as const;
 
 export const PUSH_APP_ROLE_LABELS: Record<PushAppRole, string> = {
-  CLIENT: 'Client',
-  ADMIN: 'Admin',
+  CLIENT: "Client",
+  ADMIN: "Admin",
 };
 
 /**
@@ -84,12 +82,13 @@ export interface RegisterDevicePushTokenRequest {
   appRole?: PushAppRole;
 }
 
-export const registerDevicePushTokenRequestSchema: z.ZodType<RegisterDevicePushTokenRequest> = z.object({
-  platform: PushPlatformSchema,
-  devicePushToken: z.string().min(1),
-  deviceId: z.string().min(1).optional(),
-  appRole: PushAppRoleSchema.optional(),
-});
+export const registerDevicePushTokenRequestSchema: z.ZodType<RegisterDevicePushTokenRequest> =
+  z.object({
+    platform: PushPlatformSchema,
+    devicePushToken: z.string().min(10).max(4096),
+    deviceId: z.string().uuid().optional(),
+    appRole: PushAppRoleSchema.optional(),
+  });
 
 /**
  * Unregister a native device push token.
@@ -101,9 +100,10 @@ export interface UnregisterDevicePushTokenRequest {
   appRole?: PushAppRole;
 }
 
-export const unregisterDevicePushTokenRequestSchema: z.ZodType<UnregisterDevicePushTokenRequest> = z.object({
-  platform: PushPlatformSchema,
-  devicePushToken: z.string().min(1),
-  deviceId: z.string().min(1).optional(),
-  appRole: PushAppRoleSchema.optional(),
-});
+export const unregisterDevicePushTokenRequestSchema: z.ZodType<UnregisterDevicePushTokenRequest> =
+  z.object({
+    platform: PushPlatformSchema,
+    devicePushToken: z.string().min(10).max(4096),
+    deviceId: z.string().uuid().optional(),
+    appRole: PushAppRoleSchema.optional(),
+  });

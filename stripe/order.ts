@@ -7,6 +7,29 @@
 import { z } from "zod";
 
 // ============================================================================
+// PAYMENT STATUS
+// ============================================================================
+
+/**
+ * Stripe Checkout Session payment_status values.
+ * @see https://stripe.com/docs/api/checkout/sessions/object#checkout_session_object-payment_status
+ */
+export const ORDER_PAYMENT_STATUSES = [
+  "paid",
+  "unpaid",
+  "no_payment_required",
+] as const;
+
+export const OrderPaymentStatusSchema = z.enum(ORDER_PAYMENT_STATUSES);
+export type OrderPaymentStatus = z.infer<typeof OrderPaymentStatusSchema>;
+
+export const ORDER_PAYMENT_STATUS_LABELS: Record<OrderPaymentStatus, string> = {
+  paid: "Paid",
+  unpaid: "Unpaid",
+  no_payment_required: "No Payment Required",
+};
+
+// ============================================================================
 // FULFILLMENT STATUS
 // ============================================================================
 
@@ -19,9 +42,8 @@ export const FULFILLMENT_STATUSES = [
   "RETURNED",
 ] as const;
 
-export type FulfillmentStatus = (typeof FULFILLMENT_STATUSES)[number];
-
 export const FulfillmentStatusSchema = z.enum(FULFILLMENT_STATUSES);
+export type FulfillmentStatus = z.infer<typeof FulfillmentStatusSchema>;
 
 // ============================================================================
 // ORDER ITEM
@@ -46,6 +68,7 @@ export const OrderItemSchema = z.object({
   unitPriceInCents: z.number().int(),
   totalInCents: z.number().int(),
 });
+export type OrderItem = z.infer<typeof OrderItemSchema>;
 
 // ============================================================================
 // SHIPPING ADDRESS
@@ -68,6 +91,7 @@ export const ShippingAddressSchema = z.object({
   postalCode: z.string(),
   country: z.string(),
 });
+export type ShippingAddress = z.infer<typeof ShippingAddressSchema>;
 
 // ============================================================================
 // ORDER
@@ -101,7 +125,7 @@ export interface OrderContract {
   deliveredAt: string | null;
 
   // Payment
-  paymentStatus: string;
+  paymentStatus: OrderPaymentStatus;
   paidAt: string | null;
 
   createdAt: string;
@@ -127,7 +151,7 @@ export const OrderSchema: z.ZodType<OrderContract> = z.object({
   carrier: z.string().nullable(),
   shippedAt: z.string().nullable(),
   deliveredAt: z.string().nullable(),
-  paymentStatus: z.string(),
+  paymentStatus: OrderPaymentStatusSchema,
   paidAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -137,16 +161,12 @@ export const OrderSchema: z.ZodType<OrderContract> = z.object({
 // UPDATE FULFILLMENT REQUEST
 // ============================================================================
 
-export interface UpdateFulfillmentRequest {
-  status: FulfillmentStatus;
-  trackingNumber?: string;
-  carrier?: string;
-  notes?: string;
-}
-
 export const UpdateFulfillmentRequestSchema = z.object({
   status: FulfillmentStatusSchema,
   trackingNumber: z.string().optional(),
   carrier: z.string().optional(),
   notes: z.string().optional(),
 });
+export type UpdateFulfillmentRequest = z.infer<
+  typeof UpdateFulfillmentRequestSchema
+>;

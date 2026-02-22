@@ -94,6 +94,7 @@ export type MetricsNotesArrayContract = z.infer<typeof metricsNotesArraySchema>;
  *
  * @prisma DailyMetrics.recommendations
  */
+// zod-manual: alias — type exported from canonical schema
 export const metricsRecommendationsArraySchema = stringArraySchema;
 export type MetricsRecommendationsArrayContract = z.infer<
   typeof metricsRecommendationsArraySchema
@@ -105,6 +106,7 @@ export type MetricsRecommendationsArrayContract = z.infer<
  *
  * @prisma UserPreferences.dashboardCardOrder
  */
+// zod-manual: type exported as DashboardCardOrderContract
 export const dashboardCardOrderSchema = z.array(z.string());
 export type DashboardCardOrderContract = z.infer<
   typeof dashboardCardOrderSchema
@@ -124,6 +126,7 @@ export type DashboardCardOrderContract = z.infer<
  * @prisma ProviderAvailability.slots
  * @example { dayOfWeek: 1, startHour: 9, endHour: 17 } // Monday 9 AM - 5 PM
  */
+// zod-manual: type exported as PrismaAvailabilitySlotContract
 export const prismaAvailabilitySlotSchema = z.object({
   /** Day of week: 0=Sunday, 1=Monday, ..., 6=Saturday */
   dayOfWeek: z.number().int().min(0).max(6),
@@ -132,7 +135,6 @@ export const prismaAvailabilitySlotSchema = z.object({
   /** End hour in 24-hour format (1-24, where 24 = midnight) */
   endHour: z.number().int().min(0).max(24),
 });
-
 export type PrismaAvailabilitySlotContract = z.infer<
   typeof prismaAvailabilitySlotSchema
 >;
@@ -143,6 +145,7 @@ export type PrismaAvailabilitySlotContract = z.infer<
  *
  * @prisma ProviderAvailability.slots
  */
+// zod-manual: type exported as PrismaAvailabilitySlotsArrayContract
 export const prismaAvailabilitySlotsArraySchema = z.array(
   prismaAvailabilitySlotSchema,
 );

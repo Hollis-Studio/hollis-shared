@@ -91,7 +91,7 @@ export {
  * Consumers that previously relied on the exhaustive literal union should migrate
  * to runtime validation via MetricDefinition.code lookup.
  */
-export type HealthMetricKey = string;
+export type HealthMetricKey = z.infer<typeof HealthMetricKeySchema>;
 
 /** Zod schema for HealthMetricKey — accepts any non-empty string */
 export const HealthMetricKeySchema = z.string().min(1);
@@ -104,9 +104,9 @@ export const HealthMetricKeySchema = z.string().min(1);
  * Health trend values indicating direction of change.
  */
 export const HEALTH_TRENDS = ["improving", "stable", "declining"] as const;
-export type HealthTrend = (typeof HEALTH_TRENDS)[number];
 
 export const HealthTrendSchema = z.enum(HEALTH_TRENDS);
+export type HealthTrend = z.infer<typeof HealthTrendSchema>;
 
 /** Centralized trend constants for equality checks */
 export const HEALTH_TREND = {
@@ -165,9 +165,8 @@ export const DATA_QUALITY_LEVELS = [
   "sparse",
   "insufficient",
 ] as const;
-export type DataQualityLevel = (typeof DATA_QUALITY_LEVELS)[number];
-
 export const DataQualityLevelSchema = z.enum(DATA_QUALITY_LEVELS);
+export type DataQualityLevel = z.infer<typeof DataQualityLevelSchema>;
 
 /** Centralized data quality constants for equality checks */
 export const DATA_QUALITY = {

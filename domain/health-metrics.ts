@@ -15,33 +15,27 @@
 import { z } from "zod";
 import { type BiometricSource, BiometricSourceSchema } from "./clinical";
 import { dailyMetricsSchema } from "./daily-metrics";
-import {
-  type DataQualityLevel,
-  DataQualityLevelSchema,
-  type HealthTrend,
-  HealthTrendSchema,
-} from "./health-progress";
+import { DataQualityLevelSchema, HealthTrendSchema } from "./health-progress";
 import { journalEntrySchema } from "./journal";
 import {
-  type MetricDefinitionSummary,
-  MetricDefinitionSummarySchema,
+    type MetricDefinitionSummary,
+    MetricDefinitionSummarySchema,
 } from "./metric-definition";
 import { DailyNutritionLogSchema } from "./nutrition";
 import {
-  type HealthMetricCategory,
-  type HealthMetricDirection,
-  HealthMetricDirectionSchema,
+    type HealthMetricDirection,
+    HealthMetricDirectionSchema,
 } from "./training";
-import { type BiologicalSex, BiologicalSexSchema } from "./user";
+import { BiologicalSexSchema } from "./user";
 
 // ============================================================================
 // SOURCE WEIGHTS & DATA POINT WEIGHTING (canonical: health-progress.ts)
 // ============================================================================
 
 export {
-  getDataPointWeight,
-  SOURCE_WEIGHTS,
-  VERIFICATION_MULTIPLIER
+    getDataPointWeight,
+    SOURCE_WEIGHTS,
+    VERIFICATION_MULTIPLIER
 } from "./health-progress";
 
 /**
@@ -105,18 +99,7 @@ export function calculateInRangeScore(
  * Tracks change in a single health metric over a period.
  * The metric field is a string (MetricDefinition.code) post-migration.
  */
-export interface MetricChange {
-  /** MetricDefinition code string (previously GoalMetricKey) */
-  metric: string;
-  unit: string;
-  startValue: number | null;
-  endValue: number | null;
-  percentChange: number | null;
-  trend: HealthTrend;
-  isWithinNormalRange: boolean;
-  dataConfidence?: number | null;
-  inRangeScore?: number | null;
-}
+export type MetricChange = z.infer<typeof MetricChangeSchema>;
 
 export const MetricChangeSchema = z.object({
   metric: z.string().min(1),
@@ -137,11 +120,7 @@ export const MetricChangeSchema = z.object({
 /**
  * Area of concern showing which metrics have declining patients.
  */
-export interface ConcernArea {
-  /** MetricDefinition code string (previously GoalMetricKey) */
-  metric: string;
-  patientsDeclined: number;
-}
+export type ConcernArea = z.infer<typeof ConcernAreaSchema>;
 
 export const ConcernAreaSchema = z.object({
   metric: z.string().min(1),
@@ -155,11 +134,7 @@ export const ConcernAreaSchema = z.object({
 /**
  * Metric with average change across patients.
  */
-export interface MetricAggregate {
-  /** MetricDefinition code string (previously GoalMetricKey) */
-  metric: string;
-  avgChange: number;
-}
+export type MetricAggregate = z.infer<typeof MetricAggregateSchema>;
 
 export const MetricAggregateSchema = z.object({
   metric: z.string().min(1),
@@ -173,10 +148,9 @@ export const MetricAggregateSchema = z.object({
 /**
  * Point on the health improvement sparkline.
  */
-export interface HealthImprovementPoint {
-  date: string;
-  percentChange: number;
-}
+export type HealthImprovementPoint = z.infer<
+  typeof HealthImprovementPointSchema
+>;
 
 export const HealthImprovementPointSchema = z.object({
   date: z.string(),
@@ -186,13 +160,9 @@ export const HealthImprovementPointSchema = z.object({
 /**
  * Lightweight view for monthly improvement badge.
  */
-export interface HealthProgressImprovement {
-  periodDays: number;
-  startScore: number | null;
-  endScore: number | null;
-  percentChange: number | null;
-  points: HealthImprovementPoint[];
-}
+export type HealthProgressImprovement = z.infer<
+  typeof HealthProgressImprovementSchema
+>;
 
 export const HealthProgressImprovementSchema = z.object({
   periodDays: z.number().int().positive(),
@@ -205,15 +175,9 @@ export const HealthProgressImprovementSchema = z.object({
 /**
  * Aggregate health progress view for admin dashboard.
  */
-export interface HealthProgressOverview {
-  totalPatients: number;
-  improving: number;
-  stable: number;
-  declining: number;
-  avgScore: number;
-  topImprovingMetrics: MetricAggregate[];
-  concernAreas: ConcernArea[];
-}
+export type HealthProgressOverview = z.infer<
+  typeof HealthProgressOverviewSchema
+>;
 
 export const HealthProgressOverviewSchema = z.object({
   totalPatients: z.number().int().min(0),
@@ -228,17 +192,9 @@ export const HealthProgressOverviewSchema = z.object({
 /**
  * Historical snapshot of health progress for a user.
  */
-export interface HealthProgressSnapshot {
-  id: string;
-  userId: string;
-  calculatedAt: string;
-  periodMonths: number;
-  overallScore: number;
-  overallTrend: HealthTrend;
-  dataConfidence: number | null;
-  categoryScores: Record<HealthMetricCategory, number>;
-  metricChanges: MetricChange[];
-}
+export type HealthProgressSnapshot = z.infer<
+  typeof HealthProgressSnapshotSchema
+>;
 
 const categoryScoreSchema = z.number().min(0).max(100);
 
@@ -270,28 +226,7 @@ export const HealthProgressSnapshotSchema = z.object({
 /**
  * Complete health progress report for a single patient over a time period.
  */
-export interface PatientHealthProgress {
-  /** Patient identifier */
-  patientId: string;
-  /** Start of evaluation period (ISO date) */
-  periodStart: string;
-  /** End of evaluation period (ISO date) */
-  periodEnd: string;
-  /** Overall health trend across all metrics */
-  overallTrend: HealthTrend;
-  /** Overall health progress score (0 to 100) */
-  overallScore: number;
-  /** Scores broken down by category (0 to 100 each) */
-  categoryScores: Record<HealthMetricCategory, number>;
-  /** Individual metric changes */
-  metricChanges: MetricChange[];
-  /** Data quality assessment */
-  dataQuality: DataQualityLevel;
-  /** Weighted average confidence across all metrics */
-  overallDataConfidence?: number | null;
-  /** Lightweight monthly improvement summary for UI sparklines */
-  monthlyImprovement?: HealthProgressImprovement | null;
-}
+export type PatientHealthProgress = z.infer<typeof PatientHealthProgressSchema>;
 
 export const PatientHealthProgressSchema = z.object({
   patientId: z.string(),
@@ -322,14 +257,9 @@ export const PatientHealthProgressSchema = z.object({
 /**
  * Patient context for clinical reference range lookup.
  */
-export interface PatientClinicalContext {
-  /** Biological sex */
-  sex?: BiologicalSex | null;
-  /** Age in years */
-  age?: number | null;
-  /** Pregnancy status */
-  pregnancyStatus?: string | null;
-}
+export type PatientClinicalContext = z.infer<
+  typeof PatientClinicalContextSchema
+>;
 
 export const PatientClinicalContextSchema = z.object({
   sex: BiologicalSexSchema.nullable().optional(),
@@ -341,27 +271,13 @@ export const PatientClinicalContextSchema = z.object({
 // HEALTH METRIC GOAL TYPES AND SCHEMAS
 // ============================================================================
 
-export interface RangeDerivationStep {
-  step: string;
-  modifier?: string;
-  description?: string;
-  minBefore?: number | null;
-  maxBefore?: number | null;
-  minAfter: number;
-  maxAfter: number;
-}
+export type RangeDerivationStep = z.infer<typeof RangeDerivationStepSchema>;
 
-export interface RangeDerivationModifier {
-  type: string;
-  value: string;
-  logicType?: string;
-}
+export type RangeDerivationModifier = z.infer<
+  typeof RangeDerivationModifierSchema
+>;
 
-export interface RangeDerivation {
-  source: string | null;
-  appliedModifiers: RangeDerivationModifier[];
-  steps: RangeDerivationStep[];
-}
+export type RangeDerivation = z.infer<typeof RangeDerivationSchema>;
 
 export interface HealthMetricGoalContract {
   /** MetricDefinition code string (previously GoalMetricKey) */
@@ -448,6 +364,7 @@ export const HealthMetricGoalSchema = z.object({
   rangeDerivation: RangeDerivationSchema.nullable(),
   metricDefinition: MetricDefinitionSummarySchema.optional(),
 });
+export type HealthMetricGoal = z.infer<typeof HealthMetricGoalSchema>;
 
 export const HealthMetricGoalUpsertSchema = z.object({
   targetValue: z.number().optional().nullable(),
@@ -513,6 +430,7 @@ export const WearablesDataSchema = z.object({
     )
     .optional(),
 });
+export type WearablesData = z.infer<typeof WearablesDataSchema>;
 
 // ============================================================================
 // DAILY SUMMARY CONTRACT

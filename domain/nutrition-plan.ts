@@ -74,14 +74,7 @@ export type NutritionPlanDay = z.infer<typeof nutritionPlanDaySchema>;
  * Daily nutrition targets within a nutrition plan.
  * Provides day-specific targets that override the plan defaults.
  */
-export interface DailyNutritionTarget {
-  day: string; // ISO date or day name (e.g., 'monday')
-  calories?: number;
-  protein?: number;
-  carbs?: number;
-  fats?: number;
-  notes?: string;
-}
+export type DailyNutritionTarget = z.infer<typeof DailyNutritionTargetSchema>;
 
 export const DailyNutritionTargetSchema = z.object({
   day: z.string(),
@@ -132,6 +125,7 @@ export const NutritionPlanSchema = z.object({
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
 });
+export type NutritionPlan = z.infer<typeof NutritionPlanSchema>;
 
 // ============================================================================
 // NUTRITION TARGETS (Daily Targets)
@@ -162,6 +156,7 @@ export const NutritionTargetsSchema = z.object({
   sodium: z.number().min(0).optional(),
   water: z.number().min(0).optional(),
 });
+export type NutritionTargets = z.infer<typeof NutritionTargetsSchema>;
 
 /**
  * Detailed nutrition with vitamins and minerals.
@@ -256,6 +251,7 @@ export const NutritionProgressSchema = z.object({
   percentage: z.number().min(0).max(100),
   remaining: z.number().min(0),
 });
+export type NutritionProgress = z.infer<typeof NutritionProgressSchema>;
 
 // ============================================================================
 // UTILITY FUNCTIONS

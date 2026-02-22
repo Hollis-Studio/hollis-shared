@@ -19,6 +19,7 @@ export const SetupIntentSchema = z.object({
   clientSecret: z.string(),
   customerId: z.string(),
 });
+export type SetupIntent = z.infer<typeof SetupIntentSchema>;
 
 // ============================================================================
 // PAYMENT METHOD
@@ -41,6 +42,7 @@ export const PaymentMethodSchema = z.object({
   expYear: z.number().int(),
   isDefault: z.boolean(),
 });
+export type PaymentMethod = z.infer<typeof PaymentMethodSchema>;
 
 // ============================================================================
 // STRIPE METADATA
@@ -71,13 +73,6 @@ export type StripeMetadata = z.infer<typeof StripeMetadataSchema>;
 // COLLECT PAYMENT REQUEST
 // ============================================================================
 
-export interface CollectPaymentRequest {
-  userId: string;
-  amountInCents: number;
-  description: string;
-  metadata?: Record<string, string>;
-}
-
 export const CollectPaymentRequestSchema = z.object({
   /** userId uses HH-XXXXXX barcode format, not UUID */
   userId: z.string().min(1),
@@ -85,6 +80,7 @@ export const CollectPaymentRequestSchema = z.object({
   description: z.string(),
   metadata: StripeMetadataSchema.optional(),
 });
+export type CollectPaymentRequest = z.infer<typeof CollectPaymentRequestSchema>;
 
 // ============================================================================
 // STRIPE CONFIG (for frontend)
@@ -97,17 +93,11 @@ export interface StripeConfigContract {
 export const StripeConfigSchema = z.object({
   publishableKey: z.string(),
 });
+export type StripeConfig = z.infer<typeof StripeConfigSchema>;
 
 // ============================================================================
 // REFUND REQUEST
 // ============================================================================
-
-export interface RefundRequest {
-  paymentIntentId: string;
-  amountInCents?: number; // Partial refund; omit for full
-  reason?: "requested_by_customer" | "duplicate" | "fraudulent";
-  notes?: string;
-}
 
 export const RefundRequestSchema = z.object({
   paymentIntentId: z.string(),
@@ -117,6 +107,7 @@ export const RefundRequestSchema = z.object({
     .optional(),
   notes: z.string().max(500).optional(),
 });
+export type RefundRequest = z.infer<typeof RefundRequestSchema>;
 
 export interface RefundResponse {
   refundId: string;

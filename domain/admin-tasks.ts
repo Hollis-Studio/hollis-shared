@@ -9,7 +9,7 @@
  * deps: zod | consumers: server, web-admin
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // ADMIN TASK TYPE
@@ -36,54 +36,54 @@ import { z } from 'zod';
  * - MANUAL_REVIEW: Generic manual review task
  */
 export const ADMIN_TASK_TYPES = [
-  'REFUND_AFTER_SESSION_RESET',
-  'VOIDED_INVOICE_AFTER_RESET',
-  'DISPUTE_LOST',
-  'DISPUTE_CREATED',
-  'DISPUTE_UNLINKED',
-  'PAYMENT_ISSUE',
-  'INVENTORY_BACKORDER',
-  'MANUAL_REVIEW',
-  'MOBILE_SESSION_REFUND',
-  'MISSING_DISPUTE_RECORD',
-  'REFUND_FAILED',
-  'REFUND_SERVICE_REVOCATION',
+  "REFUND_AFTER_SESSION_RESET",
+  "VOIDED_INVOICE_AFTER_RESET",
+  "DISPUTE_LOST",
+  "DISPUTE_CREATED",
+  "DISPUTE_UNLINKED",
+  "PAYMENT_ISSUE",
+  "INVENTORY_BACKORDER",
+  "MANUAL_REVIEW",
+  "MOBILE_SESSION_REFUND",
+  "MISSING_DISPUTE_RECORD",
+  "REFUND_FAILED",
+  "REFUND_SERVICE_REVOCATION",
 ] as const;
 
-export type AdminTaskType = (typeof ADMIN_TASK_TYPES)[number];
+export type AdminTaskType = z.infer<typeof AdminTaskTypeSchema>;
 
 export const AdminTaskTypeSchema = z.enum(ADMIN_TASK_TYPES);
 
 /** Centralized admin task type constants for equality checks */
 export const ADMIN_TASK_TYPE = {
-  REFUND_AFTER_SESSION_RESET: 'REFUND_AFTER_SESSION_RESET' as AdminTaskType,
-  VOIDED_INVOICE_AFTER_RESET: 'VOIDED_INVOICE_AFTER_RESET' as AdminTaskType,
-  DISPUTE_LOST: 'DISPUTE_LOST' as AdminTaskType,
-  DISPUTE_CREATED: 'DISPUTE_CREATED' as AdminTaskType,
-  DISPUTE_UNLINKED: 'DISPUTE_UNLINKED' as AdminTaskType,
-  PAYMENT_ISSUE: 'PAYMENT_ISSUE' as AdminTaskType,
-  INVENTORY_BACKORDER: 'INVENTORY_BACKORDER' as AdminTaskType,
-  MANUAL_REVIEW: 'MANUAL_REVIEW' as AdminTaskType,
-  MOBILE_SESSION_REFUND: 'MOBILE_SESSION_REFUND' as AdminTaskType,
-  MISSING_DISPUTE_RECORD: 'MISSING_DISPUTE_RECORD' as AdminTaskType,
-  REFUND_FAILED: 'REFUND_FAILED' as AdminTaskType,
-  REFUND_SERVICE_REVOCATION: 'REFUND_SERVICE_REVOCATION' as AdminTaskType,
+  REFUND_AFTER_SESSION_RESET: "REFUND_AFTER_SESSION_RESET" as AdminTaskType,
+  VOIDED_INVOICE_AFTER_RESET: "VOIDED_INVOICE_AFTER_RESET" as AdminTaskType,
+  DISPUTE_LOST: "DISPUTE_LOST" as AdminTaskType,
+  DISPUTE_CREATED: "DISPUTE_CREATED" as AdminTaskType,
+  DISPUTE_UNLINKED: "DISPUTE_UNLINKED" as AdminTaskType,
+  PAYMENT_ISSUE: "PAYMENT_ISSUE" as AdminTaskType,
+  INVENTORY_BACKORDER: "INVENTORY_BACKORDER" as AdminTaskType,
+  MANUAL_REVIEW: "MANUAL_REVIEW" as AdminTaskType,
+  MOBILE_SESSION_REFUND: "MOBILE_SESSION_REFUND" as AdminTaskType,
+  MISSING_DISPUTE_RECORD: "MISSING_DISPUTE_RECORD" as AdminTaskType,
+  REFUND_FAILED: "REFUND_FAILED" as AdminTaskType,
+  REFUND_SERVICE_REVOCATION: "REFUND_SERVICE_REVOCATION" as AdminTaskType,
 } as const;
 
 /** Human-readable labels for admin task types */
 export const ADMIN_TASK_TYPE_LABELS: Record<AdminTaskType, string> = {
-  REFUND_AFTER_SESSION_RESET: 'Refund After Session Reset',
-  VOIDED_INVOICE_AFTER_RESET: 'Voided Invoice After Reset',
-  DISPUTE_LOST: 'Dispute Lost',
-  DISPUTE_CREATED: 'Dispute Created',
-  DISPUTE_UNLINKED: 'Dispute Unlinked',
-  PAYMENT_ISSUE: 'Payment Issue',
-  INVENTORY_BACKORDER: 'Inventory Backorder',
-  MANUAL_REVIEW: 'Manual Review',
-  MOBILE_SESSION_REFUND: 'Mobile Session Refund',
-  MISSING_DISPUTE_RECORD: 'Missing Dispute Record',
-  REFUND_FAILED: 'Refund Failed',
-  REFUND_SERVICE_REVOCATION: 'Refund Service Revocation',
+  REFUND_AFTER_SESSION_RESET: "Refund After Session Reset",
+  VOIDED_INVOICE_AFTER_RESET: "Voided Invoice After Reset",
+  DISPUTE_LOST: "Dispute Lost",
+  DISPUTE_CREATED: "Dispute Created",
+  DISPUTE_UNLINKED: "Dispute Unlinked",
+  PAYMENT_ISSUE: "Payment Issue",
+  INVENTORY_BACKORDER: "Inventory Backorder",
+  MANUAL_REVIEW: "Manual Review",
+  MOBILE_SESSION_REFUND: "Mobile Session Refund",
+  MISSING_DISPUTE_RECORD: "Missing Dispute Record",
+  REFUND_FAILED: "Refund Failed",
+  REFUND_SERVICE_REVOCATION: "Refund Service Revocation",
 };
 
 /**
@@ -105,30 +105,30 @@ export function isAdminTaskType(value: string): value is AdminTaskType {
  * - URGENT: Critical issue requiring immediate action
  */
 export const ADMIN_TASK_PRIORITIES = [
-  'LOW',
-  'NORMAL',
-  'HIGH',
-  'URGENT',
+  "LOW",
+  "NORMAL",
+  "HIGH",
+  "URGENT",
 ] as const;
 
-export type AdminTaskPriority = (typeof ADMIN_TASK_PRIORITIES)[number];
+export type AdminTaskPriority = z.infer<typeof AdminTaskPrioritySchema>;
 
 export const AdminTaskPrioritySchema = z.enum(ADMIN_TASK_PRIORITIES);
 
 /** Centralized admin task priority constants for equality checks */
 export const ADMIN_TASK_PRIORITY = {
-  LOW: 'LOW' as AdminTaskPriority,
-  NORMAL: 'NORMAL' as AdminTaskPriority,
-  HIGH: 'HIGH' as AdminTaskPriority,
-  URGENT: 'URGENT' as AdminTaskPriority,
+  LOW: "LOW" as AdminTaskPriority,
+  NORMAL: "NORMAL" as AdminTaskPriority,
+  HIGH: "HIGH" as AdminTaskPriority,
+  URGENT: "URGENT" as AdminTaskPriority,
 } as const;
 
 /** Human-readable labels for admin task priorities */
 export const ADMIN_TASK_PRIORITY_LABELS: Record<AdminTaskPriority, string> = {
-  LOW: 'Low',
-  NORMAL: 'Normal',
-  HIGH: 'High',
-  URGENT: 'Urgent',
+  LOW: "Low",
+  NORMAL: "Normal",
+  HIGH: "High",
+  URGENT: "Urgent",
 };
 
 /**
@@ -150,30 +150,30 @@ export function isAdminTaskPriority(value: string): value is AdminTaskPriority {
  * - DISMISSED: Task closed without action (not relevant, duplicate, etc.)
  */
 export const ADMIN_TASK_STATUSES = [
-  'PENDING',
-  'IN_PROGRESS',
-  'RESOLVED',
-  'DISMISSED',
+  "PENDING",
+  "IN_PROGRESS",
+  "RESOLVED",
+  "DISMISSED",
 ] as const;
 
-export type AdminTaskStatus = (typeof ADMIN_TASK_STATUSES)[number];
+export type AdminTaskStatus = z.infer<typeof AdminTaskStatusSchema>;
 
 export const AdminTaskStatusSchema = z.enum(ADMIN_TASK_STATUSES);
 
 /** Centralized admin task status constants for equality checks */
 export const ADMIN_TASK_STATUS = {
-  PENDING: 'PENDING' as AdminTaskStatus,
-  IN_PROGRESS: 'IN_PROGRESS' as AdminTaskStatus,
-  RESOLVED: 'RESOLVED' as AdminTaskStatus,
-  DISMISSED: 'DISMISSED' as AdminTaskStatus,
+  PENDING: "PENDING" as AdminTaskStatus,
+  IN_PROGRESS: "IN_PROGRESS" as AdminTaskStatus,
+  RESOLVED: "RESOLVED" as AdminTaskStatus,
+  DISMISSED: "DISMISSED" as AdminTaskStatus,
 } as const;
 
 /** Human-readable labels for admin task statuses */
 export const ADMIN_TASK_STATUS_LABELS: Record<AdminTaskStatus, string> = {
-  PENDING: 'Pending',
-  IN_PROGRESS: 'In Progress',
-  RESOLVED: 'Resolved',
-  DISMISSED: 'Dismissed',
+  PENDING: "Pending",
+  IN_PROGRESS: "In Progress",
+  RESOLVED: "Resolved",
+  DISMISSED: "Dismissed",
 };
 
 /**

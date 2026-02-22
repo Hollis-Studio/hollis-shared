@@ -1,8 +1,14 @@
 /**
  * @ai-context Smart Assist Notes contracts | workout session notes, permanent notes, and aggregated context schemas
  */
-import { z } from 'zod';
-import { baseDocumentSchema, isoDateSchema, IsoDateString, isoTimestampSchema, IsoTimestampString } from './common';
+import { z } from "zod";
+import {
+    baseDocumentSchema,
+    isoDateSchema,
+    IsoDateString,
+    isoTimestampSchema,
+    IsoTimestampString,
+} from "./common";
 
 // ============================================================================
 // AI NOTE CATEGORIES
@@ -12,36 +18,36 @@ import { baseDocumentSchema, isoDateSchema, IsoDateString, isoTimestampSchema, I
  * Valid AI note category values for permanent user context.
  */
 export const AI_NOTE_CATEGORIES = [
-  'INJURY',
-  'PREFERENCE',
-  'LIMITATION',
-  'MEDICAL',
-  'GOAL',
-  'OTHER',
+  "INJURY",
+  "PREFERENCE",
+  "LIMITATION",
+  "MEDICAL",
+  "GOAL",
+  "OTHER",
 ] as const;
 
-export type AINoteCategory = (typeof AI_NOTE_CATEGORIES)[number];
+export type AINoteCategory = z.infer<typeof AINoteCategorySchema>;
 
 export const AINoteCategorySchema = z.enum(AI_NOTE_CATEGORIES);
 
 /** Centralized AI note category constants for equality checks */
 export const AI_NOTE_CATEGORY = {
-  INJURY: 'INJURY' as AINoteCategory,
-  PREFERENCE: 'PREFERENCE' as AINoteCategory,
-  LIMITATION: 'LIMITATION' as AINoteCategory,
-  MEDICAL: 'MEDICAL' as AINoteCategory,
-  GOAL: 'GOAL' as AINoteCategory,
-  OTHER: 'OTHER' as AINoteCategory,
+  INJURY: "INJURY" as AINoteCategory,
+  PREFERENCE: "PREFERENCE" as AINoteCategory,
+  LIMITATION: "LIMITATION" as AINoteCategory,
+  MEDICAL: "MEDICAL" as AINoteCategory,
+  GOAL: "GOAL" as AINoteCategory,
+  OTHER: "OTHER" as AINoteCategory,
 } as const;
 
 /** Human-readable labels for AI note categories */
 export const AI_NOTE_CATEGORY_LABELS: Record<AINoteCategory, string> = {
-  INJURY: 'Injury',
-  PREFERENCE: 'Preference',
-  LIMITATION: 'Limitation',
-  MEDICAL: 'Medical',
-  GOAL: 'Goal',
-  OTHER: 'Other',
+  INJURY: "Injury",
+  PREFERENCE: "Preference",
+  LIMITATION: "Limitation",
+  MEDICAL: "Medical",
+  GOAL: "Goal",
+  OTHER: "Other",
 };
 
 // ============================================================================
@@ -53,30 +59,30 @@ export const AI_NOTE_CATEGORY_LABELS: Record<AINoteCategory, string> = {
  * Used to indicate trust level and origin of the note.
  */
 export const AI_NOTE_SOURCE_TYPES = [
-  'AI_GENERATED',
-  'COACH_OBSERVATION',
-  'INTAKE_SEEDED',
-  'CLINICIAN_VERIFIED',
+  "AI_GENERATED",
+  "COACH_OBSERVATION",
+  "INTAKE_SEEDED",
+  "CLINICIAN_VERIFIED",
 ] as const;
 
-export type AINoteSourceType = (typeof AI_NOTE_SOURCE_TYPES)[number];
+export type AINoteSourceType = z.infer<typeof AINoteSourceTypeSchema>;
 
 export const AINoteSourceTypeSchema = z.enum(AI_NOTE_SOURCE_TYPES);
 
 /** Centralized AI note source type constants for equality checks */
 export const AI_NOTE_SOURCE_TYPE = {
-  AI_GENERATED: 'AI_GENERATED' as AINoteSourceType,
-  COACH_OBSERVATION: 'COACH_OBSERVATION' as AINoteSourceType,
-  INTAKE_SEEDED: 'INTAKE_SEEDED' as AINoteSourceType,
-  CLINICIAN_VERIFIED: 'CLINICIAN_VERIFIED' as AINoteSourceType,
+  AI_GENERATED: "AI_GENERATED" as AINoteSourceType,
+  COACH_OBSERVATION: "COACH_OBSERVATION" as AINoteSourceType,
+  INTAKE_SEEDED: "INTAKE_SEEDED" as AINoteSourceType,
+  CLINICIAN_VERIFIED: "CLINICIAN_VERIFIED" as AINoteSourceType,
 } as const;
 
 /** Human-readable labels for AI note source types */
 export const AI_NOTE_SOURCE_TYPE_LABELS: Record<AINoteSourceType, string> = {
-  AI_GENERATED: 'AI Generated',
-  COACH_OBSERVATION: 'Coach Observation',
-  INTAKE_SEEDED: 'Intake Form',
-  CLINICIAN_VERIFIED: 'Clinician Verified',
+  AI_GENERATED: "AI Generated",
+  COACH_OBSERVATION: "Coach Observation",
+  INTAKE_SEEDED: "Intake Form",
+  CLINICIAN_VERIFIED: "Clinician Verified",
 };
 
 /**
@@ -131,13 +137,14 @@ export interface WorkoutSessionNoteContract {
   updatedAt: IsoTimestampString;
 }
 
-export const workoutSessionNoteSchema: z.ZodType<WorkoutSessionNoteContract> = baseDocumentSchema.extend({
-  id: z.string(),
-  userId: z.string(),
-  workoutPlanId: z.string().optional(),
-  workoutDate: isoDateSchema,
-  content: z.string().min(1),
-});
+export const workoutSessionNoteSchema: z.ZodType<WorkoutSessionNoteContract> =
+  baseDocumentSchema.extend({
+    id: z.string(),
+    userId: z.string(),
+    workoutPlanId: z.string().optional(),
+    workoutDate: isoDateSchema,
+    content: z.string().min(1),
+  });
 
 // ============================================================================
 // SMART ASSIST PERMANENT NOTE
@@ -158,14 +165,15 @@ export interface AIPermanentNoteContract {
   updatedAt: IsoTimestampString;
 }
 
-export const aiPermanentNoteSchema: z.ZodType<AIPermanentNoteContract> = baseDocumentSchema.extend({
-  id: z.string(),
-  userId: z.string(),
-  content: z.string().min(1),
-  category: AINoteCategorySchema,
-  source: z.string().optional(),
-  sourceType: AINoteSourceTypeSchema.optional(),
-});
+export const aiPermanentNoteSchema: z.ZodType<AIPermanentNoteContract> =
+  baseDocumentSchema.extend({
+    id: z.string(),
+    userId: z.string(),
+    content: z.string().min(1),
+    category: AINoteCategorySchema,
+    source: z.string().optional(),
+    sourceType: AINoteSourceTypeSchema.optional(),
+  });
 
 // ============================================================================
 // SMART ASSIST CONTEXT (AGGREGATED)
@@ -222,11 +230,14 @@ export const createMockWorkoutSessionNote = (
 ): WorkoutSessionNoteContract => {
   const timestamp = nowIso();
   return {
-    id: overrides.id ?? `session-note-${Math.random().toString(36).slice(2, 8)}`,
-    userId: overrides.userId ?? 'mock-user',
+    id:
+      overrides.id ?? `session-note-${Math.random().toString(36).slice(2, 8)}`,
+    userId: overrides.userId ?? "mock-user",
     workoutPlanId: overrides.workoutPlanId,
     workoutDate: overrides.workoutDate ?? todayIso(),
-    content: overrides.content ?? 'Felt good during squats, increased weight by 10lbs.',
+    content:
+      overrides.content ??
+      "Felt good during squats, increased weight by 10lbs.",
     createdAt: overrides.createdAt ?? timestamp,
     updatedAt: overrides.updatedAt ?? timestamp,
   };
@@ -240,11 +251,15 @@ export const createMockAIPermanentNote = (
 ): AIPermanentNoteContract => {
   const timestamp = nowIso();
   return {
-    id: overrides.id ?? `permanent-note-${Math.random().toString(36).slice(2, 8)}`,
-    userId: overrides.userId ?? 'mock-user',
-    content: overrides.content ?? 'User has a previous rotator cuff injury on the left shoulder.',
+    id:
+      overrides.id ??
+      `permanent-note-${Math.random().toString(36).slice(2, 8)}`,
+    userId: overrides.userId ?? "mock-user",
+    content:
+      overrides.content ??
+      "User has a previous rotator cuff injury on the left shoulder.",
     category: overrides.category ?? AI_NOTE_CATEGORY.INJURY,
-    source: overrides.source ?? 'Workout session on 2025-01-15',
+    source: overrides.source ?? "Workout session on 2025-01-15",
     createdAt: overrides.createdAt ?? timestamp,
     updatedAt: overrides.updatedAt ?? timestamp,
   };
@@ -258,19 +273,28 @@ export const createMockAIContext = (
 ): AIContextContract => {
   const timestamp = nowIso();
   return {
-    userId: overrides.userId ?? 'mock-user',
-    recentSessionNotes: overrides.recentSessionNotes ?? [createMockWorkoutSessionNote()],
+    userId: overrides.userId ?? "mock-user",
+    recentSessionNotes: overrides.recentSessionNotes ?? [
+      createMockWorkoutSessionNote(),
+    ],
     permanentNotes: overrides.permanentNotes ?? [
       createMockAIPermanentNote({ category: AI_NOTE_CATEGORY.INJURY }),
-      createMockAIPermanentNote({ 
-        category: AI_NOTE_CATEGORY.PREFERENCE, 
-        content: 'Prefers morning workouts before 8am.',
+      createMockAIPermanentNote({
+        category: AI_NOTE_CATEGORY.PREFERENCE,
+        content: "Prefers morning workouts before 8am.",
       }),
     ],
-    clinicalLimitations: overrides.clinicalLimitations ?? ['Lower back sensitivity'],
-    medicalNotes: overrides.medicalNotes ?? 'No current medications.',
-    goals: overrides.goals ?? ['Build lean muscle', 'Improve cardiovascular endurance'],
-    preferences: overrides.preferences ?? ['Prefers free weights over machines'],
+    clinicalLimitations: overrides.clinicalLimitations ?? [
+      "Lower back sensitivity",
+    ],
+    medicalNotes: overrides.medicalNotes ?? "No current medications.",
+    goals: overrides.goals ?? [
+      "Build lean muscle",
+      "Improve cardiovascular endurance",
+    ],
+    preferences: overrides.preferences ?? [
+      "Prefers free weights over machines",
+    ],
     contextWindowDays: overrides.contextWindowDays ?? 7,
     generatedAt: overrides.generatedAt ?? timestamp,
   };

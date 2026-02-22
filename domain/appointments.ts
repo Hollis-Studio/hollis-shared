@@ -26,7 +26,7 @@ export const APPOINTMENT_STATUSES = [
   "CANCELLED",
   "NO_SHOW",
 ] as const;
-export type AppointmentStatus = (typeof APPOINTMENT_STATUSES)[number];
+export type AppointmentStatus = z.infer<typeof AppointmentStatusSchema>;
 
 export const AppointmentStatusSchema = z.enum(APPOINTMENT_STATUSES);
 
@@ -72,7 +72,7 @@ export const APPOINTMENT_TYPES = [
   "SLEEP_SCREENING", // → SLEEP_SCREENING
 ] as const;
 
-export type AppointmentType = (typeof APPOINTMENT_TYPES)[number];
+export type AppointmentType = z.infer<typeof AppointmentTypeSchema>;
 
 export const AppointmentTypeSchema = z.enum(APPOINTMENT_TYPES);
 
@@ -122,7 +122,7 @@ export const BOOKING_STEPS = [
   "confirm",
 ] as const;
 
-export type BookingStep = (typeof BOOKING_STEPS)[number];
+export type BookingStep = z.infer<typeof BookingStepSchema>;
 
 export const BookingStepSchema = z.enum(BOOKING_STEPS);
 
@@ -165,7 +165,7 @@ export const ADMIN_BOOKING_STEPS = [
   "confirm",
 ] as const;
 
-export type AdminBookingStep = (typeof ADMIN_BOOKING_STEPS)[number];
+export type AdminBookingStep = z.infer<typeof AdminBookingStepSchema>;
 
 export const AdminBookingStepSchema = z.enum(ADMIN_BOOKING_STEPS);
 
