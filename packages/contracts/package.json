@@ -45,6 +45,10 @@
     "./password": {
       "types": "./password/index.ts",
       "default": "./password/index.ts"
+    },
+    "./errors": {
+      "types": "./errors/index.ts",
+      "default": "./errors/index.ts"
     }
   },
   "scripts": {
@@ -52,11 +56,11 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "@types/zxcvbn": "^4.4.4",
-    "typescript": "^5.3.0"
+    "@types/zxcvbn": "4.4.5",
+    "typescript": "5.9.2"
   },
   "dependencies": {
-    "zod": "^4.0.0",
+    "zod": "4.0.0",
     "zxcvbn": "^4.4.2"
   }
 }

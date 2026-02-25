@@ -234,17 +234,6 @@ export type SignupBody = z.infer<typeof signupBodySchema>;
 export const emailSchema = z.string().email("Invalid email address");
 
 /**
- * Password validation schema with minimum requirements (DEPRECATED - use passwordSchema from password module).
- * This is kept for backwards compatibility with old signup flows.
- *
- * @deprecated Use passwordSchema from password module instead (10 char minimum, PASSWORD_POLICY alignment)
- * @internal Use only in tests or explicit legacy migration flows. Do not import from @contracts barrel.
- */
-export const legacyPasswordSchema = z
-  .string()
-  .min(8, "Password must be at least 8 characters");
-
-/**
  * UUID validation schema
  */
 export const uuidSchema = z.string().uuid("Invalid UUID format");
@@ -260,3 +249,73 @@ export const phoneSchema = z
  * URL validation schema
  */
 export const urlSchema = z.string().url("Invalid URL format");
+
+// ============================================================================
+// BIOMETRIC VALIDATION SCHEMAS
+// ============================================================================
+
+/** Reasonable age bounds (COPPA compliance) */
+const MIN_AGE_YEARS = 13;
+const MAX_AGE_YEARS = 120;
+
+/**
+ * Date of birth validation schema.
+ * - Must be a valid ISO date string
+ * - Must not be in the future
+ * - Must meet COPPA minimum age of 13
+ * - Must not exceed 120 years
+ */
+export const dateOfBirthSchema = z
+  .string()
+  .refine(
+    (val) => {
+      const date = new Date(val);
+      return !isNaN(date.getTime());
+    },
+    { message: "Invalid date format" },
+  )
+  .refine(
+    (val) => {
+      const date = new Date(val);
+      return date <= new Date();
+    },
+    { message: "Date of birth cannot be in the future" },
+  )
+  .refine(
+    (val) => {
+      const date = new Date(val);
+      const now = new Date();
+      const ageMs = now.getTime() - date.getTime();
+      const ageYears = ageMs / (1000 * 60 * 60 * 24 * 365.25);
+      return ageYears >= MIN_AGE_YEARS;
+    },
+    { message: `Must be at least ${MIN_AGE_YEARS} years old` },
+  )
+  .refine(
+    (val) => {
+      const date = new Date(val);
+      const now = new Date();
+      const ageMs = now.getTime() - date.getTime();
+      const ageYears = ageMs / (1000 * 60 * 60 * 24 * 365.25);
+      return ageYears <= MAX_AGE_YEARS;
+    },
+    { message: `Age must be ${MAX_AGE_YEARS} years or less` },
+  );
+
+/**
+ * Height validation schema (centimetres).
+ * Physiologically reasonable bounds: 50–300 cm.
+ */
+export const heightCmSchema = z
+  .number()
+  .min(50, "Height must be at least 50 cm")
+  .max(300, "Height cannot exceed 300 cm");
+
+/**
+ * Weight validation schema (kilograms).
+ * Physiologically reasonable bounds: 20–500 kg.
+ */
+export const weightKgSchema = z
+  .number()
+  .min(20, "Weight must be at least 20 kg")
+  .max(500, "Weight cannot exceed 500 kg");

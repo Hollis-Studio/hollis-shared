@@ -10,6 +10,7 @@
 
 import { z } from "zod";
 import { USER_TIERS } from "../domain/user";
+import { emailSchema } from "../schemas";
 import {
     FulfillmentStatusSchema,
     OrderItemSchema,
@@ -81,7 +82,7 @@ export type CustomerPaymentMethod = CustomerPaymentMethodContract;
 
 export const CustomerOrderSchema = z.object({
   id: z.string().uuid(),
-  customerEmail: z.string().email(),
+  customerEmail: emailSchema,
   customerName: z.string().nullable(),
   subtotalInCents: z.number().int(),
   taxInCents: z.number().int(),

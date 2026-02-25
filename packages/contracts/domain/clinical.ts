@@ -271,7 +271,7 @@ export const ClinicalNoteContractSchema = z.object({
   id: z.string(),
   patientId: z.string(),
   authorId: z.string(),
-  content: z.string(),
+  content: z.string().min(1, "Note content is required"),
   tags: z.array(z.string()),
   createdAt: z.string(),
   updatedAt: z.string(),

@@ -12,6 +12,14 @@
  * deps: zod | consumers: all codebases
  */
 
+// DEFERRED(audit-#43): [God module] This file is 1203 lines and handles multiple responsibilities
+// (user roles, membership tiers, profile enums, notification preferences, onboarding schemas,
+// profile update DTOs, and display label maps for all of the above).
+// Severity: Medium | Rationale: Functions work correctly. This is a shared contracts file consumed
+// by all three surfaces; decomposition must be coordinated across mobile, web-admin, and server.
+// Revisit: When adding new user domain concepts. Consider splitting into user/roles.ts,
+// user/profile.ts, user/notifications.ts, and user/onboarding.ts sub-modules.
+
 import { z } from "zod";
 
 import {
@@ -288,6 +296,13 @@ export function isPremiumTier(tier: string | undefined | null): boolean {
   return tier === USER_TIER.CORE || tier === USER_TIER.CONCIERGE;
 }
 
+/** Type guard: checks whether value is a valid UserTier */
+export function isUserTier(
+  value: string | undefined | null,
+): value is UserTier {
+  return USER_TIERS.includes(value as UserTier);
+}
+
 // ============================================================================
 // MEMBERSHIP CONTRACT
 // ============================================================================
@@ -555,6 +570,15 @@ export const ACCOUNT_STATUS_LABELS: Record<AccountStatus, string> = {
   suspended: "Suspended",
   inactive: "Inactive",
 };
+
+/**
+ * Returns true if the given account status represents an active account.
+ * Only `ACCOUNT_STATUS.ACTIVE` is considered active; suspended and inactive are not.
+ * Centralised here so that the active-set can be expanded in one place.
+ */
+export function isActiveAccountStatus(status: AccountStatusValue): boolean {
+  return status === ACCOUNT_STATUS.ACTIVE;
+}
 
 // ============================================================================
 // PREGNANCY STATUS

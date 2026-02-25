@@ -474,7 +474,11 @@ export const SessionUsageSchema = baseDocumentSchema.extend({
   notes: z.string().optional(),
   source: SessionUsageSourceSchema,
   quantity: z.number().int(),
-  balanceAfter: z.number().int(),
+  balanceAfter: z.number().int().nullable(),
+  /** Billing period start for this usage record (from sessionBalance at time of usage) */
+  periodStart: isoTimestampSchema.nullable().optional(),
+  /** Billing period end for this usage record (from sessionBalance at time of usage) */
+  periodEnd: isoTimestampSchema.nullable().optional(),
 });
 
 export type SessionUsageContract = z.infer<typeof SessionUsageSchema>;
@@ -485,7 +489,12 @@ export type SessionUsageContract = z.infer<typeof SessionUsageSchema>;
 
 export const SessionAdjustmentPayloadSchema = z.object({
   sessionType: SessionTypeSchema,
-  adjustment: z.number().int(),
+  adjustment: z
+    .number()
+    .int()
+    .refine((val) => val !== 0, {
+      message: "Adjustment must be a non-zero number",
+    }),
   reason: z.string().min(1),
 });
 
@@ -557,11 +566,15 @@ export function hasSessionsAvailable(
 }
 
 /**
- * Helper to calculate the effective remaining (includes adjustments)
+ * Helper to return the effective remaining for a session type.
+ *
+ * NOTE: `balance.remaining` is computed server-side as:
+ *   `Math.max(0, allocated + rolledOver - used + adjustments)`
+ * Adjustments are already baked into `remaining`. Do NOT add them again.
  */
 export function getEffectiveRemaining(
   balance: SessionBalanceItemContract,
 ): number {
   if (balance.allocated === -1) return -1; // Unlimited
-  return Math.max(0, balance.remaining + balance.adjustments);
+  return Math.max(0, balance.remaining);
 }

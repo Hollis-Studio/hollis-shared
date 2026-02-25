@@ -89,7 +89,7 @@ export const DetailedStrategyGoalSchema = z.object({
   baselineValue: z.number().optional(),
   currentValue: z.number().optional(),
   goalTarget: z.number(),
-  weight: z.number().min(0).max(1),
+  weight: z.number().min(0.1).max(10),
   dataSource: GoalDataSourceSchema,
   dataKey: z.string().optional(),
   progressPercent: z.number().min(0).max(100),
@@ -429,6 +429,12 @@ export type StrategyGenerationResult = z.infer<
   typeof StrategyGenerationResultSchema
 >;
 
+/**
+ * @deprecated Use {@link StrategyGenerationResult} instead.
+ * This alias was introduced when local mobile contracts used a `Contract` suffix convention.
+ * The canonical name is `StrategyGenerationResult` (no suffix).
+ * TY-18: duplicate alias for same Zod inference — kept for backward compatibility only.
+ */
 export type StrategyGenerationResultContract = z.infer<
   typeof StrategyGenerationResultSchema
 >;

@@ -148,7 +148,11 @@ export const WORKOUT_GENERATION_EVENT = {
 } as const;
 
 /**
- * Result from workout plan generation
+ * Result from workout plan generation.
+ *
+ * @note newNotes uses AIGeneratedNote (the DB-persisted shape with createdAt/updatedAt).
+ * AIPermanentNoteContract is a structural supertype of AIGeneratedNote and is compatible.
+ * Mobile contracts (src/contracts/aiNotes.ts) re-export this type directly.
  */
 export const WorkoutPlanGenerationResultSchema = z.object({
   plan: GeneratedWorkoutPlanSchema,

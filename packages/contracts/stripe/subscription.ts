@@ -9,6 +9,7 @@
 
 import { z } from "zod";
 import { USER_TIERS } from "../domain/user";
+import { emailSchema } from "../schemas";
 
 // ============================================================================
 // SUBSCRIPTION STATUS
@@ -213,7 +214,9 @@ export const SubscriptionListParamsSchema = z.object({
   page: z.number().int().positive().optional(),
   limit: z.number().int().positive().max(200).optional(),
 });
-export type SubscriptionListParams = z.infer<typeof SubscriptionListParamsSchema>;
+export type SubscriptionListParams = z.infer<
+  typeof SubscriptionListParamsSchema
+>;
 
 /**
  * A subscription entry enriched with basic user info for the admin list view.
@@ -221,7 +224,7 @@ export type SubscriptionListParams = z.infer<typeof SubscriptionListParamsSchema
 export const SubscriptionListItemSchema = SubscriptionSchema.extend({
   user: z.object({
     id: z.string(),
-    email: z.string().email(),
+    email: emailSchema,
     firstName: z.string().nullable(),
     lastName: z.string().nullable(),
   }),
@@ -237,4 +240,6 @@ export const SubscriptionListResponseSchema = z.object({
     pages: z.number().int(),
   }),
 });
-export type SubscriptionListResponse = z.infer<typeof SubscriptionListResponseSchema>;
+export type SubscriptionListResponse = z.infer<
+  typeof SubscriptionListResponseSchema
+>;

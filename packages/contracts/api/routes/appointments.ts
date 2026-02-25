@@ -29,6 +29,14 @@ export const APPOINTMENTS_ROUTES = {
   list: (userId: string) => `/users/${userId}/appointments` as const,
 
   /**
+   * GET /users/:userId/appointments/:appointmentId - Get single appointment by ID
+   * @param userId - User's unique identifier
+   * @param appointmentId - Appointment's unique identifier
+   */
+  get: (userId: string, appointmentId: string) =>
+    `/users/${userId}/appointments/${appointmentId}` as const,
+
+  /**
    * POST /users/:userId/appointments - Create appointment
    * @param userId - User's unique identifier
    */
@@ -68,15 +76,16 @@ export const PROVIDERS_ROUTES = {
   /**
    * GET /api/providers/:providerId - Get single provider
    * @param providerId - Provider's unique identifier
+   * @note B-13: No known client caller — server route exists but is currently unused by mobile/web-admin
    */
   get: (providerId: string) => `/api/providers/${providerId}` as const,
 
   /**
-   * GET /api/providers/:providerId/available-slots - Get available slots
-   * Query params: startDate, endDate
+   * GET /api/providers/:providerId/availability - Get available booking slots
+   * Query params: date, days
    * @param providerId - Provider's unique identifier
    */
-  availableSlots: (providerId: string) => `/api/providers/${providerId}/available-slots` as const,
+  availability: (providerId: string) => `/api/providers/${providerId}/availability` as const,
 
   /**
    * GET/PUT /api/providers/:providerId/schedule - Get or update provider schedule

@@ -5,6 +5,7 @@
  */
 
 import { z } from "zod";
+import { emailSchema } from "../schemas";
 
 // ============================================================================
 // PAYMENT STATUS
@@ -86,7 +87,7 @@ export const OrderSchema = z.object({
   id: z.string().uuid(),
   /** userId uses HH-XXXXXX barcode format, not UUID */
   userId: z.string().min(1).nullable(),
-  customerEmail: z.string().email(),
+  customerEmail: emailSchema,
   customerName: z.string().nullable(),
   subtotalInCents: z.number().int(),
   taxInCents: z.number().int(),

@@ -85,21 +85,16 @@ export type BiometricListResponse = z.infer<typeof biometricListResponseSchema>;
  * Input type for creating a new biometric entry.
  * Contains only the fields required by the server's create endpoint.
  * Server-generated fields (id, userId, isVerified, createdAt, updatedAt) are excluded.
+ *
+ * `metricDefinitionId` is required. The legacy `key`-primary path has been removed;
+ * the server rejects any payload that omits `metricDefinitionId`.
+ * `key` is a read-only display alias derived server-side from `metricDefinition.code`
+ * and must not be sent on create.
  */
-export type BiometricCreateInput =
-  | {
-      metricDefinitionId: string;
-      key?: string;
-      value: number;
-      unit: string;
-      source: BiometricSource;
-      date: string; // ISO Date String (yyyy-mm-dd)
-    }
-  | {
-      key: string;
-      metricDefinitionId?: string;
-      value: number;
-      unit: string;
-      source: BiometricSource;
-      date: string; // ISO Date String (yyyy-mm-dd)
-    };
+export type BiometricCreateInput = {
+  metricDefinitionId: string;
+  value: number;
+  unit: string;
+  source: BiometricSource;
+  date: string; // ISO Date String (yyyy-mm-dd)
+};

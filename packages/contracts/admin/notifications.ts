@@ -27,6 +27,8 @@ export const ADMIN_REALTIME_NOTIFICATION_KINDS = [
   "appointment-cancelled",
   "appointment-modified",
   "patient-assigned",
+  "lab-review-needed",
+  "new-registration",
 ] as const;
 
 export const adminRealtimeNotificationKindSchema = z.enum(
@@ -42,6 +44,8 @@ export const ADMIN_REALTIME_NOTIFICATION_KIND = {
     "appointment-cancelled" as AdminRealtimeNotificationKind,
   APPOINTMENT_MODIFIED: "appointment-modified" as AdminRealtimeNotificationKind,
   PATIENT_ASSIGNED: "patient-assigned" as AdminRealtimeNotificationKind,
+  LAB_REVIEW_NEEDED: "lab-review-needed" as AdminRealtimeNotificationKind,
+  NEW_REGISTRATION: "new-registration" as AdminRealtimeNotificationKind,
 } as const;
 
 export const adminRealtimeNotificationEventDataSchema = z
@@ -50,6 +54,8 @@ export const adminRealtimeNotificationEventDataSchema = z
     actorUserId: z.string().optional(),
     patientId: z.string().optional(),
     appointmentId: z.string().optional(),
+    /** Opaque lab report ID — used by clients to navigate to the lab report. PHI-minimal: ID only. */
+    reportId: z.string().optional(),
   })
   .strict();
 export type AdminRealtimeNotificationEventData = z.infer<

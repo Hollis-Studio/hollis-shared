@@ -11,6 +11,7 @@
  */
 
 import { z } from "zod";
+import { emailSchema } from "../schemas";
 
 // ============================================================================
 // MFA CODE LENGTH CONSTANTS
@@ -247,7 +248,7 @@ export type StepUpAuthResponseContract = z.infer<
  */
 export const authSessionProfileSchema = z.object({
   userId: z.string(),
-  email: z.string().email(),
+  email: emailSchema,
   fullName: z.string().optional(),
   role: z.string(),
   tier: z.string().optional(),

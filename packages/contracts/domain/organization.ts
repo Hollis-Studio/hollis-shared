@@ -58,6 +58,33 @@ export const ORGANIZATION_STATUS_LABELS: Record<OrganizationStatus, string> = {
 export const OrganizationStatusSchema = z.enum(ORGANIZATION_STATUSES);
 
 // ============================================================================
+// Organization Feature Flags
+// ============================================================================
+
+/**
+ * Valid feature flags for an organization's settings.features array.
+ * These control which product modules are enabled for the organization.
+ *
+ * Values MUST match what is seeded/set in the database.
+ * See: server/prisma/seed.ts for reference data.
+ *
+ * - labs: Lab orders and panel results module
+ * - training: Trainer assignment and workout tracking module
+ * - nutrition: Nutrition logging and plan module
+ * - crm: CRM dashboard and client pipeline module
+ */
+export const ORG_FEATURE_FLAGS = [
+  "labs",
+  "training",
+  "nutrition",
+  "crm",
+] as const;
+
+export type OrgFeatureFlag = (typeof ORG_FEATURE_FLAGS)[number];
+
+export const OrgFeatureFlagSchema = z.enum(ORG_FEATURE_FLAGS);
+
+// ============================================================================
 // Zod Schemas
 // ============================================================================
 
@@ -82,7 +109,7 @@ export type OrganizationBillingInfo = z.infer<
 export const OrganizationSettingsSchema = z.object({
   timezone: z.string().default("America/Chicago"),
   locale: z.string().default("en-US"),
-  features: z.array(z.string()).default([]),
+  features: z.array(OrgFeatureFlagSchema).default([]),
   branding: z
     .object({
       primaryColor: z.string().optional(),

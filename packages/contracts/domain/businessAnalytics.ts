@@ -15,6 +15,7 @@
  */
 
 import { z } from "zod";
+import { emailSchema } from "../schemas";
 
 // ============================================================================
 // LAB ORDER STATUS (Domain Constants Pattern)
@@ -354,7 +355,7 @@ export type LabPipeline = z.infer<typeof LabPipelineSchema>;
  */
 export const LeadPipelineItemSchema = z.object({
   id: z.string().uuid(),
-  email: z.string().email(),
+  email: emailSchema,
   name: z.string().nullable(),
   phone: z.string().nullable(),
   stage: LeadStageSchema,
@@ -561,7 +562,7 @@ export type CRMAnalytics = z.infer<typeof CRMAnalyticsSchema>;
 export const AtRiskClientSchema = z.object({
   userId: z.string(),
   name: z.string(),
-  email: z.string().email(),
+  email: emailSchema,
   tier: z.string(),
   riskFactors: z.array(RiskFactorSchema),
   complianceScore: z.number().min(0).max(100),
@@ -1044,7 +1045,7 @@ export const ReferralNodeSchema: z.ZodType<ReferralNode> = z.lazy(() =>
   z.object({
     id: z.string(),
     name: z.string(),
-    email: z.string().email(),
+    email: emailSchema,
     tier: z.string().nullable(),
     isActiveMember: z.boolean(),
     directReferralCount: z.number().int(),

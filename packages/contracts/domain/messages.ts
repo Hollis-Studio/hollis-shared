@@ -23,6 +23,26 @@ import type { MessagingRecipientRole } from "./user";
 export const MESSAGE_MAX_LENGTH = 5000 as const;
 
 // ============================================================================
+// MESSAGE PARTICIPANT SCHEMA
+// ============================================================================
+
+/**
+ * Canonical participant shape used in messages and conversations.
+ * firstName/lastName are nullable to match DB reality (Prisma String?).
+ */
+export const MessageParticipantSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  role: z.string(),
+  firstName: z.string().nullable().optional(),
+  lastName: z.string().nullable().optional(),
+});
+
+export type MessageParticipantContract = z.infer<
+  typeof MessageParticipantSchema
+>;
+
+// ============================================================================
 // MESSAGE SCHEMA
 // ============================================================================
 
@@ -36,24 +56,8 @@ export const MessageSchema = z.object({
   createdAt: z.string(), // ISO timestamp
   updatedAt: z.string().optional(),
   // Populated sender/receiver info
-  sender: z
-    .object({
-      id: z.string(),
-      email: z.string(),
-      role: z.string(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-    })
-    .optional(),
-  receiver: z
-    .object({
-      id: z.string(),
-      email: z.string(),
-      role: z.string(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-    })
-    .optional(),
+  sender: MessageParticipantSchema.optional(),
+  receiver: MessageParticipantSchema.optional(),
 });
 
 export type MessageContract = z.infer<typeof MessageSchema>;
@@ -68,15 +72,7 @@ export const ConversationSchema = z.object({
   participantIds: z.array(z.string()).length(2),
   lastMessage: MessageSchema.optional(),
   unreadCount: z.number().default(0),
-  participant: z
-    .object({
-      id: z.string(),
-      email: z.string(),
-      role: z.string(),
-      firstName: z.string().optional(),
-      lastName: z.string().optional(),
-    })
-    .optional(), // The "other" participant in the conversation
+  participant: MessageParticipantSchema.optional(), // The "other" participant in the conversation
 });
 
 export type ConversationContract = z.infer<typeof ConversationSchema>;
@@ -88,7 +84,10 @@ export type ConversationContract = z.infer<typeof ConversationSchema>;
 export const SendMessageRequestSchema = z.object({
   senderId: z.string(),
   receiverId: z.string(),
-  content: z.string().max(MESSAGE_MAX_LENGTH),
+  content: z
+    .string()
+    .min(1, "Message content is required")
+    .max(MESSAGE_MAX_LENGTH),
   attachmentUrl: z.string().optional(),
 });
 

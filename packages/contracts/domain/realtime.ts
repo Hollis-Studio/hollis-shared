@@ -19,39 +19,41 @@
  * deps: zod | consumers: all codebases
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // ============================================================================
 // SSE RESOURCE TYPES - Shared between client and server
 // ============================================================================
 
 export const SSE_RESOURCE_TYPES = [
-  'nutrition',
-  'daily-metrics',
-  'daily-summary',
-  'biometrics',
-  'journal',
-  'appointments',
-  'sessions',
-  'user-account',
-  'messages',
-  'exercise-performance',
+  "nutrition",
+  "daily-metrics",
+  "daily-summary",
+  "biometrics",
+  "journal",
+  "appointments",
+  "sessions",
+  "user-account",
+  "messages",
+  "exercise-performance",
+  "labs",
 ] as const;
 
 export type SSEResourceType = (typeof SSE_RESOURCE_TYPES)[number];
 
 /** Centralized resource type constants for equality checks */
 export const SSE_RESOURCE_TYPE = {
-  NUTRITION: 'nutrition' as SSEResourceType,
-  DAILY_METRICS: 'daily-metrics' as SSEResourceType,
-  DAILY_SUMMARY: 'daily-summary' as SSEResourceType,
-  BIOMETRICS: 'biometrics' as SSEResourceType,
-  JOURNAL: 'journal' as SSEResourceType,
-  APPOINTMENTS: 'appointments' as SSEResourceType,
-  SESSIONS: 'sessions' as SSEResourceType,
-  USER_ACCOUNT: 'user-account' as SSEResourceType,
-  MESSAGES: 'messages' as SSEResourceType,
-  EXERCISE_PERFORMANCE: 'exercise-performance' as SSEResourceType,
+  NUTRITION: "nutrition" as SSEResourceType,
+  DAILY_METRICS: "daily-metrics" as SSEResourceType,
+  DAILY_SUMMARY: "daily-summary" as SSEResourceType,
+  BIOMETRICS: "biometrics" as SSEResourceType,
+  JOURNAL: "journal" as SSEResourceType,
+  APPOINTMENTS: "appointments" as SSEResourceType,
+  SESSIONS: "sessions" as SSEResourceType,
+  USER_ACCOUNT: "user-account" as SSEResourceType,
+  MESSAGES: "messages" as SSEResourceType,
+  EXERCISE_PERFORMANCE: "exercise-performance" as SSEResourceType,
+  LABS: "labs" as SSEResourceType,
 } as const;
 
 /**
@@ -72,15 +74,20 @@ export function isSSEResourceType(value: string): value is SSEResourceType {
  * - heartbeat: Keep-alive ping
  * - notification: Push notification event
  */
-export const SSE_EVENT_TYPES = ['invalidate', 'connected', 'heartbeat', 'notification'] as const;
+export const SSE_EVENT_TYPES = [
+  "invalidate",
+  "connected",
+  "heartbeat",
+  "notification",
+] as const;
 export type SSEEventType = (typeof SSE_EVENT_TYPES)[number];
 
 /** Centralized event type constants for equality checks */
 export const SSE_EVENT_TYPE = {
-  INVALIDATE: 'invalidate' as SSEEventType,
-  CONNECTED: 'connected' as SSEEventType,
-  HEARTBEAT: 'heartbeat' as SSEEventType,
-  NOTIFICATION: 'notification' as SSEEventType,
+  INVALIDATE: "invalidate" as SSEEventType,
+  CONNECTED: "connected" as SSEEventType,
+  HEARTBEAT: "heartbeat" as SSEEventType,
+  NOTIFICATION: "notification" as SSEEventType,
 } as const;
 
 export const sseEventTypeSchema = z.enum(SSE_EVENT_TYPES);

@@ -280,3 +280,27 @@ export const ProviderSummarySchema = z.object({
 });
 
 export type ProviderSummaryContract = z.infer<typeof ProviderSummarySchema>;
+
+// ============================================================================
+// CREATE APPOINTMENT INPUT
+// ============================================================================
+
+/**
+ * Canonical input schema for creating an appointment.
+ * Used by both mobile and server to ensure field parity.
+ * Server is authoritative — mobile was missing meetingLink.
+ */
+export const createAppointmentInputSchema = z.object({
+  providerId: z.string(),
+  title: z.string().max(200),
+  startTime: z.string(),
+  type: AppointmentTypeSchema,
+  duration: z.number().int().positive().optional(),
+  location: z.string().max(500).optional(),
+  notes: z.string().max(2000).optional(),
+  meetingLink: z.string().url().max(2000).optional(),
+});
+
+export type CreateAppointmentInput = z.infer<
+  typeof createAppointmentInputSchema
+>;

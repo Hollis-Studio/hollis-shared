@@ -16,7 +16,7 @@ import { z } from "zod";
 // LAB RESULT STATUS (Domain Constants Pattern)
 // ============================================================================
 
-/** Tuple of valid lab result status values (source of truth). UPPER_CASE to match Prisma LabResultStatus enum. */
+/** Tuple of valid lab result status values (source of truth). UPPER_CASE to match Prisma LabPanelStatus enum. */
 export const LAB_RESULT_STATUSES = [
   "PRELIMINARY",
   "FINAL",

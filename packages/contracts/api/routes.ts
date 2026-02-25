@@ -16,6 +16,13 @@
  * deps: none | consumers: src/services/*, web-admin/services/*, server/src/*
  */
 
+// DEFERRED(audit-#44): [Barrel complexity] This file is 1195 lines and serves as both a route
+// registry AND an inline type definition hub for all API endpoints across the monorepo.
+// Severity: Medium | Rationale: File is correct and well-organized. All consumers import correctly.
+// The complexity is structural (many endpoints) rather than an indicator of bugs.
+// Revisit: When the number of routes grows significantly or causes slow TypeScript compilation.
+// Consider splitting into routes/auth.ts, routes/users.ts, routes/admin.ts, etc. sub-registries.
+
 // ============================================================================
 // TYPE HELPERS (canonical source: ./routes/types.ts)
 // ============================================================================
@@ -491,6 +498,14 @@ export const APPOINTMENTS_ROUTES = {
   list: (userId: string) => `/users/${userId}/appointments` as const,
 
   /**
+   * GET /users/:userId/appointments/:appointmentId - Get single appointment by ID
+   * @param userId - User's unique identifier
+   * @param appointmentId - Appointment's unique identifier
+   */
+  get: (userId: string, appointmentId: string) =>
+    `/users/${userId}/appointments/${appointmentId}` as const,
+
+  /**
    * POST /users/:userId/appointments - Create appointment
    * @param userId - User's unique identifier
    */
@@ -755,16 +770,17 @@ export const PROVIDERS_ROUTES = {
   /**
    * GET /api/providers/:providerId - Get single provider
    * @param providerId - Provider's unique identifier
+   * @note B-13: No known client caller — server route exists but is currently unused by mobile/web-admin
    */
   get: (providerId: string) => `/api/providers/${providerId}` as const,
 
   /**
-   * GET /api/providers/:providerId/available-slots - Get available slots
-   * Query params: startDate, endDate
+   * GET /api/providers/:providerId/availability - Get available booking slots
+   * Query params: date, days
    * @param providerId - Provider's unique identifier
    */
-  availableSlots: (providerId: string) =>
-    `/api/providers/${providerId}/available-slots` as const,
+  availability: (providerId: string) =>
+    `/api/providers/${providerId}/availability` as const,
 
   /**
    * GET/PUT /api/providers/:providerId/schedule - Get or update provider schedule
@@ -772,12 +788,6 @@ export const PROVIDERS_ROUTES = {
    */
   schedule: (providerId: string) =>
     `/api/providers/${providerId}/schedule` as const,
-  /**
-   * GET /api/providers/:providerId/availability - Get provider availability
-   * @param providerId - Provider's unique identifier
-   */
-  availability: (providerId: string) =>
-    `/api/providers/${providerId}/availability` as const,
 } as const;
 
 /** Type for providers route values */
@@ -943,6 +953,73 @@ export const ACCOUNT_ROUTES = {
 export type AccountRoute = (typeof ACCOUNT_ROUTES)[keyof typeof ACCOUNT_ROUTES];
 
 // ============================================================================
+// PHI ROUTES
+// ============================================================================
+
+/**
+ * Protected Health Information (PHI) API routes.
+ * Base path: /phi
+ *
+ * SECURITY: All PHI routes enforce strict authorization and Cache-Control: no-store.
+ * Users can only access their own PHI; clinicians their patients'; admins all.
+ *
+ * Query params (e.g. userId) are NOT part of the route path — append at call-site
+ * using buildUrlWithQuery.
+ *
+ * @group PHI
+ */
+export const PHI_ROUTES = {
+  // --- Labs ---
+
+  /** GET /phi/labs - Lab panel timeline (query: userId) */
+  LAB_TIMELINE: "/phi/labs",
+
+  /**
+   * GET /phi/labs/:panelId - Specific lab panel (query: userId)
+   * @param panelId - Lab panel's unique identifier
+   */
+  labPanel: (panelId: string) => `/phi/labs/${panelId}` as const,
+
+  /**
+   * GET /phi/labs/results/:resultId - Specific lab result (query: userId)
+   * @param resultId - Lab result's unique identifier
+   */
+  labResult: (resultId: string) => `/phi/labs/results/${resultId}` as const,
+
+  // --- Trends ---
+
+  /** GET /phi/trends - All clinical metric trends (query: userId) */
+  ALL_TRENDS: "/phi/trends",
+
+  /**
+   * GET /phi/trends/:metricCode - Specific clinical metric trend (query: userId)
+   * @param metricCode - Clinical metric code (e.g. "HBA1C", "GLUCOSE")
+   */
+  metricTrend: (metricCode: string) => `/phi/trends/${metricCode}` as const,
+
+  // --- Care Team / Providers ---
+
+  /** GET /phi/providers - Care team list (query: userId) */
+  PROVIDERS: "/phi/providers",
+
+  /**
+   * GET /phi/providers/:memberId - Specific care team member (query: userId)
+   * @param memberId - Care team member's unique identifier
+   */
+  provider: (memberId: string) => `/phi/providers/${memberId}` as const,
+} as const;
+
+/** Type for PHI route values */
+export type PhiRoute =
+  | (typeof PHI_ROUTES)["LAB_TIMELINE"]
+  | (typeof PHI_ROUTES)["ALL_TRENDS"]
+  | (typeof PHI_ROUTES)["PROVIDERS"]
+  | ReturnType<typeof PHI_ROUTES.labPanel>
+  | ReturnType<typeof PHI_ROUTES.labResult>
+  | ReturnType<typeof PHI_ROUTES.metricTrend>
+  | ReturnType<typeof PHI_ROUTES.provider>;
+
+// ============================================================================
 // AGGREGATED API ROUTES
 // ============================================================================
 
@@ -984,6 +1061,7 @@ export const API_ROUTES = {
   PUSH: PUSH_ROUTES,
   SSE: SSE_ROUTES,
   ACCOUNT: ACCOUNT_ROUTES,
+  PHI: PHI_ROUTES,
 } as const;
 
 // ============================================================================

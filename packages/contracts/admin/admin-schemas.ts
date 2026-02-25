@@ -245,6 +245,7 @@ export type PatientAdminControlsPayload = z.infer<
 export const clinicianSummarySchema = z.object({
   id: z.string(),
   name: z.string(),
+  email: z.string().email().optional(),
   role: UserRoleSchema,
   specialty: z.string(),
 });
@@ -347,7 +348,7 @@ export const createRegistrationPayloadSchema = z.object({
   email: z.string().email().optional(),
   tier: UserTierSchema.optional(),
   profile: prefilledProfileSchema.optional(),
-  expiresInDays: z.number().positive().max(365).optional(),
+  expiresInDays: z.number().positive().max(365).default(30),
 });
 export type CreateRegistrationPayload = z.infer<
   typeof createRegistrationPayloadSchema

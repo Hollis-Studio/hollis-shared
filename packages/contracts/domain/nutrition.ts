@@ -16,6 +16,7 @@
 
 import { z } from "zod";
 import { foodLogEntrySchema } from "../schemas/json-blobs";
+import { createPaginatedListSchema } from "./pagination";
 
 // Note: foodLogEntrySchema and FoodLogEntryContract are used internally but NOT re-exported
 // to avoid duplicate export errors in barrel files. Import them from @hollis/contracts/schemas.
@@ -552,6 +553,18 @@ export const mealContextSchema = MealContextSchema;
 /** @deprecated Use DailyNutritionLogSchema instead. Remove after 2026-05-01 */
 // zod-manual: deprecated alias
 export const dailyNutritionLogSchema = DailyNutritionLogSchema;
+
+/**
+ * Backward-compatible nutrition list payload:
+ * - canonical paginated payload: { data, pagination }
+ * - legacy array payload: DailyNutritionLogContract[]
+ */
+export const nutritionListResponseSchema = z.union([
+  createPaginatedListSchema(DailyNutritionLogSchema),
+  z.array(DailyNutritionLogSchema),
+]);
+
+export type NutritionListResponse = z.infer<typeof nutritionListResponseSchema>;
 
 // ============================================================================
 // UTILITY FUNCTIONS
