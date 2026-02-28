@@ -33,6 +33,8 @@ export const AUTH_ROUTES = {
   RESET_PASSWORD: "/auth/reset-password",
   /** POST - Change password for authenticated user (invalidates all sessions) */
   CHANGE_PASSWORD: "/auth/change-password",
+  /** POST - Re-verify MFA for session (when MFA session expires, no re-login needed) */
+  MFA_SESSION_REVERIFY: "/auth/mfa/session-reverify",
 } as const;
 
 /** Type for auth route values */

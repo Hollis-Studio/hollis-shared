@@ -96,9 +96,24 @@ export const StepUpAuthActionSchema = z.enum(STEP_UP_AUTH_ACTIONS);
 
 /**
  * Step-up auth window in milliseconds (how long a step-up verification lasts)
+ * Used for individual sensitive actions (e.g., data export, MFA management).
  * Default: 15 minutes
  */
 export const STEP_UP_AUTH_WINDOW_MS = 15 * 60 * 1000;
+
+/**
+ * MFA session window in milliseconds.
+ * How long a user's MFA verification remains valid for general PHI access
+ * after initial login MFA verification. Distinct from STEP_UP_AUTH_WINDOW_MS
+ * which governs individual sensitive action tokens.
+ *
+ * When the access token is refreshed within this window, the server carries
+ * forward the mfaVerifiedAt timestamp so the user isn't locked out every
+ * 15 minutes (the access token TTL).
+ *
+ * Default: 8 hours
+ */
+export const MFA_SESSION_WINDOW_MS = 8 * 60 * 60 * 1000;
 
 // ============================================================================
 // CLINICIAN-PATIENT ASSIGNMENT STATUS
@@ -237,6 +252,24 @@ export const mfaLoginVerifyResponseSchema = z.object({
 });
 export type MfaLoginVerifyResponse = z.infer<
   typeof mfaLoginVerifyResponseSchema
+>;
+
+/**
+ * MFA session re-verification request.
+ *
+ * Used by admin/clinician users whose MFA session window has expired.
+ * Unlike /login/verify (which uses a single-use mfa_pending token), this
+ * endpoint uses the user's existing access token.
+ *
+ * Server route: POST /auth/mfa/session-reverify
+ */
+export const mfaSessionReverifyRequestSchema = z.object({
+  code: z.string().min(1),
+  credentialId: z.string().uuid().optional(),
+  isBackupCode: z.boolean().optional().default(false),
+});
+export type MfaSessionReverifyRequestContract = z.infer<
+  typeof mfaSessionReverifyRequestSchema
 >;
 
 /**
