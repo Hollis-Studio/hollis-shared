@@ -13,6 +13,7 @@
  */
 import { z } from "zod";
 
+import { MESSAGE_RECIPIENT_ROLES } from "./user";
 import type { MessagingRecipientRole } from "./user";
 
 // ============================================================================
@@ -48,16 +49,17 @@ export type MessageParticipantContract = z.infer<
 
 export const MessageSchema = z.object({
   id: z.string(),
-  senderId: z.string(),
-  receiverId: z.string(),
+  senderId: z.string().nullable(),
+  receiverId: z.string().nullable(),
   content: z.string().max(MESSAGE_MAX_LENGTH),
   attachmentUrl: z.string().nullable().optional(),
   isRead: z.boolean().default(false),
   createdAt: z.string(), // ISO timestamp
   updatedAt: z.string().optional(),
   // Populated sender/receiver info
-  sender: MessageParticipantSchema.optional(),
-  receiver: MessageParticipantSchema.optional(),
+  // nullable: Prisma returns null (not undefined) when the related user record is absent
+  sender: MessageParticipantSchema.nullable().optional(),
+  receiver: MessageParticipantSchema.nullable().optional(),
 });
 
 export type MessageContract = z.infer<typeof MessageSchema>;
@@ -81,15 +83,36 @@ export type ConversationContract = z.infer<typeof ConversationSchema>;
 // SEND MESSAGE REQUEST
 // ============================================================================
 
-export const SendMessageRequestSchema = z.object({
-  senderId: z.string(),
-  receiverId: z.string(),
-  content: z
-    .string()
-    .min(1, "Message content is required")
-    .max(MESSAGE_MAX_LENGTH),
-  attachmentUrl: z.string().optional(),
-});
+/**
+ * Canonical request schema for sending a message.
+ *
+ * Supports two modes:
+ * - Direct send: provide `receiverId` (UUID of the target user)
+ * - Role-based send: provide `recipientRole` (resolved server-side to the
+ *   sender's assigned clinician or fitness coordinator)
+ *
+ * At least one of `receiverId` or `recipientRole` must be present.
+ *
+ * NOTE: `senderId` is intentionally absent — the server derives sender identity
+ * from the authenticated JWT. Never trust a client-supplied sender ID.
+ */
+export const SendMessageRequestSchema = z
+  .object({
+    receiverId: z
+      .string()
+      .min(1, "receiverId is required")
+      .optional(),
+    recipientRole: z.enum(MESSAGE_RECIPIENT_ROLES).optional(),
+    content: z
+      .string()
+      .min(1, "Message content is required")
+      .max(MESSAGE_MAX_LENGTH),
+    attachmentUrl: z.string().optional(),
+  })
+  .refine((data) => data.receiverId ?? data.recipientRole, {
+    message: "Either receiverId or recipientRole is required",
+    path: ["receiverId"],
+  });
 
 export type SendMessageRequest = z.infer<typeof SendMessageRequestSchema>;
 

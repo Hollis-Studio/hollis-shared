@@ -68,6 +68,9 @@ export type StripeMetadata = z.infer<typeof StripeMetadataSchema>;
 export const CollectPaymentRequestSchema = z.object({
   /** userId uses HH-XXXXXX barcode format, not UUID */
   userId: z.string().min(1),
+  // VALIDATION-CONFIRMED: .int().positive() rejects floats, zero, and negative
+  // values before amountInCents reaches createPaymentIntent(). Max $5,000 cap
+  // prevents accidental over-charge. (audit Cat4 #12)
   amountInCents: z.number().int().positive().max(500_000), // Max $5,000
   description: z.string(),
   metadata: StripeMetadataSchema.optional(),

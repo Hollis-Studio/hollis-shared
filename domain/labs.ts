@@ -11,6 +11,7 @@
  */
 
 import { z } from "zod";
+import { LabOrderStatusSchema } from "./businessAnalytics";
 
 // ============================================================================
 // LAB RESULT STATUS (Domain Constants Pattern)
@@ -441,6 +442,7 @@ export const LabObservationSchema = z.object({
   labFlag: z.string().nullable().optional(),
   mappingStatus: LabMappingStatusSchema,
   mappingConfidence: z.number().min(0).max(1).nullable().optional(),
+  mappingNotes: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
   tags: z.array(z.string()).nullable().optional(),
   extractionConfidences: z.record(z.string(), z.number()).nullable().optional(),
@@ -471,6 +473,7 @@ export const LabReportSchema = z.object({
   verifiedById: z.string().nullable().optional(),
   verifiedAt: z.string().nullable().optional(),
   notes: z.string().nullable().optional(),
+  orderStatus: LabOrderStatusSchema,
   observations: z.array(LabObservationSchema),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -567,6 +570,76 @@ export const createMockLabObservation = (
   };
 };
 
+// ============================================================================
+// LAB REPORT FORM SCHEMA (Web-admin entry form validation)
+// ============================================================================
+
+/**
+ * Zod schema for validating the metadata fields of the lab report entry form
+ * before API submission. Observations are validated separately.
+ *
+ * @see web-admin/components/admin/LabEntryForm.tsx
+ */
+export const labReportFormSchema = z.object({
+  /** ISO date string (YYYY-MM-DD) for the report date */
+  reportDate: z.string().min(1, "Report date is required"),
+  labName: z
+    .string()
+    .max(200, "Lab name must be 200 characters or fewer")
+    .optional(),
+  labLocation: z
+    .string()
+    .max(200, "Lab location must be 200 characters or fewer")
+    .optional(),
+  panelName: z
+    .string()
+    .max(200, "Panel name must be 200 characters or fewer")
+    .optional(),
+  specimenType: z
+    .string()
+    .max(100, "Specimen type must be 100 characters or fewer")
+    .optional(),
+  orderingProvider: z
+    .string()
+    .max(200, "Ordering provider must be 200 characters or fewer")
+    .optional(),
+  notes: z.string().optional(),
+});
+
+export type LabReportFormData = z.infer<typeof labReportFormSchema>;
+
+// ============================================================================
+// BIOMARKER CREATE FORM SCHEMA (Web-admin inline create form validation)
+// ============================================================================
+
+/**
+ * Zod schema for validating the BiomarkerPicker inline creation form data
+ * before API submission.
+ *
+ * @see web-admin/components/labs/BiomarkerPicker.tsx
+ */
+export const biomarkerCreateFormSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, "Biomarker name is required")
+    .max(200, "Name must be 200 characters or fewer"),
+  code: z
+    .string()
+    .trim()
+    .max(100, "Code must be 100 characters or fewer")
+    .optional(),
+  category: LabMetricCategorySchema,
+  canonicalUnit: z
+    .string()
+    .trim()
+    .min(1, "Unit is required")
+    .max(50, "Unit must be 50 characters or fewer"),
+  directionality: LabMetricDirectionalitySchema,
+});
+
+export type BiomarkerCreateFormData = z.infer<typeof biomarkerCreateFormSchema>;
+
 export const createMockLabReport = (
   overrides: Partial<LabReportContract> = {},
 ): LabReportContract => {
@@ -577,6 +650,7 @@ export const createMockLabReport = (
     reportDate: timestamp,
     labName: "Quest Diagnostics",
     panelName: "Comprehensive Metabolic Panel",
+    orderStatus: "ORDERED",
     observations: [createMockLabObservation()],
     createdAt: timestamp,
     updatedAt: timestamp,

@@ -707,42 +707,51 @@ export const UserProfileSchema = z.object({
   email: z.string().email().max(255),
   /** @computed Assembled from User.firstName + " " + User.lastName, falls back to email if both are null */
   fullName: z.string().min(1).max(200),
-  preferredName: z.string().optional(),
+  preferredName: z.string().nullable().optional(),
   role: UserRoleSchema.optional(),
   tier: UserTierSchema.optional(),
-  avatarUrl: z.string().url().optional(),
-  bio: z.string().optional(),
-  occupation: z.string().optional(),
-  primaryGoal: PrimaryGoalSchema.optional(),
-  activityLevel: ActivityLevelSchema.optional(),
-  experienceLevel: FitnessExperienceSchema.optional(),
-  dateOfBirth: z.string().optional(),
-  biologicalSex: BiologicalSexSchema.optional(),
+  avatarUrl: z.string().url().nullable().optional(),
+  bio: z.string().nullable().optional(),
+  occupation: z.string().nullable().optional(),
+  primaryGoal: PrimaryGoalSchema.nullable().optional(),
+  activityLevel: ActivityLevelSchema.nullable().optional(),
+  experienceLevel: FitnessExperienceSchema.nullable().optional(),
+  dateOfBirth: z.string().nullable().optional(),
+  biologicalSex: BiologicalSexSchema.nullable().optional(),
   pregnancyStatus: PregnancyStatusSchema.nullable().optional(),
   pregnancyDueDate: z.string().nullable().optional(),
   calculatedPregnancyStatus: PregnancyStatusSchema.nullable().optional(),
-  heightCm: z.number().min(0).max(300).optional(),
+  heightCm: z.number().min(0).max(300).nullable().optional(),
   /**
    * @computed Latest BiometricEntry for weight metric, falls back to ClinicalProfile.startWeight
    * Current weight in kilograms. Updated as new measurements are taken.
    * Distinct from Prisma's `startWeight` which captures the initial onboarding weight.
    * Requires null-safe access — may be absent for users who haven't set a weight.
    */
-  weightKg: z.number().min(0).max(500).optional(),
+  weightKg: z.number().min(0).max(500).nullable().optional(),
   /** Initial weight at onboarding (kg). Null-safe — may be absent for legacy users. */
-  initialWeightKg: z.number().min(0).optional(),
+  initialWeightKg: z.number().min(0).nullable().optional(),
   /** IANA timezone identifier. Null-safe — defaults to organization timezone if absent. */
-  timezone: z.string().optional(),
+  timezone: z.string().nullable().optional(),
   /** Assigned clinician ID. Null when no clinician is assigned. */
   assignedClinicianId: z.string().nullable().optional(),
   /** @computed Primary active TrainerAssignment.trainerId for this user. Null when no trainer is assigned. */
   assignedTrainerId: z.string().nullable().optional(),
-  medications: z.array(medicationSchema).optional(),
-  limitations: z.array(limitationSchema).optional(),
-  injuries: z.array(injurySchema).optional(),
-  medicalConditions: z.array(medicalConditionSchema).optional(),
+  medications: z.array(medicationSchema).nullable().optional(),
+  limitations: z.array(limitationSchema).nullable().optional(),
+  injuries: z.array(injurySchema).nullable().optional(),
+  medicalConditions: z.array(medicalConditionSchema).nullable().optional(),
   onboardingCompleted: z.boolean(),
   isActive: z.boolean().optional(),
+  // ── Data Retention (GDPR / CCPA / HIPAA) ─────────────────────────────────
+  /** Earliest date on which PHI records may be permanently purged. Set on soft-delete. */
+  recordRetentionDate: z.coerce.date().nullable().optional(),
+  /** Timestamp of the deletion/anonymisation request that initiated account removal. */
+  deletionRequestedAt: z.coerce.date().nullable().optional(),
+  /** Human-readable reason for deletion (e.g. "admin_initiated", "user_request"). */
+  deletionReason: z.string().nullable().optional(),
+  /** ISO 3166-2 subdivision code (e.g. "TX", "CA", "NY"). Determines retention period. */
+  stateOfResidence: z.string().max(10).nullable().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -750,9 +759,76 @@ export const UserProfileSchema = z.object({
 export type UserProfileContract = z.infer<typeof UserProfileSchema>;
 
 // ============================================================================
+// PROFILE EDIT FORM SCHEMAS
+// ============================================================================
+
+/**
+ * Validates PHI fields submitted from PersonalInfoSection before persisting.
+ * All fields are optional (partial update). Uses `.passthrough()` so that
+ * unrecognised FormDataRecord keys are preserved without causing a parse error.
+ */
+export const personalInfoFormSchema = z
+  .object({
+    fullName: z
+      .string()
+      .min(1, "Full name must not be empty")
+      .max(200, "Full name must be at most 200 characters")
+      .optional(),
+    preferredName: z.string().max(200).nullable().optional(),
+    dateOfBirth: z
+      .string()
+      .regex(
+        /^\d{4}-\d{2}-\d{2}$/,
+        "Date of birth must be in YYYY-MM-DD format",
+      )
+      .nullable()
+      .optional(),
+    biologicalSex: BiologicalSexSchema.nullable().optional(),
+    occupation: z.string().max(200).nullable().optional(),
+    bio: z.string().max(2000).nullable().optional(),
+  })
+  .passthrough();
+
+export type PersonalInfoFormData = z.infer<typeof personalInfoFormSchema>;
+
+/**
+ * Validates PHI physical-stats fields **after** unit conversion to metric.
+ * Called in PhysicalStatsSection.handleSaveWithConversion before persisting.
+ * Uses `.passthrough()` so non-validated FormDataRecord keys are preserved.
+ */
+export const physicalStatsFormSchema = z
+  .object({
+    heightCm: z
+      .number()
+      .positive("Height must be a positive number")
+      .max(300, "Height must be at most 300 cm")
+      .nullable()
+      .optional(),
+    weightKg: z
+      .number()
+      .positive("Weight must be a positive number")
+      .max(500, "Weight must be at most 500 kg")
+      .nullable()
+      .optional(),
+    activityLevel: ActivityLevelSchema.nullable().optional(),
+    experienceLevel: FitnessExperienceSchema.nullable().optional(),
+    primaryGoal: PrimaryGoalSchema.nullable().optional(),
+  })
+  .passthrough();
+
+export type PhysicalStatsFormData = z.infer<typeof physicalStatsFormSchema>;
+
+// ============================================================================
 // USER GOALS CONTRACT
 // ============================================================================
 
+/**
+ * @warning Fields in this contract are backed by a NutritionPlan.notes JSON blob, not standalone DB columns.
+ * Migration to dedicated columns is recommended. See audit-04.
+ */
+// DEFERRED(schema): UserGoalsContract is backed by a JSON blob in the DB rather than normalized columns.
+// Migrating to structured columns requires a schema migration and data backfill.
+// Revisit post-launch once goals data model is stable.
 export const UserGoalsSchema = z.object({
   id: z.string().optional(),
   userId: z.string().max(20),
@@ -760,8 +836,11 @@ export const UserGoalsSchema = z.object({
   proteinTarget: z.number().min(0),
   carbTarget: z.number().min(0),
   fatTarget: z.number().min(0),
+  /** @stored-in NutritionPlan.notes JSON blob ("weeklyWeightChangeTarget" key). Not a standalone DB column. */
   weeklyWeightChangeTarget: z.number(),
+  /** @stored-in NutritionPlan.notes JSON blob ("workoutsPerWeek" key). Not a standalone DB column. */
   workoutsPerWeek: z.number().min(0),
+  /** @stored-in NutritionPlan.notes JSON blob ("sleepHoursTarget" key). Not a standalone DB column. */
   sleepHoursTarget: z.number().min(0).max(24).optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -1174,9 +1253,11 @@ export const UserPreferencesSchema = z.object({
   }),
   advancedUnits: advancedUnitPreferencesSchema.default(defaultAdvancedUnits()),
   notifications: notificationPreferencesSchema.default(defaultNotifications()),
+  /** @deprecated Alias for `unitSystem`. No standalone DB column. Use `unitSystem` instead. Will be removed in a future contract cleanup. */
   units: z.enum(["imperial", "metric", "advanced"]).optional(),
   dashboardCardOrder: z.array(z.string()).optional(),
   dashboardSections: dashboardSectionsSchema.optional(),
+  /** @stored-in UserPreferences.dashboard JSON blob as dashboard.hiddenSections. Not a standalone DB column. Derive from dashboard.hiddenSections at serialisation time. */
   hiddenDashboardCards: z.array(z.string()).optional(),
   eveningReminderEnabled: z.boolean().optional(),
   eveningReminderTime: timeStringSchema.optional(),
@@ -1195,6 +1276,39 @@ export const UserAccountSchema = z.object({
 });
 
 export type UserAccountContract = z.infer<typeof UserAccountSchema>;
+
+// ============================================================================
+// ADMIN FORM SCHEMAS
+// ============================================================================
+
+/**
+ * Zod schema for the admin portal profile-settings form.
+ * Validates the two editable fields before calling the profile service.
+ */
+export const adminProfileFormSchema = z.object({
+  fullName: z.string().trim().min(1, "Full name is required").max(200),
+  email: z.string().email("Invalid email address"),
+});
+export type AdminProfileFormInput = z.infer<typeof adminProfileFormSchema>;
+
+// ============================================================================
+// GDPR / CCPA DELETION REQUEST CONTRACT
+// ============================================================================
+
+/**
+ * Input schema for a patient-initiated account deletion request.
+ *
+ * Satisfies GDPR Art. 17 (right to erasure) and CCPA § 1798.105.
+ * The `reason` field is optional — patients are not required to justify their
+ * erasure request under either regulation.
+ *
+ * Consumed by: POST /api/account/deletion-request (mobile, web-public)
+ */
+export const DeletionRequestInputSchema = z.object({
+  reason: z.string().max(500).optional(),
+});
+
+export type DeletionRequestInput = z.infer<typeof DeletionRequestInputSchema>;
 
 // ============================================================================
 // HELPER UTILITIES

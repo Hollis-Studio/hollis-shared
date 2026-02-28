@@ -435,7 +435,7 @@ export const DailyNutritionLogSchema = z.object({
   timezone: z.string(),
   meals: z.array(MealLogSchema),
   totals: NutritionMacroBreakdownSchema,
-  hydrationMl: z.number().int().min(0).optional(),
+  hydrationMl: z.number().int().min(0).nullable().optional(),
   supplements: z.array(z.string()).optional(),
   foodEntries: z.record(z.string(), z.array(foodLogEntrySchema)).optional(),
   isVerified: z.boolean(),
@@ -555,14 +555,11 @@ export const mealContextSchema = MealContextSchema;
 export const dailyNutritionLogSchema = DailyNutritionLogSchema;
 
 /**
- * Backward-compatible nutrition list payload:
- * - canonical paginated payload: { data, pagination }
- * - legacy array payload: DailyNutritionLogContract[]
+ * Canonical paginated nutrition list response: { data, pagination }
  */
-export const nutritionListResponseSchema = z.union([
-  createPaginatedListSchema(DailyNutritionLogSchema),
-  z.array(DailyNutritionLogSchema),
-]);
+export const nutritionListResponseSchema = createPaginatedListSchema(
+  DailyNutritionLogSchema,
+);
 
 export type NutritionListResponse = z.infer<typeof nutritionListResponseSchema>;
 
@@ -684,6 +681,91 @@ export const createMockNutritionPortion = (
   },
   photoUrl: overrides.photoUrl,
 });
+
+// ============================================================================
+// CALORIE ENTRY FORM SCHEMA
+// ============================================================================
+
+/**
+ * Zod schema for the quick calorie-logging form (log-calories modal).
+ * Validates PHI nutrition inputs before they are sent to the API.
+ *
+ * Bounds match the manual validation enforced in the submit handler:
+ *   - totalCalories: integer, 0–10 000 kcal
+ *   - protein / carbs / fat: optional grams, 0–500 g
+ */
+export const calorieEntryFormSchema = z.object({
+  totalCalories: z
+    .number({ error: "Calories must be a number" })
+    .int("Calories must be a whole number")
+    .min(0, "Calories cannot be negative")
+    .max(10000, "Calories must be 10,000 kcal or less"),
+  protein: z
+    .number({ error: "Protein must be a number" })
+    .min(0, "Protein cannot be negative")
+    .max(500, "Protein must be 500g or less")
+    .optional(),
+  carbs: z
+    .number({ error: "Carbohydrates must be a number" })
+    .min(0, "Carbohydrates cannot be negative")
+    .max(500, "Carbohydrates must be 500g or less")
+    .optional(),
+  fat: z
+    .number({ error: "Fat must be a number" })
+    .min(0, "Fat cannot be negative")
+    .max(500, "Fat must be 500g or less")
+    .optional(),
+});
+
+export type CalorieEntryFormInput = z.infer<typeof calorieEntryFormSchema>;
+
+// ============================================================================
+// NUTRITION PLAN BUILDER FORM SCHEMAS
+// ============================================================================
+
+/**
+ * Zod schema for per-day macro targets in the NutritionPlanBuilder form.
+ * Validates PHI nutrition plan inputs before submission.
+ *
+ * Bounds mirror MACRO_LIMITS in NutritionPlanBuilder.tsx:
+ *   - calories: integer, 0–10 000 kcal
+ *   - protein / carbs / fats: 0–1 000 g
+ */
+export const nutritionDayTargetSchema = z.object({
+  calories: z
+    .number()
+    .int("Calories must be a whole number")
+    .min(0, "Calories cannot be negative")
+    .max(10000, "Calories must be 10,000 kcal or less"),
+  protein: z
+    .number()
+    .min(0, "Protein cannot be negative")
+    .max(1000, "Protein must be 1,000g or less"),
+  carbs: z
+    .number()
+    .min(0, "Carbohydrates cannot be negative")
+    .max(1000, "Carbohydrates must be 1,000g or less"),
+  fats: z
+    .number()
+    .min(0, "Fats cannot be negative")
+    .max(1000, "Fats must be 1,000g or less"),
+});
+
+export type NutritionDayTarget = z.infer<typeof nutritionDayTargetSchema>;
+
+/**
+ * Zod schema for NutritionPlanBuilder form-level fields.
+ * Validates customPrompt to enforce a max-length contract and mitigate
+ * prompt-injection risk (defence-in-depth alongside the textarea maxLength).
+ */
+export const nutritionPlanFormSchema = z.object({
+  customPrompt: z
+    .string()
+    .max(2000, "Custom prompt must be under 2000 characters")
+    .optional(),
+});
+
+export type NutritionPlanFormInput = z.infer<typeof nutritionPlanFormSchema>;
 
 export const createMockDailyNutritionLog = (
   overrides: Partial<DailyNutritionLogContract> = {},

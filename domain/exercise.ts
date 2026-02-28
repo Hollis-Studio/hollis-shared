@@ -264,22 +264,22 @@ export const exerciseSchema = baseDocumentSchema.extend({
   slug: z.string().optional(),
   aliases: z.array(z.string()).optional(),
   category: ExerciseCategorySchema,
-  movementPattern: MovementPatternSchema.optional(),
+  movementPattern: MovementPatternSchema.nullable().optional(),
   trackingType: TrackingTypeSchema.optional(),
   muscleGroups: z.array(z.string()).optional(),
-  primaryMuscle: z.string().optional(),
+  primaryMuscle: z.string().nullable().optional(),
   /** @deprecated Remove after 2026-09-01 — use `muscleGroups` instead. Kept for backward compatibility. */
   primaryMuscleGroups: z.array(MuscleGroupSchema).optional(),
   /** @deprecated Remove after 2026-09-01 — use `muscleGroups` instead. Not persisted in DB. Computed from muscleGroups. */
   secondaryMuscleGroups: z.array(MuscleGroupSchema).optional(),
   equipment: z.array(EquipmentTypeSchema),
-  difficulty: DifficultyLevelSchema.optional(),
+  difficulty: DifficultyLevelSchema.nullable().optional(),
   /** @deprecated No Prisma Exercise.description column. Always undefined. Will be removed or migrated after 2026-09-01. */
   description: z.string().max(2000).optional(),
   instructions: z.string().nullable().optional(),
   cues: z.array(z.string()).optional(),
-  videoUrl: z.string().url().optional(),
-  imageUrl: z.string().url().optional(),
+  videoUrl: z.string().url().nullable().optional(),
+  imageUrl: z.string().url().nullable().optional(),
   /** @deprecated Remove after 2026-09-01 — use `imageUrl` instead. */
   thumbnailUrl: z.string().url().optional(),
   /** @enrichment Computed from category; not persisted */
@@ -289,11 +289,11 @@ export const exerciseSchema = baseDocumentSchema.extend({
   /** @enrichment UI-computed; not persisted */
   isActive: z.boolean().optional(),
   tags: z.array(z.string()).optional(),
-  mergedIntoId: z.string().uuid().optional(),
-  createdBy: z.string().optional(),
+  mergedIntoId: z.string().uuid().nullable().optional(),
+  createdBy: z.string().nullable().optional(),
   metricDefinitionId: z.string().optional(),
-  defaultSets: z.number().int().optional(),
-  defaultReps: z.string().optional(),
+  defaultSets: z.number().int().nullable().optional(),
+  defaultReps: z.string().nullable().optional(),
 });
 
 export type ExerciseContract = z.infer<typeof exerciseSchema>;
@@ -310,27 +310,27 @@ export const exerciseLogSchema = baseDocumentSchema.extend({
   exerciseName: z.string().min(1).optional(),
   /** @deprecated Use workoutPlanId. Kept for backward compatibility. */
   workoutSessionId: z.string().uuid().optional(),
-  workoutPlanId: z.string().uuid().optional(),
+  workoutPlanId: z.string().uuid().nullable().optional(),
   /** @deprecated No Prisma ExerciseLog.performedAt column exists. Always undefined in API responses. Use `date` instead. Will be removed after 2026-09-01. */
   performedAt: isoTimestampSchema.optional(),
   date: isoDateSchema,
   setNumber: z.number().int().min(1).optional(),
   /** @enrichment Aggregate set count; not per-row */
   sets: z.number().int().min(1).optional(),
-  reps: z.number().int().min(0).optional(),
-  weight: z.number().min(0).optional(),
-  weightUnit: z.enum(["kg", "lbs"]).optional(),
-  duration: z.number().int().min(0).optional(),
-  distance: z.number().min(0).optional(),
-  rpe: z.number().int().min(1).max(10).optional(),
-  notes: z.string().max(1000).optional(),
+  reps: z.number().int().min(0).nullable().optional(),
+  weight: z.number().min(0).nullable().optional(),
+  weightUnit: z.enum(["kg", "lbs"]).nullable().optional(),
+  duration: z.number().int().min(0).nullable().optional(),
+  distance: z.number().min(0).nullable().optional(),
+  rpe: z.number().int().min(1).max(10).nullable().optional(),
+  notes: z.string().max(1000).nullable().optional(),
   /** @deprecated No Prisma ExerciseLog.tags column. Always undefined. Remove or add DB column before 2026-09-01. */
   tags: z.array(z.string()).optional(),
   metricDefinitionId: z.string().optional(),
   /** @computed Calculated from weight × reps × sets */
-  volume: z.number().optional(),
+  volume: z.number().nullable().optional(),
   /** @computed Estimated one-rep max */
-  estimated1RM: z.number().optional(),
+  estimated1RM: z.number().nullable().optional(),
 });
 
 export type ExerciseLogContract = z.infer<typeof exerciseLogSchema>;
@@ -348,6 +348,21 @@ export type CreateExercise = z.infer<typeof createExerciseSchema>;
 
 export const updateExerciseSchema = createExerciseSchema.partial();
 export type UpdateExercise = z.infer<typeof updateExerciseSchema>;
+
+/**
+ * Zod schema for the ExerciseModal create/edit form.
+ * Validates the critical user-facing fields before calling the exercise service.
+ * Optional enum fields accept an empty string to represent "not selected".
+ */
+export const exerciseFormSchema = z.object({
+  name: z.string().trim().min(1, "Exercise name is required").max(200),
+  category: ExerciseCategorySchema,
+  primaryMuscle: z.string().min(1, "Primary muscle is required"),
+  muscleGroups: z.array(z.string()).min(1, "Select at least one muscle group"),
+  movementPattern: z.union([MovementPatternSchema, z.literal("")]).optional(),
+  difficulty: z.union([DifficultyLevelSchema, z.literal("")]).optional(),
+});
+export type ExerciseFormInput = z.infer<typeof exerciseFormSchema>;
 
 export const createExerciseLogSchema = exerciseLogSchema.omit({
   id: true,

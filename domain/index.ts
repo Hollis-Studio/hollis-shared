@@ -170,8 +170,7 @@ export {
     DailySummarySchema,
     HealthImprovementPointSchema,
     HealthMetricGoalSchema,
-    HealthMetricGoalUpsertSchema,
-    HealthProgressImprovementSchema,
+    HealthMetricGoalUpsertSchema, HealthProgressImprovementSchema,
     HealthProgressOverviewSchema,
     HealthProgressSnapshotSchema,
     MetricAggregateSchema,
@@ -183,11 +182,8 @@ export {
     RangeDerivationStepSchema,
     WearablesDataSchema,
     calculateInRangeScore,
-    getDefaultReferenceRange,
-    type ConcernArea,
-    type DailySummaryContract,
-    type HealthImprovementPoint,
-    type HealthMetricGoalContract,
+    getDefaultReferenceRange, healthGoalsListResponseSchema, type ConcernArea,
+    type DailySummaryContract, type HealthGoalsListResponse, type HealthImprovementPoint, type HealthMetricGoalContract,
     type HealthMetricGoalUpsert,
     type HealthProgressImprovement,
     type HealthProgressOverview,
@@ -207,6 +203,9 @@ export * from "./exercise";
 
 // Daily Metrics domain - TDEE, recovery, training load
 export * from "./daily-metrics";
+
+// Sleep domain - sleep entry form validation schemas
+export * from "./sleep";
 
 // Journal domain - journal entries and AI assessments
 export * from "./journal";

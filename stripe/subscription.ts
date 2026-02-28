@@ -42,6 +42,106 @@ export const SUBSCRIPTION_STATUS = {
 } as const satisfies Record<SubscriptionStatus, SubscriptionStatus>;
 
 // ============================================================================
+// SUBSCRIPTION EVENT TYPE
+// ============================================================================
+
+/**
+ * All known SubscriptionEvent.eventType values.
+ *
+ * `SubscriptionEvent.eventType` is a plain String column in Prisma (not a DB
+ * enum), so this constant object acts as the single source of truth for every
+ * value that may be written to that column. All server code MUST use these
+ * constants instead of raw string literals.
+ *
+ * Naming convention: SCREAMING_SNAKE_CASE key → snake_case value (matching
+ * the legacy DB values so no migration is required).
+ */
+export const SUBSCRIPTION_EVENT_TYPE = {
+  // ── Lifecycle ──────────────────────────────────────────────────────────────
+  /** Subscription record first created (admin-initiated or checkout). */
+  CREATED: "created",
+  /** Subscription reactivated after a previous cancellation. */
+  REACTIVATED: "reactivated",
+  /** Subscription soft-canceled; remains active until period end. */
+  CANCELED: "canceled",
+  /** Subscription hard-terminated immediately (e.g. delinquency, fraud). */
+  TERMINATED: "terminated",
+  /** Subscription terminated because the grace period expired. */
+  TERMINATED_GRACE_PERIOD_EXPIRED: "terminated_grace_period_expired",
+
+  // ── Trial ──────────────────────────────────────────────────────────────────
+  /** Trial period ended and first real payment collected. */
+  TRIAL_CONVERTED: "trial_converted",
+
+  // ── Billing ────────────────────────────────────────────────────────────────
+  /** Successful recurring invoice paid; subscription renewed. */
+  RENEWED: "renewed",
+  /** Invoice payment failed. */
+  PAYMENT_FAILED: "payment_failed",
+  /** Asynchronous payment method failed. */
+  ASYNC_PAYMENT_FAILED: "async_payment_failed",
+  /** Invoice voided (post session-reset path). */
+  INVOICE_VOIDED_POST_RESET: "invoice_voided_post_reset",
+  /** Invoice voided (standard path). */
+  INVOICE_VOIDED: "invoice_voided",
+  /** Charge refunded (post session-reset path). */
+  REFUND_POST_RESET: "refund_post_reset",
+  /** Charge refunded (standard path). */
+  REFUNDED: "refunded",
+
+  // ── Dispute ────────────────────────────────────────────────────────────────
+  /** Stripe dispute (chargeback) opened. */
+  DISPUTE_CREATED: "dispute_created",
+  /** Stripe dispute (chargeback) resolved. */
+  DISPUTE_RESOLVED: "dispute_resolved",
+
+  // ── Early termination ──────────────────────────────────────────────────────
+  /** Early-termination fee calculated and persisted for the subscriber. */
+  EARLY_TERMINATION_QUOTED: "early_termination_quoted",
+
+  // ── Pause / resume ────────────────────────────────────────────────────────
+  /** Subscription paused. */
+  PAUSED: "paused",
+  /** Paused subscription resumed (early or on schedule). */
+  RESUMED: "resumed",
+  /** A pending tier change was cleared because the subscription was paused. */
+  SCHEDULED_TIER_CHANGE_CLEARED: "scheduled_tier_change_cleared",
+
+  // ── Tier changes ──────────────────────────────────────────────────────────
+  /** Tier upgraded immediately. */
+  TIER_UPGRADED: "tier_upgraded",
+  /** Tier downgrade scheduled for next billing boundary. */
+  TIER_DOWNGRADE_SCHEDULED: "tier_downgrade_scheduled",
+  /** Tier change (scheduled downgrade) cancelled. */
+  TIER_CHANGE_CANCELLED: "tier_change_cancelled",
+  /** Tier upgraded while subscription is in a grace period. */
+  UPGRADE_FROM_GRACE_PERIOD: "upgrade_from_grace_period",
+  /**
+   * Tier changed (used by the subscriptionUpdated webhook for generic
+   * tier-change events detected via Stripe metadata comparison).
+   */
+  TIER_CHANGED: "tier_changed",
+
+  // ── Status changes ────────────────────────────────────────────────────────
+  /** Generic subscription status change detected by the webhook handler. */
+  STATUS_CHANGED: "status_changed",
+  /** Cancellation scheduled (cancel_at_period_end set via Stripe). */
+  CANCEL_SCHEDULED: "cancel_scheduled",
+  /** Pending cancellation reversed (cancel_at_period_end cleared). */
+  CANCEL_REVERSED: "cancel_reversed",
+
+  // ── Delinquency / enforcement ─────────────────────────────────────────────
+  /** User marked delinquent by the delinquency tracking job. */
+  MARKED_DELINQUENT: "marked_delinquent",
+  /** Grace period warning notification sent to user. */
+  GRACE_PERIOD_WARNING_SENT: "grace_period_warning_sent",
+} as const;
+
+/** Union type of all valid SubscriptionEvent.eventType values. */
+export type SubscriptionEventType =
+  (typeof SUBSCRIPTION_EVENT_TYPE)[keyof typeof SUBSCRIPTION_EVENT_TYPE];
+
+// ============================================================================
 // STRIPE SUBSCRIPTION SCHEDULE STATUS (external Stripe values)
 // ============================================================================
 
@@ -87,9 +187,9 @@ export const CONTRACT_DURATION_MONTHS: Record<ContractDuration, number> = {
 
 /** Map duration to discount percentage */
 export const CONTRACT_DURATION_DISCOUNTS: Record<ContractDuration, number> = {
-  MONTH_4: 0,
-  MONTH_8: 5,
-  MONTH_12: 10,
+  MONTH_4: 5,
+  MONTH_8: 10,
+  MONTH_12: 15,
 };
 
 // ============================================================================
@@ -111,8 +211,8 @@ export const SubscriptionSchema = z.object({
   userId: z.string().min(1),
   stripeSubscriptionId: z.string(),
   stripeCustomerId: z.string(),
-  /** @enrichment from Stripe */
-  stripePriceId: z.string().nullable().optional(),
+  /** Stripe price ID for this subscription plan. Non-nullable in DB. */
+  stripePriceId: z.string(),
   tier: z.enum(USER_TIERS),
   status: SubscriptionStatusSchema,
   contractDuration: ContractDurationSchema,
@@ -142,6 +242,9 @@ export const SubscriptionSchema = z.object({
   scheduledTierChange: z.enum(USER_TIERS).nullable(),
   tierChangeEffectiveDate: z.string().nullable(),
   signedContractKey: z.string().nullable(),
+  failedPaymentCount: z.number().int().default(0),
+  cancelReason: z.string().nullable().optional(),
+  earlyTerminationFee: z.number().int().nullable().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

@@ -49,11 +49,11 @@ export const dailyMetricsSchema = baseDocumentSchema.extend({
   tdeeConfidence: z.number().min(0).max(1).optional().nullable(),
   recoveryScore: z.number().int().min(0).max(100).nullable().optional(),
   trainingLoad: z.number().int().min(0).nullable().optional(),
-  strainDelta: z.number().int().optional(),
-  sleepScore: z.number().int().min(0).max(100).optional(),
-  readinessScore: z.number().int().min(0).max(100).optional(),
-  caloricBalance: z.number().int().optional(),
-  acuteChronicRatio: z.number().min(0).optional(),
+  strainDelta: z.number().int().nullable().optional(),
+  sleepScore: z.number().int().min(0).max(100).nullable().optional(),
+  readinessScore: z.number().int().min(0).max(100).nullable().optional(),
+  caloricBalance: z.number().int().nullable().optional(),
+  acuteChronicRatio: z.number().min(0).nullable().optional(),
   notes: z.array(z.string()).optional(),
   recommendations: z.array(z.string()).optional(),
 });
@@ -66,19 +66,14 @@ export type DailyMetricsContract = z.infer<typeof dailyMetricsSchema>;
 export const dailyMetricsListPayloadSchema =
   createPaginatedListSchema(dailyMetricsSchema);
 
-/**
- * Backward-compatible daily metrics list payload:
- * - canonical paginated payload: { data, pagination }
- * - legacy array payload: DailyMetrics[]
- */
-export const dailyMetricsListResponseSchema = z.union([
-  dailyMetricsListPayloadSchema,
-  z.array(dailyMetricsSchema),
-]);
-
 export type DailyMetricsListPayload = z.infer<
   typeof dailyMetricsListPayloadSchema
 >;
+
+/**
+ * Canonical paginated daily metrics list response: { data, pagination }
+ */
+export const dailyMetricsListResponseSchema = dailyMetricsListPayloadSchema;
 export type DailyMetricsListResponse = z.infer<
   typeof dailyMetricsListResponseSchema
 >;

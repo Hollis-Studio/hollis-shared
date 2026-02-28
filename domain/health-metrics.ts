@@ -15,6 +15,7 @@
 import { z } from "zod";
 import { BiometricSourceSchema } from "./clinical";
 import { dailyMetricsSchema } from "./daily-metrics";
+import { createPaginatedListSchema } from "./pagination";
 import {
     DataQualityLevelSchema,
     HealthMetricKeySchema,
@@ -342,6 +343,17 @@ export const HealthMetricGoalUpsertSchema = z.object({
 
 export type HealthMetricGoalUpsert = z.infer<
   typeof HealthMetricGoalUpsertSchema
+>;
+
+/**
+ * Canonical paginated health goals list payload: { data, pagination }
+ */
+export const healthGoalsListResponseSchema = createPaginatedListSchema(
+  HealthMetricGoalSchema,
+);
+
+export type HealthGoalsListResponse = z.infer<
+  typeof healthGoalsListResponseSchema
 >;
 
 // ============================================================================

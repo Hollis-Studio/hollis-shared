@@ -258,12 +258,12 @@ export async function checkPasswordBreached(
     } finally {
       clearTimeout(timeoutId);
     }
-  } catch (error) {
+  } catch (err) {
     // Network error or timeout - fail open but log
-    if ((error as Error).name === "AbortError") {
+    if ((err as Error).name === "AbortError") {
       console.warn("[Password] HIBP check timed out");
     } else {
-      console.warn("[Password] HIBP check failed:", error);
+      console.warn("[Password] HIBP check failed", { err });
     }
     return { breached: false, count: 0 };
   }
@@ -404,3 +404,25 @@ export const resetPasswordRequestSchema = z.object({
  * TypeScript type for reset password request
  */
 export type ResetPasswordRequest = z.infer<typeof resetPasswordRequestSchema>;
+
+// ============================================================================
+// PASSWORD RESET RESPONSE SCHEMA
+// ============================================================================
+
+/**
+ * Schema for the password reset success response payload.
+ *
+ * The server sends `{ success: true, data: { message: string } }` via sendSuccess().
+ * After envelope unwrapping by the API clients, consumers receive `{ message: string }`.
+ *
+ * Used by both mobile (src/services/auth.http.ts) and
+ * web-admin (web-admin/services/webAuthService.ts) to validate the response.
+ */
+export const passwordResetResponseSchema = z.object({
+  message: z.string(),
+});
+
+/**
+ * TypeScript type for the unwrapped password reset response.
+ */
+export type PasswordResetResponse = z.infer<typeof passwordResetResponseSchema>;

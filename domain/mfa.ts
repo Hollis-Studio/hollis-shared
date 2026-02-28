@@ -218,6 +218,28 @@ export type MfaLoginPendingResponse = z.infer<
 >;
 
 /**
+ * Response returned by the MFA login verify endpoint on success.
+ *
+ * The server returns a slim session shape — no `profile` or `provider` wrapper
+ * is present because the MFA verify step issues a fresh token, not a full
+ * auth session. Callers must rebuild the full session from the `user` sub-object.
+ *
+ * Server route: POST /auth/mfa/login/verify
+ */
+export const mfaLoginVerifyResponseSchema = z.object({
+  expiresIn: z.number(),
+  expiresAt: z.string(),
+  user: z.object({
+    uid: z.string(),
+    email: z.string(),
+    role: z.string(),
+  }),
+});
+export type MfaLoginVerifyResponse = z.infer<
+  typeof mfaLoginVerifyResponseSchema
+>;
+
+/**
  * Step-up auth request
  */
 export const stepUpAuthRequestSchema = z.object({
@@ -266,10 +288,13 @@ export type AuthSessionProfile = z.infer<typeof authSessionProfileSchema>;
 
 /**
  * Response when backup codes are generated or regenerated for a TOTP credential.
+ *
+ * `credentialId` is present on admin MFA reset responses but absent on the
+ * /auth/mfa/backup-codes endpoint which only returns `{ backupCodes }`.
  */
 export const backupCodesResponseSchema = z.object({
   backupCodes: z.array(z.string()),
-  credentialId: z.string().uuid(),
+  credentialId: z.string().uuid().optional(),
 });
 export type BackupCodesResponse = z.infer<typeof backupCodesResponseSchema>;
 

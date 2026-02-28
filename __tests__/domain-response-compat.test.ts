@@ -6,7 +6,7 @@ import {
     normalizeGoalDataSource,
 } from "../domain";
 
-describe("Domain response compatibility contracts", () => {
+describe("Domain response contracts — canonical paginated shape", () => {
   const now = new Date().toISOString();
 
   const biometric = {
@@ -32,24 +32,27 @@ describe("Domain response compatibility contracts", () => {
     endTime: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
     status: "SCHEDULED",
     type: "CONSULTATION",
+    duration: 30,
     createdAt: now,
     updatedAt: now,
   } as const;
 
-  it("accepts canonical and legacy biometric list payloads", () => {
+  it("accepts canonical paginated biometric list payload", () => {
     expect(
       biometricListResponseSchema.safeParse({
         data: [biometric],
         pagination: { offset: 0, limit: 50, total: 1 },
       }).success,
     ).toBe(true);
+  });
 
+  it("rejects raw array biometric payload (unions removed)", () => {
     expect(biometricListResponseSchema.safeParse([biometric]).success).toBe(
-      true,
+      false,
     );
   });
 
-  it("accepts canonical and legacy daily metrics payloads", () => {
+  it("accepts canonical paginated daily metrics payload", () => {
     const dailyMetric = createMockDailyMetrics({ userId: "user-1" });
 
     expect(
@@ -58,20 +61,26 @@ describe("Domain response compatibility contracts", () => {
         pagination: { offset: 0, limit: 50, total: 1 },
       }).success,
     ).toBe(true);
+  });
+
+  it("rejects raw array daily metrics payload (unions removed)", () => {
+    const dailyMetric = createMockDailyMetrics({ userId: "user-1" });
 
     expect(
       dailyMetricsListResponseSchema.safeParse([dailyMetric]).success,
-    ).toBe(true);
+    ).toBe(false);
   });
 
-  it("accepts canonical, legacy-object, and legacy-array appointments payloads", () => {
+  it("accepts canonical paginated appointments payload", () => {
     expect(
       appointmentsListResponseSchema.safeParse({
         data: [appointment],
         pagination: { offset: 0, limit: 50, total: 1 },
       }).success,
     ).toBe(true);
+  });
 
+  it("rejects legacy-object and raw array appointment payloads (unions removed)", () => {
     expect(
       appointmentsListResponseSchema.safeParse({
         appointments: [appointment],
@@ -79,11 +88,11 @@ describe("Domain response compatibility contracts", () => {
         limit: 50,
         offset: 0,
       }).success,
-    ).toBe(true);
+    ).toBe(false);
 
     expect(
       appointmentsListResponseSchema.safeParse([appointment]).success,
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it("normalizes legacy training dataSource values", () => {

@@ -19,6 +19,8 @@ export const ORDER_PAYMENT_STATUSES = [
   "paid",
   "unpaid",
   "no_payment_required",
+  "refunded",
+  "partially_refunded",
 ] as const;
 
 export const OrderPaymentStatusSchema = z.enum(ORDER_PAYMENT_STATUSES);
@@ -28,6 +30,8 @@ export const ORDER_PAYMENT_STATUS_LABELS: Record<OrderPaymentStatus, string> = {
   paid: "Paid",
   unpaid: "Unpaid",
   no_payment_required: "No Payment Required",
+  refunded: "Refunded",
+  partially_refunded: "Partially Refunded",
 };
 
 // ============================================================================

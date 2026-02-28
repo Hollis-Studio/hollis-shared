@@ -56,6 +56,7 @@ export const PHI_RESOURCES = [
   "ai_context",
   "training_strategy",
   "exercise_logs",
+  "billing_dispute",
 ] as const;
 export const PhiResourceSchema = z.enum(PHI_RESOURCES);
 export type PhiResource = z.infer<typeof PhiResourceSchema>;
@@ -101,6 +102,7 @@ export const PHI_RESOURCE = {
   AI_CONTEXT: "ai_context",
   TRAINING_STRATEGY: "training_strategy",
   EXERCISE_LOGS: "exercise_logs",
+  BILLING_DISPUTE: "billing_dispute",
 } as const;
 
 // ============================================================================

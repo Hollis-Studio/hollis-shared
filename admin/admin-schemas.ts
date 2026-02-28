@@ -29,11 +29,23 @@ import {
     normalizeGoalDataSource,
 } from "../domain";
 import {
+    AdminTaskPrioritySchema,
+    AdminTaskTypeSchema,
+} from "../domain/admin-tasks";
+import { createPaginatedListSchema } from "../domain/pagination";
+import {
+    InjuryRecoveryStatusSchema,
+    LimitationSeveritySchema,
+    MedicalConditionStatusSchema,
+} from "../domain/clinical";
+import {
     LabMappingStatusSchema,
     LabMetricCategorySchema,
     LabMetricDirectionalitySchema,
     MetricApprovalStatusSchema,
 } from "../domain/labs";
+import { VolumeLevelSchema } from "../primitives/volume-level";
+import { heightCmSchema, weightKgSchema } from "../schemas";
 
 // ============================================================================
 // ADMIN-SPECIFIC ENUMS
@@ -52,36 +64,27 @@ export type AdminComplianceStatus = z.infer<typeof adminComplianceStatusSchema>;
 
 /**
  * Volume level schema for training phases.
+ * @deprecated Use `VolumeLevelSchema` (PascalCase) from `../primitives/volume-level` directly.
  */
-export const volumeLevelSchema = z.enum(["low", "moderate", "high"]); // zod-manual: type exported from primitives/volume-level.ts
+export const volumeLevelSchema = VolumeLevelSchema;
 
 /**
  * Limitation severity schema.
+ * @deprecated Use `LimitationSeveritySchema` (PascalCase) from `../domain/clinical` directly.
  */
-export const limitationSeveritySchema = z.enum(["mild", "moderate", "severe"]); // zod-manual: type exported from domain/clinical.ts
+export const limitationSeveritySchema = LimitationSeveritySchema;
 
 /**
  * Injury recovery status schema.
+ * @deprecated Use `InjuryRecoveryStatusSchema` (PascalCase) from `../domain/clinical` directly.
  */
-// zod-manual: type exported from domain/clinical.ts
-export const injuryRecoveryStatusSchema = z.enum([
-  "active",
-  "recovering",
-  "healed",
-  "chronic",
-]);
-// Type exported from domain/clinical.ts — do not re-export here to avoid TS2308
+export const injuryRecoveryStatusSchema = InjuryRecoveryStatusSchema;
 
 /**
  * Medical condition status schema.
+ * @deprecated Use `MedicalConditionStatusSchema` (PascalCase) from `../domain/clinical` directly.
  */
-// zod-manual: type exported from domain/clinical.ts
-export const medicalConditionStatusSchema = z.enum([
-  "active",
-  "managed",
-  "resolved",
-  "monitoring",
-]);
+export const medicalConditionStatusSchema = MedicalConditionStatusSchema;
 
 // ============================================================================
 // PATIENT MANAGEMENT SCHEMAS
@@ -190,8 +193,8 @@ export const patientProfileUpdatePayloadSchema = z.object({
   pregnancyDueDate: isoDateSchema.nullable().optional(),
   occupation: z.string().max(200).nullable().optional(),
   bio: z.string().max(5000).nullable().optional(),
-  heightCm: z.number().positive().max(300).optional(),
-  weightKg: z.number().positive().max(700).optional(),
+  heightCm: heightCmSchema.optional(),
+  weightKg: weightKgSchema.optional(),
   activityLevel: ActivityLevelSchema.nullable().optional(),
   experienceLevel: FitnessExperienceSchema.nullable().optional(),
   primaryGoal: PrimaryGoalSchema.nullable().optional(),
@@ -306,8 +309,8 @@ export const prefilledProfileSchema = z.object({
   firstName: z.string().max(100).optional(),
   lastName: z.string().max(100).optional(),
   phone: z.string().max(50).optional(),
-  heightCm: z.number().positive().max(300).optional(),
-  weightKg: z.number().positive().max(700).optional(),
+  heightCm: heightCmSchema.optional(),
+  weightKg: weightKgSchema.optional(),
   dateOfBirth: isoDateSchema.optional(),
   biologicalSex: BiologicalSexSchema.optional(),
   primaryGoal: z.string().max(1000).optional(),
@@ -372,7 +375,7 @@ export const createPhaseInputSchema = z.object({
   isActive: z.boolean(),
   isCompleted: z.boolean(),
 });
-// Type exported from admin-types.ts — do not re-export here to avoid TS2308
+export type CreatePhaseInputFromSchema = z.infer<typeof createPhaseInputSchema>;
 
 /**
  * Create goal input schema.
@@ -399,7 +402,7 @@ export const createGoalInputSchema = z.object({
     })
     .optional(),
 });
-// Type exported from admin-types.ts — do not re-export here to avoid TS2308
+export type CreateGoalInputFromSchema = z.infer<typeof createGoalInputSchema>;
 
 /**
  * Update goal input schema.
@@ -412,7 +415,7 @@ export const updateGoalInputSchema = z.object({
   /** Optional clinician notes about this metric update. */
   notes: z.string().max(2000).optional(),
 });
-// Type exported from admin-types.ts — do not re-export here to avoid TS2308
+export type UpdateGoalInputFromSchema = z.infer<typeof updateGoalInputSchema>;
 
 /**
  * Create strategy input schema.
@@ -428,7 +431,9 @@ export const createStrategyInputSchema = z.object({
   goals: z.array(createGoalInputSchema),
   phases: z.array(createPhaseInputSchema).optional(),
 });
-// Type exported from admin-types.ts — do not re-export here to avoid TS2308
+export type CreateStrategyInputFromSchema = z.infer<
+  typeof createStrategyInputSchema
+>;
 
 /**
  * Fetch value request schema.
@@ -516,8 +521,9 @@ export const workoutPlanGenerationParamsSchema = z.object({
   customPrompt: z.string().max(5000).optional(),
   overwriteMode: z.enum(["overwrite", "fillEmpty"]).optional(),
 });
-
-// Type exported from admin-types.ts — do not re-export here to avoid TS2308
+export type WorkoutPlanGenerationInput = z.infer<
+  typeof workoutPlanGenerationParamsSchema
+>;
 
 // ============================================================================
 // NUTRITION GENERATION SCHEMAS
@@ -866,6 +872,8 @@ export const suggestedNewMetricSchema = z.object({
   suggestedAliases: z.array(z.string()),
   canonicalUnit: z.string(),
   directionality: LabMetricDirectionalitySchema,
+  /** User-facing description of what this metric measures and why it matters for health */
+  description: z.string().optional(),
   confidence: z.number().min(0).max(1),
   reasoning: z.string().optional(),
   rawAnalyteName: z.string(),
@@ -911,4 +919,108 @@ export const metricGovernanceResultSchema = z.object({
 });
 export type MetricGovernanceResult = z.infer<
   typeof metricGovernanceResultSchema
+>;
+
+// ============================================================================
+// TRAINER SUMMARY SCHEMA
+// ============================================================================
+
+/**
+ * Trainer summary schema - summary view of a fitness trainer.
+ */
+export const trainerSummarySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  role: UserRoleSchema,
+});
+export type TrainerSummaryFromSchema = z.infer<typeof trainerSummarySchema>;
+
+// ============================================================================
+// LAB METRIC SEARCH RESPONSE SCHEMA
+// ============================================================================
+
+/**
+ * Response schema for lab metric semantic search endpoint.
+ */
+export const labMetricSearchResponseSchema = z.object({
+  results: z.array(labMetricDefinitionSummarySchema),
+});
+export type LabMetricSearchResponseFromSchema = z.infer<
+  typeof labMetricSearchResponseSchema
+>;
+
+// ============================================================================
+// PENDING METRICS RESPONSE SCHEMA
+// ============================================================================
+
+/**
+ * Response schema for the pending metrics governance endpoint.
+ */
+export const pendingMetricsResponseSchema = z.object({
+  metrics: z.array(pendingMetricReviewSchema),
+  total: z.number().int().min(0),
+});
+// PendingMetricsResponse type is defined as an interface in admin/labs.ts
+
+// ============================================================================
+// ADMIN TASK SCHEMAS
+// ============================================================================
+
+/**
+ * Admin task schema — mirrors the AdminTask interface in tasksService.ts.
+ */
+export const adminTaskSchema = z.object({
+  id: z.string(),
+  taskType: AdminTaskTypeSchema,
+  title: z.string(),
+  description: z.string().nullable().optional(),
+  priority: AdminTaskPrioritySchema,
+  status: z.string(),
+  assignedTo: z.string().nullable().optional(),
+  resolvedAt: z.string().nullable().optional(),
+  resolvedBy: z.string().nullable().optional(),
+  resolution: z.string().nullable().optional(),
+  metadata: z.record(z.string(), z.unknown()).nullable().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  userId: z.string().nullable().optional(),
+  subscriptionId: z.string().nullable().optional(),
+  orderId: z.string().nullable().optional(),
+  user: z
+    .object({
+      id: z.string(),
+      email: z.string(),
+      firstName: z.string().nullable().optional(),
+      lastName: z.string().nullable().optional(),
+    })
+    .nullable()
+    .optional(),
+  subscription: z
+    .object({
+      id: z.string(),
+      tier: z.string(),
+      status: z.string(),
+    })
+    .nullable()
+    .optional(),
+  order: z
+    .object({
+      id: z.string(),
+      totalInCents: z.number().int(),
+      fulfillmentStatus: z.string(),
+    })
+    .nullable()
+    .optional(),
+});
+export type AdminTaskFromSchema = z.infer<typeof adminTaskSchema>;
+
+/**
+ * Admin task list response schema — canonical paginated shape.
+ * Wire format: { data: AdminTask[], pagination: { limit, total, hasMore, ... } }
+ * The tasksService remaps this to { tasks, total } for consumers.
+ */
+export const adminTaskListResponseSchema =
+  createPaginatedListSchema(adminTaskSchema);
+export type AdminTaskListResponseFromSchema = z.infer<
+  typeof adminTaskListResponseSchema
 >;

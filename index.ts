@@ -60,9 +60,11 @@ export {
     ZXCVBN_SCORE_LABELS,
     checkPasswordBreached,
     passwordLengthSchema,
+    passwordResetResponseSchema,
     passwordSchema,
     validatePassword,
     validatePasswordStrength,
+    type PasswordResetResponse,
     type PasswordValidationResult
 } from "./password";
 

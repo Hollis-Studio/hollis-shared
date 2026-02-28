@@ -63,8 +63,8 @@ export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
  * Default pagination values used across the application.
  */
 export const PAGINATION = {
-  DEFAULT_PAGE_SIZE: 20,
-  MAX_PAGE_SIZE: 100,
+  DEFAULT_PAGE_SIZE: 50,
+  MAX_PAGE_SIZE: 200,
   DEFAULT_PAGE: 1,
 } as const;
 
@@ -133,8 +133,10 @@ export const HTTP_STATUS = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   CONFLICT: 409,
+  GONE: 410,
   UNPROCESSABLE_ENTITY: 422,
   TOO_MANY_REQUESTS: 429,
+  PAYLOAD_TOO_LARGE: 413,
   INTERNAL_SERVER_ERROR: 500,
   SERVICE_UNAVAILABLE: 503,
 } as const;
@@ -159,6 +161,7 @@ export const UNIT_CONVERSION = {
   // Length (base: cm)
   CM_PER_INCH: 2.54,
   INCHES_PER_FOOT: 12,
+  CM_PER_FOOT: 30.48, // CM_PER_INCH * INCHES_PER_FOOT = 2.54 * 12
 
   // Food weight (base: g)
   OZ_PER_GRAM: 0.035274,

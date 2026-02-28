@@ -186,12 +186,29 @@ export function isGoalDataSource(value: string): value is GoalDataSource {
 }
 
 /**
- * Validate canonical goal data-source values.
+ * Legacy value mapping for goal data sources persisted before the canonical
+ * GOAL_DATA_SOURCES enum was established. Maps old string values to their
+ * canonical equivalents before Zod validation.
+ */
+const LEGACY_GOAL_DATA_SOURCE_MAP: Record<string, GoalDataSource> = {
+  measurement: "biometric",
+};
+
+/**
+ * Normalize a goal data-source value, mapping legacy values to their canonical
+ * equivalents. Throws a ZodError for unrecognized values.
+ *
+ * Legacy mappings:
+ * - "measurement" → "biometric"
  */
 export function normalizeGoalDataSource(
   value: string | null | undefined,
 ): GoalDataSource {
-  return GoalDataSourceSchema.parse(value);
+  const normalized =
+    value != null && value in LEGACY_GOAL_DATA_SOURCE_MAP
+      ? LEGACY_GOAL_DATA_SOURCE_MAP[value]
+      : value;
+  return GoalDataSourceSchema.parse(normalized);
 }
 
 // ============================================================================

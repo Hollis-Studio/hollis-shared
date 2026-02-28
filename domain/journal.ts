@@ -55,6 +55,28 @@ export const JOURNAL_ENERGY_LABELS: Record<JournalEnergy, string> = {
 };
 
 // ============================================================================
+// DAILY CHECK-IN FORM
+// ============================================================================
+
+/** Canonical allowed values for the plan-adherence UI button group. */
+export const PLAN_ADHERENCE_VALUES = ["Yes", "Mostly", "No"] as const;
+export const PlanAdherenceSchema = z.enum(PLAN_ADHERENCE_VALUES);
+/** UI-facing plan adherence answer (maps to numeric 1-3 before persistence). */
+export type PlanAdherence = z.infer<typeof PlanAdherenceSchema>;
+
+/**
+ * Zod schema for the daily check-in form before any contract mapping.
+ * Validated in the feature layer (useDailyCheckIn) on submit.
+ */
+export const dailyCheckInFormSchema = z.object({
+  planAdherence: PlanAdherenceSchema,
+  energyLevel: z.number().int().min(1).max(5),
+  /** Optional free-text notes. Capped at 2000 chars to prevent runaway PHI storage. */
+  notes: z.string().max(2000).optional(),
+});
+export type DailyCheckInFormInput = z.infer<typeof dailyCheckInFormSchema>;
+
+// ============================================================================
 // JOURNAL AI ASSESSMENT CONTRACT
 // ============================================================================
 
@@ -79,17 +101,45 @@ export const journalEntrySchema = baseDocumentSchema.extend({
   userId: z.string(),
   entryDate: isoDateSchema,
   content: z.string().min(1),
-  mood: JournalMoodSchema.optional(),
-  energy: JournalEnergySchema.optional(),
-  stressLevel: z.number().int().min(1).max(10).optional(),
-  planAdherence: z.number().int().min(1).max(3).optional(),
-  motivation: z.number().int().min(1).max(10).optional(),
-  tags: z.array(z.string()).optional(),
-  aiAssessment: journalAIAssessmentSchema.optional(),
-  attachments: z.array(z.string()).optional(),
+  mood: JournalMoodSchema.nullable().optional(),
+  energy: JournalEnergySchema.nullable().optional(),
+  stressLevel: z.number().int().min(1).max(10).nullable().optional(),
+  planAdherence: z.number().int().min(1).max(3).nullable().optional(),
+  motivation: z.number().int().min(1).max(10).nullable().optional(),
+  tags: z.array(z.string()).nullable().optional(),
+  aiAssessment: journalAIAssessmentSchema.nullable().optional(),
+  attachments: z.array(z.string().url()).nullable().optional(),
 });
 
 export type JournalEntryContract = z.infer<typeof journalEntrySchema>;
+
+// ============================================================================
+// JOURNAL ENTRY FORM INPUT SCHEMA
+// ============================================================================
+
+/**
+ * Client-side form validation schema for journal entry input.
+ * Slider values (mood, energy, stress, motivation) are raw 1–10 integers;
+ * they are mapped to domain enum values before submission.
+ * Bounds match server-side validation in server/src/validation/journal.ts.
+ */
+export const journalEntryFormSchema = z.object({
+  content: z
+    .string()
+    .trim()
+    .min(1, "Journal entry cannot be empty")
+    .max(10000, "Journal entry is too long (max 10,000 characters)"),
+  mood: z.number().int().min(1).max(10).optional(),
+  energy: z.number().int().min(1).max(10).optional(),
+  stress: z.number().int().min(1).max(10).optional(),
+  motivation: z.number().int().min(1).max(10).optional(),
+  tags: z
+    .array(z.string().trim().max(50, "Each tag must be 50 characters or less"))
+    .max(20, "Too many tags (max 20)")
+    .optional(),
+});
+
+export type JournalEntryFormInput = z.infer<typeof journalEntryFormSchema>;
 
 // ============================================================================
 // MOCK FACTORIES

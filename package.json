@@ -1,4 +1,5 @@
 {
+  "_comment_BUILD_001": "DEFERRED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Deferred — adding package.json 'exports' entries for all deep sub-paths (e.g. domain/user, domain/labs) requires coordinating 155+ import sites across the monorepo; no user-facing impact in current state. If revisited: Add explicit 'exports' entries mapping every deep sub-path, then update all deep imports to use package-root or mapped paths. Reviewed: 2026-02-27 (product team lead)",
   "name": "@hollis/contracts",
   "version": "1.0.0",
   "private": true,

@@ -87,10 +87,10 @@ export const workoutPlanSchema = baseDocumentSchema.extend({
   userId: z.string(),
   date: isoDateSchema, // ISO Date YYYY-MM-DD
   title: z.string(),
-  description: z.string().optional(),
+  description: z.string().nullable().optional(),
   blocks: z.array(workoutSectionSchema),
   isCompleted: z.boolean().default(false),
-  completedAt: z.string().optional(),
+  completedAt: z.string().nullable().optional(),
 });
 
 export type WorkoutPlanContract = z.infer<typeof workoutPlanSchema>;

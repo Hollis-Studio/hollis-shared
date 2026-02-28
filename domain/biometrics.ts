@@ -22,10 +22,10 @@ export const BiometricEntryContractSchema = z.object({
   id: z.string(),
   userId: z.string(),
   date: z.string(),
-  /** Display key alias (derived from metricDefinition.code). */
+  /** @computed Derived from metricDefinition.code at serialisation time. Not stored as a DB column. */
   key: z.string().min(1),
   metricDefinitionId: z.string(),
-  value: z.number().min(0).max(100000),
+  value: z.number().min(0),
   unit: z.string().max(50),
   source: BiometricSourceSchema,
   isVerified: z.boolean(),
@@ -46,7 +46,7 @@ export const biometricEntrySchema = baseDocumentSchema.extend({
   /** Display key alias (derived from metricDefinition.code). */
   key: z.string().min(1),
   metricDefinitionId: z.string().min(1),
-  value: z.number().min(0).max(100000),
+  value: z.number().min(0),
   unit: z.string().min(1).max(50),
   source: BiometricSourceSchema,
   isVerified: z.boolean(),
@@ -68,17 +68,12 @@ export const biometricListPayloadSchema = createPaginatedListSchema(
   BiometricEntryContractSchema,
 );
 
-/**
- * Backward-compatible biometric list payload:
- * - canonical paginated payload: { data, pagination }
- * - legacy array payload: BiometricEntryContract[]
- */
-export const biometricListResponseSchema = z.union([
-  biometricListPayloadSchema,
-  z.array(BiometricEntryContractSchema),
-]);
-
 export type BiometricListPayload = z.infer<typeof biometricListPayloadSchema>;
+
+/**
+ * Canonical paginated biometric list response: { data, pagination }
+ */
+export const biometricListResponseSchema = biometricListPayloadSchema;
 export type BiometricListResponse = z.infer<typeof biometricListResponseSchema>;
 
 /**

@@ -469,12 +469,13 @@ export const SessionUsageSchema = baseDocumentSchema.extend({
   id: z.string().optional(),
   userId: z.string(),
   sessionType: SessionTypeSchema,
-  appointmentId: z.string().optional(),
+  appointmentId: z.string().nullable().optional(),
   usedAt: isoTimestampSchema,
-  notes: z.string().optional(),
+  notes: z.string().nullable().optional(),
   source: SessionUsageSourceSchema,
   quantity: z.number().int(),
-  balanceAfter: z.number().int().nullable(),
+  /** Session balance after this usage. DB default 0. */
+  balanceAfter: z.number().int(),
   /** Billing period start for this usage record (from sessionBalance at time of usage) */
   periodStart: isoTimestampSchema.nullable().optional(),
   /** Billing period end for this usage record (from sessionBalance at time of usage) */

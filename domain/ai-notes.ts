@@ -125,15 +125,16 @@ export function getAINoteCategoryLabel(category: string): string {
  * Workout session notes - temporary context for specific workout sessions.
  * Used to capture user feedback, modifications, and observations during workouts.
  */
-export const workoutSessionNoteSchema =
-  baseDocumentSchema.extend({
-    id: z.string(),
-    userId: z.string(),
-    workoutPlanId: z.string().optional(),
-    workoutDate: isoDateSchema,
-    content: z.string().min(1),
-  });
-export type WorkoutSessionNoteContract = z.infer<typeof workoutSessionNoteSchema>;
+export const workoutSessionNoteSchema = baseDocumentSchema.extend({
+  id: z.string(),
+  userId: z.string(),
+  workoutPlanId: z.string().nullable().optional(),
+  workoutDate: isoDateSchema,
+  content: z.string().min(1),
+});
+export type WorkoutSessionNoteContract = z.infer<
+  typeof workoutSessionNoteSchema
+>;
 
 // ============================================================================
 // SMART ASSIST PERMANENT NOTE
@@ -143,16 +144,26 @@ export type WorkoutSessionNoteContract = z.infer<typeof workoutSessionNoteSchema
  * Smart Assist permanent notes - long-term context about user preferences, limitations, and conditions.
  * Used by Smart Assist systems to personalize workout and diet recommendations.
  */
-export const aiPermanentNoteSchema =
-  baseDocumentSchema.extend({
-    id: z.string(),
-    userId: z.string(),
-    content: z.string().min(1),
-    category: AINoteCategorySchema,
-    source: z.string().optional(),
-    sourceType: AINoteSourceTypeSchema.optional(),
-  });
+export const aiPermanentNoteSchema = baseDocumentSchema.extend({
+  id: z.string(),
+  userId: z.string(),
+  content: z.string().min(1),
+  category: AINoteCategorySchema,
+  source: z.string().nullable().optional(),
+  sourceType: AINoteSourceTypeSchema.nullable().optional(),
+});
 export type AIPermanentNoteContract = z.infer<typeof aiPermanentNoteSchema>;
+
+/**
+ * Form-level schema for creating or editing a permanent note (PHI).
+ * Used to validate the AddNoteModal form before API submission.
+ * Intentionally excludes id, userId, category (handled separately in the modal).
+ */
+export const permanentNoteFormSchema = z.object({
+  content: z.string().trim().min(1, "Note content is required").max(50000),
+  source: z.string().trim().max(200).optional(),
+});
+export type PermanentNoteFormInput = z.infer<typeof permanentNoteFormSchema>;
 
 // ============================================================================
 // SMART ASSIST CONTEXT (AGGREGATED)

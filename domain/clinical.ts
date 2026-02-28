@@ -168,6 +168,20 @@ export const medicationSchema = z.object({
 
 export type Medication = z.infer<typeof medicationSchema>;
 
+/**
+ * Form-level schema for a single medication entry in the admin UI (PHI).
+ * Used to validate medication form fields before API submission.
+ * Intentionally lenient: dosage/frequency optional so partial entries can be
+ * validated incrementally (required-field gate lives in the container save handler).
+ */
+export const medicationItemSchema = z.object({
+  name: z.string().trim().min(1, "Medication name is required").max(200),
+  dosage: z.string().trim().max(100).optional(),
+  frequency: z.string().trim().max(100).optional(),
+  notes: z.string().trim().max(1000).optional(),
+});
+export type MedicationItemInput = z.infer<typeof medicationItemSchema>;
+
 export const medicationsSchema = z.array(medicationSchema);
 export type Medications = z.infer<typeof medicationsSchema>;
 

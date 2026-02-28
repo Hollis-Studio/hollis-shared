@@ -2,7 +2,7 @@
 
 > Quick reference for finding Zod schemas in the Hollis Health contracts module.
 
-**Last Updated:** 2026-01-10
+**Last Updated:** 2026-02-27
 
 ---
 
@@ -15,6 +15,24 @@
 5. **AI/Agent function calls** → See [AI Schemas](#ai-schemas)
 6. **Password validation and reset** → See [Password Schemas](#password-schemas)
 7. **Mobile/web-specific schemas** → See [Platform-Specific Schemas](#platform-specific-schemas)
+
+---
+
+## Canonical Response Shapes
+
+### Paginated Lists
+
+All list endpoints return a **single canonical paginated shape**:
+
+```ts
+{ data: T[], pagination: { total, limit, offset, hasMore } }
+```
+
+Use `createPaginatedListSchema(itemSchema)` from `domain/pagination.ts` to define list response schemas. **Do not** use `z.union()` to accept both paginated and raw array shapes — unions were removed in the schema drift cleanup.
+
+### Nullable vs Optional
+
+For fields sourced from nullable Prisma columns, use `.nullable().optional()` (accepts `null`, `undefined`, and absent). This eliminates the need for `?? undefined` coercions in server mappers. Use `.optional()` alone only for fields that are truly never `null` from the database.
 
 ---
 
@@ -60,19 +78,19 @@ Domain-specific enum schemas live alongside their tuples/constants. Import from 
 
 ### user.ts
 
-| Schema                         | Purpose                                              |
-| ------------------------------ | ---------------------------------------------------- |
-| `UserRoleSchema`               | ADMIN, CLINICIAN, TRAINER, CLIENT                    |
-| `UserTierSchema`               | ESSENTIALS, CORE, CONCIERGE                          |
-| `BiologicalSexSchema`          | MALE, FEMALE, OTHER, PREFER_NOT_TO_SAY               |
-| `ActivityLevelSchema`          | SEDENTARY, LIGHT, MODERATE, ACTIVE, VERY_ACTIVE      |
-| `PrimaryGoalSchema`            | LOSE_WEIGHT, BUILD_MUSCLE, IMPROVE_HEALTH, etc.      |
-| `FitnessExperienceSchema`      | BEGINNER, INTERMEDIATE, ADVANCED, EXPERT             |
-| `NotificationFrequencySchema`  | IMMEDIATE, DAILY_DIGEST, WEEKLY_DIGEST, NEVER        |
-| `WeekdaySchema`                | MONDAY through SUNDAY                                |
-| `AccountStatusSchema`          | ACTIVE, SUSPENDED, PENDING_VERIFICATION, DEACTIVATED |
-| `PregnancyStatusSchema`        | NOT_PREGNANT, PREGNANT, POSTPARTUM, TTC              |
-| `MessagingRecipientRoleSchema` | Message recipient roles                              |
+| Schema                         | Purpose                                                            |
+| ------------------------------ | ------------------------------------------------------------------ |
+| `UserRoleSchema`               | ADMIN, CLINICIAN, TRAINER, CLIENT                                  |
+| `UserTierSchema`               | ESSENTIALS, CORE, CONCIERGE                                        |
+| `BiologicalSexSchema`          | female, male, non_binary, intersex, prefer_not_to_say              |
+| `ActivityLevelSchema`          | sedentary, lightly_active, moderately_active, very_active, athlete |
+| `PrimaryGoalSchema`            | lose_weight, gain_muscle, maintain, improve_health                 |
+| `FitnessExperienceSchema`      | beginner, intermediate, advanced, expert                           |
+| `NotificationFrequencySchema`  | daily, weekly, biweekly, monthly, custom                           |
+| `WeekdaySchema`                | MONDAY through SUNDAY                                              |
+| `AccountStatusSchema`          | active, suspended, inactive                                        |
+| `PregnancyStatusSchema`        | not_pregnant, trimester_1, trimester_2, trimester_3, postpartum    |
+| `MessagingRecipientRoleSchema` | Message recipient roles                                            |
 
 ### appointments.ts
 
@@ -97,7 +115,7 @@ Domain-specific enum schemas live alongside their tuples/constants. Import from 
 | Schema                     | Purpose                                  |
 | -------------------------- | ---------------------------------------- |
 | `SessionTypeSchema`        | FITNESS_SESSION, CLINICIAN_INITIAL, etc. |
-| `ResetFrequencySchema`     | WEEKLY, BIWEEKLY, MONTHLY, YEARLY        |
+| `ResetFrequencySchema`     | MONTHLY, QUARTERLY, BIANNUAL, ANNUAL     |
 | `SessionUsageSourceSchema` | How sessions are consumed                |
 | `sessionErrorCodeSchema`   | Session operation error codes            |
 
@@ -133,19 +151,19 @@ Domain-specific enum schemas live alongside their tuples/constants. Import from 
 
 ### labs.ts
 
-| Schema                          | Purpose                                        |
-| ------------------------------- | ---------------------------------------------- |
-| `LabResultStatusSchema`         | pending, reviewed, flagged                     |
-| `LabResultFlagSchema`           | normal, low, high, critical_low, critical_high |
-| `LabMappingStatusSchema`        | mapped, unmapped, ambiguous, needs_review      |
-| `LabMetricDirectionalitySchema` | higher_better, lower_better, target_range      |
-| `LabChangeSignificanceSchema`   | minimal, moderate, significant                 |
-| `LabClinicalDirectionSchema`    | improving, stable, worsening                   |
-| `LabRangeStatusSchema`          | optimal, normal, borderline, out_of_range      |
-| `LabMetricCategorySchema`       | Lab metric categories                          |
-| `MetricApprovalStatusSchema`    | pending, approved, rejected                    |
-| `ClinicianGoalStatusSchema`     | active, achieved, paused, cancelled            |
-| `GoalTargetDirectionSchema`     | increase, decrease, maintain                   |
+| Schema                          | Purpose                                          |
+| ------------------------------- | ------------------------------------------------ |
+| `LabResultStatusSchema`         | PRELIMINARY, FINAL, CORRECTED, CANCELLED         |
+| `LabResultFlagSchema`           | normal, low, high, critical_low, critical_high   |
+| `LabMappingStatusSchema`        | MATCHED, CREATED, REVIEW_NEEDED, MANUAL_OVERRIDE |
+| `LabMetricDirectionalitySchema` | higher_better, lower_better, target_range        |
+| `LabChangeSignificanceSchema`   | minimal, moderate, significant                   |
+| `LabClinicalDirectionSchema`    | improving, stable, worsening                     |
+| `LabRangeStatusSchema`          | optimal, normal, borderline, out_of_range        |
+| `LabMetricCategorySchema`       | Lab metric categories                            |
+| `MetricApprovalStatusSchema`    | pending, approved, rejected                      |
+| `ClinicianGoalStatusSchema`     | active, achieved, paused, cancelled              |
+| `GoalTargetDirectionSchema`     | increase, decrease, maintain                     |
 
 ### biometrics.ts
 
@@ -625,3 +643,24 @@ When adding new schemas:
 6. **Update this index** when adding significant schemas
 
 Run `npm run check:contract-duplicates` to ensure no duplicate definitions exist.
+
+---
+
+## Undocumented Modules
+
+The following domain contract files exist but have not yet been added to this index. Schemas pending documentation.
+
+| File                     | Location                        |
+| ------------------------ | ------------------------------- |
+| `admin-notifications.ts` | `domain/admin-notifications.ts` |
+| `admin-tasks.ts`         | `domain/admin-tasks.ts`         |
+| `businessAnalytics.ts`   | `domain/businessAnalytics.ts`   |
+| `daily-metrics.ts`       | `domain/daily-metrics.ts`       |
+| `enumContract.ts`        | `domain/enumContract.ts`        |
+| `health-metric-types.ts` | `domain/health-metric-types.ts` |
+| `metric-codes.ts`        | `domain/metric-codes.ts`        |
+| `nutrition-plan.ts`      | `domain/nutrition-plan.ts`      |
+| `pagination.ts`          | `domain/pagination.ts`          |
+| `sleep.ts`               | `domain/sleep.ts`               |
+| `training-strategy.ts`   | `domain/training-strategy.ts`   |
+| `units.ts`               | `domain/units.ts`               |

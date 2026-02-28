@@ -197,6 +197,24 @@ export const refreshBodySchema = z.object({
 export type RefreshBody = z.infer<typeof refreshBodySchema>;
 
 /**
+ * Height validation schema (centimetres).
+ * Physiologically reasonable bounds: 50–300 cm.
+ */
+export const heightCmSchema = z
+  .number()
+  .min(50, "Height must be at least 50 cm")
+  .max(300, "Height cannot exceed 300 cm");
+
+/**
+ * Weight validation schema (kilograms).
+ * Physiologically reasonable bounds: 20–500 kg.
+ */
+export const weightKgSchema = z
+  .number()
+  .min(20, "Weight must be at least 20 kg")
+  .max(500, "Weight cannot exceed 500 kg");
+
+/**
  * Schema for signup request body (barcode-based patient registration).
  *
  * The `code` field is the patient's barcode (HH-XXXXXX format).
@@ -214,8 +232,8 @@ export const signupBodySchema = z.object({
   // Optional fields that can override prefilled data
   profile: z
     .object({
-      heightCm: z.number().optional(),
-      weightKg: z.number().optional(),
+      heightCm: heightCmSchema.optional(),
+      weightKg: weightKgSchema.optional(),
       dateOfBirth: z.string().optional(), // ISO date string
       biologicalSex: z.enum(SIGNUP_SEX_OPTIONS).optional(),
       primaryGoal: z.string().optional(),
@@ -301,21 +319,3 @@ export const dateOfBirthSchema = z
     },
     { message: `Age must be ${MAX_AGE_YEARS} years or less` },
   );
-
-/**
- * Height validation schema (centimetres).
- * Physiologically reasonable bounds: 50–300 cm.
- */
-export const heightCmSchema = z
-  .number()
-  .min(50, "Height must be at least 50 cm")
-  .max(300, "Height cannot exceed 300 cm");
-
-/**
- * Weight validation schema (kilograms).
- * Physiologically reasonable bounds: 20–500 kg.
- */
-export const weightKgSchema = z
-  .number()
-  .min(20, "Weight must be at least 20 kg")
-  .max(500, "Weight cannot exceed 500 kg");

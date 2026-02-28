@@ -201,19 +201,21 @@ export function isAdminBookingStep(value: string): value is AdminBookingStep {
 export const PatientSummarySchema = z.object({
   id: z.string(),
   name: z.string(),
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
+  firstName: z.string().nullable().optional(),
+  lastName: z.string().nullable().optional(),
 });
 
 export type PatientSummaryContract = z.infer<typeof PatientSummarySchema>;
 
 export const AppointmentSchema = baseDocumentSchema.extend({
   id: z.string().optional(),
+  /** @mapped-from Appointment.userId */
   patientId: z.string(),
   providerId: z.string().nullable(), // Admin/Clinician ID
   title: z.string().max(200),
-  /** @deprecated Use 'notes' instead. Will be removed when Prisma column is renamed. @see TODO(appointment-field-rename) */
+  /** @mapped-from Appointment.notes @deprecated Use `notes` field instead */
   description: z.string().optional(),
+  /** @mapped-from Appointment.date */
   startTime: isoTimestampSchema,
   /** Duration of the appointment in minutes (stored in database as integer). */
   duration: z.number().int().positive(),
@@ -221,11 +223,14 @@ export const AppointmentSchema = baseDocumentSchema.extend({
   endTime: isoTimestampSchema,
   status: AppointmentStatusSchema,
   type: AppointmentTypeSchema,
-  meetingLink: z.string().url().max(2000).optional(),
-  location: z.string().max(500).optional(),
-  notes: z.string().max(5000).optional(),
+  // Plain string (no .url()) to accept legacy DB values that may lack an
+  // https:// scheme. URL format is enforced on CREATE input via
+  // createAppointmentInputSchema.meetingLink which uses z.string().url().
+  meetingLink: z.string().max(2000).nullable().optional(),
+  location: z.string().max(500).nullable().optional(),
+  notes: z.string().max(5000).nullable().optional(),
   /** Patient info included for admin booking lists */
-  patient: PatientSummarySchema.optional(),
+  patient: PatientSummarySchema.nullable().optional(),
 });
 
 export type Appointment = z.infer<typeof AppointmentSchema>;
@@ -239,34 +244,14 @@ export type AppointmentContract = Appointment;
 export const appointmentsListPayloadSchema =
   createPaginatedListSchema(AppointmentSchema);
 
-/**
- * Legacy appointments list payload used by older endpoints.
- */
-export const legacyAppointmentsListPayloadSchema = z.object({
-  appointments: z.array(AppointmentSchema),
-  total: z.number().int().min(0),
-  limit: z.number().int().positive(),
-  offset: z.number().int().min(0),
-});
-
-/**
- * Backward-compatible appointments list payload:
- * - canonical paginated payload: { data, pagination }
- * - legacy payload: { appointments, total, limit, offset }
- * - legacy array payload: Appointment[]
- */
-export const appointmentsListResponseSchema = z.union([
-  appointmentsListPayloadSchema,
-  legacyAppointmentsListPayloadSchema,
-  z.array(AppointmentSchema),
-]);
-
 export type AppointmentsListPayload = z.infer<
   typeof appointmentsListPayloadSchema
 >;
-export type LegacyAppointmentsListPayload = z.infer<
-  typeof legacyAppointmentsListPayloadSchema
->;
+
+/**
+ * Canonical paginated appointments list response: { data, pagination }
+ */
+export const appointmentsListResponseSchema = appointmentsListPayloadSchema;
 export type AppointmentsListResponse = z.infer<
   typeof appointmentsListResponseSchema
 >;

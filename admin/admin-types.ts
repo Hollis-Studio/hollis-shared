@@ -347,6 +347,8 @@ interface SuggestedNewMetric {
   suggestedAliases: string[];
   canonicalUnit: string;
   directionality: LabMetricDirectionality;
+  /** User-facing description of what this metric measures and why it matters for health */
+  description?: string;
   confidence: number;
   reasoning?: string;
   rawAnalyteName: string;

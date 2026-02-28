@@ -20,12 +20,14 @@ import { z } from "zod";
  * - PAST_DUE: Payment overdue but not yet escalated
  * - DELINQUENT: Severely overdue, may suspend service
  * - COLLECTIONS: Sent to collections agency
+ * - DISPUTED: Active payment dispute / chargeback filed
  */
 export const BILLING_STATUSES = [
   "GOOD_STANDING",
   "PAST_DUE",
   "DELINQUENT",
   "COLLECTIONS",
+  "DISPUTED",
 ] as const;
 
 export type BillingStatus = z.infer<typeof BillingStatusSchema>;
@@ -38,6 +40,7 @@ export const BILLING_STATUS = {
   PAST_DUE: "PAST_DUE",
   DELINQUENT: "DELINQUENT",
   COLLECTIONS: "COLLECTIONS",
+  DISPUTED: "DISPUTED",
 } as const satisfies Record<BillingStatus, BillingStatus>;
 
 /** Human-readable labels for billing statuses */
@@ -46,6 +49,7 @@ export const BILLING_STATUS_LABELS: Record<BillingStatus, string> = {
   PAST_DUE: "Past Due",
   DELINQUENT: "Delinquent",
   COLLECTIONS: "In Collections",
+  DISPUTED: "Disputed",
 };
 
 /**
@@ -129,20 +133,26 @@ export const DelinquentUsersResponseSchema = z.object({
   users: z.array(DelinquentUserSchema),
   count: z.number().int(),
 });
-export type DelinquentUsersResponse = z.infer<typeof DelinquentUsersResponseSchema>;
+export type DelinquentUsersResponse = z.infer<
+  typeof DelinquentUsersResponseSchema
+>;
 
 export const SendToCollectionsRequestSchema = z.object({
   userId: z.string(),
   collectionAgency: z.string().optional(),
   notes: z.string().optional(),
 });
-export type SendToCollectionsRequest = z.infer<typeof SendToCollectionsRequestSchema>;
+export type SendToCollectionsRequest = z.infer<
+  typeof SendToCollectionsRequestSchema
+>;
 
 export const UpdateDelinquencyNotesRequestSchema = z.object({
   userId: z.string(),
   notes: z.string(),
 });
-export type UpdateDelinquencyNotesRequest = z.infer<typeof UpdateDelinquencyNotesRequestSchema>;
+export type UpdateDelinquencyNotesRequest = z.infer<
+  typeof UpdateDelinquencyNotesRequestSchema
+>;
 
 // ============================================================================
 // CONTRACT UPLOAD

@@ -16,6 +16,7 @@
 
 import { z } from "zod";
 import { emailSchema } from "../schemas";
+import { createPaginatedListSchema } from "./pagination";
 
 // ============================================================================
 // LAB ORDER STATUS (Domain Constants Pattern)
@@ -992,12 +993,9 @@ export type AIChatSendMessageResponse = z.infer<
 >;
 
 /**
- * List sessions response
+ * List sessions response — canonical paginated shape { data: AIChatSession[], pagination: {...} }
  */
-export const AIChatSessionListSchema = z.object({
-  sessions: z.array(AIChatSessionSchema),
-  total: z.number(),
-});
+export const AIChatSessionListSchema = createPaginatedListSchema(AIChatSessionSchema);
 
 export type AIChatSessionList = z.infer<typeof AIChatSessionListSchema>;
 

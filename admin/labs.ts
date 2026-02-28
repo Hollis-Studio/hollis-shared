@@ -8,7 +8,9 @@
  * deps: admin-types, domain/labs, domain/businessAnalytics | consumers: web-admin/services/admin/labsService.ts, server/src/routes/admin/labs/*
  */
 
+import { z } from "zod";
 import type { LabOrderStatus } from "../domain/businessAnalytics";
+import { LabOrderStatusSchema } from "../domain/businessAnalytics";
 import type {
     LabMetricCategory,
     LabMetricDirectionality,
@@ -62,6 +64,8 @@ export interface CreateLabMetricDefinitionInput {
   optimalRangeLow?: number | null;
   /** Upper bound of the optimal reference range */
   optimalRangeHigh?: number | null;
+  /** User-facing description of what this metric measures and why it matters */
+  description?: string | null;
   /** User ID of the admin who created this definition */
   createdBy?: string | null;
 }
@@ -110,6 +114,39 @@ export interface LabOrderDetailResponse {
     mappingConfidence: number | null;
   }[];
 }
+
+/**
+ * Zod schema for LabOrderDetailResponse — validates the GET /lab-orders/:id response.
+ */
+export const LabOrderDetailResponseSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  reportDate: z.string(),
+  labName: z.string().nullable(),
+  labLocation: z.string().nullable(),
+  specimenType: z.string().nullable(),
+  orderingProvider: z.string().nullable(),
+  panelName: z.string().nullable(),
+  panelCode: z.string().nullable(),
+  notes: z.string().nullable(),
+  orderStatus: LabOrderStatusSchema,
+  observations: z.array(
+    z.object({
+      id: z.string(),
+      rawAnalyteName: z.string(),
+      rawValueText: z.string().nullable(),
+      rawUnit: z.string().nullable(),
+      rawReferenceIntervalLow: z.number().nullable(),
+      rawReferenceIntervalHigh: z.number().nullable(),
+      rawFlag: z.string().nullable(),
+      canonicalValue: z.number().nullable(),
+      canonicalUnit: z.string().nullable(),
+      metricDefinitionId: z.string().nullable(),
+      mappingStatus: z.string(),
+      mappingConfidence: z.number().nullable(),
+    }),
+  ),
+});
 
 /** Input for attaching observations to an existing lab order */
 export interface AttachObservationsInput {

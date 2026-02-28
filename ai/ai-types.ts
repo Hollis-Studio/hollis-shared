@@ -14,7 +14,7 @@
  */
 
 import { z } from "zod";
-import { AINoteCategorySchema } from "../domain/ai-notes";
+import { AINoteCategorySchema, AINoteSourceTypeSchema } from "../domain/ai-notes";
 import { type StrategyGenerationPhase } from "../domain/training";
 import {
     type StrategyGenerationActivity as _StrategyGenerationActivity,
@@ -321,7 +321,8 @@ export const AIGeneratedNoteSchema = z.object({
   userId: z.string(),
   content: z.string().min(1),
   category: AINoteCategorySchema,
-  source: z.string().optional(),
+  source: z.string().nullable().optional(),
+  sourceType: AINoteSourceTypeSchema.nullable().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
