@@ -61,7 +61,7 @@
     "typescript": "5.9.2"
   },
   "dependencies": {
-    "zod": "4.0.0",
+    "zod": "4.3.6",
     "zxcvbn": "^4.4.2"
   }
 }
