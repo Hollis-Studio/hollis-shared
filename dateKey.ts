@@ -8,10 +8,12 @@
  * @ai-context Date key utils | consumers: src/utils/timeFormat, server/src/utils/dateFormat, web-admin/stubs/timeFormat
  */
 
-import { format as dateFnsFormat } from "date-fns";
-
 /** The standard date format used for database keys and API parameters. */
 export const DATE_KEY_FORMAT = "yyyy-MM-dd" as const;
+
+function pad(n: number): string {
+  return String(n).padStart(2, "0");
+}
 
 /**
  * Format a Date object to a date key string (yyyy-MM-dd).
@@ -25,7 +27,7 @@ export const DATE_KEY_FORMAT = "yyyy-MM-dd" as const;
  * formatDateKey(new Date('2025-01-15')) // '2025-01-15'
  */
 export function formatDateKey(date: Date): string {
-  return dateFnsFormat(date, DATE_KEY_FORMAT);
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
 /**
