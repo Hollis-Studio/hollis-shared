@@ -160,10 +160,10 @@ export const MEDICAL_CONDITION_STATUS_LABELS: Record<
 
 export const medicationSchema = z.object({
   id: z.string(),
-  name: z.string().min(1, "Medication name is required").max(200),
-  dosage: z.string().min(1, "Dosage is required").max(100),
-  frequency: z.string().min(1, "Frequency is required").max(200),
-  notes: z.string().max(5000).optional(),
+  name: z.string().min(1, "Medication name is required").max(200, "Name must be at most 200 characters"),
+  dosage: z.string().min(1, "Dosage is required").max(100, "Dosage must be at most 100 characters"),
+  frequency: z.string().min(1, "Frequency is required").max(200, "Frequency must be at most 200 characters"),
+  notes: z.string().max(5000, "Notes must be at most 5000 characters").optional(),
 });
 
 export type Medication = z.infer<typeof medicationSchema>;
@@ -191,9 +191,9 @@ export type Medications = z.infer<typeof medicationsSchema>;
 
 export const limitationSchema = z.object({
   id: z.string(),
-  description: z.string().min(1, "Limitation description is required").max(500),
+  description: z.string().min(1, "Limitation description is required").max(500, "Description must be at most 500 characters"),
   severity: LimitationSeveritySchema.optional(),
-  notes: z.string().max(5000).optional(),
+  notes: z.string().max(5000, "Notes must be at most 5000 characters").optional(),
 });
 
 export type Limitation = z.infer<typeof limitationSchema>;
