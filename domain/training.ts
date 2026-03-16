@@ -14,6 +14,10 @@
 
 import { z } from "zod";
 import { VolumeLevelSchema } from "../primitives";
+import {
+    MetricCategorySchema,
+    type MetricCategory,
+} from "./health-metric-types";
 import { MetricDefinitionSummarySchema } from "./metric-definition";
 
 // ============================================================================
@@ -156,11 +160,25 @@ export const GoalDataSourceSchema = z.enum(GOAL_DATA_SOURCES);
 export type GoalDataSource = z.infer<typeof GoalDataSourceSchema>;
 
 /**
- * @deprecated Compatibility alias; canonical goal data-source values only.
+ * Canonical-only contract for new goal write surfaces.
+ *
+ * Legacy persisted values (for example "measurement") remain supported only
+ * through deferred read-time normalization helpers during migration cleanup.
  */
-export const LEGACY_GOAL_DATA_SOURCES = GOAL_DATA_SOURCES;
-export const LegacyGoalDataSourceSchema = GoalDataSourceSchema;
-export type LegacyGoalDataSource = GoalDataSource;
+export const GoalWriteDataSourceSchema = GoalDataSourceSchema;
+export type GoalWriteDataSource = GoalDataSource;
+
+/**
+ * @deprecated Compatibility alias; includes the legacy persisted "measurement"
+ * value until a database backfill fully removes it.
+ */
+// DEFERRED [audit-05]: Shared training contracts still export legacy goal data-source values and normalization to keep pre-migration consumers working. Not material at <50 users pre-revenue. Revisit at scale.
+export const LEGACY_GOAL_DATA_SOURCES = [
+  ...GOAL_DATA_SOURCES,
+  "measurement",
+] as const;
+export const LegacyGoalDataSourceSchema = z.enum(LEGACY_GOAL_DATA_SOURCES);
+export type LegacyGoalDataSource = z.infer<typeof LegacyGoalDataSourceSchema>;
 
 /** Centralized goal data source constants for equality checks */
 export const GOAL_DATA_SOURCE = {
@@ -169,6 +187,63 @@ export const GOAL_DATA_SOURCE = {
   EXERCISE_LOG: "exercise_log" as GoalDataSource,
   MANUAL: "manual" as GoalDataSource,
 } as const;
+
+export const EXERCISE_GOAL_DATA_KEYS = [
+  "estimated1RM",
+  "bestDuration",
+  "bestDistance",
+  "bestReps",
+] as const;
+export const ExerciseGoalDataKeySchema = z.enum(EXERCISE_GOAL_DATA_KEYS);
+export type ExerciseGoalDataKey = z.infer<typeof ExerciseGoalDataKeySchema>;
+
+export const EXERCISE_GOAL_DATA_KEY = {
+  ESTIMATED_1RM: "estimated1RM" as ExerciseGoalDataKey,
+  BEST_DURATION: "bestDuration" as ExerciseGoalDataKey,
+  BEST_DISTANCE: "bestDistance" as ExerciseGoalDataKey,
+  BEST_REPS: "bestReps" as ExerciseGoalDataKey,
+} as const satisfies Record<
+  "ESTIMATED_1RM" | "BEST_DURATION" | "BEST_DISTANCE" | "BEST_REPS",
+  ExerciseGoalDataKey
+>;
+
+/**
+ * Canonical goal data-source subset for ad-hoc dynamic metric definitions.
+ * These metric definitions currently hydrate only from lab and biometric feeds.
+ */
+export const DYNAMIC_METRIC_GOAL_DATA_SOURCES = [
+  GOAL_DATA_SOURCE.LAB,
+  GOAL_DATA_SOURCE.BIOMETRIC,
+] as const;
+export const DynamicMetricGoalDataSourceSchema = GoalDataSourceSchema.extract(
+  DYNAMIC_METRIC_GOAL_DATA_SOURCES,
+);
+export type DynamicMetricGoalDataSource = z.infer<
+  typeof DynamicMetricGoalDataSourceSchema
+>;
+
+/**
+ * Canonical MetricCategory → GoalDataSource mapping.
+ *
+ * Wearable metrics persist through the biometric ingestion path, so they must
+ * sync like biometrics rather than manual-only goals.
+ */
+export const GOAL_DATA_SOURCE_BY_METRIC_CATEGORY = {
+  LAB: GOAL_DATA_SOURCE.LAB,
+  EXERCISE: GOAL_DATA_SOURCE.EXERCISE_LOG,
+  BIOMETRIC: GOAL_DATA_SOURCE.BIOMETRIC,
+  NUTRITION: GOAL_DATA_SOURCE.MANUAL,
+  WEARABLE: GOAL_DATA_SOURCE.BIOMETRIC,
+  COMPUTED: GOAL_DATA_SOURCE.MANUAL,
+} as const satisfies Record<MetricCategory, GoalDataSource>;
+
+export function mapMetricCategoryToGoalDataSource(
+  category: MetricCategory,
+): GoalDataSource {
+  return GOAL_DATA_SOURCE_BY_METRIC_CATEGORY[
+    MetricCategorySchema.parse(category)
+  ];
+}
 
 /** Human-readable labels for data sources */
 export const GOAL_DATA_SOURCE_LABELS: Record<GoalDataSource, string> = {
@@ -191,7 +266,7 @@ export function isGoalDataSource(value: string): value is GoalDataSource {
  * canonical equivalents before Zod validation.
  */
 const LEGACY_GOAL_DATA_SOURCE_MAP: Record<string, GoalDataSource> = {
-  measurement: "biometric",
+  measurement: GOAL_DATA_SOURCE.BIOMETRIC,
 };
 
 /**
@@ -209,6 +284,185 @@ export function normalizeGoalDataSource(
       ? LEGACY_GOAL_DATA_SOURCE_MAP[value]
       : value;
   return GoalDataSourceSchema.parse(normalized);
+}
+
+/**
+ * Normalize a goal data-source value when the caller prefers a nullable result
+ * instead of a thrown Zod error.
+ */
+export function normalizeGoalDataSourceOrNull(
+  value: string | null | undefined,
+): GoalDataSource | null {
+  if (value == null) {
+    return null;
+  }
+
+  try {
+    return normalizeGoalDataSource(value);
+  } catch {
+    return null;
+  }
+}
+
+export interface GoalMetricDataSourceInferenceInput {
+  category: MetricCategory;
+  code: string;
+  displayName: string;
+  primaryUnit?: string | null;
+  trendDirection?: string | null;
+}
+
+const EXERCISE_DURATION_KEYWORDS = [
+  "time",
+  "duration",
+  "minute",
+  "second",
+  "pace",
+] as const;
+const EXERCISE_DISTANCE_KEYWORDS = [
+  "distance",
+  "meter",
+  "metre",
+  "mile",
+  "km",
+  "run",
+  "walk",
+  "sprint",
+] as const;
+const EXERCISE_REPS_KEYWORDS = [
+  "rep",
+  "repetition",
+  "round",
+  "set_count",
+] as const;
+const EXERCISE_STRENGTH_KEYWORDS = [
+  "1rm",
+  "max",
+  "load",
+  "weight",
+  "strength",
+] as const;
+const EXERCISE_DURATION_UNITS = [
+  "ms",
+  "s",
+  "sec",
+  "secs",
+  "second",
+  "seconds",
+  "min",
+  "mins",
+  "minute",
+  "minutes",
+  "hr",
+  "hrs",
+  "hour",
+  "hours",
+] as const;
+const EXERCISE_DISTANCE_UNITS = [
+  "m",
+  "meter",
+  "meters",
+  "metre",
+  "metres",
+  "km",
+  "mi",
+  "mile",
+  "miles",
+  "yd",
+  "yard",
+  "yards",
+  "ft",
+  "feet",
+] as const;
+const EXERCISE_REPS_UNITS = ["rep", "reps", "count"] as const;
+const EXERCISE_WEIGHT_UNITS = [
+  "kg",
+  "kgs",
+  "lb",
+  "lbs",
+  "pound",
+  "pounds",
+] as const;
+
+function normalizeMetricSearchValue(value: string | null | undefined): string {
+  return value?.toLowerCase().trim() ?? "";
+}
+
+function haystackContainsAny(
+  haystack: string,
+  keywords: readonly string[],
+): boolean {
+  return keywords.some((keyword) => haystack.includes(keyword));
+}
+
+export function inferExerciseGoalDataKey(
+  metric: Pick<
+    GoalMetricDataSourceInferenceInput,
+    "code" | "displayName" | "primaryUnit" | "trendDirection"
+  >,
+): ExerciseGoalDataKey {
+  const primaryUnit = normalizeMetricSearchValue(metric.primaryUnit);
+  const trendDirection = normalizeMetricSearchValue(metric.trendDirection);
+  const haystack = `${metric.code} ${metric.displayName}`.toLowerCase();
+
+  if (EXERCISE_REPS_UNITS.includes(primaryUnit as (typeof EXERCISE_REPS_UNITS)[number])) {
+    return EXERCISE_GOAL_DATA_KEY.BEST_REPS;
+  }
+
+  if (EXERCISE_DISTANCE_UNITS.includes(primaryUnit as (typeof EXERCISE_DISTANCE_UNITS)[number])) {
+    return EXERCISE_GOAL_DATA_KEY.BEST_DISTANCE;
+  }
+
+  if (EXERCISE_DURATION_UNITS.includes(primaryUnit as (typeof EXERCISE_DURATION_UNITS)[number])) {
+    return EXERCISE_GOAL_DATA_KEY.BEST_DURATION;
+  }
+
+  if (EXERCISE_WEIGHT_UNITS.includes(primaryUnit as (typeof EXERCISE_WEIGHT_UNITS)[number])) {
+    return EXERCISE_GOAL_DATA_KEY.ESTIMATED_1RM;
+  }
+
+  if (haystackContainsAny(haystack, EXERCISE_REPS_KEYWORDS)) {
+    return EXERCISE_GOAL_DATA_KEY.BEST_REPS;
+  }
+
+  if (haystackContainsAny(haystack, EXERCISE_DISTANCE_KEYWORDS)) {
+    return EXERCISE_GOAL_DATA_KEY.BEST_DISTANCE;
+  }
+
+  if (haystackContainsAny(haystack, EXERCISE_DURATION_KEYWORDS)) {
+    return EXERCISE_GOAL_DATA_KEY.BEST_DURATION;
+  }
+
+  if (haystackContainsAny(haystack, EXERCISE_STRENGTH_KEYWORDS)) {
+    return EXERCISE_GOAL_DATA_KEY.ESTIMATED_1RM;
+  }
+
+  if (trendDirection.includes("lower")) {
+    return EXERCISE_GOAL_DATA_KEY.BEST_DURATION;
+  }
+
+  return EXERCISE_GOAL_DATA_KEY.ESTIMATED_1RM;
+}
+
+export function inferGoalMetricDataSourceInfo(
+  metric: GoalMetricDataSourceInferenceInput,
+): {
+  dataSource: GoalDataSource;
+  dataKey: string;
+} {
+  const dataSource = mapMetricCategoryToGoalDataSource(metric.category);
+
+  if (metric.category === MetricCategorySchema.enum.EXERCISE) {
+    return {
+      dataSource,
+      dataKey: inferExerciseGoalDataKey(metric),
+    };
+  }
+
+  return {
+    dataSource,
+    dataKey: metric.code,
+  };
 }
 
 // ============================================================================
@@ -332,7 +586,7 @@ export const StrategyGoalSchema = z.object({
   linkedExerciseId: z.string().uuid().optional(),
   dynamicMetricDefinition: z
     .object({
-      dataSource: z.enum(["lab", "biometric"]),
+      dataSource: DynamicMetricGoalDataSourceSchema,
       dataKey: z.string(),
       label: z.string(),
       unit: z.string(),

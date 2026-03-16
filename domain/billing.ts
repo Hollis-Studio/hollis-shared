@@ -9,6 +9,7 @@
  */
 
 import { z } from "zod";
+import { createPaginatedListSchema } from "./pagination";
 
 // ============================================================================
 // BILLING STATUS
@@ -129,10 +130,15 @@ export const DelinquentUserSchema = z.object({
 });
 export type DelinquentUser = z.infer<typeof DelinquentUserSchema>;
 
-export const DelinquentUsersResponseSchema = z.object({
-  users: z.array(DelinquentUserSchema),
-  count: z.number().int(),
-});
+/**
+ * Canonical paginated delinquent users response.
+ * Shape: { data: DelinquentUser[], pagination: PaginationMeta }
+ *
+ * @migration Replaced legacy { users, count } shape with canonical paginated shape.
+ * Server returns this via createOffsetPaginatedResponse().
+ */
+export const DelinquentUsersResponseSchema =
+  createPaginatedListSchema(DelinquentUserSchema);
 export type DelinquentUsersResponse = z.infer<
   typeof DelinquentUsersResponseSchema
 >;
@@ -164,6 +170,30 @@ export const ContractUploadRequestSchema = z.object({
   fileName: z.string(),
 });
 export type ContractUploadRequest = z.infer<typeof ContractUploadRequestSchema>;
+
+// ============================================================================
+// SUBSCRIPTION INVOICE STATUS
+// ============================================================================
+
+/**
+ * Valid SubscriptionInvoice status values (matches Stripe invoice lifecycle).
+ * - draft: Invoice not yet finalized
+ * - open: Invoice finalized, awaiting payment
+ * - paid: Invoice paid in full
+ * - void: Invoice voided (cancelled before payment)
+ * - uncollectible: Invoice marked uncollectible (bad debt)
+ *
+ * Matches `SubscriptionInvoice.status` comment in server/prisma/schema.prisma.
+ */
+export const INVOICE_STATUS = {
+  DRAFT: "draft",
+  OPEN: "open",
+  PAID: "paid",
+  VOID: "void",
+  UNCOLLECTIBLE: "uncollectible",
+} as const;
+
+export type InvoiceStatus = (typeof INVOICE_STATUS)[keyof typeof INVOICE_STATUS];
 
 // ============================================================================
 // TIER CHANGE TRIGGER

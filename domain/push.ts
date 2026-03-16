@@ -69,29 +69,128 @@ export function isPushAppRole(value: string): value is PushAppRole {
 }
 
 // ============================================================================
+// NOTIFICATION TYPES
+// ============================================================================
+
+/**
+ * Client-facing notification types (patient-facing app)
+ */
+export const CLIENT_NOTIFICATION_TYPES = [
+  "NEW_WORKOUT_PLAN",
+  "NEW_NUTRITION_PLAN",
+  "NEW_MESSAGE",
+  "APPOINTMENT_REMINDER",
+  "APPOINTMENT_UPDATE",
+  "LAB_RESULTS_READY",
+  "PLAN_UPDATE",
+] as const;
+export const ClientNotificationTypeSchema = z.enum(CLIENT_NOTIFICATION_TYPES);
+export type ClientNotificationType = z.infer<
+  typeof ClientNotificationTypeSchema
+>;
+
+/**
+ * Admin-facing notification types (staff/trainer/clinician portal)
+ *
+ * These are sent to admin devices when:
+ * - A patient books/modifies/cancels an appointment
+ * - A patient is assigned to a staff member
+ * - A new registration is completed
+ */
+export const ADMIN_NOTIFICATION_TYPES = [
+  "ADMIN_APPOINTMENT_BOOKED",
+  "ADMIN_APPOINTMENT_CANCELLED",
+  "ADMIN_APPOINTMENT_MODIFIED",
+  "ADMIN_PATIENT_ASSIGNED",
+  "ADMIN_NEW_REGISTRATION",
+] as const;
+export const AdminNotificationTypeSchema = z.enum(ADMIN_NOTIFICATION_TYPES);
+export type AdminNotificationType = z.infer<
+  typeof AdminNotificationTypeSchema
+>;
+
+/** All notification types */
+export const NOTIFICATION_TYPES = [
+  ...CLIENT_NOTIFICATION_TYPES,
+  ...ADMIN_NOTIFICATION_TYPES,
+] as const satisfies readonly [string, ...string[]];
+
+export const NotificationTypeSchema = z.enum(NOTIFICATION_TYPES);
+export type NotificationType = z.infer<typeof NotificationTypeSchema>;
+
+export const NOTIFICATION_TYPE = {
+  // Client notifications
+  NEW_WORKOUT_PLAN: "NEW_WORKOUT_PLAN" as NotificationType,
+  NEW_NUTRITION_PLAN: "NEW_NUTRITION_PLAN" as NotificationType,
+  NEW_MESSAGE: "NEW_MESSAGE" as NotificationType,
+  APPOINTMENT_REMINDER: "APPOINTMENT_REMINDER" as NotificationType,
+  APPOINTMENT_UPDATE: "APPOINTMENT_UPDATE" as NotificationType,
+  LAB_RESULTS_READY: "LAB_RESULTS_READY" as NotificationType,
+  PLAN_UPDATE: "PLAN_UPDATE" as NotificationType,
+  // Admin notifications
+  ADMIN_APPOINTMENT_BOOKED: "ADMIN_APPOINTMENT_BOOKED" as NotificationType,
+  ADMIN_APPOINTMENT_CANCELLED:
+    "ADMIN_APPOINTMENT_CANCELLED" as NotificationType,
+  ADMIN_APPOINTMENT_MODIFIED: "ADMIN_APPOINTMENT_MODIFIED" as NotificationType,
+  ADMIN_PATIENT_ASSIGNED: "ADMIN_PATIENT_ASSIGNED" as NotificationType,
+  ADMIN_NEW_REGISTRATION: "ADMIN_NEW_REGISTRATION" as NotificationType,
+} as const;
+
+/**
+ * Check if a string is a valid notification type
+ */
+export function isNotificationType(value: string): value is NotificationType {
+  return (NOTIFICATION_TYPES as readonly string[]).includes(value);
+}
+
+export function isClientNotificationType(
+  value: string,
+): value is ClientNotificationType {
+  return (CLIENT_NOTIFICATION_TYPES as readonly string[]).includes(value);
+}
+
+export function isAdminNotificationType(
+  value: string,
+): value is AdminNotificationType {
+  return (ADMIN_NOTIFICATION_TYPES as readonly string[]).includes(value);
+}
+
+// ============================================================================
 // REQUEST SCHEMAS
 // ============================================================================
 
 /**
  * Register a native device push token (APNs/FCM).
  */
-export const registerDevicePushTokenRequestSchema =
-  z.object({
-    platform: PushPlatformSchema,
-    devicePushToken: z.string().min(10).max(4096),
-    deviceId: z.string().uuid().optional(),
-    appRole: PushAppRoleSchema.optional(),
-  });
-export type RegisterDevicePushTokenRequest = z.infer<typeof registerDevicePushTokenRequestSchema>;
+export const registerDevicePushTokenRequestSchema = z.object({
+  platform: PushPlatformSchema,
+  devicePushToken: z.string().min(10).max(4096),
+  deviceId: z.string().uuid().optional(),
+  appRole: PushAppRoleSchema.optional(),
+});
+export type RegisterDevicePushTokenRequest = z.infer<
+  typeof registerDevicePushTokenRequestSchema
+>;
 
 /**
  * Unregister a native device push token.
  */
-export const unregisterDevicePushTokenRequestSchema =
-  z.object({
-    platform: PushPlatformSchema,
-    devicePushToken: z.string().min(10).max(4096),
-    deviceId: z.string().uuid().optional(),
-    appRole: PushAppRoleSchema.optional(),
-  });
-export type UnregisterDevicePushTokenRequest = z.infer<typeof unregisterDevicePushTokenRequestSchema>;
+export const unregisterDevicePushTokenRequestSchema = z.object({
+  platform: PushPlatformSchema,
+  devicePushToken: z.string().min(10).max(4096),
+  deviceId: z.string().uuid().optional(),
+  appRole: PushAppRoleSchema.optional(),
+});
+export type UnregisterDevicePushTokenRequest = z.infer<
+  typeof unregisterDevicePushTokenRequestSchema
+>;
+
+/**
+ * Send a test push notification (dev/test only).
+ */
+export const sendTestNotificationRequestSchema = z.object({
+  type: NotificationTypeSchema.optional(),
+});
+export type SendTestNotificationRequest = z.infer<
+  typeof sendTestNotificationRequestSchema
+>;

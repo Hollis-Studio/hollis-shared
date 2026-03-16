@@ -37,6 +37,7 @@ export const SSE_RESOURCE_TYPES = [
   "messages",
   "exercise-performance",
   "labs",
+  "plans",
 ] as const;
 
 export type SSEResourceType = (typeof SSE_RESOURCE_TYPES)[number];
@@ -54,6 +55,7 @@ export const SSE_RESOURCE_TYPE = {
   MESSAGES: "messages" as SSEResourceType,
   EXERCISE_PERFORMANCE: "exercise-performance" as SSEResourceType,
   LABS: "labs" as SSEResourceType,
+  PLANS: "plans" as SSEResourceType,
 } as const;
 
 /**

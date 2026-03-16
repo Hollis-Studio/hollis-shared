@@ -2,6 +2,8 @@
  * @ai-context Admin Notifications domain contracts | SSE-triggered realtime notification types
  *
  * Notification kinds for admin/trainer/clinician realtime alerts.
+ * This is the canonical source of truth for admin realtime notification kinds,
+ * schemas, and event payload contracts.
  *
  * NOTE: These are intentionally PHI-minimal. Payloads should only include IDs
  * and never names, emails, notes, or clinical details.

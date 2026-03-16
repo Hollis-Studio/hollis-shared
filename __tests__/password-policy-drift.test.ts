@@ -170,6 +170,7 @@ describe('Password Policy Drift Detection', () => {
     expect(PASSWORD_POLICY.MIN_ZXCVBN_SCORE).toBe(3);
   });
 
+  // test-quality-ok: assertion is via throw new Error() when violations are found; no-throw = passing test
   it('should not have hardcoded password requirements outside of PASSWORD_POLICY', () => {
     const violations: Violation[] = [];
 

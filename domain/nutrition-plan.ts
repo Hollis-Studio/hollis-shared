@@ -12,6 +12,33 @@
 import { z } from "zod";
 
 // ============================================================================
+// LIFESTYLE GOALS (NutritionPlan.lifestyleGoals JSON field)
+// ============================================================================
+
+/**
+ * Schema for the NutritionPlan.lifestyleGoals JSON column.
+ * Shape: { workoutsPerWeek, sleepHoursTarget, weeklyWeightChangeTarget }
+ *
+ * Field semantics (confirmed from planHelpers.ts and data migration 005):
+ * - workoutsPerWeek: target workout sessions per week (0-14 range)
+ * - sleepHoursTarget: nightly sleep hours target (0-24 range)
+ * - weeklyWeightChangeTarget: weekly weight delta in kg (positive = gain, negative = loss)
+ *
+ * All fields are nullable/optional because the column is Json? (nullable) in Prisma
+ * and individual values within it may be absent in partially-populated legacy rows.
+ */
+export const lifestyleGoalsSchema = z
+  .object({
+    workoutsPerWeek: z.number().int().min(0).max(14).nullable().optional(),
+    sleepHoursTarget: z.number().min(0).max(24).nullable().optional(),
+    weeklyWeightChangeTarget: z.number().nullable().optional(),
+  })
+  .nullable()
+  .optional();
+
+export type LifestyleGoals = z.infer<typeof lifestyleGoalsSchema>;
+
+// ============================================================================
 // NUTRITION PLAN (Coach-Assigned)
 // ============================================================================
 

@@ -9,111 +9,105 @@
  */
 
 import { z } from "zod";
-import type { LabOrderStatus } from "../domain/businessAnalytics";
+import { isoDateSchema } from "../domain";
 import { LabOrderStatusSchema } from "../domain/businessAnalytics";
-import type {
-    LabMetricCategory,
-    LabMetricDirectionality,
+import {
+    LabMappingStatusSchema,
+    LabMetricCategorySchema,
+    LabMetricDirectionalitySchema,
 } from "../domain/labs";
+import { userIdSchema } from "../schemas";
 import type {
-    LabMetricDefinitionSummary,
-    PendingMetricReview,
+    LabMetricSearchResponseFromSchema,
+    PendingMetricsResponseFromSchema,
 } from "./admin-schemas";
-import type { LabObservationInput } from "./admin-types";
+import { labObservationInputSchema } from "./admin-schemas";
 
 // ============================================================================
 // SEARCH & METRIC DEFINITION
 // ============================================================================
 
 /** Parameters for semantic lab metric search */
-export interface LabMetricSearchParams {
+export const labMetricSearchParamsSchema = z.object({
   /** Search query string (semantic search) */
-  q: string;
+  q: z.string(),
   /** Maximum number of results to return */
-  limit?: number;
-}
+  limit: z.number().int().min(1).max(200).optional(),
+});
+
+/** Parameters for semantic lab metric search */
+export type LabMetricSearchParams = z.input<typeof labMetricSearchParamsSchema>;
 
 /** Response for pending metric governance reviews */
-export interface PendingMetricsResponse {
-  metrics: PendingMetricReview[];
-  total: number;
-}
+export type PendingMetricsResponse = PendingMetricsResponseFromSchema;
 
 /** Response from lab metric semantic search */
-export interface LabMetricSearchResponse {
-  results: LabMetricDefinitionSummary[];
-}
+export type LabMetricSearchResponse = LabMetricSearchResponseFromSchema;
 
 /** Input for creating a new lab metric definition */
-export interface CreateLabMetricDefinitionInput {
+export const createLabMetricDefinitionInputSchema = z.object({
   /** Human-readable name for the biomarker */
-  name: string;
+  name: z.string().min(1).max(200),
   /** Unique code identifier (e.g., "HBA1C", "TSH") */
-  code?: string;
+  code: z.string().min(1).max(100).optional(),
   /** Category for grouping */
-  category: LabMetricCategory;
+  category: LabMetricCategorySchema,
   /** Standard unit for this metric */
-  canonicalUnit: string;
+  canonicalUnit: z.string().min(1).max(50),
   /** How to interpret changes in value */
-  directionality: LabMetricDirectionality;
+  directionality: LabMetricDirectionalitySchema,
   /** Threshold for meaningful change (0-1, percentage) */
-  variabilityThreshold?: number | null;
+  variabilityThreshold: z.number().min(0).max(1).nullable().optional(),
   /** Alternative names/abbreviations */
-  aliases?: string[];
+  aliases: z.array(z.string().max(200)).optional(),
   /** Lower bound of the optimal reference range */
-  optimalRangeLow?: number | null;
+  optimalRangeLow: z.number().nullable().optional(),
   /** Upper bound of the optimal reference range */
-  optimalRangeHigh?: number | null;
+  optimalRangeHigh: z.number().nullable().optional(),
   /** User-facing description of what this metric measures and why it matters */
-  description?: string | null;
+  description: z.string().max(500).nullable().optional(),
   /** User ID of the admin who created this definition */
-  createdBy?: string | null;
-}
+  createdBy: userIdSchema.nullable().optional(),
+});
+
+/** Input for creating a new lab metric definition */
+export type CreateLabMetricDefinitionInput = z.input<
+  typeof createLabMetricDefinitionInputSchema
+>;
 
 // ============================================================================
 // EXTRACTION
 // ============================================================================
 
 /** Input for extracting lab data from a document (PDF or image) */
-export interface ExtractLabDataInput {
+export const extractLabDataInputSchema = z.object({
   /** Base64-encoded file content */
-  fileBase64: string;
+  fileBase64: z.string().min(1, "fileBase64 is required"),
   /** MIME type of the file (e.g., 'application/pdf', 'image/jpeg') */
-  mimeType: string;
-}
+  mimeType: z.string().min(1, "mimeType is required"),
+});
+
+/** Input for extracting lab data from a document (PDF or image) */
+export type ExtractLabDataInput = z.input<typeof extractLabDataInputSchema>;
 
 // ============================================================================
 // LAB ORDERS & OBSERVATIONS
 // ============================================================================
 
-/** Response type for a single lab order with all its observations */
-export interface LabOrderDetailResponse {
-  id: string;
-  userId: string;
-  reportDate: string;
-  labName: string | null;
-  labLocation: string | null;
-  specimenType: string | null;
-  orderingProvider: string | null;
-  panelName: string | null;
-  panelCode: string | null;
-  notes: string | null;
-  orderStatus: LabOrderStatus;
-  observations: {
-    id: string;
-    rawAnalyteName: string;
-    rawValueText: string | null;
-    rawUnit: string | null;
-    rawReferenceIntervalLow: number | null;
-    rawReferenceIntervalHigh: number | null;
-    rawFlag: string | null;
-    canonicalValue: number | null;
-    canonicalUnit: string | null;
-    metricDefinitionId: string | null;
-    mappingStatus: string;
-    mappingConfidence: number | null;
-  }[];
-}
+const labOrderDetailObservationSchema = z.object({
+  id: z.string(),
+  rawAnalyteName: z.string(),
+  rawValueText: z.string().nullable(),
+  rawUnit: z.string().nullable(),
+  rawReferenceIntervalLow: z.number().nullable(),
+  rawReferenceIntervalHigh: z.number().nullable(),
+  rawFlag: z.string().nullable(),
+  canonicalValue: z.number().nullable(),
+  canonicalUnit: z.string().nullable(),
+  metricDefinitionId: z.string().nullable(),
+  mappingStatus: LabMappingStatusSchema,
+  mappingConfidence: z.number().nullable(),
+});
 
 /**
  * Zod schema for LabOrderDetailResponse — validates the GET /lab-orders/:id response.
@@ -130,49 +124,59 @@ export const LabOrderDetailResponseSchema = z.object({
   panelCode: z.string().nullable(),
   notes: z.string().nullable(),
   orderStatus: LabOrderStatusSchema,
-  observations: z.array(
-    z.object({
-      id: z.string(),
-      rawAnalyteName: z.string(),
-      rawValueText: z.string().nullable(),
-      rawUnit: z.string().nullable(),
-      rawReferenceIntervalLow: z.number().nullable(),
-      rawReferenceIntervalHigh: z.number().nullable(),
-      rawFlag: z.string().nullable(),
-      canonicalValue: z.number().nullable(),
-      canonicalUnit: z.string().nullable(),
-      metricDefinitionId: z.string().nullable(),
-      mappingStatus: z.string(),
-      mappingConfidence: z.number().nullable(),
-    }),
-  ),
+  observations: z.array(labOrderDetailObservationSchema),
+});
+
+/** Response type for a single lab order with all its observations */
+export type LabOrderDetailResponse = z.infer<
+  typeof LabOrderDetailResponseSchema
+>;
+
+/** Input for attaching observations to an existing lab order */
+export const attachObservationsInputSchema = z.object({
+  observations: z
+    .array(labObservationInputSchema)
+    .min(1, "At least one observation is required"),
+  /** Override the order report date with the finalized report date */
+  actualReportDate: isoDateSchema.optional(),
+  /** If true, transitions the order to RESULTS_PENDING status */
+  transitionToResultsPending: z.boolean().optional(),
+  extractionConfidences: z.record(z.string(), z.number()).nullable().optional(),
+  extractionFragments: z.record(z.string(), z.string()).nullable().optional(),
 });
 
 /** Input for attaching observations to an existing lab order */
-export interface AttachObservationsInput {
-  observations: LabObservationInput[];
-  /** If true, transitions the order to RESULTS_PENDING status */
-  transitionToResultsPending?: boolean;
-}
+export type AttachObservationsInput = z.input<
+  typeof attachObservationsInputSchema
+>;
+
+const pendingLabOrderStatuses = [
+  "ORDERED",
+  "SAMPLE_RECEIVED",
+  "RESULTS_PENDING",
+] as const;
 
 /** Input for creating a new lab order */
-export interface CreateLabOrderInput {
+export const createLabOrderInputSchema = z.object({
   /** Date of the lab report (ISO date string) */
-  reportDate: string;
+  reportDate: isoDateSchema,
   /** Name of the lab panel */
-  panelName: string;
+  panelName: z.string().min(1, "Panel name is required").max(200),
   /** Name of the laboratory */
-  labName?: string;
+  labName: z.string().max(200).optional().nullable(),
   /** Physical location of the lab */
-  labLocation?: string;
+  labLocation: z.string().max(200).optional().nullable(),
   /** Name of the ordering provider */
-  orderingProvider?: string;
+  orderingProvider: z.string().max(200).optional().nullable(),
   /** Type of specimen (e.g., "Blood", "Urine") */
-  specimenType?: string;
+  specimenType: z.string().max(200).optional().nullable(),
   /** Lab code for the panel */
-  panelCode?: string;
+  panelCode: z.string().max(100).optional().nullable(),
   /** Additional notes */
-  notes?: string;
+  notes: z.string().max(2000).nullable().optional(),
   /** Initial order status (defaults to ORDERED) */
-  orderStatus?: "ORDERED" | "SAMPLE_RECEIVED" | "RESULTS_PENDING";
-}
+  orderStatus: LabOrderStatusSchema.extract(pendingLabOrderStatuses).optional(),
+});
+
+/** Input for creating a new lab order */
+export type CreateLabOrderInput = z.input<typeof createLabOrderInputSchema>;

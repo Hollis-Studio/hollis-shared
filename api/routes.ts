@@ -65,8 +65,8 @@ export const AUTH_ROUTES = {
   SIGNUP: "/auth/signup",
   /** POST - Refresh access token using refresh token */
   REFRESH: "/auth/refresh",
-  /** POST - Link OAuth credentials to existing account */
-  LINK: "/auth/link",
+  /** POST - OAuth social sign-in (Apple or Google) with nonce + CSRF state verification */
+  OAUTH_SIGN_IN: "/auth/oauth",
   /** POST - Sign out current session */
   LOGOUT: "/auth/logout",
   /** POST - Request password reset email */
@@ -865,19 +865,19 @@ export type PushRoute = (typeof PUSH_ROUTES)[keyof typeof PUSH_ROUTES];
 
 /**
  * SSE API routes.
- * Base path: /api/sse
+ * Base path: /api/events
  *
  * @group SSE
  */
 export const SSE_ROUTES = {
-  /** POST /api/sse/token - Exchange JWT for SSE token */
-  TOKEN: "/api/sse/token",
+  /** POST /api/events/token - Exchange JWT for short-lived SSE token */
+  TOKEN: "/api/events/token",
 
-  /** GET /api/sse/connect - SSE stream connection */
-  CONNECT: "/api/sse/connect",
+  /** GET /api/events/:userId - SSE stream for user-specific events */
+  CONNECT: "/api/events",
 
-  /** GET /api/sse/stats - Get connection stats (admin only) */
-  STATS: "/api/sse/stats",
+  /** GET /api/events/stats - SSE connection statistics (admin only) */
+  STATS: "/api/events/stats",
 } as const;
 
 /** Type for SSE route values */
@@ -1091,11 +1091,6 @@ export const ROUTE_METADATA: Record<string, RouteMetadata> = {
     method: "POST",
     description: "Refresh access token using refresh token",
     requiresAuth: false,
-  },
-  [AUTH_ROUTES.LINK]: {
-    method: "POST",
-    description: "Link OAuth credentials to existing account",
-    requiresAuth: true,
   },
   [AUTH_ROUTES.LOGOUT]: {
     method: "POST",

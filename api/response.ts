@@ -23,7 +23,8 @@ export interface ApiSuccessResponse<T> {
  * Unwraps the server response envelope `{ success: true, data: T, message?: string }`.
  * Returns the inner `data` value when the envelope is detected; otherwise returns the value as-is.
  *
- * Detection criteria: the value is a non-null object with both `success` and `data` properties.
+ * Detection criteria: the value is a non-null object with both `success` and `data` properties,
+ * and `success === true`.
  * This is safe against paginated responses (e.g. `{ data: [...], pagination: {...} }`)
  * because those lack a `success` property.
  *
@@ -36,6 +37,7 @@ export function unwrapEnvelope<T>(response: ApiSuccessResponse<T> | T): T {
     response != null &&
     typeof response === "object" &&
     "success" in response &&
+    (response as { success?: unknown }).success === true &&
     "data" in response
   ) {
     return (response as ApiSuccessResponse<T>).data;

@@ -73,19 +73,19 @@ export type PushRoute = (typeof PUSH_ROUTES)[keyof typeof PUSH_ROUTES];
 
 /**
  * SSE API routes.
- * Base path: /api/sse
+ * Base path: /api/events
  *
  * @group SSE
  */
 export const SSE_ROUTES = {
-  /** POST /api/sse/token - Exchange JWT for SSE token */
-  TOKEN: '/api/sse/token',
+  /** POST /api/events/token - Exchange JWT for short-lived SSE token */
+  TOKEN: '/api/events/token',
 
-  /** GET /api/sse/connect - SSE stream connection */
-  CONNECT: '/api/sse/connect',
+  /** GET /api/events/:userId - SSE stream for user-specific events */
+  CONNECT: '/api/events',
 
-  /** GET /api/sse/stats - Get connection stats (admin only) */
-  STATS: '/api/sse/stats',
+  /** GET /api/events/stats - SSE connection statistics (admin only) */
+  STATS: '/api/events/stats',
 } as const;
 
 /** Type for SSE route values */

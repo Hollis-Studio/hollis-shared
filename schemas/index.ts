@@ -21,6 +21,7 @@
 
 import { z } from "zod";
 import { baseDocumentSchema, isoDateSchema } from "../domain/common";
+import { BiologicalSexSchema, PrimaryGoalSchema } from "../domain/user";
 import { passwordSchema } from "../password";
 
 // ============================================================================
@@ -235,8 +236,8 @@ export const signupBodySchema = z.object({
       heightCm: heightCmSchema.optional(),
       weightKg: weightKgSchema.optional(),
       dateOfBirth: z.string().optional(), // ISO date string
-      biologicalSex: z.enum(SIGNUP_SEX_OPTIONS).optional(),
-      primaryGoal: z.string().optional(),
+      biologicalSex: BiologicalSexSchema.optional(),
+      primaryGoal: PrimaryGoalSchema.optional(),
     })
     .optional(),
 });
@@ -257,11 +258,89 @@ export const emailSchema = z.string().email("Invalid email address");
 export const uuidSchema = z.string().uuid("Invalid UUID format");
 
 /**
- * Phone number validation schema (flexible international format)
+ * Phone number validation schema (strict E.164 international format)
+ * Requires canonical E.164 formatting: leading `+`, international country code,
+ * digits only, and a plausible international length.
+ * Use for API payloads and backend validation where consistent format is required.
  */
+const STRICT_E164_PHONE_REGEX = /^\+[1-9]\d{7,14}$/u;
+
+const LENIENT_PHONE_ALLOWED_CHARS_REGEX = /^[\d\s\-+().]{7,}$/u;
+
+const countPhoneDigits = (value: string): number =>
+  (value.match(/\d/g) ?? []).length;
+
+export const STRICT_E164_PHONE_MESSAGE =
+  "Enter a phone number in international format, like +14155552671";
+
+export const LENIENT_PHONE_MESSAGE =
+  "Enter a valid phone number with at least 7 digits";
+
 export const phoneSchema = z
   .string()
-  .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number format");
+  .regex(STRICT_E164_PHONE_REGEX, STRICT_E164_PHONE_MESSAGE);
+
+/**
+ * Phone number validation schema (lenient format)
+ * Accepts formatted phone numbers with spaces, dashes, parentheses, etc.
+ * Requires at least 7 digits so punctuation-only placeholders do not pass.
+ * Use for user-facing forms where UX accepts common formatting patterns.
+ */
+export const phoneSchemaLenient = z
+  .string()
+  .regex(LENIENT_PHONE_ALLOWED_CHARS_REGEX, LENIENT_PHONE_MESSAGE)
+  .refine((value) => countPhoneDigits(value) >= 7, LENIENT_PHONE_MESSAGE);
+
+/**
+ * Normalizes a user-facing phone input to canonical E.164 when possible.
+ *
+ * This is intended for UI edges that accept punctuation/spaces or national-format
+ * numbers, but must submit canonical E.164 across API boundaries.
+ *
+ * Behavior:
+ * - `+1 (415) 555-2671` -> `+14155552671`
+ * - `(415) 555-2671` -> `+14155552671` (defaults to US country code `1`)
+ * - `14155552671` -> `+14155552671`
+ * - invalid strings (letters, too few digits, etc.) -> `null`
+ */
+export function normalizePhoneToE164(
+  value: string,
+  options?: {
+    defaultCountryCode?: string;
+  },
+): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  if (!phoneSchemaLenient.safeParse(trimmed).success) {
+    return null;
+  }
+
+  const digits = trimmed.replace(/\D/g, "");
+  if (!digits) {
+    return null;
+  }
+
+  const defaultCountryCode = options?.defaultCountryCode ?? "1";
+
+  const candidates = trimmed.startsWith("+")
+    ? [`+${digits}`]
+    : digits.length === 10
+      ? [`+${defaultCountryCode}${digits}`]
+      : digits.length === 11 && digits.startsWith(defaultCountryCode)
+        ? [`+${digits}`]
+        : [`+${digits}`];
+
+  for (const candidate of candidates) {
+    if (phoneSchema.safeParse(candidate).success) {
+      return candidate;
+    }
+  }
+
+  return null;
+}
 
 /**
  * URL validation schema

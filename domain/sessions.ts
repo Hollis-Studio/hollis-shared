@@ -579,3 +579,20 @@ export function getEffectiveRemaining(
   if (balance.allocated === -1) return -1; // Unlimited
   return Math.max(0, balance.remaining);
 }
+
+// ============================================================================
+// LEGACY RESPONSE SHAPES
+// ============================================================================
+
+/**
+ * @deprecated Legacy session history response shape — use canonical paginated shape for new endpoints.
+ * The canonical shape is { data: SessionUsageContract[], pagination: { total, limit, offset, hasMore } }.
+ * Kept for backward compatibility with mobile clients < v4.0.
+ * See: server/src/routes/sessions.ts GET /history endpoint.
+ */
+export interface LegacySessionHistoryResponse {
+  usages: SessionUsageContract[];
+  total: number;
+  limit: number;
+  offset: number;
+}
