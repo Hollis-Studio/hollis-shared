@@ -13,6 +13,8 @@
  * deps: none | consumers: all codebases
  */
 
+import { USER_TIER_PRICES_DOLLARS, type UserTier } from "../domain/user";
+
 // ============================================================================
 // STORAGE KEYS
 // ============================================================================
@@ -180,9 +182,79 @@ export const UNIT_CONVERSION = {
   FT_PER_M: 3.28084,
 } as const;
 
-// Monthly price in cents for each membership tier (used for pipeline MRR estimates)
-export const TIER_MONTHLY_PRICE: Record<string, number> = {
-  ESSENTIALS: 799,
-  CORE: 1349,
-  CONCIERGE: 1999,
-};
+/**
+ * Canonical monthly membership pricing in whole US dollars.
+ *
+ * This alias preserves existing constants imports while delegating to the
+ * canonical user-domain pricing contract. Convert to cents with `price * 100`
+ * only at integrations that explicitly require cents (for example, Stripe).
+ */
+export const TIER_MONTHLY_PRICE_DOLLARS: Record<UserTier, number> =
+  USER_TIER_PRICES_DOLLARS;
+
+/**
+ * @deprecated Use `TIER_MONTHLY_PRICE_DOLLARS` or `USER_TIER_PRICES_DOLLARS`
+ * for explicit units. This legacy alias is dollar-denominated, not cents.
+ */
+export const TIER_MONTHLY_PRICE: Record<UserTier, number> =
+  TIER_MONTHLY_PRICE_DOLLARS;
+
+// ============================================================================
+// UPLOAD LIMITS
+// ============================================================================
+
+/** Maximum file sizes in bytes by category */
+export const UPLOAD_LIMITS = {
+  /** Default max file size (10 MB) */
+  DEFAULT_MAX_FILE_SIZE_BYTES: 10 * 1024 * 1024,
+  /** Max video file size (50 MB) */
+  MAX_VIDEO_FILE_SIZE_BYTES: 50 * 1024 * 1024,
+  /** Max number of files in a single upload batch */
+  MAX_FILES_PER_UPLOAD: 5,
+  /** Max base64-encoded image payload characters (~10 MB decoded) */
+  MAX_IMAGE_BASE64_CHARS: 13_500_000,
+} as const;
+
+// ============================================================================
+// OAUTH PROVIDERS
+// ============================================================================
+
+/**
+ * Canonical list of supported OAuth providers for social sign-in.
+ * Single source of truth used by shared contracts, server validation, and client code.
+ * All provider string comparisons must reference this constant — no magic strings.
+ */
+export const OAUTH_PROVIDERS = ["apple", "google"] as const;
+
+/**
+ * Union type of supported OAuth provider identifiers.
+ * Derived from OAUTH_PROVIDERS so it stays in sync automatically.
+ */
+export type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
+
+// ============================================================================
+// SLEEP STAGES (normalized cross-platform strings)
+// ============================================================================
+
+/**
+ * Normalized sleep stage strings used across platform health integrations.
+ *
+ * These are the canonical output strings produced after mapping platform-specific
+ * numeric codes to a common vocabulary:
+ * - Health Connect (Android): uses integer codes 0-6 (mapped in useHealthConnect.ts)
+ * - HealthKit (iOS): uses HKCategoryValueSleepAnalysis integer codes (mapped in useHealthKit.ts)
+ *
+ * Platform-specific numeric constants (HC_SLEEP_STAGE_CODE, SLEEP_VALUE) remain
+ * local to their respective hook files — only the normalized output strings are shared.
+ */
+export const SLEEP_STAGE = {
+  UNKNOWN: "unknown",
+  AWAKE: "awake",
+  LIGHT: "light",
+  DEEP: "deep",
+  REM: "rem",
+  OUT_OF_BED: "out_of_bed",
+  SLEEPING: "sleeping",
+} as const;
+
+export type SleepStage = (typeof SLEEP_STAGE)[keyof typeof SLEEP_STAGE];

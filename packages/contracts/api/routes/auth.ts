@@ -23,8 +23,8 @@ export const AUTH_ROUTES = {
   VALIDATE_BARCODE: "/auth/validate-barcode",
   /** POST - Refresh access token using refresh token */
   REFRESH: "/auth/refresh",
-  /** POST - Link OAuth credentials to existing account */
-  LINK: "/auth/link",
+  /** POST - OAuth social sign-in (Apple or Google) with nonce + CSRF state verification */
+  OAUTH_SIGN_IN: "/auth/oauth",
   /** POST - Sign out current session */
   LOGOUT: "/auth/logout",
   /** POST - Request password reset email (rate limited, no account enumeration) */

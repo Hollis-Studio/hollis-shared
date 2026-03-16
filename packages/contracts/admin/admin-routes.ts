@@ -23,22 +23,26 @@
  */
 export const ADMIN_PATIENT_ROUTES = {
   /** GET - List all patients */
-  LIST: '/api/admin/patients',
+  LIST: "/api/admin/patients",
 
   /** GET - Get patient details by ID */
   get: (userId: string) => `/api/admin/patients/${userId}` as const,
 
   /** GET - Get patient compliance metrics */
-  compliance: (userId: string) => `/api/admin/patients/${userId}/compliance` as const,
+  compliance: (userId: string) =>
+    `/api/admin/patients/${userId}/compliance` as const,
 
   /** GET - Get patient health progress */
-  healthProgress: (userId: string) => `/api/admin/patients/${userId}/health-progress` as const,
+  healthProgress: (userId: string) =>
+    `/api/admin/patients/${userId}/health-progress` as const,
 
   /** GET - Get patient health progress history */
-  healthProgressHistory: (userId: string) => `/api/admin/patients/${userId}/health-progress/history` as const,
+  healthProgressHistory: (userId: string) =>
+    `/api/admin/patients/${userId}/health-progress/history` as const,
 
   /** POST - Assign clinician to patient */
-  assignClinician: (patientId: string) => `/api/admin/patients/${patientId}/assign-clinician` as const,
+  assignClinician: (patientId: string) =>
+    `/api/admin/patients/${patientId}/assign-clinician` as const,
 
   /** GET - Get patient journal entries */
   journal: (userId: string) => `/api/admin/patients/${userId}/journal` as const,
@@ -47,7 +51,8 @@ export const ADMIN_PATIENT_ROUTES = {
   events: (userId: string) => `/api/admin/patients/${userId}/events` as const,
 
   /** GET - Get patient health goals */
-  healthGoals: (userId: string) => `/api/admin/patients/${userId}/health-goals` as const,
+  healthGoals: (userId: string) =>
+    `/api/admin/patients/${userId}/health-goals` as const,
 
   /** PUT - Update patient health goal by metric key */
   updateHealthGoal: (userId: string, metricKey: string) =>
@@ -58,22 +63,28 @@ export const ADMIN_PATIENT_ROUTES = {
     `/api/admin/patients/${userId}/health-goals/${metricKey}` as const,
 
   /** GET - Get patient workouts */
-  workouts: (userId: string) => `/api/admin/patients/${userId}/workouts` as const,
+  workouts: (userId: string) =>
+    `/api/admin/patients/${userId}/workouts` as const,
 
   /** DELETE - Delete patient workout by date */
-  deleteWorkout: (userId: string, date: string) => `/api/admin/patients/${userId}/workouts/${date}` as const,
+  deleteWorkout: (userId: string, date: string) =>
+    `/api/admin/patients/${userId}/workouts/${date}` as const,
 
   /** GET - Get patient session notes */
-  sessionNotes: (userId: string) => `/api/admin/patients/${userId}/session-notes` as const,
+  sessionNotes: (userId: string) =>
+    `/api/admin/patients/${userId}/session-notes` as const,
 
   /** GET - Get patient AI context */
-  aiContext: (userId: string) => `/api/admin/patients/${userId}/ai-context` as const,
+  aiContext: (userId: string) =>
+    `/api/admin/patients/${userId}/ai-context` as const,
 
   /** GET - Get patient permanent notes */
-  permanentNotes: (userId: string) => `/api/admin/patients/${userId}/permanent-notes` as const,
+  permanentNotes: (userId: string) =>
+    `/api/admin/patients/${userId}/permanent-notes` as const,
 
   /** POST - Create patient permanent note */
-  createPermanentNote: (userId: string) => `/api/admin/patients/${userId}/permanent-notes` as const,
+  createPermanentNote: (userId: string) =>
+    `/api/admin/patients/${userId}/permanent-notes` as const,
 
   /** PATCH - Update patient permanent note */
   updatePermanentNote: (userId: string, noteId: string) =>
@@ -84,34 +95,44 @@ export const ADMIN_PATIENT_ROUTES = {
     `/api/admin/patients/${userId}/permanent-notes/${noteId}` as const,
 
   /** POST - Add patient clinical note */
-  addNote: (patientId: string) => `/api/admin/patients/${patientId}/notes` as const,
+  addNote: (patientId: string) =>
+    `/api/admin/patients/${patientId}/notes` as const,
 
   /** PUT - Update patient clinical note */
-  updateNote: (userId: string, noteId: string) => `/api/admin/patients/${userId}/notes/${noteId}` as const,
+  updateNote: (userId: string, noteId: string) =>
+    `/api/admin/patients/${userId}/notes/${noteId}` as const,
 
   /** DELETE - Delete patient clinical note */
-  deleteNote: (userId: string, noteId: string) => `/api/admin/patients/${userId}/notes/${noteId}` as const,
+  deleteNote: (userId: string, noteId: string) =>
+    `/api/admin/patients/${userId}/notes/${noteId}` as const,
 
   /** POST - Create lab report */
-  createLabReport: (userId: string) => `/api/admin/patients/${userId}/labs/reports` as const,
+  createLabReport: (userId: string) =>
+    `/api/admin/patients/${userId}/labs/reports` as const,
 
   /** DELETE - Delete lab report */
-  deleteLabReport: (userId: string, reportId: string) => `/api/admin/patients/${userId}/labs/reports/${reportId}` as const,
+  deleteLabReport: (userId: string, reportId: string) =>
+    `/api/admin/patients/${userId}/labs/reports/${reportId}` as const,
 
   /** GET - Get patient intake questionnaire */
-  intakeQuestionnaire: (userId: string) => `/api/admin/patients/${userId}/intake-questionnaire` as const,
+  intakeQuestionnaire: (userId: string) =>
+    `/api/admin/patients/${userId}/intake-questionnaire` as const,
 
   /** POST - Submit client intake */
-  submitIntake: (userId: string) => `/api/admin/patients/${userId}/intake` as const,
+  submitIntake: (userId: string) =>
+    `/api/admin/patients/${userId}/intake` as const,
 
   /** PUT - Update patient profile */
-  updateProfile: (userId: string) => `/api/admin/patients/${userId}/profile` as const,
+  updateProfile: (userId: string) =>
+    `/api/admin/patients/${userId}/profile` as const,
 
   /** PUT - Update patient goals */
-  updateGoals: (userId: string) => `/api/admin/patients/${userId}/goals` as const,
+  updateGoals: (userId: string) =>
+    `/api/admin/patients/${userId}/goals` as const,
 
   /** PUT - Update patient admin controls */
-  updateAdminControls: (userId: string) => `/api/admin/patients/${userId}/admin-controls` as const,
+  updateAdminControls: (userId: string) =>
+    `/api/admin/patients/${userId}/admin-controls` as const,
 
   /** PUT - Update patient daily metrics */
   updateDailyMetrics: (userId: string, date: string) =>
@@ -131,7 +152,8 @@ export const ADMIN_STRATEGY_ROUTES = {
   list: (userId: string) => `/api/admin/patients/${userId}/strategies` as const,
 
   /** POST - Create patient strategy */
-  create: (userId: string) => `/api/admin/patients/${userId}/strategies` as const,
+  create: (userId: string) =>
+    `/api/admin/patients/${userId}/strategies` as const,
 
   /** GET - Get patient strategy by ID */
   get: (userId: string, strategyId: string) =>
@@ -174,10 +196,12 @@ export const ADMIN_STRATEGY_ROUTES = {
     `/api/admin/patients/${userId}/strategies/${strategyId}/sync` as const,
 
   /** POST - Fetch goal value */
-  fetchValue: (userId: string) => `/api/admin/patients/${userId}/strategies/fetch-value` as const,
+  fetchValue: (userId: string) =>
+    `/api/admin/patients/${userId}/strategies/fetch-value` as const,
 
   /** POST - Generate strategy via SSE */
-  generate: (userId: string) => `/api/admin/patients/${userId}/strategies/generate` as const,
+  generate: (userId: string) =>
+    `/api/admin/patients/${userId}/strategies/generate` as const,
 
   /** POST - Continue strategy generation after clarification */
   continueGeneration: (userId: string) =>
@@ -194,10 +218,11 @@ export const ADMIN_STRATEGY_ROUTES = {
  */
 export const ADMIN_CLINICIAN_ROUTES = {
   /** GET - List all clinicians */
-  LIST: '/api/admin/clinicians',
+  LIST: "/api/admin/clinicians",
 
   /** GET - Get clinician availability */
-  availability: (clinicianId: string) => `/api/admin/clinicians/${clinicianId}/availability` as const,
+  availability: (clinicianId: string) =>
+    `/api/admin/clinicians/${clinicianId}/availability` as const,
 
   /** POST - Upsert clinician availability */
   upsertAvailability: (clinicianId: string) =>
@@ -214,10 +239,12 @@ export const ADMIN_CLINICIAN_ROUTES = {
  */
 export const ADMIN_PROVIDER_ROUTES = {
   /** GET - Get provider schedule */
-  schedule: (providerId: string) => `/api/admin/providers/${providerId}/schedule` as const,
+  schedule: (providerId: string) =>
+    `/api/admin/providers/${providerId}/schedule` as const,
 
   /** PUT - Update provider schedule */
-  updateSchedule: (providerId: string) => `/api/admin/providers/${providerId}/schedule` as const,
+  updateSchedule: (providerId: string) =>
+    `/api/admin/providers/${providerId}/schedule` as const,
 } as const;
 
 // ============================================================================
@@ -230,10 +257,11 @@ export const ADMIN_PROVIDER_ROUTES = {
  */
 export const ADMIN_MESSAGE_ROUTES = {
   /** POST - Send message */
-  SEND: '/api/admin/messages',
+  SEND: "/api/admin/messages",
 
   /** GET - Get user conversations */
-  conversations: (userId: string) => `/api/admin/messages/${userId}/conversations` as const,
+  conversations: (userId: string) =>
+    `/api/admin/messages/${userId}/conversations` as const,
 
   /** GET - Get message thread */
   thread: (userId: string, partnerId: string) =>
@@ -243,7 +271,8 @@ export const ADMIN_MESSAGE_ROUTES = {
   delete: (messageId: string) => `/api/admin/messages/${messageId}` as const,
 
   /** POST - Mark messages as read */
-  markRead: (userId: string) => `/api/admin/messages/${userId}/mark-read` as const,
+  markRead: (userId: string) =>
+    `/api/admin/messages/${userId}/mark-read` as const,
 } as const;
 
 // ============================================================================
@@ -256,16 +285,16 @@ export const ADMIN_MESSAGE_ROUTES = {
  */
 export const ADMIN_EXERCISE_ROUTES = {
   /** GET - List exercises (with filters) */
-  LIST: '/api/admin/exercises',
+  LIST: "/api/admin/exercises",
 
   /** GET - Get exercise categories */
-  CATEGORIES: '/api/admin/exercises/categories',
+  CATEGORIES: "/api/admin/exercises/categories",
 
   /** GET - Get exercise by ID */
   get: (id: string) => `/api/admin/exercises/${id}` as const,
 
   /** POST - Create exercise */
-  CREATE: '/api/admin/exercises',
+  CREATE: "/api/admin/exercises",
 
   /** PUT - Update exercise */
   update: (id: string) => `/api/admin/exercises/${id}` as const,
@@ -284,19 +313,22 @@ export const ADMIN_EXERCISE_ROUTES = {
  */
 export const ADMIN_BOOKING_ROUTES = {
   /** GET - List appointments with optional filters */
-  LIST: '/api/admin/appointments',
+  LIST: "/api/admin/appointments",
 
   /** GET - Get single appointment by ID */
-  get: (appointmentId: string) => `/api/admin/appointments/${appointmentId}` as const,
+  get: (appointmentId: string) =>
+    `/api/admin/appointments/${appointmentId}` as const,
 
   /** POST - Create appointment for a patient */
-  CREATE: '/api/admin/appointments',
+  CREATE: "/api/admin/appointments",
 
   /** PUT - Update appointment */
-  update: (appointmentId: string) => `/api/admin/appointments/${appointmentId}` as const,
+  update: (appointmentId: string) =>
+    `/api/admin/appointments/${appointmentId}` as const,
 
   /** POST - Cancel appointment */
-  cancel: (appointmentId: string) => `/api/admin/appointments/${appointmentId}/cancel` as const,
+  cancel: (appointmentId: string) =>
+    `/api/admin/appointments/${appointmentId}/cancel` as const,
 } as const;
 
 // ============================================================================
@@ -309,7 +341,7 @@ export const ADMIN_BOOKING_ROUTES = {
  */
 export const ADMIN_WORKOUT_ROUTES = {
   /** POST - Upsert workout plan */
-  UPSERT: '/api/admin/workouts/upsert',
+  UPSERT: "/api/admin/workouts/upsert",
 } as const;
 
 // ============================================================================
@@ -322,7 +354,7 @@ export const ADMIN_WORKOUT_ROUTES = {
  */
 export const ADMIN_SESSION_NOTES_ROUTES = {
   /** POST - Create session note */
-  CREATE: '/api/admin/session-notes',
+  CREATE: "/api/admin/session-notes",
 
   /** PUT - Update session note */
   update: (noteId: string) => `/api/admin/session-notes/${noteId}` as const,
@@ -341,10 +373,10 @@ export const ADMIN_SESSION_NOTES_ROUTES = {
  */
 export const ADMIN_REGISTRATION_ROUTES = {
   /** GET - List registrations */
-  LIST: '/api/admin/registrations',
+  LIST: "/api/admin/registrations",
 
   /** POST - Create registration */
-  CREATE: '/api/admin/registrations',
+  CREATE: "/api/admin/registrations",
 
   /** POST - Approve registration */
   approve: (id: string) => `/api/admin/registrations/${id}/approve` as const,
@@ -366,37 +398,37 @@ export const ADMIN_REGISTRATION_ROUTES = {
  */
 export const ADMIN_ANALYTICS_ROUTES = {
   /** GET - Get CRM analytics */
-  ANALYTICS: '/api/admin/analytics',
+  ANALYTICS: "/api/admin/analytics",
 
   /** GET - Get health progress overview */
-  HEALTH_PROGRESS_OVERVIEW: '/api/admin/health-progress/overview',
+  HEALTH_PROGRESS_OVERVIEW: "/api/admin/health-progress/overview",
 
   /** GET - Latest snapshot + trend data */
-  BUSINESS_SNAPSHOT: '/api/admin/analytics/business-snapshot',
+  BUSINESS_SNAPSHOT: "/api/admin/analytics/business-snapshot",
 
   /** GET - Population health improvements */
-  CLINICAL_IMPACT: '/api/admin/analytics/clinical-impact',
+  CLINICAL_IMPACT: "/api/admin/analytics/clinical-impact",
 
   /** GET - All clients with compliance scores */
-  COMPLIANCE_HEATMAP: '/api/admin/analytics/compliance-heatmap',
+  COMPLIANCE_HEATMAP: "/api/admin/analytics/compliance-heatmap",
 
   /** GET - Trainers ranked by effectiveness */
-  TRAINER_LEADERBOARD: '/api/admin/analytics/trainer-leaderboard',
+  TRAINER_LEADERBOARD: "/api/admin/analytics/trainer-leaderboard",
 
   /** GET - Lab orders by status (Kanban data) */
-  LAB_PIPELINE: '/api/admin/analytics/lab-pipeline',
+  LAB_PIPELINE: "/api/admin/analytics/lab-pipeline",
 
   /** GET - Lead pipeline stages with counts */
-  SALES_FUNNEL: '/api/admin/analytics/sales-funnel',
+  SALES_FUNNEL: "/api/admin/analytics/sales-funnel",
 
   /** GET - Red flag watchlist */
-  AT_RISK_CLIENTS: '/api/admin/analytics/at-risk-clients',
+  AT_RISK_CLIENTS: "/api/admin/analytics/at-risk-clients",
 
   /** GET - Referral tree */
-  REFERRAL_TREE: '/api/admin/analytics/referral-tree',
+  REFERRAL_TREE: "/api/admin/analytics/referral-tree",
 
   /** POST - AI-powered natural language analytics query */
-  AI_QUERY: '/api/admin/analytics/ai-query',
+  AI_QUERY: "/api/admin/analytics/ai-query",
 } as const;
 
 // ============================================================================
@@ -409,13 +441,14 @@ export const ADMIN_ANALYTICS_ROUTES = {
  */
 export const ADMIN_USERS_ROUTES = {
   /** GET - Search users */
-  SEARCH: '/api/admin/users/search',
+  SEARCH: "/api/admin/users/search",
 
   /** POST - Admin-initiated MFA reset for locked-out users (requires step-up auth) */
   resetMfa: (userId: string) => `/api/admin/users/${userId}/mfa/reset` as const,
 
   /** GET - Get MFA status for a specific user */
-  mfaStatus: (userId: string) => `/api/admin/users/${userId}/mfa/status` as const,
+  mfaStatus: (userId: string) =>
+    `/api/admin/users/${userId}/mfa/status` as const,
 } as const;
 
 // ============================================================================
@@ -428,23 +461,24 @@ export const ADMIN_USERS_ROUTES = {
  */
 export const ADMIN_LAB_ROUTES = {
   /** POST - Extract lab data from PDF */
-  EXTRACT: '/api/admin/labs/extract',
+  EXTRACT: "/api/admin/labs/extract",
 
   /** POST - Create verified lab report for a patient */
-  reports: (userId: string) => `/api/admin/patients/${userId}/labs/reports` as const,
+  reports: (userId: string) =>
+    `/api/admin/patients/${userId}/labs/reports` as const,
 
   /** DELETE - Delete lab report for a patient */
   deleteReport: (userId: string, reportId: string) =>
     `/api/admin/patients/${userId}/labs/reports/${reportId}` as const,
 
   /** GET - Search lab metric definitions */
-  METRIC_SEARCH: '/api/admin/labs/metrics/search',
+  METRIC_SEARCH: "/api/admin/labs/metrics/search",
 
   /** POST - Create lab metric definition */
-  METRIC_CREATE: '/api/admin/labs/metrics',
+  METRIC_CREATE: "/api/admin/labs/metrics",
 
   /** Base path for metric governance operations */
-  METRICS: '/api/admin/labs/metrics',
+  METRICS: "/api/admin/labs/metrics",
 
   /** PATCH - Update lab order status */
   status: (labId: string) => `/api/admin/labs/${labId}/status` as const,
@@ -454,13 +488,16 @@ export const ADMIN_LAB_ROUTES = {
   getOrder: (orderId: string) => `/api/admin/labs/orders/${orderId}` as const,
 
   /** DELETE - Delete lab order by ID */
-  deleteOrder: (orderId: string) => `/api/admin/labs/orders/${orderId}` as const,
+  deleteOrder: (orderId: string) =>
+    `/api/admin/labs/orders/${orderId}` as const,
 
   /** POST - Create lab order (without observations) */
-  createOrder: (userId: string) => `/api/admin/patients/${userId}/labs/orders` as const,
+  createOrder: (userId: string) =>
+    `/api/admin/patients/${userId}/labs/orders` as const,
 
   /** GET - Get pending orders for a patient */
-  pendingOrders: (userId: string) => `/api/admin/patients/${userId}/labs/orders/pending` as const,
+  pendingOrders: (userId: string) =>
+    `/api/admin/patients/${userId}/labs/orders/pending` as const,
 
   /** PATCH - Attach observations to existing order */
   attachObservations: (userId: string, orderId: string) =>
@@ -477,19 +514,22 @@ export const ADMIN_LAB_ROUTES = {
  */
 export const ADMIN_TRAINER_ROUTES = {
   /** GET - List all trainers (users with TRAINER or ADMIN role) */
-  LIST: '/api/admin/trainers',
+  LIST: "/api/admin/trainers",
 
   /** POST - Create trainer assignment */
-  ASSIGNMENTS: '/api/admin/trainer-assignments',
+  ASSIGNMENTS: "/api/admin/trainer-assignments",
 
   /** DELETE - Remove trainer assignment */
-  deleteAssignment: (id: string) => `/api/admin/trainer-assignments/${id}` as const,
+  deleteAssignment: (id: string) =>
+    `/api/admin/trainer-assignments/${id}` as const,
 
   /** GET - Get client's trainer assignments */
-  clientAssignments: (clientId: string) => `/api/admin/clients/${clientId}/trainer-assignments` as const,
+  clientAssignments: (clientId: string) =>
+    `/api/admin/clients/${clientId}/trainer-assignments` as const,
 
   /** GET - Get primary trainer for a client */
-  primaryTrainer: (clientId: string) => `/api/admin/clients/${clientId}/primary-trainer` as const,
+  primaryTrainer: (clientId: string) =>
+    `/api/admin/clients/${clientId}/primary-trainer` as const,
 } as const;
 
 // ============================================================================
@@ -502,7 +542,7 @@ export const ADMIN_TRAINER_ROUTES = {
  */
 export const ADMIN_NUTRITION_ROUTES = {
   /** POST - Generate nutrition plan */
-  GENERATE: '/api/admin/nutrition/generate',
+  GENERATE: "/api/admin/nutrition/generate",
 } as const;
 
 // ============================================================================
@@ -515,7 +555,7 @@ export const ADMIN_NUTRITION_ROUTES = {
  */
 export const ADMIN_AI_ROUTES = {
   /** POST - Generate workout plan */
-  GENERATE_WORKOUT_PLAN: '/api/ai/generate-workout-plan',
+  GENERATE_WORKOUT_PLAN: "/api/ai/generate-workout-plan",
 } as const;
 
 // ============================================================================
@@ -528,7 +568,7 @@ export const ADMIN_AI_ROUTES = {
  */
 export const ADMIN_UPLOAD_ROUTES = {
   /** POST - Upload file */
-  UPLOAD: '/api/upload',
+  UPLOAD: "/api/upload",
 } as const;
 
 // ============================================================================
@@ -541,25 +581,25 @@ export const ADMIN_UPLOAD_ROUTES = {
  */
 export const ADMIN_BILLING_ANALYTICS_ROUTES = {
   /** GET - Monthly Recurring Revenue */
-  MRR: '/api/admin/billing-analytics/mrr',
+  MRR: "/api/admin/billing-analytics/mrr",
 
   /** GET - Churn metrics */
-  CHURN: '/api/admin/billing-analytics/churn',
+  CHURN: "/api/admin/billing-analytics/churn",
 
   /** GET - Lifetime Value metrics */
-  LTV: '/api/admin/billing-analytics/ltv',
+  LTV: "/api/admin/billing-analytics/ltv",
 
   /** GET - Inventory analytics */
-  INVENTORY: '/api/admin/billing-analytics/inventory',
+  INVENTORY: "/api/admin/billing-analytics/inventory",
 
   /** GET - Revenue over time */
-  REVENUE: '/api/admin/billing-analytics/revenue',
+  REVENUE: "/api/admin/billing-analytics/revenue",
 
   /** GET - Combined analytics summary */
-  SUMMARY: '/api/admin/billing-analytics/summary',
+  SUMMARY: "/api/admin/billing-analytics/summary",
 
   /** GET - List delinquent users */
-  DELINQUENT_USERS: '/api/admin/billing-analytics/delinquent-users',
+  DELINQUENT_USERS: "/api/admin/billing-analytics/delinquent-users",
 
   /** POST - Send delinquent user to collections */
   sendToCollections: (userId: string) =>
@@ -570,7 +610,7 @@ export const ADMIN_BILLING_ANALYTICS_ROUTES = {
     `/api/admin/billing-analytics/delinquent-users/${userId}/notes` as const,
 
   /** GET - List payment disputes */
-  DISPUTES: '/api/admin/billing-analytics/disputes',
+  DISPUTES: "/api/admin/billing-analytics/disputes",
 
   /** PATCH - Update dispute resolution */
   updateDisputeResolution: (disputeId: string) =>
@@ -587,16 +627,18 @@ export const ADMIN_BILLING_ANALYTICS_ROUTES = {
  */
 export const ADMIN_PAYMENT_ROUTES = {
   /** GET - Stripe publishable key config */
-  CONFIG: '/api/admin/payments/config',
+  CONFIG: "/api/admin/payments/config",
 
   /** POST - Create SetupIntent for saving payment method */
-  SETUP_INTENT: '/api/admin/payments/setup-intent',
+  SETUP_INTENT: "/api/admin/payments/setup-intent",
 
   /** GET - List payment methods for user */
-  paymentMethods: (userId: string) => `/api/admin/payments/payment-methods/${userId}` as const,
+  paymentMethods: (userId: string) =>
+    `/api/admin/payments/payment-methods/${userId}` as const,
 
   /** POST - Attach payment method to user */
-  attachPaymentMethod: (userId: string) => `/api/admin/payments/payment-methods/${userId}` as const,
+  attachPaymentMethod: (userId: string) =>
+    `/api/admin/payments/payment-methods/${userId}` as const,
 
   /** DELETE - Remove payment method */
   detachPaymentMethod: (userId: string, paymentMethodId: string) =>
@@ -607,13 +649,13 @@ export const ADMIN_PAYMENT_ROUTES = {
     `/api/admin/payments/payment-methods/${userId}/default` as const,
 
   /** POST - Collect one-time payment */
-  COLLECT: '/api/admin/payments/collect',
+  COLLECT: "/api/admin/payments/collect",
 
   /** POST - Refund a payment */
-  REFUND: '/api/admin/payments/refund',
+  REFUND: "/api/admin/payments/refund",
 
   /** POST - Retry failed invoice payment */
-  RETRY_INVOICE: '/api/admin/payments/retry-invoice',
+  RETRY_INVOICE: "/api/admin/payments/retry-invoice",
 
   /** GET - Get payment history for user */
   history: (userId: string) => `/api/admin/payments/history/${userId}` as const,
@@ -629,19 +671,21 @@ export const ADMIN_PAYMENT_ROUTES = {
  */
 export const ADMIN_SUBSCRIPTION_ROUTES = {
   /** GET - List subscriptions with optional filters */
-  LIST: '/api/admin/subscriptions',
+  LIST: "/api/admin/subscriptions",
 
   /** POST - Create subscription */
-  CREATE: '/api/admin/subscriptions',
+  CREATE: "/api/admin/subscriptions",
 
   /** GET - Get subscription by ID */
   get: (id: string) => `/api/admin/subscriptions/${id}` as const,
 
   /** GET - Get user's active subscription */
-  forUser: (userId: string) => `/api/admin/subscriptions/user/${userId}` as const,
+  forUser: (userId: string) =>
+    `/api/admin/subscriptions/user/${userId}` as const,
 
   /** GET - Get early termination fee quote */
-  terminationQuote: (id: string) => `/api/admin/subscriptions/${id}/early-termination-quote` as const,
+  terminationQuote: (id: string) =>
+    `/api/admin/subscriptions/${id}/early-termination-quote` as const,
 
   /** POST - Cancel subscription */
   cancel: (id: string) => `/api/admin/subscriptions/${id}/cancel` as const,
@@ -660,13 +704,16 @@ export const ADMIN_SUBSCRIPTION_ROUTES = {
     `/api/admin/subscriptions/${id}/scheduled-tier-change` as const,
 
   /** POST - Upload signed contract PDF */
-  uploadContract: (id: string) => `/api/admin/subscriptions/${id}/contract` as const,
+  uploadContract: (id: string) =>
+    `/api/admin/subscriptions/${id}/contract` as const,
 
   /** GET - Get presigned URL for signed contract */
-  getContract: (id: string) => `/api/admin/subscriptions/${id}/contract` as const,
+  getContract: (id: string) =>
+    `/api/admin/subscriptions/${id}/contract` as const,
 
   /** DELETE - Delete signed contract */
-  deleteContract: (id: string) => `/api/admin/subscriptions/${id}/contract` as const,
+  deleteContract: (id: string) =>
+    `/api/admin/subscriptions/${id}/contract` as const,
 } as const;
 
 // ============================================================================
@@ -679,34 +726,40 @@ export const ADMIN_SUBSCRIPTION_ROUTES = {
  */
 export const ADMIN_TERMINAL_ROUTES = {
   /** GET - Check if Terminal is enabled */
-  STATUS: '/api/admin/terminal/status',
+  STATUS: "/api/admin/terminal/status",
 
   /** POST - Get connection token for reader auth */
-  CONNECTION_TOKEN: '/api/admin/terminal/connection-token',
+  CONNECTION_TOKEN: "/api/admin/terminal/connection-token",
 
   /** POST - Create PaymentIntent for Terminal */
-  PAYMENT_INTENT: '/api/admin/terminal/payment-intent',
+  PAYMENT_INTENT: "/api/admin/terminal/payment-intent",
 
   /** POST - Capture Terminal payment */
-  capture: (paymentIntentId: string) => `/api/admin/terminal/capture/${paymentIntentId}` as const,
+  capture: (paymentIntentId: string) =>
+    `/api/admin/terminal/capture/${paymentIntentId}` as const,
 
   /** POST - Cancel Terminal payment */
-  cancel: (paymentIntentId: string) => `/api/admin/terminal/cancel/${paymentIntentId}` as const,
+  cancel: (paymentIntentId: string) =>
+    `/api/admin/terminal/cancel/${paymentIntentId}` as const,
 
   /** GET - List all registered readers */
-  READERS: '/api/admin/terminal/readers',
+  READERS: "/api/admin/terminal/readers",
 
   /** GET - Get specific reader */
-  reader: (readerId: string) => `/api/admin/terminal/readers/${readerId}` as const,
+  reader: (readerId: string) =>
+    `/api/admin/terminal/readers/${readerId}` as const,
 
   /** POST - Process payment on reader */
-  processPayment: (readerId: string) => `/api/admin/terminal/readers/${readerId}/process` as const,
+  processPayment: (readerId: string) =>
+    `/api/admin/terminal/readers/${readerId}/process` as const,
 
   /** POST - Cancel current reader action */
-  cancelReaderAction: (readerId: string) => `/api/admin/terminal/readers/${readerId}/cancel` as const,
+  cancelReaderAction: (readerId: string) =>
+    `/api/admin/terminal/readers/${readerId}/cancel` as const,
 
   /** POST - Set reader display */
-  setDisplay: (readerId: string) => `/api/admin/terminal/readers/${readerId}/display` as const,
+  setDisplay: (readerId: string) =>
+    `/api/admin/terminal/readers/${readerId}/display` as const,
 } as const;
 
 // ============================================================================
@@ -719,13 +772,14 @@ export const ADMIN_TERMINAL_ROUTES = {
  */
 export const ADMIN_ORDER_ROUTES = {
   /** GET - List orders with optional filters */
-  LIST: '/api/admin/orders',
+  LIST: "/api/admin/orders",
 
   /** GET - Get order by ID */
   get: (id: string) => `/api/admin/orders/${id}` as const,
 
   /** PATCH - Update order fulfillment status */
-  updateFulfillment: (id: string) => `/api/admin/orders/${id}/fulfillment` as const,
+  updateFulfillment: (id: string) =>
+    `/api/admin/orders/${id}/fulfillment` as const,
 
   /** POST - Cancel order */
   cancel: (id: string) => `/api/admin/orders/${id}/cancel` as const,
@@ -741,13 +795,13 @@ export const ADMIN_ORDER_ROUTES = {
  */
 export const ADMIN_INVENTORY_ROUTES = {
   /** GET - List inventory for tracked products */
-  LIST: '/api/admin/inventory',
+  LIST: "/api/admin/inventory",
 
   /** GET - Low stock products */
-  LOW_STOCK: '/api/admin/inventory/low-stock',
+  LOW_STOCK: "/api/admin/inventory/low-stock",
 
   /** GET - Out of stock products */
-  OUT_OF_STOCK: '/api/admin/inventory/out-of-stock',
+  OUT_OF_STOCK: "/api/admin/inventory/out-of-stock",
 
   /** PATCH - Adjust inventory for a product */
   adjust: (productId: string) => `/api/admin/inventory/${productId}` as const,
@@ -769,13 +823,16 @@ export const ADMIN_MOBILE_SESSION_ROUTES = {
   use: (userId: string) => `/api/admin/mobile-sessions/${userId}/use` as const,
 
   /** POST - Create mobile session purchase */
-  purchase: (userId: string) => `/api/admin/mobile-sessions/${userId}/purchase` as const,
+  purchase: (userId: string) =>
+    `/api/admin/mobile-sessions/${userId}/purchase` as const,
 
   /** GET - Get mobile session usage history */
-  history: (userId: string) => `/api/admin/mobile-sessions/${userId}/history` as const,
+  history: (userId: string) =>
+    `/api/admin/mobile-sessions/${userId}/history` as const,
 
   /** GET - Get mobile session purchase history */
-  purchases: (userId: string) => `/api/admin/mobile-sessions/${userId}/purchases` as const,
+  purchases: (userId: string) =>
+    `/api/admin/mobile-sessions/${userId}/purchases` as const,
 } as const;
 
 // ============================================================================
@@ -788,19 +845,22 @@ export const ADMIN_MOBILE_SESSION_ROUTES = {
  */
 export const ADMIN_AI_CHAT_ROUTES = {
   /** GET - List all AI chat sessions for current user */
-  SESSIONS: '/api/admin/ai-chat/sessions',
+  SESSIONS: "/api/admin/ai-chat/sessions",
 
   /** GET - Get specific AI chat session with all messages */
-  session: (sessionId: string) => `/api/admin/ai-chat/sessions/${sessionId}` as const,
+  session: (sessionId: string) =>
+    `/api/admin/ai-chat/sessions/${sessionId}` as const,
 
   /** POST - Send message in AI chat (creates session if needed) */
-  SEND_MESSAGE: '/api/admin/ai-chat/messages',
+  SEND_MESSAGE: "/api/admin/ai-chat/messages",
 
   /** DELETE - Delete AI chat session */
-  deleteSession: (sessionId: string) => `/api/admin/ai-chat/sessions/${sessionId}` as const,
+  deleteSession: (sessionId: string) =>
+    `/api/admin/ai-chat/sessions/${sessionId}` as const,
 
   /** PATCH - Rename AI chat session */
-  renameSession: (sessionId: string) => `/api/admin/ai-chat/sessions/${sessionId}` as const,
+  renameSession: (sessionId: string) =>
+    `/api/admin/ai-chat/sessions/${sessionId}` as const,
 } as const;
 
 // ============================================================================
@@ -813,7 +873,10 @@ export const ADMIN_AI_CHAT_ROUTES = {
  */
 export const ADMIN_TASK_ROUTES = {
   /** GET - List pending/in-progress admin tasks */
-  LIST: '/api/admin/tasks',
+  LIST: "/api/admin/tasks",
+
+  /** GET - Get a single admin task by ID */
+  detail: (taskId: string) => `/api/admin/tasks/${taskId}` as const,
 
   /** POST - Resolve an admin task */
   resolve: (taskId: string) => `/api/admin/tasks/${taskId}/resolve` as const,
@@ -835,7 +898,7 @@ export const ADMIN_TASK_ROUTES = {
  */
 export const ADMIN_LEADS_ROUTES = {
   /** GET - List leads with optional filters */
-  LIST: '/api/admin/leads',
+  LIST: "/api/admin/leads",
 
   /** PATCH - Update lead stage */
   updateStage: (id: string) => `/api/admin/leads/${id}/stage` as const,

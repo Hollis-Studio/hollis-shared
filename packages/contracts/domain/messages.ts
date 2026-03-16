@@ -13,8 +13,9 @@
  */
 import { z } from "zod";
 
-import { MESSAGE_RECIPIENT_ROLES } from "./user";
+import { createPaginatedListSchema } from "./pagination";
 import type { MessagingRecipientRole } from "./user";
+import { MESSAGE_RECIPIENT_ROLES, UserRoleSchema } from "./user";
 
 // ============================================================================
 // CONSTANTS
@@ -30,11 +31,12 @@ export const MESSAGE_MAX_LENGTH = 5000 as const;
 /**
  * Canonical participant shape used in messages and conversations.
  * firstName/lastName are nullable to match DB reality (Prisma String?).
+ * role is the canonical role of the underlying user record.
  */
 export const MessageParticipantSchema = z.object({
   id: z.string(),
   email: z.string(),
-  role: z.string(),
+  role: UserRoleSchema,
   firstName: z.string().nullable().optional(),
   lastName: z.string().nullable().optional(),
 });
@@ -80,6 +82,29 @@ export const ConversationSchema = z.object({
 export type ConversationContract = z.infer<typeof ConversationSchema>;
 
 // ============================================================================
+// ADMIN USER SEARCH
+// ============================================================================
+
+/** Canonical user-search row used by admin messaging recipient lookup. */
+export const UserSearchResultSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+  role: UserRoleSchema,
+});
+
+export type UserSearchResultContract = z.infer<typeof UserSearchResultSchema>;
+
+/** Canonical paginated response for admin user search results. */
+export const UserSearchResponseSchema = createPaginatedListSchema(
+  UserSearchResultSchema,
+);
+
+export type UserSearchResponseContract = z.infer<
+  typeof UserSearchResponseSchema
+>;
+
+// ============================================================================
 // SEND MESSAGE REQUEST
 // ============================================================================
 
@@ -98,10 +123,7 @@ export type ConversationContract = z.infer<typeof ConversationSchema>;
  */
 export const SendMessageRequestSchema = z
   .object({
-    receiverId: z
-      .string()
-      .min(1, "receiverId is required")
-      .optional(),
+    receiverId: z.string().min(1, "receiverId is required").optional(),
     recipientRole: z.enum(MESSAGE_RECIPIENT_ROLES).optional(),
     content: z
       .string()
@@ -120,10 +142,18 @@ export type SendMessageRequest = z.infer<typeof SendMessageRequestSchema>;
 // UNREAD COUNTS
 // ============================================================================
 
+const unreadCountsShape: Record<MessagingRecipientRole, z.ZodNumber> =
+  MESSAGE_RECIPIENT_ROLES.reduce(
+    (shape, role) => {
+      shape[role] = z.number();
+      return shape;
+    },
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- seed empty accumulator for reduce
+    {} as Record<MessagingRecipientRole, z.ZodNumber>,
+  );
+
 /** Unread counts response - uses typed keys from MESSAGE_RECIPIENT_ROLES */
-export const UnreadCountsSchema = z.object({
-  FITNESS_COORDINATOR: z.number(),
-  CLINICIAN: z.number(),
+export const UnreadCountsSchema = z.object(unreadCountsShape).extend({
   total: z.number().optional(),
 });
 

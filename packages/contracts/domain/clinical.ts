@@ -278,6 +278,80 @@ export const CARE_TEAM_ROLE_LABELS: Record<CareTeamRole, string> = {
 };
 
 // ============================================================================
+// NOTE LIMITS (shared constants for note content validation)
+// ============================================================================
+
+/**
+ * Shared content and tag limits for all note types.
+ *
+ * Use these constants in:
+ * - Server route validation (server/src/validation/notes.ts)
+ * - Client form validation (features, components)
+ *
+ * This ensures server and client enforce identical constraints without
+ * duplicating magic numbers.
+ */
+export const NOTE_LIMITS = {
+  /** User-created notes (patient self-entry) */
+  USER_CONTENT_MAX: 10_000,
+  /** Clinical notes (admin/clinician entry) */
+  CLINICAL_CONTENT_MAX: 5_000,
+  /** Maximum tags per note */
+  MAX_TAGS: 20,
+  /** Maximum tag length in characters */
+  MAX_TAG_LENGTH: 100,
+} as const;
+
+// ============================================================================
+// NOTE INPUT SCHEMAS (canonical — derive from NOTE_LIMITS)
+// ============================================================================
+
+/**
+ * Canonical tags schema — enforces MAX_TAGS and MAX_TAG_LENGTH.
+ * Use in both server validation and client form schemas.
+ */
+export const noteTagsSchema = z
+  .array(z.string().max(NOTE_LIMITS.MAX_TAG_LENGTH))
+  .max(NOTE_LIMITS.MAX_TAGS, `Too many tags (max ${NOTE_LIMITS.MAX_TAGS})`);
+
+/**
+ * Canonical note input schema for user-created (patient self-entry) notes.
+ * Server route: server/src/validation/notes.ts createNoteBodySchema
+ */
+export const userNoteInputSchema = z.object({
+  patientId: z.string().min(1),
+  content: z
+    .string()
+    .min(1, "Content is required")
+    .max(
+      NOTE_LIMITS.USER_CONTENT_MAX,
+      `Content must be ${NOTE_LIMITS.USER_CONTENT_MAX} characters or less`,
+    ),
+  tags: noteTagsSchema.optional(),
+});
+export type UserNoteInput = z.infer<typeof userNoteInputSchema>;
+
+/**
+ * Canonical note input schema for clinical notes (admin/clinician entry).
+ * Server route: server/src/validation/notes.ts createClinicalNoteBodySchema
+ *
+ * NOTE: createdAt is omitted — server decides whether to accept it based on
+ * the caller's role (ADMIN may supply it; CLINICIAN must use server timestamp).
+ */
+export const clinicalNoteInputSchema = z.object({
+  content: z
+    .string()
+    .min(1, "Content is required")
+    .max(
+      NOTE_LIMITS.CLINICAL_CONTENT_MAX,
+      `Content must be ${NOTE_LIMITS.CLINICAL_CONTENT_MAX} characters or less`,
+    ),
+  tags: noteTagsSchema.optional(),
+  createdAt: z.string().datetime().optional(),
+});
+export type ClinicalNoteInput = z.infer<typeof clinicalNoteInputSchema>;
+
+// ============================================================================
 // CLINICAL NOTE CONTRACT
 // ============================================================================
 

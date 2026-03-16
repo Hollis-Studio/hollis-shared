@@ -128,11 +128,6 @@ export const ROUTE_METADATA: Record<string, RouteMetadata> = {
     description: "Refresh access token using refresh token",
     requiresAuth: false,
   },
-  [AUTH_ROUTES.LINK]: {
-    method: "POST",
-    description: "Link OAuth credentials to existing account",
-    requiresAuth: true,
-  },
   [AUTH_ROUTES.LOGOUT]: {
     method: "POST",
     description: "Sign out current session",

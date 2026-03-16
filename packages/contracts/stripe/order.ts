@@ -50,6 +50,26 @@ export const FULFILLMENT_STATUSES = [
 export const FulfillmentStatusSchema = z.enum(FULFILLMENT_STATUSES);
 export type FulfillmentStatus = z.infer<typeof FulfillmentStatusSchema>;
 
+/** Constant object for fulfillment status comparisons (avoids magic strings) */
+export const FULFILLMENT_STATUS = {
+  PENDING: "PENDING",
+  PROCESSING: "PROCESSING",
+  SHIPPED: "SHIPPED",
+  DELIVERED: "DELIVERED",
+  CANCELLED: "CANCELLED",
+  RETURNED: "RETURNED",
+} as const satisfies Record<FulfillmentStatus, FulfillmentStatus>;
+
+/** Human-readable labels for fulfillment statuses */
+export const FULFILLMENT_STATUS_LABELS: Record<FulfillmentStatus, string> = {
+  PENDING: "Pending",
+  PROCESSING: "Processing",
+  SHIPPED: "Shipped",
+  DELIVERED: "Delivered",
+  CANCELLED: "Cancelled",
+  RETURNED: "Returned",
+};
+
 // ============================================================================
 // ORDER ITEM
 // ============================================================================

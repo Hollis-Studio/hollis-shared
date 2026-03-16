@@ -30,6 +30,7 @@ import {
 } from "../domain";
 import {
     AdminTaskPrioritySchema,
+    AdminTaskStatusSchema,
     AdminTaskTypeSchema,
 } from "../domain/admin-tasks";
 import {
@@ -44,8 +45,11 @@ import {
     MetricApprovalStatusSchema,
 } from "../domain/labs";
 import { createPaginatedListSchema } from "../domain/pagination";
+import { DynamicMetricGoalDataSourceSchema } from "../domain/training";
 import { VolumeLevelSchema } from "../primitives/volume-level";
 import { USER_ID_REGEX, heightCmSchema, weightKgSchema } from "../schemas";
+import { FulfillmentStatusSchema } from "../stripe/order";
+import { SubscriptionStatusSchema } from "../stripe/subscription";
 
 // ============================================================================
 // ADMIN-SPECIFIC ENUMS
@@ -103,6 +107,14 @@ export const patientSummarySchema = z.object({
   lastLog: z.string(),
 });
 export type PatientSummary = z.infer<typeof patientSummarySchema>;
+
+/**
+ * Canonical paginated patient list response.
+ * Shape: { data: PatientSummary[], pagination: PaginationMeta }
+ */
+export const patientListResponseSchema =
+  createPaginatedListSchema(patientSummarySchema);
+export type PatientListResponse = z.infer<typeof patientListResponseSchema>;
 
 /**
  * Admin patient document summary schema used by patient detail responses.
@@ -299,6 +311,15 @@ export type ProviderScheduleData = z.infer<typeof providerScheduleDataSchema>;
 // ============================================================================
 
 /**
+ * Canonical max length for legacy registration prefill goal text.
+ *
+ * @deprecated Registration `primaryGoal` now uses `PrimaryGoalSchema` enum
+ * validation instead of free-form text. This export remains for backward
+ * compatibility with older consumers and generated artifacts.
+ */
+export const PREFILLED_PROFILE_PRIMARY_GOAL_MAX_LENGTH = 500;
+
+/**
  * Prefilled profile schema.
  *
  * Key names MUST match the keys read by the signup route (auth.ts):
@@ -313,7 +334,7 @@ export const prefilledProfileSchema = z.object({
   weightKg: weightKgSchema.optional(),
   dateOfBirth: isoDateSchema.optional(),
   biologicalSex: BiologicalSexSchema.optional(),
-  primaryGoal: z.string().max(1000).optional(),
+  primaryGoal: PrimaryGoalSchema.optional(),
   /** Set by admin when rejecting a registration */
   rejectionReason: z.string().optional(),
   /** ISO timestamp when admin rejected the registration */
@@ -388,6 +409,7 @@ export const createGoalInputSchema = z.object({
   baselineValue: z.number().optional(),
   weight: z.number().min(0).max(1).optional(),
   linkedExerciseId: z.string().optional(),
+  // DEFERRED [audit-05]: Admin strategy goal payloads still accept legacy goal data-source values to bridge pre-migration requests. Not material at <50 users pre-revenue. Revisit at scale.
   dataSource: z
     .union([GoalDataSourceSchema, LegacyGoalDataSourceSchema])
     .transform(normalizeGoalDataSource)
@@ -395,7 +417,7 @@ export const createGoalInputSchema = z.object({
   dataKey: z.string().min(1).optional(),
   dynamicMetricDefinition: z
     .object({
-      dataSource: z.enum(["lab", "biometric"]),
+      dataSource: DynamicMetricGoalDataSourceSchema,
       dataKey: z.string().min(1),
       label: z.string().min(1),
       unit: z.string().min(1),
@@ -441,6 +463,7 @@ export type CreateStrategyInputFromSchema = z.infer<
  * Fetch value request schema.
  */
 export const fetchValueRequestSchema = z.object({
+  // DEFERRED [audit-05]: Admin fetch-value requests still accept legacy goal data-source values to bridge pre-migration requests. Not material at <50 users pre-revenue. Revisit at scale.
   dataSource: z
     .union([GoalDataSourceSchema, LegacyGoalDataSourceSchema])
     .transform(normalizeGoalDataSource),
@@ -652,6 +675,16 @@ export type LabDataExtractionResult = z.infer<
   typeof labDataExtractionResultSchema
 >;
 
+/**
+ * Canonical MetricDefinition identifier for verified lab observation payloads.
+ *
+ * When present, this must reference a persisted MetricDefinition UUID.
+ * Observations still awaiting review should omit the field or send `null`.
+ */
+export const labMetricDefinitionIdInputSchema = z
+  .string()
+  .uuid("metricDefinitionId must be a valid UUID");
+
 export const labObservationInputSchema = z.object({
   rawAnalyteName: z.string().min(1).max(200),
   rawValueText: z.string().nullable().optional(),
@@ -667,7 +700,7 @@ export const labObservationInputSchema = z.object({
   labReferenceIntervalHigh: z.number().nullable().optional(),
   labReferenceIntervalText: z.string().nullable().optional(),
   labFlag: z.string().nullable().optional(),
-  metricDefinitionId: z.string().nullable().optional(),
+  metricDefinitionId: labMetricDefinitionIdInputSchema.nullable().optional(),
   mappingStatus: LabMappingStatusSchema,
   mappingConfidence: z.number().min(0).max(1).nullable().optional(),
   notes: z.string().max(2000).nullable().optional(),
@@ -740,53 +773,10 @@ export const clientIntakePayloadSchema = z.object({
 
   // Clinical Data - supports both structured arrays and legacy string format
   // Structured format (preferred)
-  medicationsData: z
-    .array(
-      z.object({
-        id: z.string(),
-        name: z.string().min(1).max(200),
-        dosage: z.string().min(1).max(100),
-        frequency: z.string().min(1).max(200),
-        notes: z.string().max(5000).optional(),
-      }),
-    )
-    .optional(),
-  limitationsData: z
-    .array(
-      z.object({
-        id: z.string(),
-        description: z.string().min(1).max(500),
-        severity: z.enum(["mild", "moderate", "severe"]).optional(),
-        notes: z.string().max(5000).optional(),
-      }),
-    )
-    .optional(),
-  injuriesData: z
-    .array(
-      z.object({
-        id: z.string(),
-        description: z.string().min(1).max(500),
-        bodyPart: z.string().max(100).optional(),
-        occurredAt: z.string().optional(),
-        severity: z.enum(["mild", "moderate", "severe"]).optional(),
-        recoveryStatus: z
-          .enum(["active", "recovering", "healed", "chronic"])
-          .optional(),
-        notes: z.string().max(5000).optional(),
-      }),
-    )
-    .optional(),
-  medicalConditionsData: z
-    .array(
-      z.object({
-        id: z.string(),
-        name: z.string().min(1).max(200),
-        status: z.enum(["active", "managed", "resolved", "monitoring"]),
-        diagnosisDate: z.string().optional(),
-        notes: z.string().max(5000).optional(),
-      }),
-    )
-    .optional(),
+  medicationsData: z.array(adminMedicationSchema).optional(),
+  limitationsData: z.array(adminLimitationSchema).optional(),
+  injuriesData: z.array(adminInjurySchema).optional(),
+  medicalConditionsData: z.array(adminMedicalConditionSchema).optional(),
 
   // Legacy string format (for backwards compatibility)
   injuries: z.string().max(5000).optional(),
@@ -813,6 +803,9 @@ export const exerciseFilterParamsSchema = z.object({
   limit: z.number().positive().max(100).optional(),
   offset: z.number().min(0).optional(),
 });
+export type ExerciseFilterParamsFromSchema = z.infer<
+  typeof exerciseFilterParamsSchema
+>;
 
 // ============================================================================
 // ANALYTICS SCHEMAS
@@ -883,6 +876,33 @@ export const suggestedNewMetricSchema = z.object({
   parentMetricCode: z.string().optional(),
 });
 export type SuggestedNewMetric = z.infer<typeof suggestedNewMetricSchema>;
+
+/**
+ * Self-review summary for governed lab extraction responses.
+ */
+export const labDataExtractionSelfReviewSummarySchema = z.object({
+  iterationsPerformed: z.number().int().min(0),
+  duplicatesDetected: z.number().int().min(0),
+  garbageFlagged: z.number().int().min(0),
+  verifiedCreations: z.number().int().min(0),
+});
+export type LabDataExtractionSelfReviewSummaryFromSchema = z.infer<
+  typeof labDataExtractionSelfReviewSummarySchema
+>;
+
+/**
+ * Lab data extraction response extended with metric-governance review data.
+ * Canonical schema for the governed extraction payload returned after
+ * canonicalization and self-review.
+ */
+export const labDataExtractionResultWithGovernanceSchema =
+  labDataExtractionResultSchema.extend({
+    suggestedNewMetrics: z.array(suggestedNewMetricSchema),
+    selfReviewSummary: labDataExtractionSelfReviewSummarySchema.optional(),
+  });
+export type LabDataExtractionResultWithGovernanceFromSchema = z.infer<
+  typeof labDataExtractionResultWithGovernanceSchema
+>;
 
 /**
  * Metric governance action schema - approve/reject a pending metric.
@@ -962,7 +982,38 @@ export const pendingMetricsResponseSchema = z.object({
   metrics: z.array(pendingMetricReviewSchema),
   total: z.number().int().min(0),
 });
-// PendingMetricsResponse type is defined as an interface in admin/labs.ts
+export type PendingMetricsResponseFromSchema = z.infer<
+  typeof pendingMetricsResponseSchema
+>;
+// PendingMetricsResponse alias is exported from admin/labs.ts for backwards compatibility.
+
+// ============================================================================
+// ADMIN TASK ACTION REQUEST SCHEMAS
+// ============================================================================
+
+/**
+ * Schema for resolving an admin task (optional resolution notes).
+ */
+export const resolveTaskBodySchema = z.object({
+  notes: z.string().max(2000).optional(),
+});
+export type ResolveTaskBody = z.infer<typeof resolveTaskBodySchema>;
+
+/**
+ * Schema for dismissing an admin task (reason is required).
+ */
+export const dismissTaskBodySchema = z.object({
+  reason: z.string().min(1, "reason is required").max(2000),
+});
+export type DismissTaskBody = z.infer<typeof dismissTaskBodySchema>;
+
+/**
+ * Schema for assigning an admin task to an admin user.
+ */
+export const assignTaskBodySchema = z.object({
+  assigneeId: z.string().min(1, "assigneeId is required"),
+});
+export type AssignTaskBody = z.infer<typeof assignTaskBodySchema>;
 
 // ============================================================================
 // ADMIN TASK SCHEMAS
@@ -977,7 +1028,7 @@ export const adminTaskSchema = z.object({
   title: z.string(),
   description: z.string().nullable().optional(),
   priority: AdminTaskPrioritySchema,
-  status: z.string(),
+  status: AdminTaskStatusSchema,
   assignedTo: z.string().nullable().optional(),
   resolvedAt: z.string().nullable().optional(),
   resolvedBy: z.string().nullable().optional(),
@@ -1001,7 +1052,7 @@ export const adminTaskSchema = z.object({
     .object({
       id: z.string(),
       tier: z.string(),
-      status: z.string(),
+      status: SubscriptionStatusSchema,
     })
     .nullable()
     .optional(),
@@ -1009,7 +1060,7 @@ export const adminTaskSchema = z.object({
     .object({
       id: z.string(),
       totalInCents: z.number().int(),
-      fulfillmentStatus: z.string(),
+      fulfillmentStatus: FulfillmentStatusSchema,
     })
     .nullable()
     .optional(),
@@ -1025,4 +1076,15 @@ export const adminTaskListResponseSchema =
   createPaginatedListSchema(adminTaskSchema);
 export type AdminTaskListResponseFromSchema = z.infer<
   typeof adminTaskListResponseSchema
+>;
+
+/**
+ * Admin task single-item response schema.
+ * Wire format: { task: AdminTask }
+ */
+export const adminTaskDetailResponseSchema = z.object({
+  task: adminTaskSchema,
+});
+export type AdminTaskDetailResponseFromSchema = z.infer<
+  typeof adminTaskDetailResponseSchema
 >;

@@ -12,6 +12,7 @@
 
 import { z } from "zod";
 import { emailSchema } from "../schemas";
+import { UserRoleSchema, UserTierSchema } from "./user";
 
 // ============================================================================
 // MFA CODE LENGTH CONSTANTS
@@ -216,21 +217,52 @@ export type MfaLoginVerifyRequestContract = z.infer<
  * Response returned by the login endpoint when MFA verification is required.
  * The client must present `sessionToken` when calling the MFA verify endpoint.
  */
+const mfaLoginPendingUserInputSchema = z
+  .object({
+    uid: z.string().optional(),
+    userId: z.string().optional(),
+    email: emailSchema,
+    displayName: z.string().optional(),
+    fullName: z.string().optional(),
+    role: UserRoleSchema,
+  })
+  .superRefine((user, ctx) => {
+    const canonicalUserId = user.userId ?? user.uid;
+
+    if (
+      typeof canonicalUserId !== "string" ||
+      canonicalUserId.trim().length === 0
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "MFA pending response must include a valid userId",
+        path: ["userId"],
+      });
+    }
+  });
+
+export const mfaLoginPendingUserSchema =
+  mfaLoginPendingUserInputSchema.transform(
+    ({ uid, userId, displayName, fullName, ...user }) => ({
+      ...user,
+      userId: userId ?? uid ?? "",
+      fullName: fullName ?? displayName,
+    }),
+  );
+export type MfaLoginPendingUser = z.output<typeof mfaLoginPendingUserSchema>;
+export type CanonicalMfaLoginPendingUser = MfaLoginPendingUser;
+
 export const mfaLoginPendingResponseSchema = z.object({
   mfaRequired: z.literal(true),
   sessionToken: z.string(),
   availableMethods: z.array(MfaCredentialTypeSchema),
   expiresIn: z.number(),
-  user: z.object({
-    uid: z.string(),
-    email: z.string(),
-    displayName: z.string().optional(),
-    role: z.string(),
-  }),
+  user: mfaLoginPendingUserSchema,
 });
-export type MfaLoginPendingResponse = z.infer<
+export type MfaLoginPendingResponse = z.output<
   typeof mfaLoginPendingResponseSchema
 >;
+export type CanonicalMfaLoginPendingResponse = MfaLoginPendingResponse;
 
 /**
  * Response returned by the MFA login verify endpoint on success.
@@ -247,7 +279,7 @@ export const mfaLoginVerifyResponseSchema = z.object({
   user: z.object({
     uid: z.string(),
     email: z.string(),
-    role: z.string(),
+    role: UserRoleSchema,
   }),
 });
 export type MfaLoginVerifyResponse = z.infer<
@@ -305,8 +337,8 @@ export const authSessionProfileSchema = z.object({
   userId: z.string(),
   email: emailSchema,
   fullName: z.string().optional(),
-  role: z.string(),
-  tier: z.string().optional(),
+  role: UserRoleSchema,
+  tier: UserTierSchema.optional(),
   onboardingCompleted: z.boolean().optional(),
   organizationId: z.string().optional(),
   isActive: z.boolean().optional(),
@@ -344,10 +376,14 @@ export const adminMfaResetRequestSchema = z.object({
 export type AdminMfaResetRequest = z.infer<typeof adminMfaResetRequestSchema>;
 
 /**
- * Response from admin MFA reset — issues fresh backup codes for the user.
+ * Unwrapped response payload from admin MFA reset.
+ *
+ * The server still uses sendSuccess(), so the HTTP response envelope is:
+ * `{ success: true, data: { backupCodes, message } }`.
+ * Web clients validate the inner `data` payload against this schema after
+ * the standard success envelope is automatically unwrapped.
  */
 export const adminMfaResetResponseSchema = z.object({
-  success: z.boolean(),
   backupCodes: z.array(z.string()),
   message: z.string(),
 });

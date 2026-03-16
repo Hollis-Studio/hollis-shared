@@ -41,6 +41,18 @@ export const SUBSCRIPTION_STATUS = {
   SUSPENDED: "SUSPENDED",
 } as const satisfies Record<SubscriptionStatus, SubscriptionStatus>;
 
+/** Human-readable labels for subscription statuses */
+export const SUBSCRIPTION_STATUS_LABELS: Record<SubscriptionStatus, string> = {
+  PENDING: "Pending",
+  TRIAL: "Trial",
+  ACTIVE: "Active",
+  PAUSED: "Paused",
+  PAST_DUE: "Past Due",
+  CANCELED: "Canceled",
+  TERMINATED: "Terminated",
+  SUSPENDED: "Suspended",
+};
+
 // ============================================================================
 // SUBSCRIPTION EVENT TYPE
 // ============================================================================
@@ -192,6 +204,13 @@ export const CONTRACT_DURATION_DISCOUNTS: Record<ContractDuration, number> = {
   MONTH_12: 15,
 };
 
+/** Constant object for contract duration comparisons (avoids magic strings) */
+export const CONTRACT_DURATION = {
+  MONTH_4: "MONTH_4",
+  MONTH_8: "MONTH_8",
+  MONTH_12: "MONTH_12",
+} as const satisfies Record<ContractDuration, ContractDuration>;
+
 // ============================================================================
 // BILLING SOURCE
 // ============================================================================
@@ -200,6 +219,12 @@ export const BILLING_SOURCES = ["DIRECT", "ORGANIZATION"] as const;
 
 export const BillingSourceSchema = z.enum(BILLING_SOURCES);
 export type BillingSource = z.infer<typeof BillingSourceSchema>;
+
+/** Constant object for billing source comparisons (avoids magic strings) */
+export const BILLING_SOURCE = {
+  DIRECT: "DIRECT",
+  ORGANIZATION: "ORGANIZATION",
+} as const satisfies Record<BillingSource, BillingSource>;
 
 // ============================================================================
 // SUBSCRIPTION CONTRACT

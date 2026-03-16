@@ -12,7 +12,245 @@
  * Run: npm run test:contracts
  */
 
+import {
+    createGoalInputSchema,
+    createPhaseInputSchema,
+    createStrategyInputSchema,
+    exerciseFilterParamsSchema,
+    labDataExtractionResultWithGovernanceSchema,
+    labMetricSearchResponseSchema,
+    labObservationInputSchema,
+    pendingMetricsResponseSchema,
+    trainerSummarySchema,
+    updateGoalInputSchema,
+    workoutGenerationProgressSchema,
+} from "../admin/admin-schemas";
+import type {
+    CreateGoalInput,
+    CreatePhaseInput,
+    CreateStrategyInput,
+    ExerciseFilterParams,
+    LabDataExtractionResultWithGovernance,
+    LabObservationInput,
+    TrainerSummary,
+    UpdateGoalInput,
+    WorkoutGenerationProgress,
+} from "../admin/admin-types";
+import type {
+    AttachObservationsInput,
+    CreateLabMetricDefinitionInput,
+    CreateLabOrderInput,
+    ExtractLabDataInput,
+    LabMetricSearchParams,
+    LabMetricSearchResponse,
+    LabOrderDetailResponse,
+    PendingMetricsResponse,
+} from "../admin/labs";
+import {
+    attachObservationsInputSchema,
+    createLabMetricDefinitionInputSchema,
+    createLabOrderInputSchema,
+    extractLabDataInputSchema,
+    labMetricSearchParamsSchema,
+    LabOrderDetailResponseSchema,
+} from "../admin/labs";
 import * as contracts from "../index";
+
+type ContractIsExact<A, B> =
+  (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2
+    ? (<T>() => T extends B ? 1 : 2) extends <T>() => T extends A ? 1 : 2
+      ? true
+      : false
+    : false;
+
+type AssertContract<T extends true> = T;
+
+function assertLabObservationInputContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      LabObservationInput,
+      import("zod").input<typeof labObservationInputSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertLabMetricSearchResponseContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      LabMetricSearchResponse,
+      import("zod").output<typeof labMetricSearchResponseSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertLabMetricSearchParamsContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      LabMetricSearchParams,
+      import("zod").input<typeof labMetricSearchParamsSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertCreateLabMetricDefinitionInputContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      CreateLabMetricDefinitionInput,
+      import("zod").input<typeof createLabMetricDefinitionInputSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertExtractLabDataInputContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      ExtractLabDataInput,
+      import("zod").input<typeof extractLabDataInputSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertAttachObservationsInputContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      AttachObservationsInput,
+      import("zod").input<typeof attachObservationsInputSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertCreateLabOrderInputContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      CreateLabOrderInput,
+      import("zod").input<typeof createLabOrderInputSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertPendingMetricsResponseContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      PendingMetricsResponse,
+      import("zod").output<typeof pendingMetricsResponseSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertWorkoutGenerationProgressContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      WorkoutGenerationProgress,
+      import("zod").infer<typeof workoutGenerationProgressSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertLabDataExtractionResultWithGovernanceContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      LabDataExtractionResultWithGovernance,
+      import("zod").infer<typeof labDataExtractionResultWithGovernanceSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertLabOrderDetailResponseContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      LabOrderDetailResponse,
+      import("zod").infer<typeof LabOrderDetailResponseSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertTrainerSummaryContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      TrainerSummary,
+      import("zod").infer<typeof trainerSummarySchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertCreatePhaseInputContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      CreatePhaseInput,
+      import("zod").infer<typeof createPhaseInputSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertCreateGoalInputContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      CreateGoalInput,
+      import("zod").infer<typeof createGoalInputSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertUpdateGoalInputContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      UpdateGoalInput,
+      import("zod").infer<typeof updateGoalInputSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertCreateStrategyInputContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      CreateStrategyInput,
+      import("zod").infer<typeof createStrategyInputSchema>
+    >
+  >,
+): void {
+  void _value;
+}
+
+function assertExerciseFilterParamsContractMatchesSchema(
+  _value: AssertContract<
+    ContractIsExact<
+      ExerciseFilterParams,
+      import("zod").infer<typeof exerciseFilterParamsSchema>
+    >
+  >,
+): void {
+  void _value;
+}
 
 // ============================================================================
 // COMPILATION TESTS
@@ -415,6 +653,377 @@ describe("Circular Dependency Prevention", () => {
 // ============================================================================
 
 describe("Type Coherence", () => {
+  it("should keep legacy admin strategy exports aligned with their schemas", () => {
+    assertTrainerSummaryContractMatchesSchema(true);
+    assertCreatePhaseInputContractMatchesSchema(true);
+    assertCreateGoalInputContractMatchesSchema(true);
+    assertUpdateGoalInputContractMatchesSchema(true);
+    assertCreateStrategyInputContractMatchesSchema(true);
+    assertExerciseFilterParamsContractMatchesSchema(true);
+
+    const trainerSummary: TrainerSummary = {
+      id: "trainer_123",
+      name: "Coach Hollis",
+      role: contracts.USER_ROLE.TRAINER,
+    };
+    const phase: CreatePhaseInput = {
+      name: "Foundation",
+      order: 0,
+      weekCount: 4,
+      intensityRange: "60-70%",
+      volumeLevel: contracts.VOLUME_LEVEL.MODERATE,
+      focusAreas: ["mobility", "strength"],
+      notes: "Build consistency first.",
+      isActive: true,
+      isCompleted: false,
+    };
+    const goal: CreateGoalInput = {
+      goalMetric: "squat_1rm",
+      goalTarget: 225,
+      baselineValue: 185,
+      weight: 0.5,
+      linkedExerciseId: "exercise_456",
+      dataSource: contracts.GOAL_DATA_SOURCE.BIOMETRIC,
+      dataKey: "strength:squat_1rm",
+      dynamicMetricDefinition: {
+        dataSource: "biometric",
+        dataKey: "strength:squat_1rm",
+        label: "Squat 1RM",
+        unit: "lb",
+        direction: "increase",
+        category: "strength",
+      },
+    };
+    const updateGoal: UpdateGoalInput = {
+      goalTarget: 235,
+      baselineValue: 190,
+      currentValue: 205,
+      weight: 0.6,
+      notes: "Ahead of schedule.",
+    };
+    const strategy: CreateStrategyInput = {
+      name: "Spring Strength Block",
+      type: contracts.STRATEGY_TYPE.BLOCK,
+      goal: "Increase lower body strength",
+      description: "Progressive overload with recovery guardrails.",
+      startDate: "2026-03-12",
+      endDate: "2026-04-30",
+      status: contracts.STRATEGY_STATUS.ACTIVE,
+      goals: [goal],
+      phases: [phase],
+    };
+    const filters: ExerciseFilterParams = {
+      search: "squat",
+      category: "strength",
+      muscleGroup: "legs",
+      equipment: "barbell",
+      difficulty: "intermediate",
+      tag: "compound",
+      limit: 25,
+      offset: 0,
+    };
+
+    expect(trainerSummarySchema.safeParse(trainerSummary).success).toBe(true);
+    expect(createPhaseInputSchema.safeParse(phase).success).toBe(true);
+    expect(createGoalInputSchema.safeParse(goal).success).toBe(true);
+    expect(updateGoalInputSchema.safeParse(updateGoal).success).toBe(true);
+    expect(createStrategyInputSchema.safeParse(strategy).success).toBe(true);
+    expect(exerciseFilterParamsSchema.safeParse(filters).success).toBe(true);
+  });
+
+  it("should keep LabObservationInput aligned with labObservationInputSchema", () => {
+    assertLabObservationInputContractMatchesSchema(true);
+
+    const payload: LabObservationInput = {
+      rawAnalyteName: "Hemoglobin A1c",
+      rawValueText: "5.4",
+      rawUnit: "%",
+      rawReferenceIntervalText: "4.0-5.6",
+      rawReferenceIntervalLow: 4,
+      rawReferenceIntervalHigh: 5.6,
+      rawFlag: null,
+      observedAt: "2026-03-12",
+      canonicalValue: 5.4,
+      canonicalUnit: "%",
+      labReferenceIntervalLow: 4,
+      labReferenceIntervalHigh: 5.6,
+      labReferenceIntervalText: "4.0-5.6",
+      labFlag: null,
+      metricDefinitionId: null,
+      mappingStatus: contracts.LAB_MAPPING_STATUS.REVIEW_NEEDED,
+      mappingConfidence: 0.98,
+      notes: null,
+      tags: ["glycemic"],
+    };
+
+    const result = labObservationInputSchema.safeParse(payload);
+
+    expect(result.success).toBe(true);
+  });
+
+  it("should keep admin lab request inputs aligned with their schemas", () => {
+    assertLabMetricSearchParamsContractMatchesSchema(true);
+    assertCreateLabMetricDefinitionInputContractMatchesSchema(true);
+    assertExtractLabDataInputContractMatchesSchema(true);
+    assertAttachObservationsInputContractMatchesSchema(true);
+    assertCreateLabOrderInputContractMatchesSchema(true);
+
+    const searchParams: LabMetricSearchParams = {
+      q: "hemoglobin",
+      limit: 25,
+    };
+    const createMetricInput: CreateLabMetricDefinitionInput = {
+      name: "Hemoglobin A1c",
+      code: "HBA1C",
+      category: "metabolic",
+      canonicalUnit: "%",
+      directionality: "LOWER_IS_BETTER",
+      variabilityThreshold: 0.15,
+      aliases: ["A1C"],
+      optimalRangeLow: 4,
+      optimalRangeHigh: 5.6,
+      description: "Glycemic control marker.",
+      createdBy: "HH-ABC123",
+    };
+    const extractInput: ExtractLabDataInput = {
+      fileBase64: "ZmFrZS1wZGY=",
+      mimeType: "application/pdf",
+    };
+    const attachInput: AttachObservationsInput = {
+      observations: [
+        {
+          rawAnalyteName: "Hemoglobin A1c",
+          rawValueText: "5.4",
+          rawUnit: "%",
+          rawReferenceIntervalText: "4.0-5.6",
+          rawReferenceIntervalLow: 4,
+          rawReferenceIntervalHigh: 5.6,
+          rawFlag: null,
+          observedAt: "2026-03-12",
+          canonicalValue: 5.4,
+          canonicalUnit: "%",
+          labReferenceIntervalLow: 4,
+          labReferenceIntervalHigh: 5.6,
+          labReferenceIntervalText: "4.0-5.6",
+          labFlag: null,
+          metricDefinitionId: null,
+          mappingStatus: contracts.LAB_MAPPING_STATUS.REVIEW_NEEDED,
+          mappingConfidence: 0.98,
+          notes: null,
+          tags: ["glycemic"],
+        },
+      ],
+      actualReportDate: "2026-03-12",
+      transitionToResultsPending: true,
+      extractionConfidences: { reportDate: 0.98 },
+      extractionFragments: { reportDate: "03/12/2026" },
+    };
+    const createOrderInput: CreateLabOrderInput = {
+      reportDate: "2026-03-12",
+      panelName: "Metabolic Panel",
+      labName: "Hollis Diagnostics",
+      labLocation: "Austin",
+      orderingProvider: "Dr. Hollis",
+      specimenType: "Blood",
+      panelCode: "MP-01",
+      notes: "Fasting panel",
+      orderStatus: "RESULTS_PENDING",
+    };
+
+    expect(labMetricSearchParamsSchema.safeParse(searchParams).success).toBe(
+      true,
+    );
+    expect(
+      createLabMetricDefinitionInputSchema.safeParse(createMetricInput).success,
+    ).toBe(true);
+    expect(extractLabDataInputSchema.safeParse(extractInput).success).toBe(
+      true,
+    );
+    expect(attachObservationsInputSchema.safeParse(attachInput).success).toBe(
+      true,
+    );
+    expect(createLabOrderInputSchema.safeParse(createOrderInput).success).toBe(
+      true,
+    );
+  });
+
+  it("should keep LabMetricSearchResponse aligned with labMetricSearchResponseSchema", () => {
+    assertLabMetricSearchResponseContractMatchesSchema(true);
+
+    const payload: LabMetricSearchResponse = {
+      results: [
+        {
+          id: "metric_1",
+          code: "HBA1C",
+          name: "Hemoglobin A1c",
+          category: "metabolic",
+          canonicalUnit: "%",
+          directionality: "LOWER_IS_BETTER",
+          isCanonical: true,
+          approvalStatus: "APPROVED",
+        },
+      ],
+    };
+
+    const result = labMetricSearchResponseSchema.safeParse(payload);
+
+    expect(result.success).toBe(true);
+  });
+
+  it("should keep PendingMetricsResponse aligned with pendingMetricsResponseSchema", () => {
+    assertPendingMetricsResponseContractMatchesSchema(true);
+
+    const payload: PendingMetricsResponse = {
+      metrics: [
+        {
+          id: "review_1",
+          code: "HBA1C",
+          name: "Hemoglobin A1c",
+          category: "metabolic",
+          canonicalUnit: "%",
+          directionality: "LOWER_IS_BETTER",
+          aliases: ["A1C"],
+          approvalStatus: "PENDING",
+          isCanonical: false,
+          createdBy: "admin_1",
+          createdAt: "2026-03-12T00:00:00.000Z",
+          observationCount: 3,
+          suggestedMergeTargets: [
+            {
+              id: "metric_approved_1",
+              code: "HBA1C-STD",
+              name: "Hemoglobin A1c Standard",
+              similarity: 0.94,
+            },
+          ],
+        },
+      ],
+      total: 1,
+    };
+
+    const result = pendingMetricsResponseSchema.safeParse(payload);
+
+    expect(result.success).toBe(true);
+  });
+
+  it("should keep WorkoutGenerationProgress aligned with workoutGenerationProgressSchema", () => {
+    assertWorkoutGenerationProgressContractMatchesSchema(true);
+
+    const payload: WorkoutGenerationProgress = {
+      step: 2,
+      totalSteps: 5,
+      phase: "Building workout block",
+      detail: "Selecting exercises and sequencing sets.",
+      turn: 1,
+      maxTurns: 4,
+      activities: [
+        {
+          timestamp: "2026-03-12T00:00:00.000Z",
+          type: "plan",
+          message: "Drafted initial structure.",
+          data: { focus: "strength" },
+        },
+      ],
+      stats: {
+        exercisesSearched: 12,
+        exercisesSelected: 6,
+        notesCreated: 2,
+      },
+    };
+
+    const result = workoutGenerationProgressSchema.safeParse(payload);
+
+    expect(result.success).toBe(true);
+  });
+
+  it("should keep LabDataExtractionResultWithGovernance aligned with its schema", () => {
+    assertLabDataExtractionResultWithGovernanceContractMatchesSchema(true);
+
+    const payload: LabDataExtractionResultWithGovernance = {
+      report: {
+        reportDate: "2026-03-12",
+        labName: "Hollis Diagnostics",
+        panelName: "Metabolic Panel",
+      },
+      observations: [
+        {
+          rawAnalyteName: "Hemoglobin A1c",
+          rawValueText: "5.4",
+          rawUnit: "%",
+          rawReferenceIntervalText: "4.0-5.6",
+          rawReferenceIntervalLow: 4,
+          rawReferenceIntervalHigh: 5.6,
+          mappingStatus: contracts.LAB_MAPPING_STATUS.REVIEW_NEEDED,
+          mappingConfidence: 0.95,
+        },
+      ],
+      suggestedNewMetrics: [
+        {
+          suggestedCode: "FASTING_INSULIN",
+          suggestedName: "Fasting Insulin",
+          suggestedCategory: "metabolic",
+          suggestedAliases: ["Insulin, Fasting"],
+          canonicalUnit: "uIU/mL",
+          directionality: "LOWER_IS_BETTER",
+          description: "Fasting insulin for metabolic health review.",
+          confidence: 0.88,
+          reasoning: "Common metabolic marker not found in current catalog.",
+          rawAnalyteName: "Insulin",
+          isPopulationVariant: false,
+        },
+      ],
+      selfReviewSummary: {
+        iterationsPerformed: 2,
+        duplicatesDetected: 0,
+        garbageFlagged: 0,
+        verifiedCreations: 1,
+      },
+    };
+
+    const result =
+      labDataExtractionResultWithGovernanceSchema.safeParse(payload);
+
+    expect(result.success).toBe(true);
+  });
+
+  it("should keep LabOrderDetailResponse aligned with LabOrderDetailResponseSchema", () => {
+    assertLabOrderDetailResponseContractMatchesSchema(true);
+
+    const payload: LabOrderDetailResponse = {
+      id: "order_1",
+      userId: "HH-ABC123",
+      reportDate: "2026-03-12T00:00:00.000Z",
+      labName: "Hollis Diagnostics",
+      labLocation: "Austin",
+      specimenType: "Blood",
+      orderingProvider: "Dr. Hollis",
+      panelName: "Metabolic Panel",
+      panelCode: "MP-01",
+      notes: null,
+      orderStatus: "RESULTS_PENDING",
+      observations: [
+        {
+          id: "obs_1",
+          rawAnalyteName: "Hemoglobin A1c",
+          rawValueText: "5.4",
+          rawUnit: "%",
+          rawReferenceIntervalLow: 4,
+          rawReferenceIntervalHigh: 5.6,
+          rawFlag: null,
+          canonicalValue: 5.4,
+          canonicalUnit: "%",
+          metricDefinitionId: null,
+          mappingStatus: contracts.LAB_MAPPING_STATUS.MATCHED,
+          mappingConfidence: 0.99,
+        },
+      ],
+    };
+
+    const result = LabOrderDetailResponseSchema.safeParse(payload);
+
+    expect(result.success).toBe(true);
+  });
+
   it("should have matching tuple and schema for USER_ROLES", () => {
     // Ensure the tuple and schema are coherent
     const tupleValues = contracts.USER_ROLES;

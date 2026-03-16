@@ -30,6 +30,25 @@ import {
 } from "./clinical";
 
 // ============================================================================
+// OAUTH PROVIDER TYPES (DB-aligned)
+// ============================================================================
+
+/**
+ * OAuth provider types supported for social sign-in.
+ * Matches the Prisma OAuthProviderType enum (uppercase values).
+ *
+ * NOTE: This is distinct from the lowercase OAuthProvider type in
+ * shared/contracts/constants (which uses "apple" | "google" for URL routing).
+ * This type aligns with the DB enum used in the OAuthAccount model.
+ */
+export const OAUTH_PROVIDER = {
+  APPLE: "APPLE",
+  GOOGLE: "GOOGLE",
+} as const;
+export const OAuthProviderSchema = z.enum(["APPLE", "GOOGLE"]);
+export type OAuthProviderType = z.infer<typeof OAuthProviderSchema>;
+
+// ============================================================================
 // USER ROLES
 // ============================================================================
 
@@ -359,6 +378,90 @@ export const BIOLOGICAL_SEX_LABELS: Record<BiologicalSex, string> = {
   prefer_not_to_say: "Prefer Not to Say",
 };
 
+/**
+ * Registration-specific biological sex options exposed on admin/signup flows.
+ *
+ * These values intentionally keep the simplified UI option `other` while the
+ * persisted profile contract remains canonical (`non_binary`). Use the mapping
+ * helpers below instead of hand-rolled client/server remaps.
+ */
+export const REGISTRATION_BIOLOGICAL_SEX_OPTIONS = [
+  BIOLOGICAL_SEX.MALE,
+  BIOLOGICAL_SEX.FEMALE,
+  "other",
+] as const;
+
+export const RegistrationBiologicalSexSchema = z.enum(
+  REGISTRATION_BIOLOGICAL_SEX_OPTIONS,
+);
+export type RegistrationBiologicalSex = z.infer<
+  typeof RegistrationBiologicalSexSchema
+>;
+
+/** Centralized registration biological sex constants for equality checks */
+export const REGISTRATION_BIOLOGICAL_SEX = {
+  MALE: "male" as RegistrationBiologicalSex,
+  FEMALE: "female" as RegistrationBiologicalSex,
+  OTHER: "other" as RegistrationBiologicalSex,
+} as const;
+
+/** Human-readable labels for admin/signup biological sex options */
+export const REGISTRATION_BIOLOGICAL_SEX_LABELS: Record<
+  RegistrationBiologicalSex,
+  string
+> = {
+  male: BIOLOGICAL_SEX_LABELS.male,
+  female: BIOLOGICAL_SEX_LABELS.female,
+  other: "Other",
+  non_binary: BIOLOGICAL_SEX_LABELS.non_binary,
+  intersex: BIOLOGICAL_SEX_LABELS.intersex,
+  prefer_not_to_say: BIOLOGICAL_SEX_LABELS.prefer_not_to_say,
+};
+
+/**
+ * Canonical mapping from registration/signup values to stored profile values.
+ * This prevents cross-surface drift between admin UI selections and backend
+ * profile expectations.
+ */
+export const REGISTRATION_BIOLOGICAL_SEX_TO_BIOLOGICAL_SEX: Record<
+  RegistrationBiologicalSex,
+  BiologicalSex
+> = {
+  male: BIOLOGICAL_SEX.MALE,
+  female: BIOLOGICAL_SEX.FEMALE,
+  other: BIOLOGICAL_SEX.NON_BINARY,
+  non_binary: BIOLOGICAL_SEX.NON_BINARY,
+  intersex: BIOLOGICAL_SEX.INTERSEX,
+  prefer_not_to_say: BIOLOGICAL_SEX.PREFER_NOT_TO_SAY,
+};
+
+export const RegistrationBiologicalSexInputSchema = z.union([
+  RegistrationBiologicalSexSchema,
+  BiologicalSexSchema,
+]);
+export type RegistrationBiologicalSexInput = z.infer<
+  typeof RegistrationBiologicalSexInputSchema
+>;
+
+/**
+ * Normalize a registration biological sex input to the canonical stored
+ * BiologicalSex contract.
+ */
+export function canonicalizeRegistrationBiologicalSex(
+  value: RegistrationBiologicalSexInput | null | undefined,
+): BiologicalSex | undefined {
+  if (value == null) {
+    return undefined;
+  }
+
+  const canonicalBiologicalSex = BiologicalSexSchema.safeParse(value);
+  if (canonicalBiologicalSex.success) {
+    return canonicalBiologicalSex.data;
+  }
+
+  return REGISTRATION_BIOLOGICAL_SEX_TO_BIOLOGICAL_SEX[value];
+}
+
 // ============================================================================
 // ACTIVITY LEVELS
 // ============================================================================
@@ -571,13 +674,111 @@ export const ACCOUNT_STATUS_LABELS: Record<AccountStatus, string> = {
   inactive: "Inactive",
 };
 
+/** Canonical boolean flags persisted on the User record for account status. */
+export interface AccountStatusFlags {
+  isActive: boolean;
+  accountSuspended: boolean;
+}
+
 /**
- * Returns true if the given account status represents an active account.
- * Only `ACCOUNT_STATUS.ACTIVE` is considered active; suspended and inactive are not.
- * Centralised here so that the active-set can be expanded in one place.
+ * Canonical account state derived from persisted flags.
+ * Includes the normalized booleans plus the derived status value.
+ */
+export interface CanonicalAccountState extends AccountStatusFlags {
+  accountStatus: AccountStatus;
+}
+
+/**
+ * Convert the canonical account status enum to the persisted User flags.
+ *
+ * Canonical mapping:
+ * - active -> isActive=true,  accountSuspended=false
+ * - suspended -> isActive=true,  accountSuspended=true
+ * - inactive -> isActive=false, accountSuspended=false
+ */
+export function mapAccountStatusToFlags(
+  status: AccountStatusValue,
+): AccountStatusFlags {
+  switch (status) {
+    case "active":
+      return {
+        isActive: true,
+        accountSuspended: false,
+      };
+    case "suspended":
+      return {
+        isActive: true,
+        accountSuspended: true,
+      };
+    case "inactive":
+      return {
+        isActive: false,
+        accountSuspended: false,
+      };
+  }
+}
+
+/**
+ * Returns true if the given account status represents a fully active,
+ * unsuspended account.
  */
 export function isActiveAccountStatus(status: AccountStatusValue): boolean {
   return status === ACCOUNT_STATUS.ACTIVE;
+}
+
+/**
+ * Derives AccountStatus from isActive and accountSuspended boolean flags.
+ * Used by server-side services to compute the display status from DB fields.
+ *
+ * Logic:
+ * - isActive=true, accountSuspended=false → "active"
+ * - isActive=true, accountSuspended=true → "suspended"
+ * - isActive=false → "inactive"
+ *
+ * @param isActive Account active flag (from User.isActive)
+ * @param accountSuspended Account suspension flag (from User.accountSuspended)
+ * @returns Derived AccountStatus value
+ */
+export function deriveAccountStatus(
+  isActive: boolean | undefined,
+  accountSuspended: boolean | undefined,
+): AccountStatus {
+  // Default to active if both flags are undefined
+  if (isActive === undefined && accountSuspended === undefined) {
+    return ACCOUNT_STATUS.ACTIVE;
+  }
+
+  // If explicitly inactive (isActive=false), return inactive regardless of suspension flag
+  if (isActive === false) {
+    return ACCOUNT_STATUS.INACTIVE;
+  }
+
+  // If active but suspended, return suspended
+  if (accountSuspended === true) {
+    return ACCOUNT_STATUS.SUSPENDED;
+  }
+
+  // Default: active
+  return ACCOUNT_STATUS.ACTIVE;
+}
+
+/**
+ * Normalize persisted account flags to the canonical cross-surface representation.
+ *
+ * This is intentionally lossy for invalid legacy combinations. For example,
+ * `isActive=false` + `accountSuspended=true` is normalized to canonical
+ * `inactive` => `isActive=false` + `accountSuspended=false`.
+ */
+export function normalizeAccountStatusFlags(
+  isActive: boolean | undefined,
+  accountSuspended: boolean | undefined,
+): CanonicalAccountState {
+  const accountStatus = deriveAccountStatus(isActive, accountSuspended);
+
+  return {
+    accountStatus,
+    ...mapAccountStatusToFlags(accountStatus),
+  };
 }
 
 // ============================================================================
@@ -743,6 +944,7 @@ export const UserProfileSchema = z.object({
   medicalConditions: z.array(medicalConditionSchema).nullable().optional(),
   onboardingCompleted: z.boolean(),
   isActive: z.boolean().optional(),
+  accountSuspended: z.boolean().optional(),
   // ── Data Retention (GDPR / CCPA / HIPAA) ─────────────────────────────────
   /** Earliest date on which PHI records may be permanently purged. Set on soft-delete. */
   recordRetentionDate: z.coerce.date().nullable().optional(),
@@ -1219,6 +1421,41 @@ export type AdminPortalNotificationPreferencesContract = z.infer<
   typeof adminPortalNotificationPreferencesSchema
 >;
 
+const weekdayIndexSchema = z
+  .number()
+  .int()
+  .min(0)
+  .max(WEEKDAYS.length - 1);
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function normalizeNutritionNotificationUpdateInput(value: unknown): unknown {
+  if (!isPlainObject(value)) {
+    return value;
+  }
+
+  const normalized = { ...value };
+  delete normalized.mealReminders;
+  return normalized;
+}
+
+function buildNotificationSection<TSection extends Record<string, unknown>>(
+  base: TSection,
+  candidate: unknown,
+  updateSchema: z.ZodType<Partial<TSection>>,
+  fullSchema: z.ZodType<TSection>,
+): TSection {
+  const parsedCandidate = updateSchema.safeParse(candidate);
+  const partialSection = parsedCandidate.success ? parsedCandidate.data : {};
+
+  return fullSchema.parse({
+    ...base,
+    ...partialSection,
+  });
+}
+
 export const notificationPreferencesSchema = z.object({
   morningBriefing: dailyNotificationSchema,
   eveningCheckIn: dailyNotificationSchema,
@@ -1236,6 +1473,159 @@ export type NotificationPreferencesContract = z.infer<
   typeof notificationPreferencesSchema
 >;
 
+export const dailyNotificationUpdateSchema = dailyNotificationSchema.partial();
+
+export const weeklyNotificationUpdateSchema = z
+  .object({
+    enabled: z.boolean().optional(),
+    time: timeOfDaySchema.optional(),
+    day: WeekdaySchema.optional(),
+    dayOfWeek: weekdayIndexSchema.optional(),
+  })
+  .transform(({ dayOfWeek, ...value }) => ({
+    ...value,
+    ...(value.day === undefined && dayOfWeek !== undefined
+      ? { day: WEEKDAYS[dayOfWeek] }
+      : {}),
+  }));
+
+export const frequencyNotificationUpdateSchema =
+  frequencyNotificationSchema.partial();
+
+export const nutritionNotificationUpdateSchema = z.preprocess(
+  normalizeNutritionNotificationUpdateInput,
+  nutritionNotificationSchema.partial(),
+);
+
+export const adminPortalNotificationPreferencesUpdateSchema =
+  adminPortalNotificationPreferencesSchema.partial();
+
+export const notificationPreferencesUpdateSchema = z
+  .object({
+    morningBriefing: dailyNotificationUpdateSchema.optional(),
+    eveningCheckIn: dailyNotificationUpdateSchema.optional(),
+    weeklyInsights: weeklyNotificationUpdateSchema.optional(),
+    coPilotCheckIns: frequencyNotificationUpdateSchema.optional(),
+    trainingGuidance: frequencyNotificationUpdateSchema.optional(),
+    nutritionCoaching: nutritionNotificationUpdateSchema.optional(),
+    adminPortal: adminPortalNotificationPreferencesUpdateSchema.optional(),
+  })
+  .partial()
+  .strip();
+
+export type NotificationPreferencesUpdate = z.infer<
+  typeof notificationPreferencesUpdateSchema
+>;
+
+export type NotificationPreferencesUpdateContract = z.infer<
+  typeof notificationPreferencesUpdateSchema
+>;
+
+export function normalizeNotificationPreferences(
+  value: unknown,
+  fallback: NotificationPreferencesContract = defaultNotifications(),
+): NotificationPreferencesContract {
+  const source = isPlainObject(value) ? value : {};
+
+  return {
+    morningBriefing: buildNotificationSection(
+      fallback.morningBriefing,
+      source.morningBriefing,
+      dailyNotificationUpdateSchema,
+      dailyNotificationSchema,
+    ),
+    eveningCheckIn: buildNotificationSection(
+      fallback.eveningCheckIn,
+      source.eveningCheckIn,
+      dailyNotificationUpdateSchema,
+      dailyNotificationSchema,
+    ),
+    weeklyInsights: buildNotificationSection(
+      fallback.weeklyInsights,
+      source.weeklyInsights,
+      weeklyNotificationUpdateSchema,
+      weeklyNotificationSchema,
+    ),
+    coPilotCheckIns: buildNotificationSection(
+      fallback.coPilotCheckIns,
+      source.coPilotCheckIns,
+      frequencyNotificationUpdateSchema,
+      frequencyNotificationSchema,
+    ),
+    trainingGuidance: buildNotificationSection(
+      fallback.trainingGuidance,
+      source.trainingGuidance,
+      frequencyNotificationUpdateSchema,
+      frequencyNotificationSchema,
+    ),
+    nutritionCoaching: buildNotificationSection(
+      fallback.nutritionCoaching,
+      source.nutritionCoaching,
+      nutritionNotificationUpdateSchema,
+      nutritionNotificationSchema,
+    ),
+    adminPortal: buildNotificationSection(
+      fallback.adminPortal,
+      source.adminPortal,
+      adminPortalNotificationPreferencesUpdateSchema,
+      adminPortalNotificationPreferencesSchema,
+    ),
+  };
+}
+
+export function mergeNotificationPreferences(
+  base: unknown,
+  update: unknown,
+): NotificationPreferencesContract {
+  const canonicalBase = normalizeNotificationPreferences(base);
+  const updateSource = isPlainObject(update) ? update : {};
+
+  return {
+    morningBriefing: buildNotificationSection(
+      canonicalBase.morningBriefing,
+      updateSource.morningBriefing,
+      dailyNotificationUpdateSchema,
+      dailyNotificationSchema,
+    ),
+    eveningCheckIn: buildNotificationSection(
+      canonicalBase.eveningCheckIn,
+      updateSource.eveningCheckIn,
+      dailyNotificationUpdateSchema,
+      dailyNotificationSchema,
+    ),
+    weeklyInsights: buildNotificationSection(
+      canonicalBase.weeklyInsights,
+      updateSource.weeklyInsights,
+      weeklyNotificationUpdateSchema,
+      weeklyNotificationSchema,
+    ),
+    coPilotCheckIns: buildNotificationSection(
+      canonicalBase.coPilotCheckIns,
+      updateSource.coPilotCheckIns,
+      frequencyNotificationUpdateSchema,
+      frequencyNotificationSchema,
+    ),
+    trainingGuidance: buildNotificationSection(
+      canonicalBase.trainingGuidance,
+      updateSource.trainingGuidance,
+      frequencyNotificationUpdateSchema,
+      frequencyNotificationSchema,
+    ),
+    nutritionCoaching: buildNotificationSection(
+      canonicalBase.nutritionCoaching,
+      updateSource.nutritionCoaching,
+      nutritionNotificationUpdateSchema,
+      nutritionNotificationSchema,
+    ),
+    adminPortal: buildNotificationSection(
+      canonicalBase.adminPortal,
+      updateSource.adminPortal,
+      adminPortalNotificationPreferencesUpdateSchema,
+      adminPortalNotificationPreferencesSchema,
+    ),
+  };
+}
+
 // ============================================================================
 // USER PREFERENCES SCHEMA (defined here after dashboard/notification schemas)
 // ============================================================================
@@ -1251,8 +1641,12 @@ export const UserPreferencesSchema = z.object({
     hiddenSections: [],
     pinnedSections: [],
   }),
-  advancedUnits: advancedUnitPreferencesSchema.nullable().default(defaultAdvancedUnits()),
-  notifications: notificationPreferencesSchema.nullable().default(defaultNotifications()),
+  advancedUnits: advancedUnitPreferencesSchema
+    .nullable()
+    .default(defaultAdvancedUnits()),
+  notifications: notificationPreferencesSchema
+    .nullable()
+    .default(defaultNotifications()),
   /** @deprecated Alias for `unitSystem`. No standalone DB column. Use `unitSystem` instead. Will be removed in a future contract cleanup. */
   units: z.enum(["imperial", "metric", "advanced"]).optional(),
   dashboardCardOrder: z.array(z.string()).nullable().optional(),

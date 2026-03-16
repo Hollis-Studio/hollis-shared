@@ -11,7 +11,7 @@
  */
 
 import { z } from "zod";
-import { LabOrderStatusSchema } from "./businessAnalytics";
+import { LAB_ORDER_STATUS, LabOrderStatusSchema } from "./businessAnalytics";
 
 // ============================================================================
 // LAB RESULT STATUS (Domain Constants Pattern)
@@ -71,12 +71,12 @@ export const LabResultFlagSchema = z.enum(LAB_RESULT_FLAGS);
 
 /** Constant object for lab result flag comparisons */
 export const LAB_RESULT_FLAG = {
-  NORMAL: "normal" as LabResultFlag,
-  LOW: "low" as LabResultFlag,
-  HIGH: "high" as LabResultFlag,
-  CRITICAL_LOW: "critical_low" as LabResultFlag,
-  CRITICAL_HIGH: "critical_high" as LabResultFlag,
-} as const;
+  NORMAL: "normal",
+  LOW: "low",
+  HIGH: "high",
+  CRITICAL_LOW: "critical_low",
+  CRITICAL_HIGH: "critical_high",
+} as const satisfies Record<string, LabResultFlag>;
 
 /** Human-readable labels for lab result flags */
 export const LAB_RESULT_FLAG_LABELS: Record<LabResultFlag, string> = {
@@ -305,6 +305,19 @@ export type LabMetricCategory = z.infer<typeof LabMetricCategorySchema>;
 
 /** Zod schema for lab metric categories */
 export const LabMetricCategorySchema = z.enum(LAB_METRIC_CATEGORIES);
+
+/** Constant object for lab metric category comparisons (avoids magic strings) */
+export const LAB_METRIC_CATEGORY = {
+  body_composition: "body_composition",
+  cardiovascular: "cardiovascular",
+  metabolic: "metabolic",
+  hormonal: "hormonal",
+  performance: "performance",
+  hematology: "hematology",
+  inflammatory: "inflammatory",
+  nutritional: "nutritional",
+  uncategorized: "uncategorized",
+} as const satisfies Record<LabMetricCategory, LabMetricCategory>;
 
 /** Human-readable labels for lab metric categories */
 export const LAB_METRIC_CATEGORY_LABELS: Record<LabMetricCategory, string> = {
@@ -668,7 +681,7 @@ export const createMockLabReport = (
     reportDate: timestamp,
     labName: "Quest Diagnostics",
     panelName: "Comprehensive Metabolic Panel",
-    orderStatus: "ORDERED",
+    orderStatus: LAB_ORDER_STATUS.ORDERED,
     observations: [createMockLabObservation()],
     createdAt: timestamp,
     updatedAt: timestamp,

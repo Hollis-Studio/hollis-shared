@@ -38,13 +38,13 @@ export type LabOrderStatus = z.infer<typeof LabOrderStatusSchema>;
 
 /** Constant object for lab order status comparisons */
 export const LAB_ORDER_STATUS = {
-  ORDERED: "ORDERED" as LabOrderStatus,
-  KIT_SENT: "KIT_SENT" as LabOrderStatus,
-  SAMPLE_RECEIVED: "SAMPLE_RECEIVED" as LabOrderStatus,
-  RESULTS_PENDING: "RESULTS_PENDING" as LabOrderStatus,
-  RESULTS_REVIEWED: "RESULTS_REVIEWED" as LabOrderStatus,
-  RESULTS_PUBLISHED: "RESULTS_PUBLISHED" as LabOrderStatus,
-} as const;
+  ORDERED: "ORDERED",
+  KIT_SENT: "KIT_SENT",
+  SAMPLE_RECEIVED: "SAMPLE_RECEIVED",
+  RESULTS_PENDING: "RESULTS_PENDING",
+  RESULTS_REVIEWED: "RESULTS_REVIEWED",
+  RESULTS_PUBLISHED: "RESULTS_PUBLISHED",
+} as const satisfies Record<LabOrderStatus, LabOrderStatus>;
 
 /** Human-readable labels for lab order statuses */
 export const LAB_ORDER_STATUS_LABELS: Record<LabOrderStatus, string> = {
@@ -168,6 +168,28 @@ export function isUserEventType(value: string): value is UserEventType {
   return (USER_EVENT_TYPES as readonly string[]).includes(value);
 }
 
+/**
+ * Known event types should come from USER_EVENT_TYPES.
+ *
+ * We still allow uppercase SNAKE_CASE extensions for forward compatibility so
+ * newly emitted events do not hard-break consumers before this tuple is updated.
+ * Free-form strings remain intentionally blocked.
+ */
+export const ForwardCompatibleUserEventTypeSchema = z.union([
+  UserEventTypeSchema,
+  z
+    .string()
+    .trim()
+    .min(1)
+    .regex(
+      /^[A-Z][A-Z0-9_]*$/,
+      "type must be a known user event type or an uppercase SNAKE_CASE extension",
+    ),
+]);
+export type ForwardCompatibleUserEventType = z.infer<
+  typeof ForwardCompatibleUserEventTypeSchema
+>;
+
 // ============================================================================
 // USER EVENT CONTRACT
 // ============================================================================
@@ -175,10 +197,10 @@ export function isUserEventType(value: string): value is UserEventType {
 export const UserEventContractSchema = z.object({
   id: z.string(),
   userId: z.string(),
-  type: UserEventTypeSchema,
+  type: ForwardCompatibleUserEventTypeSchema,
   occurredAt: z.string(),
-  source: z.string().optional(),
-  metadata: z.record(z.string(), z.unknown()),
+  source: z.string().nullable().optional(),
+  metadata: z.record(z.string(), z.unknown()).nullable().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -188,6 +210,15 @@ export const UserEventContractSchema = z.object({
  * Records significant user actions and system events.
  */
 export type UserEventContract = z.infer<typeof UserEventContractSchema>;
+
+/**
+ * Canonical paginated user events list response.
+ * Shape: { data: UserEventContract[], pagination: PaginationMeta }
+ */
+export const UserEventListResponseSchema = createPaginatedListSchema(
+  UserEventContractSchema,
+);
+export type UserEventListResponse = z.infer<typeof UserEventListResponseSchema>;
 
 // ============================================================================
 // BUSINESS DAILY SNAPSHOT
@@ -1027,7 +1058,8 @@ export type AIChatSendMessageResponse = z.infer<
 /**
  * List sessions response — canonical paginated shape { data: AIChatSession[], pagination: {...} }
  */
-export const AIChatSessionListSchema = createPaginatedListSchema(AIChatSessionSchema);
+export const AIChatSessionListSchema =
+  createPaginatedListSchema(AIChatSessionSchema);
 
 export type AIChatSessionList = z.infer<typeof AIChatSessionListSchema>;
 
@@ -1109,3 +1141,102 @@ export const ReferralTreeSchema = z.object({
 });
 
 export type ReferralTree = z.infer<typeof ReferralTreeSchema>;
+
+// ============================================================================
+// DISPUTE ITEM
+// ============================================================================
+
+/**
+ * A single Stripe chargeback/dispute record.
+ * Runtime Zod schema for the DisputeItem interface defined in domain/analytics.ts.
+ */
+export const DisputeItemSchema = z.object({
+  id: z.string(),
+  stripeDisputeId: z.string(),
+  stripeChargeId: z.string(),
+  status: z.enum(["NEEDS_RESPONSE", "UNDER_REVIEW", "WON", "LOST"]),
+  reason: z.string(),
+  amount: z.number(),
+  userId: z.string(),
+  userName: z.string().nullable(),
+  userEmail: z.string().nullable(),
+  subscriptionId: z.string().nullable(),
+  subscriptionTier: z.string().nullable(),
+  subscriptionStatus: z.string().nullable(),
+  accountSuspendedAt: z.string().nullable(),
+  accountRestoredAt: z.string().nullable(),
+  resolution: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type DisputeItemContract = z.infer<typeof DisputeItemSchema>;
+
+/**
+ * Canonical paginated disputes response.
+ * Shape: { data: DisputeItemContract[], pagination: PaginationMeta }
+ */
+export const DisputeListResponseSchema =
+  createPaginatedListSchema(DisputeItemSchema);
+
+export type DisputeListResponse = z.infer<typeof DisputeListResponseSchema>;
+
+// ============================================================================
+// BILLING ANALYTICS RESPONSE SHAPES
+// ============================================================================
+
+/**
+ * Revenue trend data point — one entry per granularity bucket (e.g. month).
+ */
+export const RevenueTrendDataPointSchema = z.object({
+  date: z.string(),
+  revenue: z.number(),
+});
+
+export type RevenueTrendDataPoint = z.infer<typeof RevenueTrendDataPointSchema>;
+
+/**
+ * Revenue trend response from the billing analytics endpoint.
+ * Keyed by granularity (day/week/month).
+ */
+export const RevenueTrendResponseSchema = z.object({
+  data: z.array(RevenueTrendDataPointSchema),
+});
+
+export type RevenueTrendResponse = z.infer<typeof RevenueTrendResponseSchema>;
+
+/**
+ * Churn metrics response from the billing analytics endpoint.
+ * Captures subscription cancellation / acquisition delta for a period.
+ */
+export const ChurnMetricsResponseSchema = z.object({
+  churnRate: z.number(),
+  canceledSubscriptions: z.number().int(),
+  newSubscriptions: z.number().int(),
+  netGrowth: z.number().int(),
+});
+
+export type ChurnMetricsResponse = z.infer<typeof ChurnMetricsResponseSchema>;
+
+/**
+ * LTV breakdown by membership tier.
+ */
+export const LTVByTierSchema = z.object({
+  tier: z.string(),
+  averageLTVCents: z.number().int(),
+  totalCustomers: z.number().int(),
+});
+
+export type LTVByTier = z.infer<typeof LTVByTierSchema>;
+
+/**
+ * LTV metrics response from the billing analytics endpoint.
+ * Amounts are in cents to avoid floating-point issues.
+ */
+export const LTVMetricsResponseSchema = z.object({
+  overallAverageLTVCents: z.number().int(),
+  overallAverageLifetimeMonths: z.number(),
+  byTier: z.array(LTVByTierSchema),
+});
+
+export type LTVMetricsResponse = z.infer<typeof LTVMetricsResponseSchema>;

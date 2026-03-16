@@ -288,12 +288,35 @@ export * from "./metric-codes";
 // Billing domain - billing status, dispute status
 export * from "./billing";
 
+// Jobs domain - cron job run status values
+export * from "./jobs";
+
 // Admin Tasks domain - task types, priorities, statuses
 export * from "./admin-tasks";
 
+// Auth Token domain - refresh token revocation reasons
+export * from "./auth-tokens";
+
 // Health Metric Types - core type definitions for health metrics (imported by health-metric-definitions)
-// NOTE: Already re-exported through health-progress.ts, no need to export directly
-// export * from './health-metric-types';
+// NOTE: MetricCategorySchema and MetricCategory are already re-exported through metric-definition.ts.
+// Export the constant maps and value-type / trend-direction symbols that are not covered elsewhere.
+export {
+    METRIC_CATEGORY,
+    METRIC_CATEGORY_LABELS,
+    METRIC_VALUE_TYPE,
+    METRIC_VALUE_TYPE_LABELS,
+    METRIC_VALUE_TYPES,
+    MetricValueTypeSchema,
+    TREND_DIRECTION,
+    TREND_DIRECTION_LABELS,
+    TREND_DIRECTIONS,
+    TrendDirectionSchema,
+    isMetricCategory,
+    isMetricValueType,
+    isTrendDirection,
+    type MetricValueType,
+    type TrendDirection,
+} from "./health-metric-types";
 
 // Health Metric Definitions - registry of all health metric definitions
 // NOTE: Already re-exported through health-progress.ts, no need to export directly to avoid conflicts

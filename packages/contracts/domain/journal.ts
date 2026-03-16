@@ -13,6 +13,7 @@
 
 import { z } from "zod";
 import { baseDocumentSchema, isoDateSchema } from "./common";
+import { createPaginatedListSchema } from "./pagination";
 
 // ============================================================================
 // JOURNAL MOOD & ENERGY
@@ -121,6 +122,15 @@ export const journalEntrySchema = baseDocumentSchema.extend({
 });
 
 export type JournalEntryContract = z.infer<typeof journalEntrySchema>;
+
+/**
+ * Canonical paginated journal list response.
+ * Shape: { data: JournalEntryContract[], pagination: PaginationMeta }
+ */
+export const journalListResponseSchema = createPaginatedListSchema(
+  journalEntrySchema,
+);
+export type JournalListResponse = z.infer<typeof journalListResponseSchema>;
 
 // ============================================================================
 // JOURNAL ENTRY FORM INPUT SCHEMA

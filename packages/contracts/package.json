@@ -47,6 +47,10 @@
       "types": "./password/index.ts",
       "default": "./password/index.ts"
     },
+    "./primitives": {
+      "types": "./primitives/index.ts",
+      "default": "./primitives/index.ts"
+    },
     "./errors": {
       "types": "./errors/index.ts",
       "default": "./errors/index.ts"
