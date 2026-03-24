@@ -10,6 +10,7 @@ This module contains the canonical definitions for:
 - **Domain Contracts** - Types, schemas, and constants for business domains
 - **Zod Schemas** - Shared validation schemas for request/response payloads
 - **Constants** - Storage keys, configuration values, and magic numbers
+- **Commercial Offer Terms** - Membership pricing, term discounts, included services, and standard third-party billing disclosures
 
 ## 📖 Schema Index
 
@@ -30,6 +31,7 @@ Looking for a specific schema? See **[SCHEMA_INDEX.md](./SCHEMA_INDEX.md)** for 
 2. **Validation Consistency** - Same Zod schemas validate data across all surfaces
 3. **No Drift** - Single definition prevents divergence between codebases
 4. **Better DX** - IDE autocomplete and type checking work across boundaries
+5. **Offer Sync** - Public pricing and legal doc blocks can stay aligned from one commercial source
 
 ## How to Import
 
@@ -102,6 +104,7 @@ shared/contracts/
 ├── domain/            # 41 domain contract files + 1 barrel index (`index.ts`)
 │   ├── index.ts       # Domain barrel
 │   ├── user.ts        # User roles, tiers
+│   ├── offer-sheet.ts # Master commercial offer sheet wrapper + helpers
 │   ├── appointments.ts # Appointment types, statuses
 │   ├── nutrition.ts   # Meal types, food units
 │   ├── training.ts    # Strategy types, goals
@@ -163,6 +166,7 @@ shared/contracts/
 ### Domain Contracts (`shared/contracts/domain`)
 
 - **User**: `USER_ROLES`, `USER_TIERS`, `UserRoleSchema`, `UserTierSchema`
+- **Commercial Offer**: `MASTER_OFFER_SHEET`, `MASTER_OFFER_TERMS`, offer comparison rows, pricing helpers
 - **Appointments**: `APPOINTMENT_STATUSES`, `APPOINTMENT_TYPES`, `BOOKING_STEPS`
 - **Nutrition**: `MEAL_TYPES`, `FOOD_UNITS`, `LOCATION_TYPES`, `PREPARATION_METHODS`
 - **Training**: `STRATEGY_TYPES`, `GOAL_CATEGORIES`
@@ -195,6 +199,7 @@ shared/contracts/
 ✅ Follow the existing pattern: `THING_TYPES` (tuple), `THING_TYPE` (object), `ThingTypeSchema` (Zod), `THING_TYPE_LABELS` (display)  
 ✅ Add tests in `__tests__/compile.test.ts`  
 ✅ Keep this module pure TypeScript + Zod only
+✅ For membership commercial terms, update `domain/offer-sheet.json` first so legal and web-public can stay aligned
 
 ### DON'T:
 
