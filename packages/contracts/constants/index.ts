@@ -258,3 +258,34 @@ export const SLEEP_STAGE = {
 } as const;
 
 export type SleepStage = (typeof SLEEP_STAGE)[keyof typeof SLEEP_STAGE];
+
+// ============================================================================
+// LEGAL
+// ============================================================================
+
+/**
+ * Canonical URLs for Hollis Health legal and support pages.
+ * Single source of truth used by mobile, web-admin, and web-public surfaces.
+ * Do NOT hardcode these URLs elsewhere — import from here.
+ */
+export const LEGAL_URLS = {
+  PRIVACY_POLICY: "https://hollishealth.com/privacy",
+  TERMS_OF_SERVICE: "https://hollishealth.com/terms",
+  SUPPORT: "https://hollishealth.com/support",
+} as const;
+
+export type LegalUrl = (typeof LEGAL_URLS)[keyof typeof LEGAL_URLS];
+
+/** Support contact information displayed in-app and on store listings. */
+export const SUPPORT_CONTACT = {
+  EMAIL: "admin@hollis.health",
+  PHONE: "210-891-9005",
+  HOURS: "Monday–Friday, 9:00 AM – 5:00 PM CT",
+} as const;
+
+/**
+ * Standard medical disclaimer displayed throughout the app.
+ * Must be shown wherever health-related content could be misread as medical advice.
+ */
+export const MEDICAL_DISCLAIMER =
+  "Hollis Health provides wellness coaching and care coordination services. This app is not a medical device and does not diagnose, treat, cure, or prevent any disease or condition. Always consult your physician or qualified healthcare provider before making health decisions." as const;

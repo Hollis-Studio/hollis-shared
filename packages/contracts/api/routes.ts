@@ -947,6 +947,9 @@ export const ACCOUNT_ROUTES = {
   ORDERS: "/api/account/orders",
   /** GET /api/account/payment-methods - Get current user's saved payment methods */
   PAYMENT_METHODS: "/api/account/payment-methods",
+
+  /** POST /api/account/deletion-request - Submit a self-service account deletion request (GDPR/CCPA) */
+  DELETION_REQUEST: "/api/account/deletion-request",
 } as const;
 
 /** Type for account route values */
