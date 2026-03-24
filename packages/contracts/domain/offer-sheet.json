@@ -1,0 +1,122 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "effectiveDate": "2026-03-24",
+    "status": "draft"
+  },
+  "terms": [
+    {
+      "months": 4,
+      "discountPercent": 0,
+      "label": "4 months"
+    },
+    {
+      "months": 8,
+      "discountPercent": 5,
+      "label": "8 months"
+    },
+    {
+      "months": 12,
+      "discountPercent": 10,
+      "label": "12 months"
+    }
+  ],
+  "policies": {
+    "enrollmentScheduleControl": "The signed Enrollment Summary and Service Schedule controls the selected tier, term, monthly rate, exact included services, add-ons, and any separately billed third-party items.",
+    "autoRenewal": "After the initial term, membership converts to month-to-month unless either party gives at least 30 days' written notice of non-renewal.",
+    "noticePeriod": "30 days' written notice before the end of the initial term or month-to-month termination date.",
+    "pauseRights": "Only if expressly permitted in the signed Membership Agreement or an approved written addendum; the signed agreement controls duration, billing effect, and term-extension effect.",
+    "earlyTermination": "If the member terminates early other than an approved or legally required cancellation, the remaining discounted contract value through the end date remains due as stated in the signed Membership Agreement.",
+    "thirdPartyDisclosure": "Independent physician, laboratory, imaging, pharmacy, and other third-party clinical charges are excluded unless the signed Enrollment Summary and Service Schedule expressly lists them as included."
+  },
+  "tiers": {
+    "ESSENTIALS": {
+      "displayName": "Essentials",
+      "baseMonthlyPriceDollars": 799,
+      "tagline": "Foundational accountability with a written service schedule",
+      "publicDescription": "A foundational wellness membership with four monthly training sessions and written enrollment terms that specify any clinical or third-party inclusions."
+    },
+    "CORE": {
+      "displayName": "Core",
+      "baseMonthlyPriceDollars": 1349,
+      "tagline": "Higher session volume with priority coordination",
+      "publicDescription": "A higher-frequency membership with eight monthly training sessions and priority care coordination, with any clinical inclusions defined in the signed enrollment schedule.",
+      "isPopular": true
+    },
+    "CONCIERGE": {
+      "displayName": "Concierge",
+      "baseMonthlyPriceDollars": 1999,
+      "tagline": "Highest-touch support with the most training capacity",
+      "publicDescription": "Our highest-touch membership with sixteen monthly training sessions and the most hands-on care coordination, with any third-party inclusions stated in writing at enrollment."
+    }
+  },
+  "comparisonRows": [
+    {
+      "key": "trainingSessionsPerMonth",
+      "category": "Included Services",
+      "label": "Personal training sessions / month",
+      "values": {
+        "ESSENTIALS": "4",
+        "CORE": "8",
+        "CONCIERGE": "16"
+      }
+    },
+    {
+      "key": "recoveryAccess",
+      "category": "Included Services",
+      "label": "Recovery modality access",
+      "values": {
+        "ESSENTIALS": "Included",
+        "CORE": "Included",
+        "CONCIERGE": "Included"
+      }
+    },
+    {
+      "key": "nutritionCoaching",
+      "category": "Included Services",
+      "label": "Standard nutrition coaching",
+      "values": {
+        "ESSENTIALS": "Included",
+        "CORE": "Included",
+        "CONCIERGE": "Included"
+      }
+    },
+    {
+      "key": "dashboardAccess",
+      "category": "Included Services",
+      "label": "Health progress dashboard",
+      "values": {
+        "ESSENTIALS": "Included",
+        "CORE": "Included",
+        "CONCIERGE": "Included"
+      }
+    },
+    {
+      "key": "bodyCompositionCheckIns",
+      "category": "Included Services",
+      "label": "Body composition check-ins",
+      "values": {
+        "ESSENTIALS": "Baseline + periodic reassessment per Service Schedule",
+        "CORE": "Baseline + expanded reassessment cadence per Service Schedule",
+        "CONCIERGE": "Baseline + highest reassessment cadence per Service Schedule"
+      }
+    },
+    {
+      "key": "careCoordination",
+      "category": "Included Services",
+      "label": "Care coordination support",
+      "values": {
+        "ESSENTIALS": "Standard",
+        "CORE": "Priority",
+        "CONCIERGE": "Highest-touch"
+      }
+    }
+  ],
+  "separatelyBilledThirdPartyItems": [
+    "Independent physician services unless expressly listed as included on the Enrollment Summary and Service Schedule",
+    "Laboratory panels and specimen collection unless expressly listed as included on the Enrollment Summary and Service Schedule",
+    "Imaging services, including DXA or other scans, unless expressly listed as included on the Enrollment Summary and Service Schedule",
+    "Prescription items and pharmacy charges",
+    "Supplements and retail products unless expressly listed as included on the Enrollment Summary and Service Schedule"
+  ]
+}

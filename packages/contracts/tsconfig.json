@@ -26,6 +26,6 @@
     "noImplicitAny": true,
     "types": ["node", "jest"]
   },
-  "include": ["./**/*.ts"],
+  "include": ["./**/*.ts", "./**/*.json"],
   "exclude": ["node_modules", "dist"]
 }

@@ -22,6 +22,7 @@
 
 import { z } from "zod";
 
+import offerSheetData from "./offer-sheet.json";
 import {
     injurySchema,
     limitationSchema,
@@ -293,9 +294,9 @@ export const USER_TIER_LABELS: Record<UserTier, string> = {
  * USER_TIER_PRICES_DOLLARS.ESSENTIALS * 100 // 79900 cents for Stripe
  */
 export const USER_TIER_PRICES_DOLLARS: Record<UserTier, number> = {
-  ESSENTIALS: 799,
-  CORE: 1349,
-  CONCIERGE: 1999,
+  ESSENTIALS: offerSheetData.tiers.ESSENTIALS.baseMonthlyPriceDollars,
+  CORE: offerSheetData.tiers.CORE.baseMonthlyPriceDollars,
+  CONCIERGE: offerSheetData.tiers.CONCIERGE.baseMonthlyPriceDollars,
 };
 
 /**

@@ -18,6 +18,9 @@ export * from "./common";
 // User domain - roles, tiers, profile enums
 export * from "./user";
 
+// Master offer sheet - canonical commercial terms for memberships
+export * from "./offer-sheet";
+
 // Appointment domain - statuses, types, booking steps
 export * from "./appointments";
 
