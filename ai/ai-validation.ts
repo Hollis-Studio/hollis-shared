@@ -240,10 +240,15 @@ export type GenerateNutritionTargetsArgs = z.infer<
  */
 export const createStrategyGoalArgsSchema = z.object({
   goalMetric: z.string().min(1),
-  goalTarget: z.number(),
+  goalTarget: z
+    .number()
+    .finite()
+    .refine((val) => val > 0 && val < 100000, {
+      message: "goalTarget must be between 0 and 100000 (exclusive)",
+    }),
   linkedExerciseId: z.string().uuid().optional(),
   weight: z.number().min(0.1).max(10).default(1.0),
-  baselineValue: z.number().optional(),
+  baselineValue: z.number().finite().optional(),
 });
 
 export type CreateStrategyGoalArgs = z.infer<
