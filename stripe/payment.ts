@@ -126,7 +126,7 @@ export type PaymentHistoryStatus = (typeof PAYMENT_HISTORY_STATUSES)[number];
 export const PaymentHistoryItemSchema = z.object({
   id: z.string(),
   invoiceId: z.string(),
-  amount: z.number(),
+  amount: z.number().int(), // cents
   status: z.enum(PAYMENT_HISTORY_STATUSES),
   date: z.string(),
   invoicePdfUrl: z.string().nullable(),

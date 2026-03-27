@@ -335,15 +335,15 @@ Some JSON field schemas are canonically defined in other modules:
 | `prefilledProfileSchema`        | `admin/admin-schemas.ts`            | User.prefilledProfile             |
 | `medicationsSchema`             | `domain/clinical.ts`                | ClinicalProfile.medications       |
 | `limitationsSchema`             | `domain/clinical.ts`                | ClinicalProfile.limitations       |
-| `dashboardPreferencesSchema`    | `src/contracts/user/preferences.ts` | UserPreferences.dashboard         |
-| `dashboardSectionsSchema`       | `src/contracts/user/preferences.ts` | UserPreferences.dashboardSections |
-| `advancedUnitPreferencesSchema` | `src/contracts/user/preferences.ts` | UserPreferences.advancedUnits     |
-| `notificationPreferencesSchema` | `src/contracts/user/preferences.ts` | UserPreferences.notifications     |
+| `dashboardPreferencesSchema`    | `src/contracts/user/preferences.ts` (mobile app only) | UserPreferences.dashboard         |
+| `dashboardSectionsSchema`       | `src/contracts/user/preferences.ts` (mobile app only) | UserPreferences.dashboardSections |
+| `advancedUnitPreferencesSchema` | `src/contracts/user/preferences.ts` (mobile app only) | UserPreferences.advancedUnits     |
+| `notificationPreferencesSchema` | `src/contracts/user/preferences.ts` (mobile app only) | UserPreferences.notifications     |
 | `workoutSectionSchema[]`        | `domain/workouts.ts`                | WorkoutPlan.blocks                |
-| `MacroShorthandSchema`          | `src/contracts/commonEnums.ts`      | DailyLog.totalMacros              |
-| `mealSchema[]`                  | `src/contracts/nutrition.ts`        | DailyLog.meals                    |
+| `MacroShorthandSchema`          | `shared/contracts/domain/nutrition.ts` | DailyLog.totalMacros              |
+| ~~`mealSchema[]`~~              | _(removed — schema no longer exists)_ | DailyLog.meals                   |
 | `journalAssessmentSchema`       | `src/contracts/journal.ts`          | JournalEntry.aiAssessment         |
-| `SessionBalanceItemSchema[]`    | `src/contracts/sessions.ts`         | SessionBalance.balances           |
+| `SessionBalanceItemSchema[]`    | `shared/contracts/domain/sessions.ts` | SessionBalance.balances           |
 
 ---
 
@@ -654,12 +654,20 @@ The following domain contract files exist but have not yet been added to this in
 | ------------------------ | ------------------------------- |
 | `admin-notifications.ts` | `domain/admin-notifications.ts` |
 | `admin-tasks.ts`         | `domain/admin-tasks.ts`         |
+| `auth-tokens.ts`         | `domain/auth-tokens.ts`         |
+| `billing.ts`             | `domain/billing.ts`             |
 | `businessAnalytics.ts`   | `domain/businessAnalytics.ts`   |
 | `daily-metrics.ts`       | `domain/daily-metrics.ts`       |
 | `enumContract.ts`        | `domain/enumContract.ts`        |
 | `health-metric-types.ts` | `domain/health-metric-types.ts` |
+| `health-metrics.ts`      | `domain/health-metrics.ts`      |
+| `jobs.ts`                | `domain/jobs.ts`                |
+| `messages.ts`            | `domain/messages.ts`            |
 | `metric-codes.ts`        | `domain/metric-codes.ts`        |
+| `metric-definition.ts`   | `domain/metric-definition.ts`   |
+| `mfa.ts`                 | `domain/mfa.ts`                 |
 | `nutrition-plan.ts`      | `domain/nutrition-plan.ts`      |
+| `offer-sheet.ts`         | `domain/offer-sheet.ts`         |
 | `pagination.ts`          | `domain/pagination.ts`          |
 | `sleep.ts`               | `domain/sleep.ts`               |
 | `training-strategy.ts`   | `domain/training-strategy.ts`   |

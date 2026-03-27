@@ -128,41 +128,94 @@ describe("Shared AI Contracts Import Verification", () => {
   });
 
   describe("Schema Exports", () => {
-    it("should export generatedExerciseSchema", () => {
-      expect(generatedExerciseSchema).toBeDefined();
-      expect(generatedExerciseSchema.safeParse).toBeDefined();
+    it("should export generatedExerciseSchema with correct validation", () => {
+      const valid = { name: "Squat", exerciseId: "550e8400-e29b-41d4-a716-446655440000" };
+      expect(generatedExerciseSchema.safeParse(valid).success).toBe(true);
+
+      // Missing required exerciseId (UUID) causes failure
+      expect(generatedExerciseSchema.safeParse({ name: "Squat" }).success).toBe(false);
     });
 
-    it("should export generatedSectionSchema", () => {
-      expect(generatedSectionSchema).toBeDefined();
+    it("should export generatedSectionSchema with correct validation", () => {
+      const validExercise = { name: "Squat", exerciseId: "550e8400-e29b-41d4-a716-446655440000" };
+      const valid = { type: "working", title: "Main Work", exercises: [validExercise] };
+      expect(generatedSectionSchema.safeParse(valid).success).toBe(true);
+
+      // Missing required title causes failure
+      expect(generatedSectionSchema.safeParse({ type: "working", exercises: [] }).success).toBe(false);
     });
 
-    it("should export generatedDaySchema", () => {
-      expect(generatedDaySchema).toBeDefined();
+    it("should export generatedDaySchema with correct validation", () => {
+      const valid = { dayOfWeek: 1, name: "Push Day", isRestDay: false, sections: [] };
+      expect(generatedDaySchema.safeParse(valid).success).toBe(true);
+
+      // dayOfWeek out of range (0-6) causes failure
+      expect(generatedDaySchema.safeParse({ dayOfWeek: 7, name: "Push Day", isRestDay: false, sections: [] }).success).toBe(false);
     });
 
-    it("should export generateWorkoutPlanArgsSchema", () => {
-      expect(generateWorkoutPlanArgsSchema).toBeDefined();
+    it("should export generateWorkoutPlanArgsSchema with correct validation", () => {
+      const validDay = { dayOfWeek: 0, name: "Rest", isRestDay: true, sections: [] };
+      expect(generateWorkoutPlanArgsSchema.safeParse({ days: [validDay] }).success).toBe(true);
+
+      // Empty days array violates min(1) constraint
+      expect(generateWorkoutPlanArgsSchema.safeParse({ days: [] }).success).toBe(false);
     });
 
-    it("should export savePermanentNoteArgsSchema", () => {
-      expect(savePermanentNoteArgsSchema).toBeDefined();
+    it("should export savePermanentNoteArgsSchema with correct validation", () => {
+      const valid = { content: "Client has knee pain", category: "INJURY" };
+      expect(savePermanentNoteArgsSchema.safeParse(valid).success).toBe(true);
+
+      // Invalid category enum value causes failure
+      expect(savePermanentNoteArgsSchema.safeParse({ content: "note", category: "UNKNOWN" }).success).toBe(false);
     });
 
-    it("should export generateNutritionTargetsArgsSchema", () => {
-      expect(generateNutritionTargetsArgsSchema).toBeDefined();
+    it("should export generateNutritionTargetsArgsSchema with correct validation", () => {
+      const dailyTarget = { dayOfWeek: 0, calories: 2500, protein: 180, carbs: 300, fat: 80 };
+      const valid = {
+        calories: 2500,
+        protein: 180,
+        carbs: 300,
+        fat: 80,
+        dailyTargets: [0, 1, 2, 3, 4, 5, 6].map((dayOfWeek) => ({ ...dailyTarget, dayOfWeek })),
+        reasoning: "Moderate activity level",
+      };
+      expect(generateNutritionTargetsArgsSchema.safeParse(valid).success).toBe(true);
+
+      // Missing required reasoning field causes failure
+      const { reasoning: _r, ...withoutReasoning } = valid;
+      expect(generateNutritionTargetsArgsSchema.safeParse(withoutReasoning).success).toBe(false);
     });
 
-    it("should export generateStrategyArgsSchema", () => {
-      expect(generateStrategyArgsSchema).toBeDefined();
+    it("should export generateStrategyArgsSchema with correct validation", () => {
+      const valid = {
+        name: "12-Week Block",
+        type: "BLOCK",
+        goal: "Increase squat",
+        startDate: "2025-01-06",
+        goals: [{ goalMetric: "weight", goalTarget: 405 }],
+        reasoning: "Intermediate athlete with meet in 12 weeks",
+      };
+      expect(generateStrategyArgsSchema.safeParse(valid).success).toBe(true);
+
+      // Missing required goals array causes failure
+      const { goals: _g, ...withoutGoals } = valid;
+      expect(generateStrategyArgsSchema.safeParse(withoutGoals).success).toBe(false);
     });
 
-    it("should export requestClarificationArgsSchema", () => {
-      expect(requestClarificationArgsSchema).toBeDefined();
+    it("should export requestClarificationArgsSchema with correct validation", () => {
+      const valid = { questions: ["What is your current squat 1RM?"] };
+      expect(requestClarificationArgsSchema.safeParse(valid).success).toBe(true);
+
+      // Empty questions array violates min(1) constraint
+      expect(requestClarificationArgsSchema.safeParse({ questions: [] }).success).toBe(false);
     });
 
-    it("should export createExerciseArgsSchema", () => {
-      expect(createExerciseArgsSchema).toBeDefined();
+    it("should export createExerciseArgsSchema with correct validation", () => {
+      const valid = { name: "Zercher Squat", category: "COMPOUND", muscleGroups: ["quadriceps"] };
+      expect(createExerciseArgsSchema.safeParse(valid).success).toBe(true);
+
+      // null input is not an object
+      expect(createExerciseArgsSchema.safeParse(null).success).toBe(false);
     });
   });
 

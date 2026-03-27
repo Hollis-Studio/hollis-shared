@@ -8,6 +8,7 @@
  * 4. CollectPaymentRequestSchema validates payment requests, rejects negative/over-limit amounts
  * 5. RefundRequestSchema validates refund requests
  * 6. StripeConfigSchema validates config
+ * 7. TerminalReaderSchema validates terminal reader objects (id, label, status)
  *
  * Run: npx jest shared/contracts/__tests__/stripe-payment.test.ts
  */
@@ -19,6 +20,7 @@ import {
     SetupIntentSchema,
     StripeConfigSchema,
     StripeMetadataSchema,
+    TerminalReaderSchema,
 } from '../stripe/payment';
 
 // ============================================================================
@@ -590,6 +592,96 @@ describe('Stripe Payment Contracts', () => {
 
       it('should reject null', () => {
         expect(RefundRequestSchema.safeParse(null).success).toBe(false);
+      });
+    });
+  });
+
+  // ============================================================================
+  // TERMINAL READER TESTS
+  // ============================================================================
+
+  describe('TerminalReaderSchema', () => {
+    const validReader = {
+      id: 'tmr_1234567890',
+      label: 'Front Desk Reader',
+      status: 'online',
+    };
+
+    describe('valid objects', () => {
+      it('should accept a valid terminal reader', () => {
+        const result = TerminalReaderSchema.safeParse(validReader);
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.data.id).toBe('tmr_1234567890');
+          expect(result.data.label).toBe('Front Desk Reader');
+          expect(result.data.status).toBe('online');
+        }
+      });
+
+      it('should accept any non-empty string for status', () => {
+        for (const status of ['online', 'offline', 'busy']) {
+          const result = TerminalReaderSchema.safeParse({ ...validReader, status });
+          expect(result.success).toBe(true);
+        }
+      });
+
+      it('should accept an empty label string', () => {
+        const result = TerminalReaderSchema.safeParse({ ...validReader, label: '' });
+        expect(result.success).toBe(true);
+      });
+    });
+
+    describe('missing required fields', () => {
+      it('should reject missing id', () => {
+        const { id: _id, ...rest } = validReader;
+        const result = TerminalReaderSchema.safeParse(rest);
+        expect(result.success).toBe(false);
+      });
+
+      it('should reject missing label', () => {
+        const { label: _label, ...rest } = validReader;
+        const result = TerminalReaderSchema.safeParse(rest);
+        expect(result.success).toBe(false);
+      });
+
+      it('should reject missing status', () => {
+        const { status: _status, ...rest } = validReader;
+        const result = TerminalReaderSchema.safeParse(rest);
+        expect(result.success).toBe(false);
+      });
+
+      it('should reject empty object', () => {
+        const result = TerminalReaderSchema.safeParse({});
+        expect(result.success).toBe(false);
+      });
+    });
+
+    describe('invalid field types', () => {
+      it('should reject non-string id', () => {
+        const result = TerminalReaderSchema.safeParse({ ...validReader, id: 123 });
+        expect(result.success).toBe(false);
+      });
+
+      it('should reject non-string label', () => {
+        const result = TerminalReaderSchema.safeParse({ ...validReader, label: true });
+        expect(result.success).toBe(false);
+      });
+
+      it('should reject non-string status', () => {
+        const result = TerminalReaderSchema.safeParse({ ...validReader, status: 42 });
+        expect(result.success).toBe(false);
+      });
+
+      it('should reject null', () => {
+        expect(TerminalReaderSchema.safeParse(null).success).toBe(false);
+      });
+
+      it('should reject undefined', () => {
+        expect(TerminalReaderSchema.safeParse(undefined).success).toBe(false);
+      });
+
+      it('should reject a plain array', () => {
+        expect(TerminalReaderSchema.safeParse([]).success).toBe(false);
       });
     });
   });
