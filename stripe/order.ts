@@ -34,6 +34,15 @@ export const ORDER_PAYMENT_STATUS_LABELS: Record<OrderPaymentStatus, string> = {
   partially_refunded: "Partially Refunded",
 };
 
+/** Lookup object for order payment statuses (avoids magic strings) */
+export const ORDER_PAYMENT_STATUS = {
+  PAID: "paid",
+  UNPAID: "unpaid",
+  NO_PAYMENT_REQUIRED: "no_payment_required",
+  REFUNDED: "refunded",
+  PARTIALLY_REFUNDED: "partially_refunded",
+} as const satisfies Record<string, OrderPaymentStatus>;
+
 // ============================================================================
 // FULFILLMENT STATUS
 // ============================================================================

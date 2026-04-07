@@ -453,7 +453,7 @@ export const GOAL_SOURCE_LABELS: Record<GoalSource, string> = {
  */
 export const LabObservationSchema = z.object({
   id: z.string(),
-  userId: z.string(),
+  userId: z.string().nullable(),
   reportId: z.string(),
   metricDefinitionId: z.string().min(1),
   observedAt: z.string(),
@@ -492,7 +492,7 @@ export type LabObservationContract = z.infer<typeof LabObservationSchema>;
  */
 export const LabReportSchema = z.object({
   id: z.string(),
-  userId: z.string(),
+  userId: z.string().nullable(),
   reportDate: z.string(),
   labName: z.string().nullable().optional(),
   labLocation: z.string().nullable().optional(),

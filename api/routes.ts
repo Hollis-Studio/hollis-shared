@@ -82,6 +82,8 @@ export const AUTH_ROUTES = {
   BIOMETRIC_TOKEN: "/auth/biometric-token",
   /** POST - Validate a registration barcode */
   VALIDATE_BARCODE: "/auth/validate-barcode",
+  /** POST - Change password for authenticated user (invalidates all sessions) */
+  CHANGE_PASSWORD: "/auth/change-password",
 } as const;
 
 /** Type for auth route values */
@@ -568,16 +570,6 @@ export const LABS_ROUTES = {
    * @param panelId - Lab panel's unique identifier
    */
   getPanel: (panelId: string) => `/api/labs/panels/${panelId}` as const,
-
-  /**
-   * POST /api/labs/panels - Create new lab panel
-   */
-  CREATE_PANEL: "/api/labs/panels",
-
-  /**
-   * POST /api/labs/auto-ingest - Auto-ingest lab data
-   */
-  AUTO_INGEST: "/api/labs/auto-ingest",
 
   /**
    * GET /api/labs/metric-definitions - List canonical lab metric definitions

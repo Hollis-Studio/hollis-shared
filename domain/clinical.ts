@@ -357,8 +357,8 @@ export type ClinicalNoteInput = z.infer<typeof clinicalNoteInputSchema>;
 
 export const ClinicalNoteContractSchema = z.object({
   id: z.string(),
-  patientId: z.string(),
-  authorId: z.string(),
+  patientId: z.string().nullable(),
+  authorId: z.string().nullable(),
   content: z.string().min(1, "Note content is required"),
   tags: z.array(z.string()),
   createdAt: z.string(),

@@ -191,6 +191,7 @@ export const INVOICE_STATUS = {
   PAID: "paid",
   VOID: "void",
   UNCOLLECTIBLE: "uncollectible",
+  REFUNDED: "refunded",
 } as const;
 
 export type InvoiceStatus = (typeof INVOICE_STATUS)[keyof typeof INVOICE_STATUS];

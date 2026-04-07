@@ -189,7 +189,7 @@ export {
     WearablesDataSchema,
     calculateInRangeScore,
     getDefaultReferenceRange, healthGoalsListResponseSchema, type ConcernArea,
-    type DailySummaryContract, type HealthGoalsListResponse, type HealthImprovementPoint, type HealthMetricGoalContract,
+    type DailySummaryContract, type HealthGoalsListResponse, type HealthImprovementPoint, type HealthMetricGoal, type HealthMetricGoalContract,
     type HealthMetricGoalUpsert,
     type HealthProgressImprovement,
     type HealthProgressOverview,
@@ -228,7 +228,10 @@ export * from "./push";
 export * from "./units";
 
 // Admin Notifications domain - realtime notification types for admin dashboard
-// NOTE: Already exported from ../admin/notifications.ts, skipping to avoid conflicts
+// NOTE: Not re-exported from this barrel — ADMIN_REALTIME_NOTIFICATION_KINDS
+// types are already exported via shared/contracts/admin, and re-exporting
+// them here produces duplicate-export lint errors at shared/contracts/index.ts.
+// Consumers should import from '@hollis-health/contracts/admin' instead.
 // export * from './admin-notifications';
 
 // Messages domain - conversation and messaging types

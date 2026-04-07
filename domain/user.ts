@@ -197,8 +197,12 @@ export interface RoleBadge {
 }
 
 /**
- * Role badge colors - inline to avoid design-token dependency in contracts.
- * These values mirror @hollis/design-tokens roleBadgeColors.
+ * Role badge colors - inlined to avoid adding @hollis/design-tokens as a dependency of
+ * shared/contracts (which is consumed by server, web-admin, and mobile alike).
+ *
+ * IMPORTANT: These hex values are pinned to match `shared/design-tokens/tokens/colors.ts`
+ * `roleBadgeColors` exactly. If you update one, update the other.
+ * Last verified in sync: see shared/design-tokens/tokens/colors.ts roleBadgeColors.
  */
 const ROLE_BADGE_COLORS = {
   admin: { color: "#7C3AED", bg: "#EDE9FE" },
@@ -210,7 +214,13 @@ const ROLE_BADGE_COLORS = {
 
 /**
  * Role badge configuration mapped by user role.
- * @deprecated - use ROLE_BADGE_CONFIG from @contracts (src/contracts/commonEnums.ts); this has hardcoded hex values
+ *
+ * This is the cross-platform version used by web-admin and any consumer that cannot
+ * depend on @hollis/design-tokens at runtime. Values are kept in sync with the design
+ * tokens (see ROLE_BADGE_COLORS above).
+ *
+ * Mobile app: use ROLE_BADGE_CONFIG from src/contracts/commonEnums.ts instead, which
+ * resolves colors via @hollis/design-tokens at runtime for dynamic theming.
  */
 export const ROLE_BADGE_CONFIG: Record<UserRole, RoleBadge> = {
   ADMIN: {
@@ -1084,7 +1094,6 @@ export type PhysicalStatsFormData = z.infer<typeof physicalStatsFormSchema>;
 // Migrating to structured columns requires a schema migration and data backfill.
 // Revisit post-launch once goals data model is stable.
 export const UserGoalsSchema = z.object({
-  id: z.string().optional(),
   userId: z.string().max(20),
   calorieTarget: z.number().min(0),
   proteinTarget: z.number().min(0),
@@ -1277,7 +1286,6 @@ export const createMockUserGoals = (
 ): UserGoalsContract => {
   const timestamp = nowIso();
   const base: UserGoalsContract = {
-    id: overrides.id,
     userId: overrides.userId ?? "mock-user",
     calorieTarget: overrides.calorieTarget ?? 2200,
     proteinTarget: overrides.proteinTarget ?? 150,

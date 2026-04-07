@@ -212,6 +212,7 @@ export const patientProfileUpdatePayloadSchema = z.object({
   activityLevel: ActivityLevelSchema.nullable().optional(),
   experienceLevel: FitnessExperienceSchema.nullable().optional(),
   primaryGoal: PrimaryGoalSchema.nullable().optional(),
+  primaryGoalNote: z.string().max(500).nullable().optional(),
   medications: z.array(adminMedicationSchema).optional(),
   limitations: z.array(adminLimitationSchema).optional(),
   injuries: z.array(adminInjurySchema).optional(),
@@ -771,7 +772,7 @@ export const clientIntakePayloadSchema = z.object({
     .object({
       heightCm: z.number().positive().optional(),
       weightKg: z.number().positive().optional(),
-      dateOfBirth: z.string().optional(), // ISO date
+      dateOfBirth: isoDateSchema.optional(),
       biologicalSex: BiologicalSexSchema.optional(),
     })
     .optional(),

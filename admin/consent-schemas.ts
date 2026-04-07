@@ -146,7 +146,13 @@ export type PhotoVideoUseType =
 export const SignedDocumentPayloadSchema = z.object({
   documentType: ConsentDocumentTypeSchema,
   documentVersion: z.string().min(1).max(20),
-  signatureDataUrl: z.string().min(1),
+  signatureDataUrl: z
+    .string()
+    .min(1)
+    .regex(
+      /^data:image\/png;base64,[A-Za-z0-9+/]+=*$/,
+      "Must be a base64 PNG data URL",
+    ),
   initialsData: z.record(z.string(), z.string()).optional(),
   optInSelections: z.record(z.string(), z.boolean()).optional(),
   contentHash: z.string().optional(), // SHA-256 hash of document content at signing time
