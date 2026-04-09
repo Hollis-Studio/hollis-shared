@@ -269,9 +269,9 @@ export type SleepStage = (typeof SLEEP_STAGE)[keyof typeof SLEEP_STAGE];
  * Do NOT hardcode these URLs elsewhere — import from here.
  */
 export const LEGAL_URLS = {
-  PRIVACY_POLICY: "https://hollishealth.com/privacy",
-  TERMS_OF_SERVICE: "https://hollishealth.com/terms",
-  SUPPORT: "https://hollishealth.com/support",
+  PRIVACY_POLICY: "https://hollis.health/privacy",
+  TERMS_OF_SERVICE: "https://hollis.health/terms",
+  SUPPORT: "https://hollis.health/support",
 } as const;
 
 export type LegalUrl = (typeof LEGAL_URLS)[keyof typeof LEGAL_URLS];
