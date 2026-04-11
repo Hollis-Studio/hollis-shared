@@ -177,9 +177,12 @@ export interface SentryLogLike {
  * Sanitizes a Sentry log entry for use in `beforeSendLog`.
  * Scrubs PHI from the message string and all attributes.
  */
-export function sanitizeSentryLog(log: SentryLogLike): SentryLogLike {
+export function sanitizeSentryLog<T>(log: T): T {
   const sanitized = sanitizeUnknown(log);
-  return isRecord(sanitized) ? (sanitized as SentryLogLike) : log;
+  if (!isRecord(sanitized)) {
+    return log;
+  }
+  return sanitized as T;
 }
 
 /**
