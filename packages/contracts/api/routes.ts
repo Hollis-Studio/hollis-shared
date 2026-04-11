@@ -161,6 +161,12 @@ export const USER_ROUTES = {
    * @param userId - User's unique identifier
    */
   compliance: (userId: string) => `/users/${userId}/compliance` as const,
+
+  /**
+   * POST /users/:userId/data-export - HIPAA §164.524 right-of-access data export
+   * @param userId - User's unique identifier
+   */
+  dataExport: (userId: string) => `/users/${userId}/data-export` as const,
 } as const;
 
 /** Type for user route values */
