@@ -1398,9 +1398,9 @@ export type AdvancedUnitPreferences = z.infer<
 >;
 
 export const dashboardPreferencesSchema = z.object({
-  sectionOrder: z.array(z.string()),
-  hiddenSections: z.array(z.string()),
-  pinnedSections: z.array(z.string()),
+  sectionOrder: z.array(z.string()).default([]),
+  hiddenSections: z.array(z.string()).default([]),
+  pinnedSections: z.array(z.string()).default([]),
 });
 export type DashboardPreferences = z.infer<typeof dashboardPreferencesSchema>;
 
@@ -1710,12 +1710,12 @@ export const UserPreferencesSchema = z.object({
   /** @deprecated Alias for `unitSystem`. No standalone DB column. Use `unitSystem` instead. Will be removed in a future contract cleanup. */
   units: z.enum(["imperial", "metric", "advanced"]).optional(),
   dashboardCardOrder: z.array(z.string()).nullable().optional(),
-  dashboardSections: dashboardSectionsSchema.optional(),
+  dashboardSections: dashboardSectionsSchema.nullish(),
   /** @stored-in UserPreferences.dashboard JSON blob as dashboard.hiddenSections. Not a standalone DB column. Derive from dashboard.hiddenSections at serialisation time. */
   hiddenDashboardCards: z.array(z.string()).optional(),
   eveningReminderEnabled: z.boolean().optional(),
   eveningReminderTime: timeStringSchema.optional(),
-  customReminderMessage: z.string().max(120).optional(),
+  customReminderMessage: z.string().max(120).nullish(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
