@@ -180,7 +180,7 @@ describe("User Domain Contracts", () => {
       it("should have correct labels", () => {
         expect(USER_ROLE_LABELS.ADMIN).toBe("Admin");
         expect(USER_ROLE_LABELS.CLINICIAN).toBe("Clinician");
-        expect(USER_ROLE_LABELS.TRAINER).toBe("Trainer");
+        expect(USER_ROLE_LABELS.TRAINER).toBe("Performance Coach");
         expect(USER_ROLE_LABELS.CLIENT).toBe("Client");
       });
     });

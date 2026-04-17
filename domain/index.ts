@@ -18,6 +18,9 @@ export * from "./common";
 // User domain - roles, tiers, profile enums
 export * from "./user";
 
+// App review/demo credentials - canonical reviewer accounts used across surfaces
+export * from "./app-review";
+
 // Master offer sheet - canonical commercial terms for memberships
 export * from "./offer-sheet";
 

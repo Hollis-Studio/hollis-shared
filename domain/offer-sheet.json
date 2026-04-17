@@ -35,41 +35,41 @@
       "displayName": "Essentials",
       "baseMonthlyPriceDollars": 799,
       "tagline": "Accountability + medical baseline",
-      "publicDescription": "A foundational wellness membership with four monthly training sessions, twice-yearly clinician visits and lab panels through our partner medical facility, White Horse Holistic Health, and full access to your health progress dashboard."
+      "publicDescription": "A foundational wellness membership with weekly private coaching sessions, twice-yearly clinician visits and lab panels through our partner medical facility, White Horse Holistic Health, and full access to your health progress dashboard."
     },
     "CORE": {
       "displayName": "Core",
       "baseMonthlyPriceDollars": 1599,
       "tagline": "Higher frequency, deeper insight",
-      "publicDescription": "Higher-frequency training with quarterly clinician visits, lab panels, and a baseline DEXA scan — all coordinated between your fitness team and White Horse Holistic Health.",
+      "publicDescription": "Twice-weekly private coaching with quarterly clinician visits, lab panels, and a baseline DEXA scan, all coordinated between your performance coach and White Horse Holistic Health.",
       "isPopular": true
     },
     "CONCIERGE": {
       "displayName": "Concierge",
       "baseMonthlyPriceDollars": 2499,
       "tagline": "Full-spectrum coordinated care",
-      "publicDescription": "Our most comprehensive membership: monthly clinician visits, monthly labs, quarterly DEXA scans, and continuous glucose monitoring — fully coordinated care between your trainers and White Horse Holistic Health."
+      "publicDescription": "Our most comprehensive membership: four private coaching sessions per week, monthly clinician visits, monthly labs, quarterly DEXA scans, and continuous glucose monitoring, fully coordinated between your performance coach and White Horse Holistic Health."
     }
   },
   "comparisonRows": [
     {
-      "key": "trainingSessionsPerMonth",
+      "key": "coachingSessionsPerWeek",
       "category": "Fitness",
-      "label": "Personal training sessions / month",
+      "label": "Private coaching sessions",
       "values": {
-        "ESSENTIALS": "4",
-        "CORE": "8",
-        "CONCIERGE": "16"
+        "ESSENTIALS": "1 / week",
+        "CORE": "2 / week",
+        "CONCIERGE": "4 / week"
       }
     },
     {
       "key": "recoveryAccess",
       "category": "Fitness",
-      "label": "Recovery modality access",
+      "label": "Recovery modalities (unlimited)",
       "values": {
-        "ESSENTIALS": "Included",
-        "CORE": "Included",
-        "CONCIERGE": "Included"
+        "ESSENTIALS": "Infrared sauna, cold plunge, red light",
+        "CORE": "Infrared sauna, cold plunge, red light",
+        "CONCIERGE": "Infrared sauna, cold plunge, red light"
       }
     },
     {
@@ -77,9 +77,9 @@
       "category": "Fitness",
       "label": "Nutrition coaching",
       "values": {
-        "ESSENTIALS": "Included",
-        "CORE": "Included",
-        "CONCIERGE": "Included (clinician-informed)"
+        "ESSENTIALS": "Coach-led",
+        "CORE": "Coach-led + macro targets",
+        "CONCIERGE": "Clinician Informed"
       }
     },
     {
@@ -145,11 +145,11 @@
     {
       "key": "ivTherapy",
       "category": "Medical (WHH)",
-      "label": "IV therapy",
+      "label": "IV therapy (Provided by our medical partner)",
       "values": {
-        "ESSENTIALS": "Add-on (~$185)",
-        "CORE": "Add-on (~$185)",
-        "CONCIERGE": "Add-on (~$185)"
+        "ESSENTIALS": "Add-on",
+        "CORE": "Add-on",
+        "CONCIERGE": "Add-on"
       }
     }
   ],

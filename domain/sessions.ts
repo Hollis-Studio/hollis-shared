@@ -2,7 +2,7 @@
  * @ai-context Sessions domain contracts | session types, reset frequencies, allocations
  *
  * Session types map to the services offered by Hollis Health:
- * - FITNESS_SESSION: 1:1 personal training sessions
+ * - FITNESS_SESSION: 1:1 private coaching sessions
  * - RECOVERY_SESSION: Sauna, ice bath, red light therapy
  * - LABWORK: Blood panel (CMP + hormones)
  * - CLINICIAN_INITIAL: Initial consultation with PCP/RN

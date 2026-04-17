@@ -179,7 +179,7 @@ export function canManageRegistrations(
 export const USER_ROLE_LABELS: Record<UserRole, string> = {
   ADMIN: "Admin",
   CLINICIAN: "Clinician",
-  TRAINER: "Trainer",
+  TRAINER: "Performance Coach",
   CLIENT: "Client",
 };
 
@@ -234,7 +234,7 @@ export const ROLE_BADGE_CONFIG: Record<UserRole, RoleBadge> = {
     bg: ROLE_BADGE_COLORS.clinician.bg,
   },
   TRAINER: {
-    label: "Trainer",
+    label: "Performance Coach",
     color: ROLE_BADGE_COLORS.trainer.color,
     bg: ROLE_BADGE_COLORS.trainer.bg,
   },

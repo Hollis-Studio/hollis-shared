@@ -133,8 +133,8 @@ export function formatUsd(amount: number): string {
 }
 
 export function getTierCardHighlights(tier: UserTier): string[] {
-  const trainingSessions =
-    getOfferComparisonValue("trainingSessionsPerMonth", tier) ??
+  const coachingSessions =
+    getOfferComparisonValue("coachingSessionsPerWeek", tier) ??
     MASTER_OFFER_SHEET.tiers[tier].baseMonthlyPriceDollars.toString();
   const recoveryAccess =
     getOfferComparisonValue("recoveryAccess", tier) ?? "Included";
@@ -148,7 +148,7 @@ export function getTierCardHighlights(tier: UserTier): string[] {
     getOfferComparisonValue("labPanels", tier) ?? "Included";
 
   return [
-    `${trainingSessions} personal training sessions / month`,
+    `Private coaching sessions: ${coachingSessions}`,
     `Recovery modality access: ${recoveryAccess}`,
     `Nutrition coaching: ${nutritionCoaching}`,
     `Clinician visits: ${clinicianVisits}`,
