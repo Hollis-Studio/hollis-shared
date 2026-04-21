@@ -335,3 +335,6 @@ export {
 // Health Metric Definitions - registry of all health metric definitions
 // NOTE: Already re-exported through health-progress.ts, no need to export directly to avoid conflicts
 // export * from './health-metric-definitions';
+
+// Marketing domain - AI-generated marketing asset image types and schemas
+export * from "./marketing";
