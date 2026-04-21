@@ -968,6 +968,26 @@ export const ADMIN_CONSENT_ROUTES = {
 } as const;
 
 // ============================================================================
+// ADMIN MARKETING ROUTES
+// ============================================================================
+
+/**
+ * Admin marketing asset image routes.
+ * Base path: /api/admin/marketing/images
+ */
+export const ADMIN_MARKETING_ROUTES = {
+  /** GET - List all generated marketing images */
+  LIST_IMAGES: "/api/admin/marketing/images",
+
+  /** POST - Generate a new marketing image via OpenAI */
+  GENERATE: "/api/admin/marketing/images",
+
+  /** DELETE - Delete a marketing image by ID */
+  deleteImage: (imageId: string) =>
+    `/api/admin/marketing/images/${imageId}` as const,
+} as const;
+
+// ============================================================================
 // AGGREGATED ADMIN ROUTES
 // ============================================================================
 
@@ -1016,4 +1036,5 @@ export const ADMIN_API_ROUTES = {
   TASKS: ADMIN_TASK_ROUTES,
   LEADS: ADMIN_LEADS_ROUTES,
   CONSENT: ADMIN_CONSENT_ROUTES,
+  MARKETING: ADMIN_MARKETING_ROUTES,
 } as const;
