@@ -107,6 +107,18 @@ export function isAppointmentType(value: string): value is AppointmentType {
   return (APPOINTMENT_TYPES as readonly string[]).includes(value);
 }
 
+/**
+ * Appointment types that require care-coordinator scheduling (not self-bookable).
+ *
+ * SLEEP_SCREENING intentionally omitted — patient self-schedules device pickup.
+ */
+export const COORDINATOR_ONLY_TYPES: ReadonlySet<AppointmentType> = new Set([
+  APPOINTMENT_TYPE.CONSULTATION,
+  APPOINTMENT_TYPE.CHECK_IN,
+  APPOINTMENT_TYPE.LABWORK,
+  APPOINTMENT_TYPE.DXA_SCAN,
+]);
+
 // ============================================================================
 // BOOKING STEPS
 // ============================================================================
