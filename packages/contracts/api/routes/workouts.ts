@@ -31,6 +31,13 @@ export const WORKOUT_PLANS_ROUTES = {
    * @param workoutId - Workout's unique identifier
    */
   toggleComplete: (workoutId: string) => `/api/plans/workout/${workoutId}/toggle-complete` as const,
+
+  /**
+   * PUT /api/plans/workout/:workoutId/log-performance - Log actual exercise performance
+   * Body: { sets: Array<{ exerciseId, setNumber, reps?, weight?, weightUnit?, rpe? }> }
+   * @param workoutId - Workout's unique identifier
+   */
+  logPerformance: (workoutId: string) => `/api/plans/workout/${workoutId}/log-performance` as const,
 } as const;
 
 // ============================================================================

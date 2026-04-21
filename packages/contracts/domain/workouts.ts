@@ -274,3 +274,29 @@ export const wearableWorkoutSyncSchema = wearableWorkoutSessionSchema.omit({
 });
 
 export type WearableWorkoutSync = z.infer<typeof wearableWorkoutSyncSchema>;
+
+// ============================================================================
+// EXERCISE LOG ENTRY DRAFT (client-side only, never sent directly to server)
+// ============================================================================
+
+/**
+ * Represents a single set's draft state during active session logging.
+ * This is a client-side-only type — the feature service maps completed
+ * entries to `LogPerformanceSetInput` (filtering incomplete, stripping nulls)
+ * before calling the API.
+ *
+ * Defaults: weightUnit = "lbs" (converted to kg on submit per storage invariant).
+ */
+export const exerciseLogEntryDraftSchema = z.object({
+  exerciseId: z.string().uuid(),
+  setNumber: z.number().int().min(1),
+  reps: z.number().int().min(1).nullable(),
+  weight: z.number().min(0).nullable(),
+  /** Display unit — always "lbs" by default; converted to kg when submitted */
+  weightUnit: WeightUnitSchema.default("lbs"),
+  rpe: z.number().int().min(1).max(10).nullable(),
+  /** Whether the trainer has checked this set as completed */
+  isComplete: z.boolean().default(false),
+});
+
+export type ExerciseLogEntryDraft = z.infer<typeof exerciseLogEntryDraftSchema>;
