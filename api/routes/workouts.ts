@@ -38,6 +38,26 @@ export const WORKOUT_PLANS_ROUTES = {
    * @param workoutId - Workout's unique identifier
    */
   logPerformance: (workoutId: string) => `/api/plans/workout/${workoutId}/log-performance` as const,
+
+  /**
+   * GET /api/plans/workout/:workoutId/log-performance - Get actual logged performance for a workout
+   * @param workoutId - Workout's unique identifier
+   */
+  getLoggedPerformance: (workoutId: string) => `/api/plans/workout/${workoutId}/log-performance` as const,
+
+  /**
+   * DELETE /api/plans/workout/:workoutId/log-performance/:exerciseId/:setNumber
+   * Remove a single logged set from a workout.
+   * @param workoutId - Workout's unique identifier
+   * @param exerciseId - Exercise UUID for the logged set
+   * @param setNumber - 1-based set number for the logged set
+   */
+  deleteLoggedPerformance: (
+    workoutId: string,
+    exerciseId: string,
+    setNumber: number,
+  ) =>
+    `/api/plans/workout/${workoutId}/log-performance/${exerciseId}/${setNumber}` as const,
 } as const;
 
 // ============================================================================
