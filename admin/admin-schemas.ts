@@ -14,6 +14,7 @@ import { z } from "zod";
 import {
     AccountStatusSchema,
     ActivityLevelSchema,
+    aiPermanentNoteSchema,
     SettableAccountStatusSchema,
     BiologicalSexSchema,
     FitnessExperienceSchema,
@@ -27,7 +28,9 @@ import {
     UserRoleSchema,
     UserTierSchema,
     isoDateSchema,
+    isoTimestampSchema,
     normalizeGoalDataSource,
+    workoutSessionNoteSchema,
 } from "../domain";
 import {
     AdminTaskPrioritySchema,
@@ -536,6 +539,53 @@ export const smartAssistProgressSchema = z.object({
 });
 export type SmartAssistProgress = z.infer<typeof smartAssistProgressSchema>;
 
+// ============================================================================
+// ADMIN AI CONTEXT SCHEMAS
+// ============================================================================
+
+const adminAIContextPassthroughObjectSchema = z.object({}).passthrough();
+
+/**
+ * Response schema for GET /api/admin/patients/:userId/ai-context.
+ *
+ * The admin endpoint returns the plan-generation context assembled by
+ * aiPlanContextService, not the smaller Smart Assist notes context from
+ * domain/ai-notes.ts.
+ */
+export const adminAIPlanContextSchema = z
+  .object({
+    userId: z.string(),
+    weekStartDate: isoDateSchema,
+    previousWorkoutPlans: z.array(adminAIContextPassthroughObjectSchema),
+    recentSessionNotes: z.array(workoutSessionNoteSchema),
+    permanentNotes: z.array(aiPermanentNoteSchema),
+    clinicalNotes: z.array(adminAIContextPassthroughObjectSchema),
+    compliance: z
+      .object({
+        workoutCompletionRate: z.number(),
+        nutritionLoggingAdherence: z.number(),
+        checkinsCount: z.number().int().nonnegative(),
+        workoutsCompleted: z.number().int().nonnegative(),
+        foodLogsCount: z.number().int().nonnegative(),
+        periodWeeks: z.number().int().positive(),
+      })
+      .passthrough(),
+    recentLabResults: z.array(adminAIContextPassthroughObjectSchema),
+    verifiedBiometricTrends: z.array(adminAIContextPassthroughObjectSchema),
+    tdeeWeight: adminAIContextPassthroughObjectSchema,
+    userProfile: adminAIContextPassthroughObjectSchema,
+    activeStrategy: adminAIContextPassthroughObjectSchema.optional(),
+    exercisePRs: z.array(adminAIContextPassthroughObjectSchema),
+    recentExercises: z.array(adminAIContextPassthroughObjectSchema),
+    detailedWorkoutHistory: z.array(adminAIContextPassthroughObjectSchema),
+    exerciseLibrary: adminAIContextPassthroughObjectSchema,
+    weeklyNutritionAverages: z.array(adminAIContextPassthroughObjectSchema),
+    generatedAt: isoTimestampSchema,
+  })
+  .passthrough();
+
+export type AdminAIPlanContext = z.infer<typeof adminAIPlanContextSchema>;
+
 /** @deprecated Use smartAssistActivitySchema instead */
 // zod-manual: deprecated alias
 export const workoutGenerationActivitySchema = smartAssistActivitySchema;
@@ -983,11 +1033,12 @@ export type LabMetricSearchResponseFromSchema = z.infer<
 
 /**
  * Response schema for the pending metrics governance endpoint.
+ * Wire format: { data: PendingMetricReview[], pagination: PaginationMeta }
+ * The web-admin labs service remaps this to { metrics, total } for existing hooks.
  */
-export const pendingMetricsResponseSchema = z.object({
-  metrics: z.array(pendingMetricReviewSchema),
-  total: z.number().int().min(0),
-});
+export const pendingMetricsResponseSchema = createPaginatedListSchema(
+  pendingMetricReviewSchema,
+);
 export type PendingMetricsResponseFromSchema = z.infer<
   typeof pendingMetricsResponseSchema
 >;

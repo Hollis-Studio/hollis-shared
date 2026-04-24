@@ -615,7 +615,7 @@ export const TrainingStrategySchema = z.object({
   description: z.string().optional(),
   strategyType: StrategyTypeSchema,
   status: StrategyStatusSchema,
-  goalCategory: GoalCategorySchema,
+  goalCategory: GoalCategorySchema.optional(),
   startDate: z.string(),
   endDate: z.string().optional(),
   targetWeeks: z.number().int().positive(),

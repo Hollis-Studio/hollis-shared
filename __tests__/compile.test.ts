@@ -874,7 +874,7 @@ describe("Type Coherence", () => {
     assertPendingMetricsResponseContractMatchesSchema(true);
 
     const payload: PendingMetricsResponse = {
-      metrics: [
+      data: [
         {
           id: "review_1",
           code: "HBA1C",
@@ -898,7 +898,13 @@ describe("Type Coherence", () => {
           ],
         },
       ],
-      total: 1,
+      pagination: {
+        page: 1,
+        limit: 50,
+        total: 1,
+        totalPages: 1,
+        hasMore: false,
+      },
     };
 
     const result = pendingMetricsResponseSchema.safeParse(payload);
