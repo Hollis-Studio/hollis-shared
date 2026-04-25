@@ -10,6 +10,7 @@
  */
 
 import { z } from "zod";
+import { createPaginatedListSchema } from "./pagination";
 
 // ============================================================================
 // Marketing Image Record
@@ -25,13 +26,16 @@ export const MarketingImageRecordSchema = z.object({
 });
 export type MarketingImageRecord = z.infer<typeof MarketingImageRecordSchema>;
 
+export const MARKETING_IMAGE_SIZES = ["1024x1024", "1792x1024"] as const;
+export type MarketingImageSize = (typeof MARKETING_IMAGE_SIZES)[number];
+
 // ============================================================================
 // Request / Response Schemas
 // ============================================================================
 
 export const GenerateMarketingImageRequestSchema = z.object({
   prompt: z.string().min(1, "prompt is required").max(2000),
-  size: z.enum(["1024x1024", "1792x1024"]).default("1024x1024"),
+  size: z.enum(MARKETING_IMAGE_SIZES).default("1024x1024"),
 });
 export type GenerateMarketingImageRequest = z.infer<
   typeof GenerateMarketingImageRequestSchema
@@ -40,15 +44,9 @@ export type GenerateMarketingImageRequest = z.infer<
 export const GenerateMarketingImageResponseSchema = MarketingImageRecordSchema;
 export type GenerateMarketingImageResponse = MarketingImageRecord;
 
-export const MarketingImageListResponseSchema = z.object({
-  data: z.array(MarketingImageRecordSchema),
-  pagination: z.object({
-    total: z.number().int(),
-    limit: z.number().int(),
-    offset: z.number().int(),
-    hasMore: z.boolean(),
-  }),
-});
+export const MarketingImageListResponseSchema = createPaginatedListSchema(
+  MarketingImageRecordSchema,
+);
 export type MarketingImageListResponse = z.infer<
   typeof MarketingImageListResponseSchema
 >;
