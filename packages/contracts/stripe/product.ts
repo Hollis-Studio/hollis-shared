@@ -76,6 +76,11 @@ export const SUPPLEMENT_TYPE_LABELS: Record<SupplementType, string> = {
 // PRODUCT SCHEMA
 // ============================================================================
 
+const ProductAssetUrlSchema = z
+  .string()
+  .url()
+  .or(z.string().regex(/^\/(?!\/).+/));
+
 /**
  * Product schema for the store catalog.
  */
@@ -108,13 +113,13 @@ export const ProductSchema = z.object({
   currency: z.string().default("USD"),
 
   /** Product image URL */
-  imageUrl: z.string().url().optional(),
+  imageUrl: ProductAssetUrlSchema.optional(),
 
   /** Additional product images */
-  galleryUrls: z.array(z.string().url()).optional(),
+  galleryUrls: z.array(ProductAssetUrlSchema).optional(),
 
-  /** Stripe Payment Link URL - static link for checkout */
-  paymentLinkUrl: z.string().url(),
+  /** Stripe Payment Link URL - static link for checkout when product is available */
+  paymentLinkUrl: z.string().url().optional(),
 
   /** Is the product currently available? */
   isAvailable: z.boolean().default(true),
@@ -159,8 +164,7 @@ export const PRODUCT_CATALOG: Product[] = [
     priceInCents: 4500,
     currency: "USD",
     imageUrl: "/images/products/omega-3.jpg",
-    paymentLinkUrl: "https://buy.stripe.com/placeholder-omega3",
-    isAvailable: true,
+    isAvailable: false,
     isFeatured: true,
     sortOrder: 1,
     tags: ["heart-health", "brain-health", "anti-inflammatory"],
@@ -178,8 +182,7 @@ export const PRODUCT_CATALOG: Product[] = [
     priceInCents: 3500,
     currency: "USD",
     imageUrl: "/images/products/creatine.jpg",
-    paymentLinkUrl: "https://buy.stripe.com/placeholder-creatine",
-    isAvailable: true,
+    isAvailable: false,
     isFeatured: true,
     sortOrder: 2,
     tags: ["strength", "performance", "muscle"],
@@ -197,8 +200,7 @@ export const PRODUCT_CATALOG: Product[] = [
     priceInCents: 4200,
     currency: "USD",
     imageUrl: "/images/products/collagen.jpg",
-    paymentLinkUrl: "https://buy.stripe.com/placeholder-collagen",
-    isAvailable: true,
+    isAvailable: false,
     isFeatured: true,
     sortOrder: 3,
     tags: ["skin-health", "joint-health", "recovery"],
@@ -215,8 +217,7 @@ export const PRODUCT_CATALOG: Product[] = [
     priceInCents: 5500,
     currency: "USD",
     imageUrl: "/images/products/whey-protein.jpg",
-    paymentLinkUrl: "https://buy.stripe.com/placeholder-whey",
-    isAvailable: true,
+    isAvailable: false,
     isFeatured: false,
     sortOrder: 4,
     tags: ["protein", "muscle", "recovery"],
@@ -234,8 +235,7 @@ export const PRODUCT_CATALOG: Product[] = [
     priceInCents: 2800,
     currency: "USD",
     imageUrl: "/images/products/vitamin-d3-k2.jpg",
-    paymentLinkUrl: "https://buy.stripe.com/placeholder-vitamind",
-    isAvailable: true,
+    isAvailable: false,
     isFeatured: false,
     sortOrder: 5,
     tags: ["bone-health", "immune", "cardiovascular"],
@@ -252,8 +252,7 @@ export const PRODUCT_CATALOG: Product[] = [
     priceInCents: 3200,
     currency: "USD",
     imageUrl: "/images/products/magnesium.jpg",
-    paymentLinkUrl: "https://buy.stripe.com/placeholder-magnesium",
-    isAvailable: true,
+    isAvailable: false,
     isFeatured: false,
     sortOrder: 6,
     tags: ["sleep", "recovery", "stress"],
@@ -270,8 +269,7 @@ export const PRODUCT_CATALOG: Product[] = [
     priceInCents: 3800,
     currency: "USD",
     imageUrl: "/images/products/electrolytes.jpg",
-    paymentLinkUrl: "https://buy.stripe.com/placeholder-electrolytes",
-    isAvailable: true,
+    isAvailable: false,
     isFeatured: false,
     sortOrder: 7,
     tags: ["hydration", "performance", "keto-friendly"],

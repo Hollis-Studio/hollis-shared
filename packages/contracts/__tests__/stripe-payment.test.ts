@@ -22,6 +22,12 @@ import {
     StripeMetadataSchema,
     TerminalReaderSchema,
 } from '../stripe/payment';
+import {
+  PRODUCT_CATALOG,
+  ProductSchema,
+  getFeaturedProducts,
+  getProductsByCategory,
+} from '../stripe/product';
 
 // ============================================================================
 // HELPERS
@@ -34,6 +40,36 @@ const VALID_UUID = '550e8400-e29b-41d4-a716-446655440000';
 // ============================================================================
 
 describe('Stripe Payment Contracts', () => {
+  describe('ProductSchema', () => {
+    it('allows unavailable catalog products without checkout links', () => {
+      for (const product of PRODUCT_CATALOG) {
+        const result = ProductSchema.safeParse(product);
+        expect(result.success).toBe(true);
+      }
+    });
+
+    it('does not expose placeholder Stripe payment links', () => {
+      expect(
+        PRODUCT_CATALOG.some((product) =>
+          product.paymentLinkUrl?.includes('placeholder'),
+        ),
+      ).toBe(false);
+    });
+
+    it('requires every available product to have a Stripe payment link', () => {
+      for (const product of PRODUCT_CATALOG) {
+        if (product.isAvailable) {
+          expect(product.paymentLinkUrl).toMatch(/^https:\/\/buy\.stripe\.com\//);
+        }
+      }
+    });
+
+    it('filters unavailable products from storefront helpers', () => {
+      expect(getFeaturedProducts()).toEqual([]);
+      expect(getProductsByCategory('SUPPLEMENTS')).toEqual([]);
+    });
+  });
+
   describe('StripeMetadataSchema', () => {
     describe('valid objects', () => {
       it('should accept empty metadata', () => {
@@ -431,12 +467,12 @@ describe('Stripe Payment Contracts', () => {
         expect(result.success).toBe(false);
       });
 
-      it('should reject invalid userId (not UUID)', () => {
+      it('should accept non-empty barcode user IDs', () => {
         const result = CollectPaymentRequestSchema.safeParse({
           ...validPaymentRequest,
-          userId: 'not-a-uuid',
+          userId: 'HH-123456',
         });
-        expect(result.success).toBe(false);
+        expect(result.success).toBe(true);
       });
 
       it('should reject missing description', () => {
