@@ -458,6 +458,22 @@ export const DailyNutritionLogSchema = z.object({
 
 export type DailyNutritionLogContract = z.infer<typeof DailyNutritionLogSchema>;
 
+/**
+ * Request body for adding one or more food entries to an hourly food log bucket.
+ * The server owns merge, idempotency, and totals recalculation.
+ */
+export const NutritionFoodEntriesMutationSchema = z
+  .object({
+    hour: z.number().int().min(0).max(23),
+    entries: z.array(foodLogEntrySchema).min(1).max(100),
+    timezone: z.string().trim().min(1).max(100).optional(),
+  })
+  .strip();
+
+export type NutritionFoodEntriesMutationContract = z.infer<
+  typeof NutritionFoodEntriesMutationSchema
+>;
+
 // ============================================================================
 // FOOD ITEM CONTRACT
 // ============================================================================

@@ -35,6 +35,29 @@ export const NUTRITION_ROUTES = {
    * @param date - ISO date string (YYYY-MM-DD)
    */
   upsert: (userId: string, date: string) => `/users/${userId}/nutrition/${date}` as const,
+
+  /**
+   * POST /users/:userId/nutrition/:date/entries - Add food entries to one hourly bucket
+   * @param userId - User's unique identifier
+   * @param date - ISO date string (YYYY-MM-DD)
+   */
+  addFoodEntries: (userId: string, date: string) =>
+    `/users/${userId}/nutrition/${date}/entries` as const,
+
+  /**
+   * DELETE /users/:userId/nutrition/:date/entries/:foodId - Delete one food entry from a daily log
+   * @param userId - User's unique identifier
+   * @param date - ISO date string (YYYY-MM-DD)
+   * @param foodId - Food entry identifier
+   */
+  deleteFoodEntry: (userId: string, date: string, foodId: string) =>
+    `/users/${userId}/nutrition/${date}/entries/${encodeURIComponent(foodId)}` as const,
+
+  /**
+   * POST /users/:userId/nutrition/analyze - Analyze nutrition data
+   * @param userId - User's unique identifier
+   */
+  analyze: (userId: string) => `/users/${userId}/nutrition/analyze` as const,
 } as const;
 
 // ============================================================================
