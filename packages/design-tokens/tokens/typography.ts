@@ -40,6 +40,7 @@ export const fontWeights = {
   medium: '500',
   semibold: '600',
   bold: '700',
+  heavy: '800',
 } as const;
 
 /** Line heights as multipliers (for React Native) */
@@ -61,7 +62,7 @@ export const lineHeightsCss = {
 
 /** Web font stack */
 export const fontFamily = {
-  sans: '"Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  sans: '"Brooklyn", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   mono: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
 } as const;
 
