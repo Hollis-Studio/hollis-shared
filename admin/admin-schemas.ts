@@ -51,7 +51,7 @@ import {
 import { createPaginatedListSchema } from "../domain/pagination.js";
 import { DynamicMetricGoalDataSourceSchema } from "../domain/training.js";
 import { VolumeLevelSchema } from "../primitives/volume-level.js";
-import { USER_ID_REGEX, heightCmSchema, weightKgSchema } from "../schemas/index.js";
+import { USER_ID_REGEX, bodyWeightKgSchema, heightCmSchema } from "../schemas/index.js";
 import { FulfillmentStatusSchema } from "../stripe/order.js";
 import { SubscriptionStatusSchema } from "../stripe/subscription.js";
 
@@ -211,7 +211,7 @@ export const patientProfileUpdatePayloadSchema = z.object({
   occupation: z.string().max(200).nullable().optional(),
   bio: z.string().max(5000).nullable().optional(),
   heightCm: heightCmSchema.optional(),
-  weightKg: weightKgSchema.optional(),
+  weightKg: bodyWeightKgSchema.optional(),
   activityLevel: ActivityLevelSchema.nullable().optional(),
   experienceLevel: FitnessExperienceSchema.nullable().optional(),
   primaryGoal: PrimaryGoalSchema.nullable().optional(),
@@ -337,7 +337,7 @@ export const prefilledProfileSchema = z.object({
   lastName: z.string().max(100).optional(),
   phone: z.string().max(50).optional(),
   heightCm: heightCmSchema.optional(),
-  weightKg: weightKgSchema.optional(),
+  weightKg: bodyWeightKgSchema.optional(),
   dateOfBirth: isoDateSchema.optional(),
   biologicalSex: BiologicalSexSchema.optional(),
   primaryGoal: PrimaryGoalSchema.optional(),
