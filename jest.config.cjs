@@ -12,6 +12,7 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.test.ts'],
   rootDir: '.',
   moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
     '^@hollis/contracts$': '<rootDir>/index.ts',
     '^@hollis/contracts/(.*)$': '<rootDir>/$1',
   },

@@ -214,6 +214,7 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
+    "test": "jest --config jest.config.cjs",
     "smoke:import": "npm run build && node scripts/smoke-import.mjs"
   },
   "devDependencies": {
