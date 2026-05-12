@@ -14,7 +14,7 @@
  * (unitRegistry) and is not replaced by this module. This shared extract
  * targets the simpler weight/height arithmetic only.
  */
-import { UNIT_CONVERSION } from "../contracts/constants/index";
+import { UNIT_CONVERSION } from "@hollis/contracts";
 
 const { LBS_PER_KG, CM_PER_INCH, INCHES_PER_FOOT } = UNIT_CONVERSION;
 

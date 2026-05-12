@@ -1,0 +1,48 @@
+{
+  "name": "@hollis/utils",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./csrf": {
+      "types": "./dist/csrf.d.ts",
+      "import": "./dist/csrf.js",
+      "default": "./dist/csrf.js"
+    },
+    "./dateKey": {
+      "types": "./dist/dateKey.d.ts",
+      "import": "./dist/dateKey.js",
+      "default": "./dist/dateKey.js"
+    },
+    "./formatCurrency": {
+      "types": "./dist/formatCurrency.d.ts",
+      "import": "./dist/formatCurrency.js",
+      "default": "./dist/formatCurrency.js"
+    },
+    "./unitConversions": {
+      "types": "./dist/unitConversions.d.ts",
+      "import": "./dist/unitConversions.js",
+      "default": "./dist/unitConversions.js"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc"
+  },
+  "dependencies": {
+    "@hollis/contracts": "1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "5.9.2"
+  }
+}
