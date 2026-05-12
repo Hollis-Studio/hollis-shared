@@ -1,12 +1,9 @@
 {
   "name": "@hollis/design-tokens",
-  "version": "1.0.0",
+  "version": "0.1.0-alpha.1",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -37,7 +34,6 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "generate:css": "npx tsx scripts/generate-css-variables.ts",
     "build": "npm run clean && tsc"
   },
   "devDependencies": {

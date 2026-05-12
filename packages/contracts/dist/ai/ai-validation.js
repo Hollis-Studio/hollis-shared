@@ -1,0 +1,287 @@
+/**
+ * @ai-context AI Validation Module | Zod schemas for AI request/response validation
+ *
+ * This module contains all Zod schemas used to validate:
+ * - AI function call arguments (from Gemini responses)
+ * - AI generation requests (from clients)
+ * - AI generation responses (to clients)
+ *
+ * IMPORTANT: These schemas are used by both server and web-admin.
+ * They must remain pure Zod with no platform-specific dependencies.
+ *
+ * deps: zod, admin/admin-types, domain/training | consumers: server/src/services/ai*, web-admin/services
+ */
+import { z } from "zod";
+import { AI_NOTE_CATEGORIES, aiPermanentNoteSchema } from "../domain/ai-notes.js";
+import { STRATEGY_STATUS, STRATEGY_STATUSES, STRATEGY_TYPES, } from "../domain/training.js";
+import { WORKOUT_SECTION_TYPES } from "../domain/workouts.js";
+import { VOLUME_LEVELS } from "../primitives/index.js";
+import { USER_ID_REGEX } from "../schemas/index.js";
+// ============================================================================
+// Constants for Validation
+// ============================================================================
+/**
+ * AI note categories for validation (alias for backward compatibility)
+ * Note: AI_NOTE_CATEGORIES and AI_NOTE_CATEGORY are already exported via domain module
+ */
+export const AI_NOTE_CATEGORIES_FOR_VALIDATION = AI_NOTE_CATEGORIES;
+// Note: WORKOUT_SECTION_TYPES is already exported via domain module
+// ============================================================================
+// Exercise Schemas
+// ============================================================================
+/**
+ * Schema for validating generated exercise from AI
+ *
+ * CRITICAL: exerciseId is REQUIRED. The AI must use list_and_select_exercise or
+ * create_exercise to get a valid UUID before generating workout plans. This
+ * enforces canonical exercise references for progression tracking.
+ */
+export const generatedExerciseSchema = z.object({
+    name: z.string().min(1, "Exercise name is required"),
+    exerciseId: z
+        .string()
+        .uuid("exerciseId must be a valid UUID from the exercise library"),
+    sets: z.number().int().positive().optional(),
+    reps: z.string().optional(),
+    weight: z.string().optional(),
+    duration: z.string().optional(),
+    notes: z.string().optional(),
+    // Accept only valid URLs or omit entirely
+    link: z.string().url().optional(),
+});
+// ============================================================================
+// Workout Section Schemas
+// ============================================================================
+/**
+ * Schema for validating generated workout section from AI
+ */
+export const generatedSectionSchema = z.object({
+    type: z.enum(WORKOUT_SECTION_TYPES),
+    title: z.string().min(1, "Section title is required"),
+    exercises: z.array(generatedExerciseSchema),
+});
+// ============================================================================
+// Workout Day Schemas
+// ============================================================================
+/**
+ * Schema for validating generated workout day from AI
+ */
+export const generatedDaySchema = z.object({
+    dayOfWeek: z.number().int().min(0).max(6),
+    name: z.string().min(1, "Day name is required"),
+    isRestDay: z.boolean(),
+    sections: z.array(generatedSectionSchema),
+});
+// ============================================================================
+// Workout Plan Schemas
+// ============================================================================
+/**
+ * Schema for validating generate_workout_plan function call arguments from AI
+ */
+export const generateWorkoutPlanArgsSchema = z.object({
+    days: z.array(generatedDaySchema).min(1, "At least one day is required"),
+    reasoning: z.string().optional(),
+});
+/**
+ * Schema for validating generated workout plan structure
+ */
+export const generatedWorkoutPlanSchema = z.object({
+    days: z.array(generatedDaySchema),
+});
+/**
+ * Schema for unresolved exercise requiring human review
+ */
+export const unresolvedExerciseSchema = z.object({
+    dayOfWeek: z.number().int().min(0).max(6),
+    dayName: z.string().min(1),
+    sectionIndex: z.number().int().min(0),
+    sectionTitle: z.string().min(1),
+    exerciseIndex: z.number().int().min(0),
+    exerciseName: z.string().min(1),
+    reason: z.enum(["missing_id", "invalid_id", "name_mismatch"]),
+});
+/**
+ * Schema for workout plan generation result
+ */
+export const workoutPlanGenerationResultSchema = z.object({
+    plan: generatedWorkoutPlanSchema,
+    newNotes: z.array(aiPermanentNoteSchema),
+    reasoning: z.string().optional(),
+    needsReview: z.boolean().optional(),
+    reviewReasons: z.array(unresolvedExerciseSchema).optional(),
+});
+/**
+ * Schema for nutrition plan generation result
+ */
+export const nutritionPlanGenerationResultSchema = z.object({
+    calories: z.number().int().positive(),
+    protein: z.number().min(0),
+    carbs: z.number().min(0),
+    fat: z.number().min(0),
+    dailyTargets: z
+        .array(z.object({
+        dayOfWeek: z.number().int().min(0).max(6),
+        calories: z.number().int().positive(),
+        protein: z.number().min(0),
+        carbs: z.number().min(0),
+        fat: z.number().min(0),
+    }))
+        .min(7, "Must generate targets for all 7 days")
+        .max(7),
+    reasoning: z.string(),
+    weeklyNotes: z.string(),
+    newNotes: z.array(aiPermanentNoteSchema),
+});
+// ============================================================================
+// Permanent Note Schemas
+// ============================================================================
+/**
+ * Schema for validating save_permanent_note function call arguments from AI
+ */
+export const savePermanentNoteArgsSchema = z.object({
+    content: z.string().min(1, "Note content is required"),
+    category: z.enum(AI_NOTE_CATEGORIES_FOR_VALIDATION),
+});
+// ============================================================================
+// Nutrition Schemas
+// ============================================================================
+/**
+ * Schema for validating generate_nutrition_targets function call arguments from AI
+ */
+export const generateNutritionTargetsArgsSchema = z.object({
+    calories: z
+        .number()
+        .int()
+        .positive()
+        .max(10000, "Calories seem unreasonably high"),
+    protein: z.number().min(0).max(500, "Protein must be 0-500g"),
+    carbs: z.number().min(0).max(1500, "Carbs must be 0-1500g"),
+    fat: z.number().min(0).max(500, "Fat must be 0-500g"),
+    dailyTargets: z
+        .array(z.object({
+        dayOfWeek: z.number().int().min(0).max(6),
+        calories: z.number().int().positive(),
+        protein: z.number().min(0),
+        carbs: z.number().min(0),
+        fat: z.number().min(0),
+    }))
+        .min(7, "Must generate targets for all 7 days")
+        .max(7),
+    reasoning: z.string().min(1, "Reasoning is required"),
+    weeklyNotes: z.string().optional(),
+});
+// ============================================================================
+// Training Strategy Schemas
+// ============================================================================
+/**
+ * Schema for strategy goal input
+ *
+ * goalMetric is a MetricDefinition code string. The AI must use a valid code
+ * from the MetricDefinition registry (retrieved at runtime from the DB).
+ */
+export const createStrategyGoalArgsSchema = z.object({
+    goalMetric: z.string().min(1),
+    goalTarget: z
+        .number()
+        .finite()
+        .refine((val) => val > 0 && val < 100000, {
+        message: "goalTarget must be between 0 and 100000 (exclusive)",
+    }),
+    linkedExerciseId: z.string().uuid().optional(),
+    weight: z.number().min(0.1).max(10).default(1.0),
+    baselineValue: z.number().finite().optional(),
+});
+/**
+ * Schema for training phase input
+ */
+export const createPhaseArgsSchema = z.object({
+    name: z.string().min(1).max(100),
+    order: z.number().int().min(0),
+    weekCount: z.number().int().min(1).max(52),
+    intensityRange: z.string().max(50).optional(),
+    volumeLevel: z.enum(VOLUME_LEVELS).optional(),
+    focusAreas: z.array(z.string().max(50)).default([]),
+    notes: z.string().max(1000).optional(),
+    startDate: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional(),
+    endDate: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional(),
+    isActive: z.boolean().default(false),
+    isCompleted: z.boolean().default(false),
+});
+/**
+ * Schema for validating request_clarification function call arguments from AI
+ */
+export const requestClarificationArgsSchema = z.object({
+    questions: z.array(z.string().min(1)).min(1).max(5),
+});
+/**
+ * Schema for validating generate_training_strategy function call arguments from AI
+ */
+export const generateStrategyArgsSchema = z.object({
+    name: z.string().min(1).max(200),
+    type: z.enum(STRATEGY_TYPES),
+    goal: z.string().min(1).max(500),
+    description: z.string().max(2000).optional(),
+    startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    endDate: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional(),
+    status: z.enum(STRATEGY_STATUSES).default(STRATEGY_STATUS.ACTIVE),
+    goals: z.array(createStrategyGoalArgsSchema).min(1),
+    phases: z.array(createPhaseArgsSchema).optional(),
+    reasoning: z.string().min(1),
+});
+// ============================================================================
+// Exercise Library Schemas
+// ============================================================================
+/**
+ * Schema for create_exercise function call arguments
+ */
+export const createExerciseArgsSchema = z.object({
+    name: z.string().min(1).max(200),
+    category: z.string().min(1),
+    muscleGroups: z.array(z.string()).min(1),
+    primaryMuscle: z.string().optional(),
+    equipment: z.array(z.string()).default([]),
+    movementPattern: z.string().optional(),
+    difficulty: z.string().optional(),
+    instructions: z.string().optional(),
+    cues: z.array(z.string()).default([]),
+    defaultSets: z.number().int().positive().optional(),
+    defaultReps: z.string().optional(),
+});
+// ============================================================================
+// API Request Schemas
+// ============================================================================
+/**
+ * Schema for workout plan generation request
+ */
+// ============================================================================
+// API Request Schemas
+// Note: Some request schemas (WorkoutPlanGenerationParams, NutritionPlanGenerationRequest)
+// are already defined in admin/admin-schemas.ts and admin/admin-types.ts
+// Import from there to avoid duplication
+// ============================================================================
+/**
+ * Schema for strategy generation request (AI-specific, not in admin)
+ *
+ * @param userId - Patient identifier in HH-XXXXXX barcode format
+ * @param customPrompt - User's training goal description
+ * @param requestId - Optional UUID for multi-turn conversations
+ * @param clarificationAnswers - Optional answers to clarification questions
+ */
+export const strategyGenerationRequestSchema = z.object({
+    userId: z
+        .string()
+        .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+    customPrompt: z.string().min(1).max(2000),
+    requestId: z.string().uuid().optional(),
+    clarificationAnswers: z.array(z.string()).optional(),
+});
+//# sourceMappingURL=ai-validation.js.map

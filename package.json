@@ -1,0 +1,19 @@
+{
+  "name": "@hollis/shared",
+  "version": "0.1.0-alpha.1",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "clean": "npm run clean --workspaces --if-present",
+    "build": "npm --workspace @hollis/contracts run build && npm --workspace @hollis/design-tokens run build && npm --workspace @hollis/utils run build",
+    "typecheck": "npm --workspace @hollis/contracts run typecheck && npm --workspace @hollis/design-tokens run typecheck && npm --workspace @hollis/utils run typecheck",
+    "smoke:import": "node scripts/smoke-import.mjs",
+    "check": "npm run build && npm run typecheck && npm run smoke:import"
+  },
+  "devDependencies": {
+    "typescript": "5.9.2"
+  }
+}

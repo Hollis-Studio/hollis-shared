@@ -1,0 +1,329 @@
+/**
+ * @ai-context Workout contracts | workout session, plan, and set schemas for training features
+ */
+import { z } from "zod";
+import { baseDocumentSchema, isoDateSchema, isoTimestampSchema } from "./common.js";
+import { WeightUnitSchema } from "./units.js";
+// ============================================================================
+// WORKOUT SECTION TYPES
+// ============================================================================
+/**
+ * Valid workout section types for training plans.
+ */
+export const WORKOUT_SECTION_TYPES = ["warmup", "working", "cooldown"];
+export const WorkoutSectionTypeSchema = z.enum(WORKOUT_SECTION_TYPES);
+/** Centralized workout section type constants for equality checks */
+export const WORKOUT_SECTION_TYPE = {
+    WARMUP: "warmup",
+    WORKING: "working",
+    COOLDOWN: "cooldown",
+};
+/** Human-readable labels for workout section types */
+export const WORKOUT_SECTION_TYPE_LABELS = {
+    warmup: "Warm-up",
+    working: "Working Sets",
+    cooldown: "Cool-down",
+};
+/**
+ * Check if a string is a valid workout section type
+ */
+export function isWorkoutSectionType(value) {
+    return WORKOUT_SECTION_TYPES.includes(value);
+}
+// --- Sub-components ---
+export const workoutSetSchema = z.object({
+    id: z.string(),
+    exerciseId: z.string().optional(), // Reference to Exercise library item
+    name: z.string(),
+    description: z.string().optional(),
+    link: z.string().url().optional(),
+    reps: z.number().int().min(0).optional(),
+    weight: z.number().min(0).optional(),
+    weightUnit: WeightUnitSchema.optional(),
+    duration: z.number().int().min(0).optional(),
+    rpe: z.number().min(1).max(10).optional(),
+    restSeconds: z.number().int().min(0).optional(),
+});
+export const workoutSectionSchema = z.object({
+    id: z.string(),
+    type: WorkoutSectionTypeSchema,
+    title: z.string(), // Customizable title
+    sets: z.array(workoutSetSchema),
+});
+// --- The Workout Session (One Day) ---
+export const workoutSessionSchema = z.object({
+    id: z.string(),
+    dayOfWeek: z.number().int().min(0).max(6), // 0=Sunday, 1=Monday, etc.
+    name: z.string(), // "Leg Day", "Rest", "Cardio"
+    icon: z.string(), // Icon name for the UI
+    sections: z.array(workoutSectionSchema),
+    isRestDay: z.boolean().default(false),
+});
+// --- The Daily Workout Plan ---
+export const workoutPlanSchema = baseDocumentSchema.extend({
+    id: z.string().optional(),
+    userId: z.string(),
+    date: isoDateSchema, // ISO Date YYYY-MM-DD
+    title: z.string(),
+    description: z.string().nullable().optional(),
+    blocks: z.array(workoutSectionSchema),
+    isCompleted: z.boolean().default(false),
+    completedAt: z.string().nullable().optional(),
+});
+// ============================================================================
+// WORKOUT PLAN BUILDER VALIDATION
+// ============================================================================
+/**
+ * Validates a single workout set as entered in the WorkoutPlanBuilder.
+ *
+ * Rules:
+ * - `name` must be non-empty (exercise was selected or typed)
+ * - `reps`, if supplied, must be a positive integer
+ * - `weight`, if supplied, must be >= 0
+ * - `duration`, if supplied, must be a positive integer (seconds)
+ * - `link`, if supplied, must be a valid URL
+ */
+export const workoutBuilderSetSchema = z.object({
+    id: z.string().min(1),
+    exerciseId: z.string().optional(),
+    name: z.string().min(1, "Exercise name is required"),
+    description: z.string().optional(),
+    link: z.string().url("Link must be a valid URL (http/https)").optional().or(z.literal("")),
+    reps: z.number().int().min(1, "Reps must be at least 1").optional(),
+    weight: z.number().min(0, "Weight cannot be negative").optional(),
+    weightUnit: WeightUnitSchema.optional(),
+    duration: z.number().int().min(1, "Duration must be at least 1 second").optional(),
+    rpe: z.number().min(1).max(10).optional(),
+    restSeconds: z.number().int().min(0).optional(),
+});
+/**
+ * Validates a single workout section as entered in the WorkoutPlanBuilder.
+ *
+ * Rules:
+ * - `type` must be one of the defined section types (warmup, working, cooldown)
+ * - `title` must be non-empty
+ * - `sets` must contain at least one exercise
+ */
+export const workoutBuilderSectionSchema = z.object({
+    id: z.string().min(1),
+    type: WorkoutSectionTypeSchema,
+    title: z.string().min(1, "Section title is required"),
+    sets: z.array(workoutBuilderSetSchema).min(1, "Each section must have at least one exercise"),
+});
+/**
+ * Valid day-of-week values (0=Monday … 6=Sunday in builder convention).
+ */
+export const BUILDER_DAY_OF_WEEK = [0, 1, 2, 3, 4, 5, 6];
+/**
+ * Validates a single workout day (session) as composed in the WorkoutPlanBuilder.
+ *
+ * Rules:
+ * - `dayOfWeek` must be 0–6
+ * - `name` must be non-empty
+ * - A non-rest day must have at least one section
+ * - A rest day may have zero sections (optional stretching/mobility is allowed)
+ */
+export const workoutBuilderDaySchema = z.object({
+    id: z.string().min(1),
+    dayOfWeek: z.number().int().min(0).max(6),
+    name: z.string().min(1, "Day name is required"),
+    icon: z.string().min(1),
+    sections: z.array(workoutBuilderSectionSchema),
+    isRestDay: z.boolean(),
+}).refine((day) => day.isRestDay || day.sections.length >= 1, { message: "A workout day must have at least one section" });
+/**
+ * Validates the full weekly plan as built by WorkoutPlanBuilder before save.
+ *
+ * Rules:
+ * - Must be an array of exactly 7 days
+ * - Each day must have a unique dayOfWeek value (0–6)
+ * - At least one day must be a non-rest day (so empty all-rest plans are rejected)
+ * - Each non-rest day must contain at least one section with at least one exercise
+ */
+export const workoutWeekBuilderSchema = z.array(workoutBuilderDaySchema)
+    .length(7, "A weekly plan must contain exactly 7 days")
+    .refine((days) => {
+    const seen = new Set();
+    for (const day of days) {
+        if (seen.has(day.dayOfWeek))
+            return false;
+        seen.add(day.dayOfWeek);
+    }
+    return true;
+}, { message: "Each day must have a unique dayOfWeek value" })
+    .refine((days) => days.some((d) => !d.isRestDay), { message: "At least one day must be a workout day (not all rest)" });
+/**
+ * Collect human-readable validation errors from a WorkoutWeek parse result.
+ * Returns an array of error strings suitable for UI display.
+ */
+export function collectWorkoutBuilderErrors(result) {
+    if (result.success)
+        return [];
+    const errors = [];
+    for (const issue of result.error.issues) {
+        const path = issue.path.join(".");
+        if (path) {
+            errors.push(`${path}: ${issue.message}`);
+        }
+        else {
+            errors.push(issue.message);
+        }
+    }
+    return errors;
+}
+// ============================================================================
+// WEARABLE WORKOUT SESSION
+// ============================================================================
+/**
+ * A single workout activity recorded by a wearable device (e.g., Apple Watch,
+ * Garmin, Whoop). Free-form sessions that do not map to structured exercise
+ * logs — stored in `wearable_workout_sessions` for longitudinal activity
+ * analytics and future AI context.
+ *
+ * Units contract:
+ * - `durationMinutes`: integer minutes (1–1440)
+ * - `activeCaloriesKcal`: integer kcal (0–50000)
+ * - `distanceKm`: decimal km (0–1000) — always stored in km regardless of device unit
+ */
+export const wearableWorkoutSessionSchema = z.object({
+    /** Unique identifier (UUID) — present on records read from DB, absent on create */
+    id: z.string().uuid().optional(),
+    userId: z.string(),
+    /** Activity type as reported by the wearable (e.g. "running", "cycling") */
+    type: z.string().min(1).max(100),
+    /** ISO 8601 UTC timestamp for workout start */
+    startTime: isoTimestampSchema,
+    /** ISO 8601 UTC timestamp for workout end */
+    endTime: isoTimestampSchema,
+    /** Duration in whole minutes (1–1440) */
+    durationMinutes: z.number().int().min(1).max(1440),
+    /** Active (exercise) calories burned in kcal */
+    activeCaloriesKcal: z.number().int().min(0).max(50000).optional(),
+    /** Distance covered in km (normalized from device unit at write time) */
+    distanceKm: z.number().min(0).max(1000).optional(),
+    /** Device or app source identifier (e.g. "com.apple.health", "whoop") */
+    source: z.string().min(1).max(200).optional(),
+    createdAt: isoTimestampSchema.optional(),
+    updatedAt: isoTimestampSchema.optional(),
+});
+/**
+ * Schema used when a wearable client submits workout sessions in a daily sync
+ * payload. The `userId` and `id` fields are populated server-side.
+ */
+export const wearableWorkoutSyncSchema = wearableWorkoutSessionSchema.omit({
+    id: true,
+    userId: true,
+    createdAt: true,
+    updatedAt: true,
+});
+// ============================================================================
+// EXERCISE LOG ENTRY DRAFT (client-side only, never sent directly to server)
+// ============================================================================
+/**
+ * Represents a single set's draft state during active session logging.
+ * This is a client-side-only type — the feature service maps completed
+ * entries to `LogPerformanceSetInput` (filtering incomplete, stripping nulls)
+ * before calling the API.
+ *
+ * Defaults: weightUnit = "lbs" (converted to kg on submit per storage invariant).
+ */
+export const exerciseLogEntryDraftSchema = z.object({
+    exerciseId: z.string().uuid(),
+    setNumber: z.number().int().min(1),
+    reps: z.number().int().min(1).nullable(),
+    weight: z.number().min(0).nullable(),
+    /** Display unit — always "lbs" by default; converted to kg when submitted */
+    weightUnit: WeightUnitSchema.default("lbs"),
+    rpe: z.number().int().min(1).max(10).nullable(),
+    /** Whether the trainer has checked this set as completed */
+    isComplete: z.boolean().default(false),
+});
+// ============================================================================
+// WEARABLE SESSION ADMIN QUERY SCHEMAS
+// ============================================================================
+/**
+ * Query parameters for the admin wearable sessions list endpoint.
+ * GET /api/admin/patients/:userId/wearable-sessions
+ */
+export const WearableSessionListQuerySchema = z.object({
+    /** Page number (1-based). Defaults to 1. */
+    page: z
+        .string()
+        .optional()
+        .transform((v) => {
+        const n = v ? Number.parseInt(v, 10) : 1;
+        return Math.max(Number.isNaN(n) ? 1 : n, 1);
+    }),
+    /** Items per page. Defaults to 20, max 100. */
+    limit: z
+        .string()
+        .optional()
+        .transform((v) => {
+        const n = v ? Number.parseInt(v, 10) : 20;
+        const clamped = Number.isNaN(n) ? 20 : n;
+        return Math.min(Math.max(clamped, 1), 100);
+    }),
+    /** ISO date string (YYYY-MM-DD) — inclusive lower bound on startTime */
+    startDate: z.string().date().optional(),
+    /** ISO date string (YYYY-MM-DD) — inclusive upper bound on startTime */
+    endDate: z.string().date().optional(),
+    /** Filter by workout type (e.g. "running", "cycling") */
+    type: z.string().min(1).max(100).optional(),
+});
+/**
+ * A single wearable session row in the admin list response.
+ * Contains only fields present in the current DB schema — no HR, GPS, or effort score.
+ */
+export const WearableSessionItemSchema = z.object({
+    id: z.string().uuid(),
+    userId: z.string(),
+    type: z.string(),
+    startTime: isoTimestampSchema,
+    endTime: isoTimestampSchema,
+    durationMinutes: z.number().int(),
+    activeCaloriesKcal: z.number().int().nullable(),
+    distanceKm: z.number().nullable(),
+    source: z.string().nullable(),
+    createdAt: isoTimestampSchema,
+    updatedAt: isoTimestampSchema,
+});
+/**
+ * Paginated response for the admin wearable sessions list endpoint.
+ * Shape: { data: WearableSessionItem[], pagination: { page, limit, total, totalPages, hasMore } }
+ */
+export const WearableSessionListResponseSchema = z.object({
+    data: z.array(WearableSessionItemSchema),
+    pagination: z.object({
+        page: z.number().int(),
+        limit: z.number().int(),
+        total: z.number().int(),
+        totalPages: z.number().int(),
+        hasMore: z.boolean(),
+    }),
+});
+// ============================================================================
+// WEARABLE ACTIVITY SUMMARY SCHEMAS
+// ============================================================================
+/**
+ * Aggregated activity data for a single calendar day.
+ * Used in the CSS bar chart (ActivitySummaryChart).
+ */
+export const WearableActivityDaySummarySchema = z.object({
+    /** UTC date key in YYYY-MM-DD format */
+    date: z.string(),
+    /** Total active minutes across all sessions on this day */
+    totalActiveMins: z.number().int(),
+    /** Total active calories burned across all sessions on this day */
+    totalCalories: z.number().int(),
+    /** Number of workout sessions on this day */
+    sessionCount: z.number().int(),
+});
+/**
+ * Response for the admin wearable activity summary endpoint.
+ * GET /api/admin/patients/:userId/wearable-activity-summary
+ */
+export const WearableActivitySummaryResponseSchema = z.object({
+    days: z.array(WearableActivityDaySummarySchema),
+    periodDays: z.number().int(),
+});
+//# sourceMappingURL=workouts.js.map
