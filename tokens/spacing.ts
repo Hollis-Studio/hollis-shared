@@ -5,8 +5,8 @@
  * Based on a 4px base unit for precise alignment.
  */
 
-/** Spacing scale in numeric values (for React Native) */
-export const spacing = {
+/** Blue/Health spacing scale in numeric values (for React Native) */
+export const spacingBlue = {
   /** 4px - Minimal spacing */
   xs: 4,
   /** 8px - Small spacing */
@@ -20,6 +20,17 @@ export const spacing = {
   /** 48px - 2x extra large spacing */
   xxl: 48,
 } as const;
+
+/** Clay/Workouts spacing scale in numeric values (for React Native) */
+export const spacingClay = {
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
+} as const;
+
+/** Default spacing remains the Blue/Health scale for backward compatibility. */
+export const spacing = spacingBlue;
 
 /** Spacing scale with CSS units (for web) */
 export const spacingCss = {
@@ -42,3 +53,5 @@ export const spacingRem = {
 } as const;
 
 export type SpacingKey = keyof typeof spacing;
+export type SpacingBlueKey = keyof typeof spacingBlue;
+export type SpacingClayKey = keyof typeof spacingClay;

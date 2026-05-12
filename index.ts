@@ -16,3 +16,5 @@
 
 // Re-export all tokens for convenience
 export * from './tokens/index.js';
+export * from './clay.js';
+export * from './workouts/index.js';

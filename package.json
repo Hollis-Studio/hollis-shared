@@ -15,6 +15,21 @@
       "import": "./dist/tokens/index.js",
       "default": "./dist/tokens/index.js"
     },
+    "./clay": {
+      "types": "./dist/clay.d.ts",
+      "import": "./dist/clay.js",
+      "default": "./dist/clay.js"
+    },
+    "./spacing-clay": {
+      "types": "./dist/spacing-clay.d.ts",
+      "import": "./dist/spacing-clay.js",
+      "default": "./dist/spacing-clay.js"
+    },
+    "./workouts": {
+      "types": "./dist/workouts/index.d.ts",
+      "import": "./dist/workouts/index.js",
+      "default": "./dist/workouts/index.js"
+    },
     "./tokens/*": {
       "types": "./dist/tokens/*.d.ts",
       "import": "./dist/tokens/*.js",
