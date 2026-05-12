@@ -6,7 +6,7 @@ import {
     baseDocumentSchema,
     isoDateSchema,
     isoTimestampSchema,
-} from "./common";
+} from "./common.js";
 
 // ============================================================================
 // AI NOTE CATEGORIES

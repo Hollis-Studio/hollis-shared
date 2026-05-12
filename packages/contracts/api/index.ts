@@ -9,10 +9,10 @@
  * deps: none | consumers: src/services/*, web-admin/services/*, server/src/*
  */
 
-export * from "./csrf";
-export * from "./endpoints";
-export * from "./response";
-export * from "./routes";
+export * from "./csrf.js";
+export * from "./endpoints.js";
+export * from "./response.js";
+export * from "./routes.js";
 
 // Legacy ./routes.ts takes precedence over ./routes/index.ts during resolution,
 // so route modules added under ./routes/* need explicit re-exports here until
@@ -20,7 +20,7 @@ export * from "./routes";
 export {
     HEALTH_METRICS_ROUTES,
     type HealthMetricsRoute
-} from "./routes/health-metrics";
+} from "./routes/health-metrics.js";
 
 // MFA and Assignment routes are defined in the modular routes/ directory (not in routes.ts).
 // Explicitly re-exported here so they are available via @hollis/contracts/api.
@@ -29,10 +29,10 @@ export {
     MFA_ROUTES,
     type AssignmentRoute,
     type MfaRoute
-} from "./routes/mfa";
+} from "./routes/mfa.js";
 
 // Workout Plans routes are defined in the modular routes/ directory (not in routes.ts).
 // Explicitly re-exported here so they are available via @hollis/contracts/api.
 export {
     WORKOUT_PLANS_ROUTES
-} from "./routes/workouts";
+} from "./routes/workouts.js";

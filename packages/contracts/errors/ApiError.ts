@@ -10,7 +10,7 @@
  * deps: errorSanitization | consumers: src/services/apiClient, web-admin/services/webApiClient, web-public/services/webApiClient
  */
 
-import { sanitizeErrorMessage } from "../errorSanitization";
+import { sanitizeErrorMessage } from "../errorSanitization.js";
 
 export class ApiError extends Error {
   constructor(

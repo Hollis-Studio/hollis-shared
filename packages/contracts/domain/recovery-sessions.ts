@@ -8,8 +8,8 @@
  */
 
 import { z } from "zod";
-import { baseDocumentSchema, isoTimestampSchema } from "./common";
-import { createPaginatedListSchema } from "./pagination";
+import { baseDocumentSchema, isoTimestampSchema } from "./common.js";
+import { createPaginatedListSchema } from "./pagination.js";
 
 export const RECOVERY_SESSION_MODALITIES = [
   "SAUNA",

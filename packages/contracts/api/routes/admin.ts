@@ -4,7 +4,7 @@
  * deps: ./types | consumers: src/services/*, web-admin/services/*, server/src/*
  */
 
-import type { RouteMetadata } from './types';
+import type { RouteMetadata } from './types.js';
 
 // ============================================================================
 // ADMIN ROUTES

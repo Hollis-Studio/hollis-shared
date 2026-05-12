@@ -6,7 +6,7 @@
  * this module so reviewer credentials cannot drift between surfaces.
  */
 
-import { USER_ROLE, USER_TIER, type UserRole, type UserTier } from "./user";
+import { USER_ROLE, USER_TIER, type UserRole, type UserTier } from "./user.js";
 
 export type AppReviewAccountKey = "primaryClient" | "reviewerAdmin";
 

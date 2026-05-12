@@ -19,16 +19,16 @@
  */
 
 import { z } from "zod";
-import { VolumeLevelSchema } from "../primitives";
-import { baseDocumentSchema, isoDateSchema } from "./common";
-import { MetricDefinitionSummarySchema } from "./metric-definition";
+import { VolumeLevelSchema } from "../primitives/index.js";
+import { baseDocumentSchema, isoDateSchema } from "./common.js";
+import { MetricDefinitionSummarySchema } from "./metric-definition.js";
 import {
     GoalCategorySchema,
     GoalDataSourceSchema,
     GoalDirectionSchema,
     StrategyStatusSchema,
     StrategyTypeSchema,
-} from "./training";
+} from "./training.js";
 
 // ============================================================================
 // VOLUME LEVEL ALIASES (Backward Compatibility)
@@ -41,7 +41,7 @@ export {
     VOLUME_LEVELS,
     VolumeLevelSchema,
     type VolumeLevel
-} from "../primitives";
+} from "../primitives/index.js";
 
 /** @deprecated Use VolumeLevelSchema (PascalCase) from primitives. Remove after 2026-05-01
  *  @removal-deadline 2026-05-01 */

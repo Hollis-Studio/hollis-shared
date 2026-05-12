@@ -27,7 +27,7 @@ import type {
     SmartAssistProgress as SmartAssistProgressFromSchema,
     TrainerSummaryFromSchema,
     UpdateGoalInputFromSchema,
-} from "./admin-schemas";
+} from "./admin-schemas.js";
 
 // ============================================================================
 // COMPLIANCE STATUS (admin-specific)
@@ -121,7 +121,7 @@ export interface WorkoutPlanGenerationParams {
  * than the validated contract.
  */
 export type LabObservationInput = ZodInput<
-  typeof import("./admin-schemas").labObservationInputSchema
+  typeof import("./admin-schemas.js").labObservationInputSchema
 >;
 
 // ============================================================================

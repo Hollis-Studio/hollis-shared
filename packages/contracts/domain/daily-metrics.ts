@@ -12,8 +12,8 @@
  */
 
 import { z } from "zod";
-import { baseDocumentSchema, isoDateSchema } from "./common";
-import { createPaginatedListSchema } from "./pagination";
+import { baseDocumentSchema, isoDateSchema } from "./common.js";
+import { createPaginatedListSchema } from "./pagination.js";
 
 // ============================================================================
 // SLEEP SOURCE (Domain Constants Pattern)

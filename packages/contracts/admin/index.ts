@@ -31,22 +31,22 @@
  */
 
 // Types
-export * from "./admin-types";
+export * from "./admin-types.js";
 
 // Routes
-export * from "./admin-routes";
+export * from "./admin-routes.js";
 
 // Schemas
-export * from "./admin-schemas";
+export * from "./admin-schemas.js";
 
 // Notifications - admin realtime notification kinds
-export * from "./notifications";
+export * from "./notifications.js";
 
 // Labs admin contracts - metric search, creation, extraction, order management
-export * from "./labs";
+export * from "./labs.js";
 
 // DXA admin contracts - extraction and ingest
-export * from "./dxa";
+export * from "./dxa.js";
 
 // Consent contracts - legal document signing schemas, constants, and route types
-export * from "./consent-schemas";
+export * from "./consent-schemas.js";

@@ -2,10 +2,10 @@
  * @ai-context Stripe contracts barrel export
  */
 
-export * from './subscription';
-export * from './payment';
-export * from './order';
-export * from './mobileSession';
-export * from './analytics';
-export * from './product';
-export * from './account';
+export * from './subscription.js';
+export * from './payment.js';
+export * from './order.js';
+export * from './mobileSession.js';
+export * from './analytics.js';
+export * from './product.js';
+export * from './account.js';

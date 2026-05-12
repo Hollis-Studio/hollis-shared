@@ -11,9 +11,9 @@
  */
 
 import { z } from "zod";
-import { extractedDataSchema } from "../schemas/json-blobs";
-import { baseDocumentSchema } from "./common";
-import { DocumentCategorySchema } from "./documents";
+import { extractedDataSchema } from "../schemas/json-blobs.js";
+import { baseDocumentSchema } from "./common.js";
+import { DocumentCategorySchema } from "./documents.js";
 
 // ============================================================================
 // LIMITATION SEVERITIES

@@ -16,7 +16,7 @@ import {
     baseDocumentSchema,
     isoDateSchema,
     isoTimestampSchema,
-} from "./common";
+} from "./common.js";
 
 // ============================================================================
 // EXERCISE CATEGORIES

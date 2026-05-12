@@ -14,8 +14,8 @@
  */
 
 import { z } from "zod";
-import type { UserTier } from "./user";
-import { UserTierSchema } from "./user";
+import type { UserTier } from "./user.js";
+import { UserTierSchema } from "./user.js";
 
 // ============================================================================
 // COMPLIANCE STATUS

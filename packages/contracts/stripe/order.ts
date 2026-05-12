@@ -5,7 +5,7 @@
  */
 
 import { z } from "zod";
-import { emailSchema } from "../schemas";
+import { emailSchema } from "../schemas/index.js";
 
 // ============================================================================
 // PAYMENT STATUS

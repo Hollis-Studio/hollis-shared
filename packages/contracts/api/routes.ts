@@ -31,8 +31,8 @@
 import type {
     HttpMethod as _HttpMethod,
     RouteMetadata as _RouteMetadata,
-} from "./routes/types";
-import { HTTP_METHODS as _HTTP_METHODS } from "./routes/types";
+} from "./routes/types.js";
+import { HTTP_METHODS as _HTTP_METHODS } from "./routes/types.js";
 
 /**
  * HTTP methods supported by the API.

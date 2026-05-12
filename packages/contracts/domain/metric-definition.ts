@@ -14,7 +14,7 @@ import {
     type MetricCategory,
     MetricCategorySchema,
     TrendDirectionSchema
-} from "./health-metric-types";
+} from "./health-metric-types.js";
 
 // Re-export MetricCategory types (canonical source: health-metric-types.ts)
 export { METRIC_CATEGORIES, MetricCategorySchema };

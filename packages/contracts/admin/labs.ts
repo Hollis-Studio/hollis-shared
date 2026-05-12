@@ -9,19 +9,19 @@
  */
 
 import { z } from "zod";
-import { isoDateSchema } from "../domain";
-import { LabOrderStatusSchema } from "../domain/businessAnalytics";
+import { isoDateSchema } from "../domain/index.js";
+import { LabOrderStatusSchema } from "../domain/businessAnalytics.js";
 import {
     LabMappingStatusSchema,
     LabMetricCategorySchema,
     LabMetricDirectionalitySchema,
-} from "../domain/labs";
-import { userIdSchema } from "../schemas";
+} from "../domain/labs.js";
+import { userIdSchema } from "../schemas/index.js";
 import type {
     LabMetricSearchResponseFromSchema,
     PendingMetricsResponseFromSchema,
-} from "./admin-schemas";
-import { labObservationInputSchema } from "./admin-schemas";
+} from "./admin-schemas.js";
+import { labObservationInputSchema } from "./admin-schemas.js";
 
 // ============================================================================
 // SEARCH & METRIC DEFINITION

@@ -13,19 +13,19 @@
  */
 
 import { z } from "zod";
-import { BiometricSourceSchema } from "./clinical";
-import { dailyMetricsSchema } from "./daily-metrics";
-import { createPaginatedListSchema } from "./pagination";
+import { BiometricSourceSchema } from "./clinical.js";
+import { dailyMetricsSchema } from "./daily-metrics.js";
+import { createPaginatedListSchema } from "./pagination.js";
 import {
     DataQualityLevelSchema,
     HealthMetricKeySchema,
     HealthTrendSchema,
-} from "./health-progress";
-import { journalEntrySchema } from "./journal";
-import { MetricDefinitionSummarySchema } from "./metric-definition";
-import { DailyNutritionLogSchema } from "./nutrition";
-import { HealthMetricDirectionSchema } from "./training";
-import { BiologicalSexSchema } from "./user";
+} from "./health-progress.js";
+import { journalEntrySchema } from "./journal.js";
+import { MetricDefinitionSummarySchema } from "./metric-definition.js";
+import { DailyNutritionLogSchema } from "./nutrition.js";
+import { HealthMetricDirectionSchema } from "./training.js";
+import { BiologicalSexSchema } from "./user.js";
 
 // ============================================================================
 // SOURCE WEIGHTS & DATA POINT WEIGHTING (canonical: health-progress.ts)
@@ -35,7 +35,7 @@ export {
     getDataPointWeight,
     SOURCE_WEIGHTS,
     VERIFICATION_MULTIPLIER
-} from "./health-progress";
+} from "./health-progress.js";
 
 /**
  * @deprecated Post-migration, reference ranges live in MetricDefinition records.

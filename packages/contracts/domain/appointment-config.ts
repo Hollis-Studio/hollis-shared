@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import { AppointmentType } from './appointments';
+import { AppointmentType } from './appointments.js';
 
 /** Business timezone for Hollis Health (San Antonio, TX - Central Time) */
 export const BUSINESS_TIMEZONE = 'America/Chicago';

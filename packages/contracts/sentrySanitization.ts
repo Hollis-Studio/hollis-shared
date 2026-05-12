@@ -5,7 +5,7 @@
  * Next.js, and the backend server without importing Sentry runtime packages.
  */
 
-import { sanitizeErrorMessage } from "./errorSanitization";
+import { sanitizeErrorMessage } from "./errorSanitization.js";
 
 const AUTH_HEADER_NAMES = new Set([
   "authorization",

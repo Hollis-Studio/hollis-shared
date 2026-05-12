@@ -7,5 +7,5 @@
  * deps: zod only | consumers: all contract modules
  */
 
-export * from './typeGuards';
-export * from './volume-level';
+export * from './typeGuards.js';
+export * from './volume-level.js';

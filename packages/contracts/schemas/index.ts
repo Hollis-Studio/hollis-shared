@@ -20,15 +20,15 @@
  */
 
 import { z } from "zod";
-import { baseDocumentSchema, isoDateSchema } from "../domain/common";
-import { BiologicalSexSchema, PrimaryGoalSchema } from "../domain/user";
-import { passwordSchema } from "../password";
+import { baseDocumentSchema, isoDateSchema } from "../domain/common.js";
+import { BiologicalSexSchema, PrimaryGoalSchema } from "../domain/user.js";
+import { passwordSchema } from "../password/index.js";
 
 // ============================================================================
 // JSON BLOB SCHEMAS (Prisma JSON fields)
 // ============================================================================
 
-export * from "./json-blobs";
+export * from "./json-blobs.js";
 
 // ============================================================================
 // COMMON PRIMITIVE SCHEMAS

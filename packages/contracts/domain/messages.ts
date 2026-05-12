@@ -13,9 +13,9 @@
  */
 import { z } from "zod";
 
-import { createPaginatedListSchema } from "./pagination";
-import type { MessagingRecipientRole } from "./user";
-import { MESSAGE_RECIPIENT_ROLES, UserRoleSchema } from "./user";
+import { createPaginatedListSchema } from "./pagination.js";
+import type { MessagingRecipientRole } from "./user.js";
+import { MESSAGE_RECIPIENT_ROLES, UserRoleSchema } from "./user.js";
 
 // ============================================================================
 // CONSTANTS

@@ -1,64 +1,78 @@
 {
-  "_comment_BUILD_001": "DEFERRED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Deferred — adding package.json 'exports' entries for all deep sub-paths (e.g. domain/user, domain/labs) requires coordinating 155+ import sites across the monorepo; no user-facing impact in current state. If revisited: Add explicit 'exports' entries mapping every deep sub-path, then update all deep imports to use package-root or mapped paths. Reviewed: 2026-02-27 (product team lead)",
+  "_comment_BUILD_001": "DEFERRED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Deferred — existing public barrel exports now point at dist ESM, but adding package.json 'exports' entries for all deep sub-paths (e.g. domain/user, domain/labs) still requires coordinating 155+ import sites across the monorepo. If revisited: Add explicit 'exports' entries mapping every deep sub-path, then update all deep imports to use package-root or mapped paths. Reviewed: 2026-05-12 (Phase C shared package ESM emit)",
   "name": "@hollis/contracts",
   "version": "1.0.0",
   "private": true,
-  "main": "./index.ts",
-  "types": "./index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
-      "types": "./index.ts",
-      "default": "./index.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./api": {
-      "types": "./api/index.ts",
-      "default": "./api/index.ts"
+      "types": "./dist/api/index.d.ts",
+      "import": "./dist/api/index.js",
+      "default": "./dist/api/index.js"
     },
     "./domain": {
-      "types": "./domain/index.ts",
-      "default": "./domain/index.ts"
+      "types": "./dist/domain/index.d.ts",
+      "import": "./dist/domain/index.js",
+      "default": "./dist/domain/index.js"
     },
     "./schemas": {
-      "types": "./schemas/index.ts",
-      "default": "./schemas/index.ts"
+      "types": "./dist/schemas/index.d.ts",
+      "import": "./dist/schemas/index.js",
+      "default": "./dist/schemas/index.js"
     },
     "./constants": {
-      "types": "./constants/index.ts",
-      "default": "./constants/index.ts"
+      "types": "./dist/constants/index.d.ts",
+      "import": "./dist/constants/index.js",
+      "default": "./dist/constants/index.js"
     },
     "./admin": {
-      "types": "./admin/index.ts",
-      "default": "./admin/index.ts"
+      "types": "./dist/admin/index.d.ts",
+      "import": "./dist/admin/index.js",
+      "default": "./dist/admin/index.js"
     },
     "./ai": {
-      "types": "./ai/index.ts",
-      "default": "./ai/index.ts"
+      "types": "./dist/ai/index.d.ts",
+      "import": "./dist/ai/index.js",
+      "default": "./dist/ai/index.js"
     },
     "./public": {
-      "types": "./public/index.ts",
-      "default": "./public/index.ts"
+      "types": "./dist/public/index.d.ts",
+      "import": "./dist/public/index.js",
+      "default": "./dist/public/index.js"
     },
     "./stripe": {
-      "types": "./stripe/index.ts",
-      "default": "./stripe/index.ts"
+      "types": "./dist/stripe/index.d.ts",
+      "import": "./dist/stripe/index.js",
+      "default": "./dist/stripe/index.js"
     },
     "./password": {
-      "types": "./password/index.ts",
-      "default": "./password/index.ts"
+      "types": "./dist/password/index.d.ts",
+      "import": "./dist/password/index.js",
+      "default": "./dist/password/index.js"
     },
     "./primitives": {
-      "types": "./primitives/index.ts",
-      "default": "./primitives/index.ts"
+      "types": "./dist/primitives/index.d.ts",
+      "import": "./dist/primitives/index.js",
+      "default": "./dist/primitives/index.js"
     },
     "./errors": {
-      "types": "./errors/index.ts",
-      "default": "./errors/index.ts"
+      "types": "./dist/errors/index.d.ts",
+      "import": "./dist/errors/index.js",
+      "default": "./dist/errors/index.js"
     }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "tsc"
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc",
+    "smoke:import": "npm run build && node scripts/smoke-import.mjs"
   },
   "devDependencies": {
     "@types/zxcvbn": "4.4.5",

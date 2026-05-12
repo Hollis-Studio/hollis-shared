@@ -27,31 +27,31 @@
  */
 
 // Primitives (exported first to avoid circular dependencies)
-export * from "./primitives";
+export * from "./primitives/index.js";
 
 // API Routes
-export * from "./api";
+export * from "./api/index.js";
 
 // Domain contracts (includes units, user, appointments, nutrition, training, clinical, etc.)
-export * from "./domain";
+export * from "./domain/index.js";
 
 // Zod schemas
-export * from "./schemas";
+export * from "./schemas/index.js";
 
 // Constants
-export * from "./constants";
+export * from "./constants/index.js";
 
 // Admin contracts (types, routes, schemas)
-export * from "./admin";
+export * from "./admin/index.js";
 
 // AI contracts (types, validation, prompts)
-export * from "./ai";
+export * from "./ai/index.js";
 
 // Public contracts (contact forms, public API)
-export * from "./public";
+export * from "./public/index.js";
 
 // Stripe contracts (products, payment links)
-export * from "./stripe";
+export * from "./stripe/index.js";
 
 // Password contracts (validation, policies, reset)
 // NOTE: Explicitly re-export passwordSchema from password module to resolve ambiguity
@@ -66,10 +66,10 @@ export {
     validatePasswordStrength,
     type PasswordResetResponse,
     type PasswordValidationResult
-} from "./password";
+} from "./password/index.js";
 
 // Shared error classes
-export * from "./errors";
+export * from "./errors/index.js";
 
 // Error sanitization (PHI protection)
 export {
@@ -77,7 +77,7 @@ export {
     containsPotentialPhi,
     sanitizeErrorMessage,
     sanitizeErrorObject
-} from "./errorSanitization";
+} from "./errorSanitization.js";
 
 // Sentry sanitization (PHI protection across all surfaces)
-export { sanitizeSentryEvent, sanitizeSentryLog, type SentryEventLike, type SentryLogLike } from "./sentrySanitization";
+export { sanitizeSentryEvent, sanitizeSentryLog, type SentryEventLike, type SentryLogLike } from "./sentrySanitization.js";
