@@ -15,8 +15,8 @@
 
 import { z } from "zod";
 
-import offerSheetData from "./offer-sheet.json";
-import { USER_TIER, type UserTier } from "./user";
+import offerSheetData from "./offer-sheet.json" with { type: "json" };
+import { USER_TIER, type UserTier } from "./user.js";
 
 export const OfferSheetStatusSchema = z.enum(["draft", "active", "archived"]);
 export type OfferSheetStatus = z.infer<typeof OfferSheetStatusSchema>;

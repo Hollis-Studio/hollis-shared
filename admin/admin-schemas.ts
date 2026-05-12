@@ -31,29 +31,29 @@ import {
     isoTimestampSchema,
     normalizeGoalDataSource,
     workoutSessionNoteSchema,
-} from "../domain";
+} from "../domain/index.js";
 import {
     AdminTaskPrioritySchema,
     AdminTaskStatusSchema,
     AdminTaskTypeSchema,
-} from "../domain/admin-tasks";
+} from "../domain/admin-tasks.js";
 import {
     InjuryRecoveryStatusSchema,
     LimitationSeveritySchema,
     MedicalConditionStatusSchema,
-} from "../domain/clinical";
+} from "../domain/clinical.js";
 import {
     LabMappingStatusSchema,
     LabMetricCategorySchema,
     LabMetricDirectionalitySchema,
     MetricApprovalStatusSchema,
-} from "../domain/labs";
-import { createPaginatedListSchema } from "../domain/pagination";
-import { DynamicMetricGoalDataSourceSchema } from "../domain/training";
-import { VolumeLevelSchema } from "../primitives/volume-level";
-import { USER_ID_REGEX, heightCmSchema, weightKgSchema } from "../schemas";
-import { FulfillmentStatusSchema } from "../stripe/order";
-import { SubscriptionStatusSchema } from "../stripe/subscription";
+} from "../domain/labs.js";
+import { createPaginatedListSchema } from "../domain/pagination.js";
+import { DynamicMetricGoalDataSourceSchema } from "../domain/training.js";
+import { VolumeLevelSchema } from "../primitives/volume-level.js";
+import { USER_ID_REGEX, heightCmSchema, weightKgSchema } from "../schemas/index.js";
+import { FulfillmentStatusSchema } from "../stripe/order.js";
+import { SubscriptionStatusSchema } from "../stripe/subscription.js";
 
 // ============================================================================
 // ADMIN-SPECIFIC ENUMS

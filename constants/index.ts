@@ -13,7 +13,7 @@
  * deps: none | consumers: all codebases
  */
 
-import { USER_TIER_PRICES_DOLLARS, type UserTier } from "../domain/user";
+import { USER_TIER_PRICES_DOLLARS, type UserTier } from "../domain/user.js";
 
 // ============================================================================
 // STORAGE KEYS

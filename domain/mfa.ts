@@ -11,8 +11,8 @@
  */
 
 import { z } from "zod";
-import { emailSchema } from "../schemas";
-import { UserRoleSchema, UserTierSchema } from "./user";
+import { emailSchema } from "../schemas/index.js";
+import { UserRoleSchema, UserTierSchema } from "./user.js";
 
 // ============================================================================
 // MFA CODE LENGTH CONSTANTS

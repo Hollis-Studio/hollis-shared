@@ -14,7 +14,7 @@
  */
 
 import { z } from "zod";
-import { UserTierSchema } from "../domain/user";
+import { UserTierSchema } from "../domain/user.js";
 
 // ============================================================================
 // CONSENT DOCUMENT TYPE

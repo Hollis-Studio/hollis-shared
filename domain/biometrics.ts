@@ -9,10 +9,10 @@
  */
 
 import { z } from "zod";
-import { type BiometricSource, BiometricSourceSchema } from "./clinical";
-import { baseDocumentSchema, isoDateSchema } from "./common";
-import { MetricDefinitionSummarySchema } from "./metric-definition";
-import { createPaginatedListSchema } from "./pagination";
+import { type BiometricSource, BiometricSourceSchema } from "./clinical.js";
+import { baseDocumentSchema, isoDateSchema } from "./common.js";
+import { MetricDefinitionSummarySchema } from "./metric-definition.js";
+import { createPaginatedListSchema } from "./pagination.js";
 
 // ============================================================================
 // BIOMETRIC ENTRY CONTRACT

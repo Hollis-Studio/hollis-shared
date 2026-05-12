@@ -10,7 +10,7 @@
  */
 
 import { z } from "zod";
-import { createPaginatedListSchema } from "./pagination";
+import { createPaginatedListSchema } from "./pagination.js";
 
 // ============================================================================
 // Marketing Image Record

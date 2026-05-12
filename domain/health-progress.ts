@@ -45,8 +45,8 @@
  */
 
 import { z } from "zod";
-import { type BiometricSource } from "./clinical";
-import { type HealthMetricDirection } from "./health-metric-types";
+import { type BiometricSource } from "./clinical.js";
+import { type HealthMetricDirection } from "./health-metric-types.js";
 
 // ============================================================================
 // HEALTH METRIC DIRECTION
@@ -62,7 +62,7 @@ export {
     HEALTH_METRIC_DIRECTIONS,
     HealthMetricDirectionSchema,
     type HealthMetricDirection
-} from "./health-metric-types";
+} from "./health-metric-types.js";
 
 // ============================================================================
 // HEALTH METRIC CATEGORY
@@ -74,7 +74,7 @@ export {
     HEALTH_METRIC_CATEGORY_LABELS,
     HealthMetricCategorySchema,
     type HealthMetricCategory
-} from "./health-metric-types";
+} from "./health-metric-types.js";
 
 // ============================================================================
 // HEALTH METRIC KEY

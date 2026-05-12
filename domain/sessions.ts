@@ -14,9 +14,9 @@
  */
 
 import { z } from "zod";
-import { type AppointmentType } from "./appointments";
-import { baseDocumentSchema, isoTimestampSchema } from "./common";
-import { USER_TIERS, type UserTier } from "./user";
+import { type AppointmentType } from "./appointments.js";
+import { baseDocumentSchema, isoTimestampSchema } from "./common.js";
+import { USER_TIERS, type UserTier } from "./user.js";
 
 // ============================================================================
 // SESSION TYPES

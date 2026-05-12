@@ -15,8 +15,8 @@
  */
 
 import { z } from "zod";
-import { emailSchema } from "../schemas";
-import { createPaginatedListSchema } from "./pagination";
+import { emailSchema } from "../schemas/index.js";
+import { createPaginatedListSchema } from "./pagination.js";
 
 // ============================================================================
 // LAB ORDER STATUS (Domain Constants Pattern)

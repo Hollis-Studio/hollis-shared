@@ -9,22 +9,22 @@
  */
 
 import { z } from "zod";
-import { USER_TIERS } from "../domain/user";
-import { emailSchema } from "../schemas";
+import { USER_TIERS } from "../domain/user.js";
+import { emailSchema } from "../schemas/index.js";
 import {
     FulfillmentStatusSchema,
     OrderItemSchema,
     OrderPaymentStatusSchema,
     ShippingAddressSchema,
     type OrderContract,
-} from "./order";
-import type { PaymentMethodContract } from "./payment";
+} from "./order.js";
+import type { PaymentMethodContract } from "./payment.js";
 import {
     BillingSourceSchema,
     ContractDurationSchema,
     SubscriptionStatusSchema,
     type SubscriptionContract,
-} from "./subscription";
+} from "./subscription.js";
 
 // ============================================================================
 // CUSTOMER SUBSCRIPTION (strips Stripe IDs, signed contract key)

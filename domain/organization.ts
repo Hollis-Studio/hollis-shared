@@ -9,7 +9,7 @@
  */
 
 import { z } from "zod";
-import { SubscriptionStatusSchema } from "../stripe/subscription";
+import { SubscriptionStatusSchema } from "../stripe/subscription.js";
 
 // ============================================================================
 // Organization Status

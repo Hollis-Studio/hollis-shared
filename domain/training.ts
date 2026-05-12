@@ -13,12 +13,12 @@
  */
 
 import { z } from "zod";
-import { VolumeLevelSchema } from "../primitives";
+import { VolumeLevelSchema } from "../primitives/index.js";
 import {
     MetricCategorySchema,
     type MetricCategory,
-} from "./health-metric-types";
-import { MetricDefinitionSummarySchema } from "./metric-definition";
+} from "./health-metric-types.js";
+import { MetricDefinitionSummarySchema } from "./metric-definition.js";
 
 // ============================================================================
 // STRATEGY TYPES
@@ -477,11 +477,11 @@ export {
     HealthMetricDirectionSchema,
     type HealthMetricCategory,
     type HealthMetricDirection
-} from "./health-metric-types";
+} from "./health-metric-types.js";
 
 // Backwards-compatibility aliases
-export { HealthMetricDirectionSchema as GoalDirectionSchema } from "./health-metric-types";
-export type { HealthMetricDirection as GoalDirection } from "./health-metric-types";
+export { HealthMetricDirectionSchema as GoalDirectionSchema } from "./health-metric-types.js";
+export type { HealthMetricDirection as GoalDirection } from "./health-metric-types.js";
 
 // ============================================================================
 // WORKOUT TYPES

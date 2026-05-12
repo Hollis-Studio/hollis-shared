@@ -12,4 +12,4 @@
  * deps: ../domain/admin-notifications | consumers: legacy shared imports
  */
 
-export * from "../domain/admin-notifications";
+export * from "../domain/admin-notifications.js";

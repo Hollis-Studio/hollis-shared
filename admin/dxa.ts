@@ -8,16 +8,16 @@
  */
 
 import { z } from "zod";
-import { isoDateSchema } from "../domain";
+import { isoDateSchema } from "../domain/index.js";
 import {
   DOCUMENT_CATEGORY,
   DocumentCategorySchema,
-} from "../domain/documents";
+} from "../domain/documents.js";
 import {
   METRIC_BODY_FAT_PERCENTAGE,
   METRIC_BODY_WEIGHT,
   METRIC_LEAN_BODY_MASS,
-} from "../domain/metric-codes";
+} from "../domain/metric-codes.js";
 
 export const DXA_TRACKED_METRICS = [
   METRIC_BODY_WEIGHT,

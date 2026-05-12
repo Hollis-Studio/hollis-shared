@@ -12,9 +12,9 @@
  */
 
 import { z } from "zod";
-import { baseDocumentSchema, isoTimestampSchema } from "./common";
-import { createPaginatedListSchema } from "./pagination";
-import { USER_ROLES } from "./user";
+import { baseDocumentSchema, isoTimestampSchema } from "./common.js";
+import { createPaginatedListSchema } from "./pagination.js";
+import { USER_ROLES } from "./user.js";
 
 // ============================================================================
 // APPOINTMENT STATUS

@@ -17,7 +17,7 @@
  * deps: ../primitives/typeGuards | consumers: src/services/apiClient, web-admin/services/webApiClient, web-public/services/webApiClient
  */
 
-import { isRecord } from "../primitives/typeGuards";
+import { isRecord } from "../primitives/typeGuards.js";
 
 export interface NormalizedErrorPayload {
   message: string;

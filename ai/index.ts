@@ -19,13 +19,13 @@
  */
 
 // AI Types - types for AI operations
-export * from './ai-types';
+export * from './ai-types.js';
 
 // AI Validation - Zod schemas for request/response validation
-export * from './ai-validation';
+export * from './ai-validation.js';
 
 // Prompt Templates - system prompts and prompt builders
-export * from './prompt-templates';
+export * from './prompt-templates.js';
 
 // Note: Domain constants (AI_NOTE_CATEGORIES, WORKOUT_SECTION_TYPES, etc.) 
 // are already exported via shared/contracts/domain

@@ -14,16 +14,16 @@
  */
 
 import { z } from "zod";
-import { AINoteCategorySchema, AINoteSourceTypeSchema } from "../domain/ai-notes";
-import { type StrategyGenerationPhase } from "../domain/training";
+import { AINoteCategorySchema, AINoteSourceTypeSchema } from "../domain/ai-notes.js";
+import { type StrategyGenerationPhase } from "../domain/training.js";
 import {
     type StrategyGenerationActivity as _StrategyGenerationActivity,
     type TrainingPhaseDraft as _TrainingPhaseDraft,
     type StrategyDraftContract,
     type StrategyGoalDraftContract,
-} from "../domain/training-strategy";
-import { WorkoutSectionTypeSchema } from "../domain/workouts";
-import { nutritionPlanGenerationResultSchema } from "./ai-validation";
+} from "../domain/training-strategy.js";
+import { WorkoutSectionTypeSchema } from "../domain/workouts.js";
+import { nutritionPlanGenerationResultSchema } from "./ai-validation.js";
 
 // ============================================================================
 // Generated Workout Plan Types

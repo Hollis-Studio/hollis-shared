@@ -8,8 +8,8 @@
  */
 
 import { z } from "zod";
-import { USER_TIERS } from "../domain/user";
-import { emailSchema } from "../schemas";
+import { USER_TIERS } from "../domain/user.js";
+import { emailSchema } from "../schemas/index.js";
 
 // ============================================================================
 // SUBSCRIPTION STATUS

@@ -15,45 +15,45 @@ import {
     CRM_ROUTES,
     DOCUMENTS_ROUTES,
     UPLOAD_ROUTES,
-} from "./admin";
-import { APPOINTMENTS_ROUTES, PROVIDERS_ROUTES } from "./appointments";
-import { AUTH_ROUTES } from "./auth";
-import { BIOMETRICS_ROUTES } from "./biometrics";
-import { HEALTH_METRICS_ROUTES } from "./health-metrics";
-import { LABS_ROUTES } from "./labs";
-import { MESSAGES_ROUTES, PUSH_ROUTES, SSE_ROUTES } from "./messaging";
-import { ASSIGNMENT_ROUTES, MFA_ROUTES } from "./mfa";
-import { NUTRITION_ROUTES } from "./nutrition";
+} from "./admin.js";
+import { APPOINTMENTS_ROUTES, PROVIDERS_ROUTES } from "./appointments.js";
+import { AUTH_ROUTES } from "./auth.js";
+import { BIOMETRICS_ROUTES } from "./biometrics.js";
+import { HEALTH_METRICS_ROUTES } from "./health-metrics.js";
+import { LABS_ROUTES } from "./labs.js";
+import { MESSAGES_ROUTES, PUSH_ROUTES, SSE_ROUTES } from "./messaging.js";
+import { ASSIGNMENT_ROUTES, MFA_ROUTES } from "./mfa.js";
+import { NUTRITION_ROUTES } from "./nutrition.js";
 import {
     DAILY_METRICS_ROUTES,
     DAILY_SUMMARY_ROUTES,
     JOURNAL_ROUTES,
     SESSIONS_ROUTES,
     USER_ROUTES,
-} from "./users";
-import { PLANS_ROUTES, STRATEGIES_ROUTES } from "./workouts";
+} from "./users.js";
+import { PLANS_ROUTES, STRATEGIES_ROUTES } from "./workouts.js";
 
-import type { RouteMetadata } from "./types";
+import type { RouteMetadata } from "./types.js";
 
 // Type definitions
-export * from "./types";
+export * from "./types.js";
 
 // Domain-specific routes
-export * from "./admin";
-export * from "./ai";
-export * from "./appointments";
-export * from "./auth";
-export * from "./biometrics";
-export * from "./health-metrics";
-export * from "./labs";
-export * from "./messaging";
-export * from "./mfa";
-export * from "./nutrition";
-export * from "./users";
-export * from "./workouts";
+export * from "./admin.js";
+export * from "./ai.js";
+export * from "./appointments.js";
+export * from "./auth.js";
+export * from "./biometrics.js";
+export * from "./health-metrics.js";
+export * from "./labs.js";
+export * from "./messaging.js";
+export * from "./mfa.js";
+export * from "./nutrition.js";
+export * from "./users.js";
+export * from "./workouts.js";
 
 // Utility functions
-export * from "./utils";
+export * from "./utils.js";
 
 // ============================================================================
 // AGGREGATED API ROUTES

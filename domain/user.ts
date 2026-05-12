@@ -27,8 +27,8 @@ import {
     limitationSchema,
     medicalConditionSchema,
     medicationSchema,
-} from "./clinical";
-import offerSheetData from "./offer-sheet.json";
+} from "./clinical.js";
+import offerSheetData from "./offer-sheet.json" with { type: "json" };
 
 // ============================================================================
 // OAUTH PROVIDER TYPES (DB-aligned)
@@ -1211,7 +1211,7 @@ export const defaultNotifications = (): NotificationPreferencesContract => ({
  * Default advanced unit preferences factory
  */
 export const defaultAdvancedUnits =
-  (): import("./units").AdvancedUnitPreferencesContract => ({
+  (): import("./units.js").AdvancedUnitPreferencesContract => ({
     weight: "kg",
     height: "cm",
     foodWeight: "g",

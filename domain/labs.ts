@@ -11,7 +11,7 @@
  */
 
 import { z } from "zod";
-import { LAB_ORDER_STATUS, LabOrderStatusSchema } from "./businessAnalytics";
+import { LAB_ORDER_STATUS, LabOrderStatusSchema } from "./businessAnalytics.js";
 
 // ============================================================================
 // LAB RESULT STATUS (Domain Constants Pattern)
