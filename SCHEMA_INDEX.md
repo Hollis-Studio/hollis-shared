@@ -1,20 +1,49 @@
 # Schema Index
 
-> Quick reference for finding Zod schemas in the Hollis Health contracts module.
+> Public-surface reference for `@hollis/contracts`. Internal file paths are
+> listed only to help maintain the package before extraction.
 
-**Last Updated:** 2026-02-27
+**Last Updated:** 2026-05-12
 
 ---
 
 ## How to Use This Index
 
-1. **API request/response validation** → See [API Request/Response Schemas](#api-requestresponse-schemas)
-2. **Domain enums and types** → See [Domain Schemas](#domain-schemas)
-3. **Prisma JSON field validation** → See [JSON Blob Schemas](#json-blob-schemas)
-4. **Admin portal operations** → See [Admin Schemas](#admin-schemas)
-5. **AI/Agent function calls** → See [AI Schemas](#ai-schemas)
-6. **Password validation and reset** → See [Password Schemas](#password-schemas)
-7. **Mobile/web-specific schemas** → See [Platform-Specific Schemas](#platform-specific-schemas)
+1. **API request/response validation** → import from `@hollis/contracts` or `@hollis/contracts/api`; see [API Request/Response Schemas](#api-requestresponse-schemas)
+2. **Domain enums and types** → import from `@hollis/contracts` or `@hollis/contracts/domain`; see [Domain Schemas](#domain-schemas)
+3. **Prisma JSON field validation** → import from `@hollis/contracts/schemas`; see [JSON Blob Schemas](#json-blob-schemas)
+4. **Admin portal operations** → import from `@hollis/contracts/admin`; see [Admin Schemas](#admin-schemas)
+5. **AI/Agent function calls** → import from `@hollis/contracts/ai`; see [AI Schemas](#ai-schemas)
+6. **Password validation and reset** → import from `@hollis/contracts/password`; see [Password Schemas](#password-schemas)
+7. **Mobile/web-specific schemas** → keep app-local schemas in the consuming app; see [Platform-Specific Schemas](#platform-specific-schemas)
+
+---
+
+## Public Package Exports
+
+The package `exports` map is the boundary. Consumers may import only these
+entrypoints unless a new subpath is deliberately added to `package.json` and
+documented here.
+
+| Public import | Surface |
+| --- | --- |
+| `@hollis/contracts` | Primary barrel for common contracts, constants, schemas, and helpers |
+| `@hollis/contracts/api` | API route constants and request/response contracts |
+| `@hollis/contracts/domain` | Domain-level contracts intentionally exported as a grouped barrel |
+| `@hollis/contracts/schemas` | Shared route/query/body and JSON blob schemas |
+| `@hollis/contracts/constants` | Shared constants |
+| `@hollis/contracts/admin` | Admin portal contracts and schemas |
+| `@hollis/contracts/ai` | AI validation and generated-content contracts |
+| `@hollis/contracts/public` | Public web/contact/waitlist contracts |
+| `@hollis/contracts/stripe` | Stripe-related contract helpers |
+| `@hollis/contracts/password` | Password policy, reset, and validation contracts |
+| `@hollis/contracts/primitives` | Cross-domain primitives and result helpers |
+| `@hollis/contracts/errors` | Shared error codes and result/error helpers |
+
+Private source paths such as `@hollis/contracts/domain/user` are not public
+unless they appear in `exports`. The deferred deep-subpath decision in
+`shared/contracts/package.json` remains deferred; cleanup work must either use
+the public barrels above or deliberately promote a subpath.
 
 ---
 
@@ -28,7 +57,7 @@ All list endpoints return a **single canonical paginated shape**:
 { data: T[], pagination: { total, limit, offset, hasMore } }
 ```
 
-Use `createPaginatedListSchema(itemSchema)` from `domain/pagination.ts` to define list response schemas. **Do not** use `z.union()` to accept both paginated and raw array shapes — unions were removed in the schema drift cleanup.
+Use `createPaginatedListSchema(itemSchema)` from `@hollis/contracts/domain` to define list response schemas. **Do not** use `z.union()` to accept both paginated and raw array shapes — unions were removed in the schema drift cleanup.
 
 ### Nullable vs Optional
 
@@ -38,7 +67,8 @@ For fields sourced from nullable Prisma columns, use `.nullable().optional()` (a
 
 ## API Request/Response Schemas
 
-**Location:** `schemas/index.ts`
+**Public import:** `@hollis/contracts/schemas`  
+**Internal source before extraction:** `schemas/index.ts`
 
 Core validation schemas for HTTP request/response payloads.
 
@@ -66,7 +96,9 @@ Core validation schemas for HTTP request/response payloads.
 
 ## Domain Schemas
 
-Domain-specific enum schemas live alongside their tuples/constants. Import from `@hollis/contracts` or the specific domain module.
+Domain-specific enum schemas live alongside their tuples/constants. Import from
+`@hollis/contracts` or `@hollis/contracts/domain` unless a narrower subpath is
+explicitly listed in [Public Package Exports](#public-package-exports).
 
 ### common.ts
 
@@ -305,7 +337,8 @@ Domain-specific enum schemas live alongside their tuples/constants. Import from 
 
 ## JSON Blob Schemas
 
-**Location:** `schemas/json-blobs.ts`
+**Public import:** `@hollis/contracts/schemas`  
+**Internal source before extraction:** `schemas/json-blobs.ts`
 
 Schemas for JSON fields stored in Prisma. Use these for validating data going into/out of JSON columns.
 
@@ -340,16 +373,17 @@ Some JSON field schemas are canonically defined in other modules:
 | `advancedUnitPreferencesSchema` | `src/contracts/user/preferences.ts` (mobile app only) | UserPreferences.advancedUnits     |
 | `notificationPreferencesSchema` | `src/contracts/user/preferences.ts` (mobile app only) | UserPreferences.notifications     |
 | `workoutSectionSchema[]`        | `domain/workouts.ts`                | WorkoutPlan.blocks                |
-| `MacroShorthandSchema`          | `shared/contracts/domain/nutrition.ts` | DailyLog.totalMacros              |
+| `MacroShorthandSchema`          | `@hollis/contracts/domain` (`domain/nutrition.ts` internally) | DailyLog.totalMacros              |
 | ~~`mealSchema[]`~~              | _(removed — schema no longer exists)_ | DailyLog.meals                   |
 | `journalAssessmentSchema`       | `src/contracts/journal.ts`          | JournalEntry.aiAssessment         |
-| `SessionBalanceItemSchema[]`    | `shared/contracts/domain/sessions.ts` | SessionBalance.balances           |
+| `SessionBalanceItemSchema[]`    | `@hollis/contracts/domain` (`domain/sessions.ts` internally) | SessionBalance.balances           |
 
 ---
 
 ## Admin Schemas
 
-**Location:** `admin/admin-schemas.ts`
+**Public import:** `@hollis/contracts/admin`  
+**Internal source before extraction:** `admin/admin-schemas.ts`
 
 Schemas for admin portal operations, patient management, and clinical workflows.
 
@@ -461,7 +495,8 @@ Schemas for admin portal operations, patient management, and clinical workflows.
 
 ## AI Schemas
 
-**Location:** `ai/ai-validation.ts`
+**Public import:** `@hollis/contracts/ai`  
+**Internal source before extraction:** `ai/ai-validation.ts`
 
 Schemas for AI function call validation and generation request/response payloads.
 
@@ -512,7 +547,8 @@ Schemas for AI function call validation and generation request/response payloads
 
 ## Password Schemas
 
-**Location:** `password/index.ts`
+**Public import:** `@hollis/contracts/password`  
+**Internal source before extraction:** `password/index.ts`
 
 Schemas for password validation and password reset flows.
 
@@ -529,7 +565,7 @@ Schemas for password validation and password reset flows.
 
 ## Platform-Specific Schemas
 
-**Location:** `src/contracts/*.ts`
+**Location:** app-local `src/contracts/*.ts`; these are not part of the `@hollis/contracts` public package surface.
 
 These schemas extend or supplement shared contracts with platform-specific (mobile/web) concerns.
 
@@ -646,9 +682,13 @@ Run `npm run check:contract-duplicates` to ensure no duplicate definitions exist
 
 ---
 
-## Undocumented Modules
+## Internal Modules Pending Public-Surface Documentation
 
-The following domain contract files exist but have not yet been added to this index. Schemas pending documentation.
+The following internal domain contract files exist before extraction but are
+not individually public subpaths unless listed in
+[Public Package Exports](#public-package-exports). Import through
+`@hollis/contracts/domain` unless a subpath is deliberately promoted and
+documented.
 
 | File                     | Location                        |
 | ------------------------ | ------------------------------- |
