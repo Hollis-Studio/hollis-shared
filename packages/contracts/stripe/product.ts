@@ -303,10 +303,24 @@ export function getFeaturedProducts(): Product[] {
 }
 
 /**
- * Get products by category.
+ * Get products by category. By default only returns products with `isAvailable`
+ * set; pass `includeUnavailable: true` to surface upcoming products that the
+ * public catalog wants to render as "Coming Soon".
  */
-export function getProductsByCategory(category: ProductCategory): Product[] {
+export function getProductsByCategory(
+  category: ProductCategory,
+  { includeUnavailable = false }: { includeUnavailable?: boolean } = {},
+): Product[] {
   return PRODUCT_CATALOG.filter(
-    (p) => p.category === category && p.isAvailable,
+    (p) => p.category === category && (includeUnavailable || p.isAvailable),
   ).sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+/**
+ * A product is purchasable when it is marked available AND has a live Stripe
+ * payment link. Both the storefront grid and individual card components must
+ * agree on this predicate so "Coming Soon" never disagrees with the Buy Now CTA.
+ */
+export function isProductPurchasable(product: Product): boolean {
+  return product.isAvailable && Boolean(product.paymentLinkUrl);
 }
