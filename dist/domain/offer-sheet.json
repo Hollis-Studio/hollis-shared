@@ -1,0 +1,165 @@
+{
+    "meta": {
+        "version": "2.1.0",
+        "effectiveDate": "2026-04-09",
+        "status": "draft"
+    },
+    "terms": [
+        {
+            "months": 4,
+            "discountPercent": 0,
+            "label": "4 months"
+        },
+        {
+            "months": 8,
+            "discountPercent": 5,
+            "label": "8 months"
+        },
+        {
+            "months": 12,
+            "discountPercent": 10,
+            "label": "12 months"
+        }
+    ],
+    "policies": {
+        "enrollmentScheduleControl": "The signed Enrollment Summary and Service Schedule controls the selected tier, term, monthly rate, exact included services, add-ons, and any separately billed third-party items.",
+        "autoRenewal": "After the initial term, membership converts to month-to-month unless either party gives at least 30 days' written notice of non-renewal.",
+        "noticePeriod": "30 days' written notice before the end of the initial term or month-to-month termination date.",
+        "pauseRights": "Only if expressly permitted in the signed Membership Agreement or an approved written addendum; the signed agreement controls duration, billing effect, and term-extension effect.",
+        "earlyTermination": "If the member terminates early other than an approved or legally required cancellation, the remaining discounted contract value through the end date remains due as stated in the signed Membership Agreement.",
+        "thirdPartyDisclosure": "Independent physician, laboratory, imaging, pharmacy, and other third-party clinical charges are excluded unless the signed Enrollment Summary and Service Schedule expressly lists them as included.",
+        "partnerFacilityDisclosure": "Medical services including clinician visits, laboratory panels, DEXA scans, and related clinical assessments are provided through White Horse Holistic Health, our partner medical facility. These services are included in your membership at no additional cost for the items listed in your tier. Hollis Health coordinates scheduling, results review, and care planning between your fitness team and your clinician."
+    },
+    "tiers": {
+        "ESSENTIALS": {
+            "displayName": "Essentials",
+            "baseMonthlyPriceDollars": 799,
+            "tagline": "Accountability + medical baseline",
+            "publicDescription": "A foundational wellness membership with weekly private coaching sessions, twice-yearly clinician visits and lab panels through our partner medical facility, White Horse Holistic Health, and full access to your health progress dashboard."
+        },
+        "CORE": {
+            "displayName": "Core",
+            "baseMonthlyPriceDollars": 1599,
+            "tagline": "Higher frequency, deeper insight",
+            "publicDescription": "Twice-weekly private coaching with quarterly clinician visits, lab panels, and a baseline DEXA scan, all coordinated between your performance coach and White Horse Holistic Health.",
+            "isPopular": true
+        },
+        "CONCIERGE": {
+            "displayName": "Concierge",
+            "baseMonthlyPriceDollars": 2499,
+            "tagline": "Full-spectrum coordinated care",
+            "publicDescription": "Our most comprehensive membership: four private coaching sessions per week, monthly clinician visits, monthly labs, quarterly DEXA scans, and continuous glucose monitoring, fully coordinated between your performance coach and White Horse Holistic Health."
+        }
+    },
+    "comparisonRows": [
+        {
+            "key": "coachingSessionsPerWeek",
+            "category": "Fitness",
+            "label": "Private coaching sessions",
+            "values": {
+                "ESSENTIALS": "1 / week",
+                "CORE": "2 / week",
+                "CONCIERGE": "4 / week"
+            }
+        },
+        {
+            "key": "recoveryAccess",
+            "category": "Fitness",
+            "label": "Recovery modalities (unlimited)",
+            "values": {
+                "ESSENTIALS": "Infrared sauna, cold plunge, red light",
+                "CORE": "Infrared sauna, cold plunge, red light",
+                "CONCIERGE": "Infrared sauna, cold plunge, red light"
+            }
+        },
+        {
+            "key": "nutritionCoaching",
+            "category": "Fitness",
+            "label": "Nutrition coaching",
+            "values": {
+                "ESSENTIALS": "Coach-led",
+                "CORE": "Coach-led + macro targets",
+                "CONCIERGE": "Clinician Informed"
+            }
+        },
+        {
+            "key": "dashboardAccess",
+            "category": "Technology",
+            "label": "Health progress dashboard",
+            "values": {
+                "ESSENTIALS": "Included",
+                "CORE": "Included",
+                "CONCIERGE": "Included"
+            }
+        },
+        {
+            "key": "careCoordination",
+            "category": "Coordination",
+            "label": "Care coordination support",
+            "values": {
+                "ESSENTIALS": "Standard",
+                "CORE": "Priority",
+                "CONCIERGE": "Dedicated"
+            }
+        },
+        {
+            "key": "clinicianVisits",
+            "category": "Medical (WHH)",
+            "label": "Clinician visits (White Horse Holistic Health)",
+            "values": {
+                "ESSENTIALS": "2x / year",
+                "CORE": "Quarterly",
+                "CONCIERGE": "Monthly"
+            }
+        },
+        {
+            "key": "labPanels",
+            "category": "Medical (WHH)",
+            "label": "Comprehensive lab panels (White Horse Holistic Health)",
+            "values": {
+                "ESSENTIALS": "2x / year",
+                "CORE": "Quarterly",
+                "CONCIERGE": "Monthly"
+            }
+        },
+        {
+            "key": "dexaScan",
+            "category": "Medical (WHH)",
+            "label": "DEXA body composition scan",
+            "values": {
+                "ESSENTIALS": "\u2014",
+                "CORE": "Baseline + 6-month",
+                "CONCIERGE": "Quarterly"
+            }
+        },
+        {
+            "key": "cgm",
+            "category": "Medical (WHH)",
+            "label": "Continuous glucose monitoring (CGM)",
+            "values": {
+                "ESSENTIALS": "Add-on",
+                "CORE": "Add-on",
+                "CONCIERGE": "Included (initial diagnostic)"
+            }
+        },
+        {
+            "key": "ivTherapy",
+            "category": "Medical (WHH)",
+            "label": "IV therapy (Provided by our medical partner)",
+            "values": {
+                "ESSENTIALS": "Add-on",
+                "CORE": "Add-on",
+                "CONCIERGE": "Add-on"
+            }
+        }
+    ],
+    "separatelyBilledThirdPartyItems": [
+        "Prescription items and pharmacy charges",
+        "Specialist referrals or services outside the scope of the membership program",
+        "Additional laboratory panels beyond the tier-included cadence, unless expressly listed as included on the Enrollment Summary and Service Schedule",
+        "Additional imaging services beyond the tier-included cadence, unless expressly listed as included on the Enrollment Summary and Service Schedule",
+        "Supplements and retail products unless expressly listed as included on the Enrollment Summary and Service Schedule",
+        "IV therapy sessions unless expressly listed as included on the Enrollment Summary and Service Schedule",
+        "CGM sensors beyond the tier-included allowance, unless expressly listed as included on the Enrollment Summary and Service Schedule"
+    ]
+}
