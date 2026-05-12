@@ -1,12 +1,9 @@
 {
   "name": "@hollis/utils",
-  "version": "1.0.0",
+  "version": "0.1.0-alpha.1",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -40,7 +37,7 @@
     "build": "npm run clean && tsc"
   },
   "dependencies": {
-    "@hollis/contracts": "1.0.0"
+    "@hollis/contracts": "git+file:///Users/isaaclandes/Documents/SRC/hollis-shared#contracts-v0.1.0-alpha.1"
   },
   "devDependencies": {
     "typescript": "5.9.2"
