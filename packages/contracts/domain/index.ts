@@ -89,6 +89,10 @@ export {
 
 // Workout domain - session, plan, and set schemas
 export * from "./workouts.js";
+export * from "./muscles.js";
+export * from "./equipment.js";
+export * from "./cardio-session.js";
+export * from "./training-session-log.js";
 
 // Clinical domain - limitation severities, biometric sources
 export * from "./clinical.js";

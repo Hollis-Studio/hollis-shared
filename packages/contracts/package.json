@@ -61,6 +61,26 @@
       "import": "./dist/domain/exercise.js",
       "default": "./dist/domain/exercise.js"
     },
+    "./domain/muscles": {
+      "types": "./dist/domain/muscles.d.ts",
+      "import": "./dist/domain/muscles.js",
+      "default": "./dist/domain/muscles.js"
+    },
+    "./domain/equipment": {
+      "types": "./dist/domain/equipment.d.ts",
+      "import": "./dist/domain/equipment.js",
+      "default": "./dist/domain/equipment.js"
+    },
+    "./domain/training-session-log": {
+      "types": "./dist/domain/training-session-log.d.ts",
+      "import": "./dist/domain/training-session-log.js",
+      "default": "./dist/domain/training-session-log.js"
+    },
+    "./domain/cardio-session": {
+      "types": "./dist/domain/cardio-session.d.ts",
+      "import": "./dist/domain/cardio-session.js",
+      "default": "./dist/domain/cardio-session.js"
+    },
     "./domain/health-metric-types": {
       "types": "./dist/domain/health-metric-types.d.ts",
       "import": "./dist/domain/health-metric-types.js",
@@ -145,6 +165,31 @@
       "types": "./dist/schemas/index.d.ts",
       "import": "./dist/schemas/index.js",
       "default": "./dist/schemas/index.js"
+    },
+    "./schemas/weight": {
+      "types": "./dist/schemas/weight.d.ts",
+      "import": "./dist/schemas/weight.js",
+      "default": "./dist/schemas/weight.js"
+    },
+    "./progression": {
+      "types": "./dist/progression/index.d.ts",
+      "import": "./dist/progression/index.js",
+      "default": "./dist/progression/index.js"
+    },
+    "./progression/baseline": {
+      "types": "./dist/progression/baseline.d.ts",
+      "import": "./dist/progression/baseline.js",
+      "default": "./dist/progression/baseline.js"
+    },
+    "./progression/metrics": {
+      "types": "./dist/progression/metrics.d.ts",
+      "import": "./dist/progression/metrics.js",
+      "default": "./dist/progression/metrics.js"
+    },
+    "./progression/program": {
+      "types": "./dist/progression/program.d.ts",
+      "import": "./dist/progression/program.js",
+      "default": "./dist/progression/program.js"
     },
     "./constants": {
       "types": "./dist/constants/index.d.ts",

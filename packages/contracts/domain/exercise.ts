@@ -17,6 +17,22 @@ import {
     isoDateSchema,
     isoTimestampSchema,
 } from "./common.js";
+export {
+  EQUIPMENT_TYPE,
+  EQUIPMENT_TYPE_LABELS,
+  EQUIPMENT_TYPES,
+  EquipmentTypeSchema,
+  type EquipmentType,
+} from "./equipment.js";
+export {
+  MUSCLE_GROUP,
+  MUSCLE_GROUP_LABELS,
+  MUSCLE_GROUPS,
+  MuscleGroupSchema,
+  type MuscleGroup,
+} from "./muscles.js";
+import { EquipmentTypeSchema } from "./equipment.js";
+import { MuscleGroupSchema } from "./muscles.js";
 
 // ============================================================================
 // EXERCISE CATEGORIES
@@ -31,6 +47,10 @@ export const EXERCISE_CATEGORIES = [
 ] as const;
 export const ExerciseCategorySchema = z.enum(EXERCISE_CATEGORIES);
 export type ExerciseCategory = z.infer<typeof ExerciseCategorySchema>;
+
+// Workouts uses TrackingMode for its top-level tracking concept
+// (`weightlifting` | `cardio` | `stretching`); ExerciseCategory remains a
+// movement classification for library exercises.
 
 export const EXERCISE_CATEGORY = {
   COMPOUND: "COMPOUND",
@@ -86,99 +106,6 @@ export const MOVEMENT_PATTERN_LABELS: Record<MovementPattern, string> = {
   carry: "Carry",
   rotation: "Rotation",
   lunge: "Lunge",
-};
-
-// ============================================================================
-// MUSCLE GROUPS
-// ============================================================================
-
-export const MUSCLE_GROUPS = [
-  "chest",
-  "back",
-  "shoulders",
-  "biceps",
-  "triceps",
-  "quadriceps",
-  "hamstrings",
-  "glutes",
-  "calves",
-  "core",
-  "forearms",
-] as const;
-export const MuscleGroupSchema = z.enum(MUSCLE_GROUPS);
-export type MuscleGroup = z.infer<typeof MuscleGroupSchema>;
-
-export const MUSCLE_GROUP = {
-  CHEST: "chest" as MuscleGroup,
-  BACK: "back" as MuscleGroup,
-  SHOULDERS: "shoulders" as MuscleGroup,
-  BICEPS: "biceps" as MuscleGroup,
-  TRICEPS: "triceps" as MuscleGroup,
-  QUADRICEPS: "quadriceps" as MuscleGroup,
-  HAMSTRINGS: "hamstrings" as MuscleGroup,
-  GLUTES: "glutes" as MuscleGroup,
-  CALVES: "calves" as MuscleGroup,
-  CORE: "core" as MuscleGroup,
-  FOREARMS: "forearms" as MuscleGroup,
-} as const;
-
-export const MUSCLE_GROUP_LABELS: Record<MuscleGroup, string> = {
-  chest: "Chest",
-  back: "Back",
-  shoulders: "Shoulders",
-  biceps: "Biceps",
-  triceps: "Triceps",
-  quadriceps: "Quadriceps",
-  hamstrings: "Hamstrings",
-  glutes: "Glutes",
-  calves: "Calves",
-  core: "Core",
-  forearms: "Forearms",
-};
-
-// ============================================================================
-// EQUIPMENT TYPES
-// ============================================================================
-
-export const EQUIPMENT_TYPES = [
-  "barbell",
-  "dumbbell",
-  "kettlebell",
-  "cable",
-  "machine",
-  "bodyweight",
-  "resistance_band",
-  "squat_rack",
-  "bench",
-  "pull_up_bar",
-] as const;
-export const EquipmentTypeSchema = z.enum(EQUIPMENT_TYPES);
-export type EquipmentType = z.infer<typeof EquipmentTypeSchema>;
-
-export const EQUIPMENT_TYPE = {
-  BARBELL: "barbell" as EquipmentType,
-  DUMBBELL: "dumbbell" as EquipmentType,
-  KETTLEBELL: "kettlebell" as EquipmentType,
-  CABLE: "cable" as EquipmentType,
-  MACHINE: "machine" as EquipmentType,
-  BODYWEIGHT: "bodyweight" as EquipmentType,
-  RESISTANCE_BAND: "resistance_band" as EquipmentType,
-  SQUAT_RACK: "squat_rack" as EquipmentType,
-  BENCH: "bench" as EquipmentType,
-  PULL_UP_BAR: "pull_up_bar" as EquipmentType,
-} as const;
-
-export const EQUIPMENT_TYPE_LABELS: Record<EquipmentType, string> = {
-  barbell: "Barbell",
-  dumbbell: "Dumbbell",
-  kettlebell: "Kettlebell",
-  cable: "Cable",
-  machine: "Machine",
-  bodyweight: "Bodyweight",
-  resistance_band: "Resistance Band",
-  squat_rack: "Squat Rack",
-  bench: "Bench",
-  pull_up_bar: "Pull Up Bar",
 };
 
 // ============================================================================

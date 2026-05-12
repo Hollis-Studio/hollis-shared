@@ -995,6 +995,32 @@ export const UserProfileSchema = z.object({
   initialWeightKg: z.number().min(0).nullable().optional(),
   /** IANA timezone identifier. Null-safe — defaults to organization timezone if absent. */
   timezone: z.string().nullable().optional(),
+  /**
+   * Optional Workouts-owned fitness profile slice. Clinical identity remains in
+   * the top-level Health profile; app-specific training preferences live here.
+   */
+  fitness: z
+    .object({
+      defaultWeightUnit: z.enum(["kg", "lbs"]).optional(),
+      defaultWeightMode: z.enum(["absolute", "relative"]).optional(),
+      defaultDistanceUnit: z.enum(["km", "mi"]).optional(),
+      progressionIncrementKg: z.number().min(0).optional(),
+      repIncrement: z.number().int().min(1).optional(),
+      goEasierPercent: z.number().min(0).max(1).optional(),
+      defaultRestTimerSec: z.number().int().min(0).optional(),
+      trainingPhase: z.enum(["build", "maintain", "cut"]).optional(),
+      adaptiveProgression: z.boolean().optional(),
+      cardioProgressionFocus: z.enum(["duration", "distance", "pace"]).optional(),
+      cardioGoalPreset: z
+        .enum(["none", "general", "endurance", "weight_loss", "threshold"])
+        .optional(),
+      appleHealthConnected: z.boolean().optional(),
+      maxHRBpm: z.number().optional(),
+      hapticIntensity: z.enum(["light", "medium", "heavy", "off"]).optional(),
+      defaultRIR: z.number().int().min(0).max(5).optional(),
+    })
+    .passthrough()
+    .optional(),
   /** Assigned clinician ID. Null when no clinician is assigned. */
   assignedClinicianId: z.string().nullable().optional(),
   /** @computed Primary active TrainerAssignment.trainerId for this user. Null when no trainer is assigned. */
