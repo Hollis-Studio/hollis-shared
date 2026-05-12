@@ -12,6 +12,10 @@
  */
 import { z } from "zod";
 import { baseDocumentSchema, isoDateSchema, isoTimestampSchema, } from "./common.js";
+export { EQUIPMENT_TYPE, EQUIPMENT_TYPE_LABELS, EQUIPMENT_TYPES, EquipmentTypeSchema, } from "./equipment.js";
+export { MUSCLE_GROUP, MUSCLE_GROUP_LABELS, MUSCLE_GROUPS, MuscleGroupSchema, } from "./muscles.js";
+import { EquipmentTypeSchema } from "./equipment.js";
+import { MuscleGroupSchema } from "./muscles.js";
 // ============================================================================
 // EXERCISE CATEGORIES
 // ============================================================================
@@ -23,6 +27,9 @@ export const EXERCISE_CATEGORIES = [
     "PLYOMETRIC",
 ];
 export const ExerciseCategorySchema = z.enum(EXERCISE_CATEGORIES);
+// Workouts uses TrackingMode for its top-level tracking concept
+// (`weightlifting` | `cardio` | `stretching`); ExerciseCategory remains a
+// movement classification for library exercises.
 export const EXERCISE_CATEGORY = {
     COMPOUND: "COMPOUND",
     ISOLATION: "ISOLATION",
@@ -70,89 +77,6 @@ export const MOVEMENT_PATTERN_LABELS = {
     carry: "Carry",
     rotation: "Rotation",
     lunge: "Lunge",
-};
-// ============================================================================
-// MUSCLE GROUPS
-// ============================================================================
-export const MUSCLE_GROUPS = [
-    "chest",
-    "back",
-    "shoulders",
-    "biceps",
-    "triceps",
-    "quadriceps",
-    "hamstrings",
-    "glutes",
-    "calves",
-    "core",
-    "forearms",
-];
-export const MuscleGroupSchema = z.enum(MUSCLE_GROUPS);
-export const MUSCLE_GROUP = {
-    CHEST: "chest",
-    BACK: "back",
-    SHOULDERS: "shoulders",
-    BICEPS: "biceps",
-    TRICEPS: "triceps",
-    QUADRICEPS: "quadriceps",
-    HAMSTRINGS: "hamstrings",
-    GLUTES: "glutes",
-    CALVES: "calves",
-    CORE: "core",
-    FOREARMS: "forearms",
-};
-export const MUSCLE_GROUP_LABELS = {
-    chest: "Chest",
-    back: "Back",
-    shoulders: "Shoulders",
-    biceps: "Biceps",
-    triceps: "Triceps",
-    quadriceps: "Quadriceps",
-    hamstrings: "Hamstrings",
-    glutes: "Glutes",
-    calves: "Calves",
-    core: "Core",
-    forearms: "Forearms",
-};
-// ============================================================================
-// EQUIPMENT TYPES
-// ============================================================================
-export const EQUIPMENT_TYPES = [
-    "barbell",
-    "dumbbell",
-    "kettlebell",
-    "cable",
-    "machine",
-    "bodyweight",
-    "resistance_band",
-    "squat_rack",
-    "bench",
-    "pull_up_bar",
-];
-export const EquipmentTypeSchema = z.enum(EQUIPMENT_TYPES);
-export const EQUIPMENT_TYPE = {
-    BARBELL: "barbell",
-    DUMBBELL: "dumbbell",
-    KETTLEBELL: "kettlebell",
-    CABLE: "cable",
-    MACHINE: "machine",
-    BODYWEIGHT: "bodyweight",
-    RESISTANCE_BAND: "resistance_band",
-    SQUAT_RACK: "squat_rack",
-    BENCH: "bench",
-    PULL_UP_BAR: "pull_up_bar",
-};
-export const EQUIPMENT_TYPE_LABELS = {
-    barbell: "Barbell",
-    dumbbell: "Dumbbell",
-    kettlebell: "Kettlebell",
-    cable: "Cable",
-    machine: "Machine",
-    bodyweight: "Bodyweight",
-    resistance_band: "Resistance Band",
-    squat_rack: "Squat Rack",
-    bench: "Bench",
-    pull_up_bar: "Pull Up Bar",
 };
 // ============================================================================
 // DIFFICULTY LEVELS

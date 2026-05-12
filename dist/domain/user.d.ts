@@ -594,6 +594,51 @@ export declare const UserProfileSchema: z.ZodObject<{
     weightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     initialWeightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     timezone: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    fitness: z.ZodOptional<z.ZodObject<{
+        defaultWeightUnit: z.ZodOptional<z.ZodEnum<{
+            kg: "kg";
+            lbs: "lbs";
+        }>>;
+        defaultWeightMode: z.ZodOptional<z.ZodEnum<{
+            absolute: "absolute";
+            relative: "relative";
+        }>>;
+        defaultDistanceUnit: z.ZodOptional<z.ZodEnum<{
+            km: "km";
+            mi: "mi";
+        }>>;
+        progressionIncrementKg: z.ZodOptional<z.ZodNumber>;
+        repIncrement: z.ZodOptional<z.ZodNumber>;
+        goEasierPercent: z.ZodOptional<z.ZodNumber>;
+        defaultRestTimerSec: z.ZodOptional<z.ZodNumber>;
+        trainingPhase: z.ZodOptional<z.ZodEnum<{
+            maintain: "maintain";
+            build: "build";
+            cut: "cut";
+        }>>;
+        adaptiveProgression: z.ZodOptional<z.ZodBoolean>;
+        cardioProgressionFocus: z.ZodOptional<z.ZodEnum<{
+            distance: "distance";
+            duration: "duration";
+            pace: "pace";
+        }>>;
+        cardioGoalPreset: z.ZodOptional<z.ZodEnum<{
+            none: "none";
+            general: "general";
+            endurance: "endurance";
+            weight_loss: "weight_loss";
+            threshold: "threshold";
+        }>>;
+        appleHealthConnected: z.ZodOptional<z.ZodBoolean>;
+        maxHRBpm: z.ZodOptional<z.ZodNumber>;
+        hapticIntensity: z.ZodOptional<z.ZodEnum<{
+            light: "light";
+            medium: "medium";
+            heavy: "heavy";
+            off: "off";
+        }>>;
+        defaultRIR: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$loose>>;
     assignedClinicianId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     assignedTrainerId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     medications: z.ZodOptional<z.ZodNullable<z.ZodArray<z.ZodObject<{
@@ -1325,6 +1370,51 @@ export declare const UserAccountSchema: z.ZodObject<{
         weightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         initialWeightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         timezone: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        fitness: z.ZodOptional<z.ZodObject<{
+            defaultWeightUnit: z.ZodOptional<z.ZodEnum<{
+                kg: "kg";
+                lbs: "lbs";
+            }>>;
+            defaultWeightMode: z.ZodOptional<z.ZodEnum<{
+                absolute: "absolute";
+                relative: "relative";
+            }>>;
+            defaultDistanceUnit: z.ZodOptional<z.ZodEnum<{
+                km: "km";
+                mi: "mi";
+            }>>;
+            progressionIncrementKg: z.ZodOptional<z.ZodNumber>;
+            repIncrement: z.ZodOptional<z.ZodNumber>;
+            goEasierPercent: z.ZodOptional<z.ZodNumber>;
+            defaultRestTimerSec: z.ZodOptional<z.ZodNumber>;
+            trainingPhase: z.ZodOptional<z.ZodEnum<{
+                maintain: "maintain";
+                build: "build";
+                cut: "cut";
+            }>>;
+            adaptiveProgression: z.ZodOptional<z.ZodBoolean>;
+            cardioProgressionFocus: z.ZodOptional<z.ZodEnum<{
+                distance: "distance";
+                duration: "duration";
+                pace: "pace";
+            }>>;
+            cardioGoalPreset: z.ZodOptional<z.ZodEnum<{
+                none: "none";
+                general: "general";
+                endurance: "endurance";
+                weight_loss: "weight_loss";
+                threshold: "threshold";
+            }>>;
+            appleHealthConnected: z.ZodOptional<z.ZodBoolean>;
+            maxHRBpm: z.ZodOptional<z.ZodNumber>;
+            hapticIntensity: z.ZodOptional<z.ZodEnum<{
+                light: "light";
+                medium: "medium";
+                heavy: "heavy";
+                off: "off";
+            }>>;
+            defaultRIR: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$loose>>;
         assignedClinicianId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         assignedTrainerId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         medications: z.ZodOptional<z.ZodNullable<z.ZodArray<z.ZodObject<{

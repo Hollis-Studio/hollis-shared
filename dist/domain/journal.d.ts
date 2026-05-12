@@ -26,9 +26,9 @@ export type JournalEnergy = z.infer<typeof JournalEnergySchema>;
 export declare const JournalEnergySchema: z.ZodEnum<{
     low: "low";
     high: "high";
+    medium: "medium";
     very_low: "very_low";
     very_high: "very_high";
-    medium: "medium";
 }>;
 export declare const JOURNAL_ENERGY_LABELS: Record<JournalEnergy, string>;
 /** Canonical allowed values for the plan-adherence UI button group. */
@@ -79,9 +79,9 @@ export declare const journalEntrySchema: z.ZodObject<{
     energy: z.ZodCatch<z.ZodOptional<z.ZodNullable<z.ZodEnum<{
         low: "low";
         high: "high";
+        medium: "medium";
         very_low: "very_low";
         very_high: "very_high";
-        medium: "medium";
     }>>>>;
     stressLevel: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     planAdherence: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
@@ -118,9 +118,9 @@ export declare const journalListResponseSchema: z.ZodObject<{
         energy: z.ZodCatch<z.ZodOptional<z.ZodNullable<z.ZodEnum<{
             low: "low";
             high: "high";
+            medium: "medium";
             very_low: "very_low";
             very_high: "very_high";
-            medium: "medium";
         }>>>>;
         stressLevel: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         planAdherence: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;

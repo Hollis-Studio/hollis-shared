@@ -666,9 +666,9 @@ export declare const DailySummarySchema: z.ZodObject<{
         energy: z.ZodCatch<z.ZodOptional<z.ZodNullable<z.ZodEnum<{
             low: "low";
             high: "high";
+            medium: "medium";
             very_low: "very_low";
             very_high: "very_high";
-            medium: "medium";
         }>>>>;
         stressLevel: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         planAdherence: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;

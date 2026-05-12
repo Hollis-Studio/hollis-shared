@@ -47,12 +47,12 @@ export declare const strategyStatusSchema: z.ZodEnum<{
 /** @deprecated Use GoalCategorySchema (PascalCase) from training. Remove after 2026-05-01
  *  @removal-deadline 2026-05-01 */
 export declare const goalCategorySchema: z.ZodEnum<{
+    fitness: "fitness";
     body_composition: "body_composition";
     cardiovascular: "cardiovascular";
     metabolic: "metabolic";
     hormonal: "hormonal";
     performance: "performance";
-    fitness: "fitness";
 }>;
 /** @deprecated Use GoalDataSourceSchema (PascalCase) from training. Remove after 2026-05-01
  *  @removal-deadline 2026-05-01 */
@@ -74,12 +74,12 @@ export declare const DetailedStrategyGoalSchema: z.ZodObject<{
     strategyId: z.ZodString;
     goalMetric: z.ZodString;
     goalCategory: z.ZodEnum<{
+        fitness: "fitness";
         body_composition: "body_composition";
         cardiovascular: "cardiovascular";
         metabolic: "metabolic";
         hormonal: "hormonal";
         performance: "performance";
-        fitness: "fitness";
     }>;
     goalUnit: z.ZodString;
     goalDirection: z.ZodEnum<{
@@ -194,12 +194,12 @@ export declare const DetailedTrainingStrategySchema: z.ZodObject<{
         strategyId: z.ZodString;
         goalMetric: z.ZodString;
         goalCategory: z.ZodEnum<{
+            fitness: "fitness";
             body_composition: "body_composition";
             cardiovascular: "cardiovascular";
             metabolic: "metabolic";
             hormonal: "hormonal";
             performance: "performance";
-            fitness: "fitness";
         }>;
         goalUnit: z.ZodString;
         goalDirection: z.ZodEnum<{
@@ -315,12 +315,12 @@ export declare const CreateDetailedStrategyGoalSchema: z.ZodObject<{
         goalEligible: z.ZodBoolean;
     }, z.core.$strip>>>;
     goalCategory: z.ZodEnum<{
+        fitness: "fitness";
         body_composition: "body_composition";
         cardiovascular: "cardiovascular";
         metabolic: "metabolic";
         hormonal: "hormonal";
         performance: "performance";
-        fitness: "fitness";
     }>;
     goalDirection: z.ZodEnum<{
         lower_better: "lower_better";
@@ -425,12 +425,12 @@ export declare const CreateDetailedTrainingStrategySchema: z.ZodObject<{
             goalEligible: z.ZodBoolean;
         }, z.core.$strip>>>;
         goalCategory: z.ZodEnum<{
+            fitness: "fitness";
             body_composition: "body_composition";
             cardiovascular: "cardiovascular";
             metabolic: "metabolic";
             hormonal: "hormonal";
             performance: "performance";
-            fitness: "fitness";
         }>;
         goalDirection: z.ZodEnum<{
             lower_better: "lower_better";
@@ -518,12 +518,12 @@ export declare const UpdateDetailedTrainingStrategySchema: z.ZodObject<{
             goalEligible: z.ZodBoolean;
         }, z.core.$strip>>>;
         goalCategory: z.ZodEnum<{
+            fitness: "fitness";
             body_composition: "body_composition";
             cardiovascular: "cardiovascular";
             metabolic: "metabolic";
             hormonal: "hormonal";
             performance: "performance";
-            fitness: "fitness";
         }>;
         goalDirection: z.ZodEnum<{
             lower_better: "lower_better";

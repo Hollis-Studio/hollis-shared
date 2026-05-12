@@ -28,6 +28,7 @@
 export * from "./primitives/index.js";
 export * from "./api/index.js";
 export * from "./domain/index.js";
+export * from "./progression/index.js";
 export * from "./schemas/index.js";
 export * from "./constants/index.js";
 export * from "./admin/index.js";

@@ -69,8 +69,8 @@ export declare const TRAINING_STATUSES: readonly ["detraining", "recovery", "mai
 export type TrainingStatus = z.infer<typeof TrainingStatusSchema>;
 export declare const TrainingStatusSchema: z.ZodEnum<{
     recovery: "recovery";
-    detraining: "detraining";
     maintenance: "maintenance";
+    detraining: "detraining";
     productive: "productive";
     overreaching: "overreaching";
     overtraining: "overtraining";

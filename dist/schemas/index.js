@@ -22,10 +22,12 @@ import { z } from "zod";
 import { isoDateSchema } from "../domain/common.js";
 import { BiologicalSexSchema, PrimaryGoalSchema } from "../domain/user.js";
 import { passwordSchema } from "../password/index.js";
+import { bodyWeightKgSchema } from "./weight.js";
 // ============================================================================
 // JSON BLOB SCHEMAS (Prisma JSON fields)
 // ============================================================================
 export * from "./json-blobs.js";
+export * from "./weight.js";
 // ============================================================================
 // BARCODE SCHEMAS
 // ============================================================================
@@ -167,14 +169,6 @@ export const heightCmSchema = z
     .min(50, "Height must be at least 50 cm")
     .max(300, "Height cannot exceed 300 cm");
 /**
- * Weight validation schema (kilograms).
- * Physiologically reasonable bounds: 20–500 kg.
- */
-export const weightKgSchema = z
-    .number()
-    .min(20, "Weight must be at least 20 kg")
-    .max(500, "Weight cannot exceed 500 kg");
-/**
  * Schema for signup request body (barcode-based patient registration).
  *
  * The `code` field is the patient's barcode (HH-XXXXXX format).
@@ -193,7 +187,7 @@ export const signupBodySchema = z.object({
     profile: z
         .object({
         heightCm: heightCmSchema.optional(),
-        weightKg: weightKgSchema.optional(),
+        weightKg: bodyWeightKgSchema.optional(),
         dateOfBirth: z.string().optional(), // ISO date string
         biologicalSex: BiologicalSexSchema.optional(),
         primaryGoal: PrimaryGoalSchema.optional(),

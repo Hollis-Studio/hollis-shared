@@ -21,6 +21,7 @@
 import { z } from "zod";
 import { baseDocumentSchema } from "../domain/common.js";
 export * from "./json-blobs.js";
+export * from "./weight.js";
 export type BaseDocument = z.infer<typeof baseDocumentSchema>;
 /**
  * Barcode format regex: HH-XXXXXX
@@ -147,11 +148,6 @@ export type RefreshBody = z.infer<typeof refreshBodySchema>;
  * Physiologically reasonable bounds: 50–300 cm.
  */
 export declare const heightCmSchema: z.ZodNumber;
-/**
- * Weight validation schema (kilograms).
- * Physiologically reasonable bounds: 20–500 kg.
- */
-export declare const weightKgSchema: z.ZodNumber;
 /**
  * Schema for signup request body (barcode-based patient registration).
  *

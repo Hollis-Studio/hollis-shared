@@ -31,6 +31,7 @@ export * from "./primitives/index.js";
 export * from "./api/index.js";
 // Domain contracts (includes units, user, appointments, nutrition, training, clinical, etc.)
 export * from "./domain/index.js";
+export * from "./progression/index.js";
 // Zod schemas
 export * from "./schemas/index.js";
 // Constants

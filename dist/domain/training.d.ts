@@ -63,12 +63,12 @@ export declare function isStrategyStatus(value: string): value is StrategyStatus
  */
 export declare const GOAL_CATEGORIES: readonly ["fitness", "body_composition", "cardiovascular", "metabolic", "hormonal", "performance"];
 export declare const GoalCategorySchema: z.ZodEnum<{
+    fitness: "fitness";
     body_composition: "body_composition";
     cardiovascular: "cardiovascular";
     metabolic: "metabolic";
     hormonal: "hormonal";
     performance: "performance";
-    fitness: "fitness";
 }>;
 export type GoalCategory = z.infer<typeof GoalCategorySchema>;
 /** Centralized goal category constants for equality checks */
@@ -340,12 +340,12 @@ export declare const TrainingStrategySchema: z.ZodObject<{
         PAUSED: "PAUSED";
     }>;
     goalCategory: z.ZodOptional<z.ZodEnum<{
+        fitness: "fitness";
         body_composition: "body_composition";
         cardiovascular: "cardiovascular";
         metabolic: "metabolic";
         hormonal: "hormonal";
         performance: "performance";
-        fitness: "fitness";
     }>>;
     startDate: z.ZodString;
     endDate: z.ZodOptional<z.ZodString>;

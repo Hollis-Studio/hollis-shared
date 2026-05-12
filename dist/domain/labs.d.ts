@@ -258,8 +258,8 @@ export declare const GOAL_SOURCES: readonly ["clinician", "none"];
 export type GoalSource = z.infer<typeof GoalSourceSchema>;
 /** Zod schema for goal source */
 export declare const GoalSourceSchema: z.ZodEnum<{
-    clinician: "clinician";
     none: "none";
+    clinician: "clinician";
 }>;
 /** Constant object for goal source comparisons */
 export declare const GOAL_SOURCE: {

@@ -11,6 +11,8 @@
  * deps: zod, common.ts | consumers: all codebases
  */
 import { z } from "zod";
+export { EQUIPMENT_TYPE, EQUIPMENT_TYPE_LABELS, EQUIPMENT_TYPES, EquipmentTypeSchema, type EquipmentType, } from "./equipment.js";
+export { MUSCLE_GROUP, MUSCLE_GROUP_LABELS, MUSCLE_GROUPS, MuscleGroupSchema, type MuscleGroup, } from "./muscles.js";
 export declare const EXERCISE_CATEGORIES: readonly ["COMPOUND", "ISOLATION", "CARDIO", "MOBILITY", "PLYOMETRIC"];
 export declare const ExerciseCategorySchema: z.ZodEnum<{
     COMPOUND: "COMPOUND";
@@ -50,62 +52,6 @@ export declare const MOVEMENT_PATTERN: {
     readonly LUNGE: MovementPattern;
 };
 export declare const MOVEMENT_PATTERN_LABELS: Record<MovementPattern, string>;
-export declare const MUSCLE_GROUPS: readonly ["chest", "back", "shoulders", "biceps", "triceps", "quadriceps", "hamstrings", "glutes", "calves", "core", "forearms"];
-export declare const MuscleGroupSchema: z.ZodEnum<{
-    chest: "chest";
-    back: "back";
-    shoulders: "shoulders";
-    biceps: "biceps";
-    triceps: "triceps";
-    quadriceps: "quadriceps";
-    hamstrings: "hamstrings";
-    glutes: "glutes";
-    calves: "calves";
-    core: "core";
-    forearms: "forearms";
-}>;
-export type MuscleGroup = z.infer<typeof MuscleGroupSchema>;
-export declare const MUSCLE_GROUP: {
-    readonly CHEST: MuscleGroup;
-    readonly BACK: MuscleGroup;
-    readonly SHOULDERS: MuscleGroup;
-    readonly BICEPS: MuscleGroup;
-    readonly TRICEPS: MuscleGroup;
-    readonly QUADRICEPS: MuscleGroup;
-    readonly HAMSTRINGS: MuscleGroup;
-    readonly GLUTES: MuscleGroup;
-    readonly CALVES: MuscleGroup;
-    readonly CORE: MuscleGroup;
-    readonly FOREARMS: MuscleGroup;
-};
-export declare const MUSCLE_GROUP_LABELS: Record<MuscleGroup, string>;
-export declare const EQUIPMENT_TYPES: readonly ["barbell", "dumbbell", "kettlebell", "cable", "machine", "bodyweight", "resistance_band", "squat_rack", "bench", "pull_up_bar"];
-export declare const EquipmentTypeSchema: z.ZodEnum<{
-    barbell: "barbell";
-    dumbbell: "dumbbell";
-    kettlebell: "kettlebell";
-    cable: "cable";
-    machine: "machine";
-    bodyweight: "bodyweight";
-    resistance_band: "resistance_band";
-    squat_rack: "squat_rack";
-    bench: "bench";
-    pull_up_bar: "pull_up_bar";
-}>;
-export type EquipmentType = z.infer<typeof EquipmentTypeSchema>;
-export declare const EQUIPMENT_TYPE: {
-    readonly BARBELL: EquipmentType;
-    readonly DUMBBELL: EquipmentType;
-    readonly KETTLEBELL: EquipmentType;
-    readonly CABLE: EquipmentType;
-    readonly MACHINE: EquipmentType;
-    readonly BODYWEIGHT: EquipmentType;
-    readonly RESISTANCE_BAND: EquipmentType;
-    readonly SQUAT_RACK: EquipmentType;
-    readonly BENCH: EquipmentType;
-    readonly PULL_UP_BAR: EquipmentType;
-};
-export declare const EQUIPMENT_TYPE_LABELS: Record<EquipmentType, string>;
 export declare const DIFFICULTY_LEVELS: readonly ["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"];
 export declare const DifficultyLevelSchema: z.ZodEnum<{
     BEGINNER: "BEGINNER";
@@ -196,12 +142,24 @@ export declare const exerciseSchema: z.ZodObject<{
         shoulders: "shoulders";
         biceps: "biceps";
         triceps: "triceps";
+        forearms: "forearms";
         quadriceps: "quadriceps";
         hamstrings: "hamstrings";
         glutes: "glutes";
         calves: "calves";
         core: "core";
-        forearms: "forearms";
+        traps: "traps";
+        lats: "lats";
+        anterior_deltoids: "anterior_deltoids";
+        lateral_deltoids: "lateral_deltoids";
+        posterior_deltoids: "posterior_deltoids";
+        hip_flexors: "hip_flexors";
+        adductors: "adductors";
+        abductors: "abductors";
+        neck: "neck";
+        obliques: "obliques";
+        lower_back: "lower_back";
+        upper_back: "upper_back";
     }>>>;
     secondaryMuscleGroups: z.ZodOptional<z.ZodArray<z.ZodEnum<{
         chest: "chest";
@@ -209,14 +167,28 @@ export declare const exerciseSchema: z.ZodObject<{
         shoulders: "shoulders";
         biceps: "biceps";
         triceps: "triceps";
+        forearms: "forearms";
         quadriceps: "quadriceps";
         hamstrings: "hamstrings";
         glutes: "glutes";
         calves: "calves";
         core: "core";
-        forearms: "forearms";
+        traps: "traps";
+        lats: "lats";
+        anterior_deltoids: "anterior_deltoids";
+        lateral_deltoids: "lateral_deltoids";
+        posterior_deltoids: "posterior_deltoids";
+        hip_flexors: "hip_flexors";
+        adductors: "adductors";
+        abductors: "abductors";
+        neck: "neck";
+        obliques: "obliques";
+        lower_back: "lower_back";
+        upper_back: "upper_back";
     }>>>;
     equipment: z.ZodArray<z.ZodEnum<{
+        other: "other";
+        none: "none";
         barbell: "barbell";
         dumbbell: "dumbbell";
         kettlebell: "kettlebell";
@@ -227,6 +199,14 @@ export declare const exerciseSchema: z.ZodObject<{
         squat_rack: "squat_rack";
         bench: "bench";
         pull_up_bar: "pull_up_bar";
+        plate_loaded_machine: "plate_loaded_machine";
+        smith_machine: "smith_machine";
+        treadmill: "treadmill";
+        stationary_bike: "stationary_bike";
+        rowing_machine: "rowing_machine";
+        elliptical: "elliptical";
+        stairmaster: "stairmaster";
+        jump_rope: "jump_rope";
     }>>;
     difficulty: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
         BEGINNER: "BEGINNER";
@@ -317,12 +297,24 @@ export declare const createExerciseSchema: z.ZodObject<{
         shoulders: "shoulders";
         biceps: "biceps";
         triceps: "triceps";
+        forearms: "forearms";
         quadriceps: "quadriceps";
         hamstrings: "hamstrings";
         glutes: "glutes";
         calves: "calves";
         core: "core";
-        forearms: "forearms";
+        traps: "traps";
+        lats: "lats";
+        anterior_deltoids: "anterior_deltoids";
+        lateral_deltoids: "lateral_deltoids";
+        posterior_deltoids: "posterior_deltoids";
+        hip_flexors: "hip_flexors";
+        adductors: "adductors";
+        abductors: "abductors";
+        neck: "neck";
+        obliques: "obliques";
+        lower_back: "lower_back";
+        upper_back: "upper_back";
     }>>>;
     secondaryMuscleGroups: z.ZodOptional<z.ZodArray<z.ZodEnum<{
         chest: "chest";
@@ -330,14 +322,28 @@ export declare const createExerciseSchema: z.ZodObject<{
         shoulders: "shoulders";
         biceps: "biceps";
         triceps: "triceps";
+        forearms: "forearms";
         quadriceps: "quadriceps";
         hamstrings: "hamstrings";
         glutes: "glutes";
         calves: "calves";
         core: "core";
-        forearms: "forearms";
+        traps: "traps";
+        lats: "lats";
+        anterior_deltoids: "anterior_deltoids";
+        lateral_deltoids: "lateral_deltoids";
+        posterior_deltoids: "posterior_deltoids";
+        hip_flexors: "hip_flexors";
+        adductors: "adductors";
+        abductors: "abductors";
+        neck: "neck";
+        obliques: "obliques";
+        lower_back: "lower_back";
+        upper_back: "upper_back";
     }>>>;
     equipment: z.ZodArray<z.ZodEnum<{
+        other: "other";
+        none: "none";
         barbell: "barbell";
         dumbbell: "dumbbell";
         kettlebell: "kettlebell";
@@ -348,6 +354,14 @@ export declare const createExerciseSchema: z.ZodObject<{
         squat_rack: "squat_rack";
         bench: "bench";
         pull_up_bar: "pull_up_bar";
+        plate_loaded_machine: "plate_loaded_machine";
+        smith_machine: "smith_machine";
+        treadmill: "treadmill";
+        stationary_bike: "stationary_bike";
+        rowing_machine: "rowing_machine";
+        elliptical: "elliptical";
+        stairmaster: "stairmaster";
+        jump_rope: "jump_rope";
     }>>;
     difficulty: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
         BEGINNER: "BEGINNER";
@@ -405,12 +419,24 @@ export declare const updateExerciseSchema: z.ZodObject<{
         shoulders: "shoulders";
         biceps: "biceps";
         triceps: "triceps";
+        forearms: "forearms";
         quadriceps: "quadriceps";
         hamstrings: "hamstrings";
         glutes: "glutes";
         calves: "calves";
         core: "core";
-        forearms: "forearms";
+        traps: "traps";
+        lats: "lats";
+        anterior_deltoids: "anterior_deltoids";
+        lateral_deltoids: "lateral_deltoids";
+        posterior_deltoids: "posterior_deltoids";
+        hip_flexors: "hip_flexors";
+        adductors: "adductors";
+        abductors: "abductors";
+        neck: "neck";
+        obliques: "obliques";
+        lower_back: "lower_back";
+        upper_back: "upper_back";
     }>>>>;
     secondaryMuscleGroups: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodEnum<{
         chest: "chest";
@@ -418,14 +444,28 @@ export declare const updateExerciseSchema: z.ZodObject<{
         shoulders: "shoulders";
         biceps: "biceps";
         triceps: "triceps";
+        forearms: "forearms";
         quadriceps: "quadriceps";
         hamstrings: "hamstrings";
         glutes: "glutes";
         calves: "calves";
         core: "core";
-        forearms: "forearms";
+        traps: "traps";
+        lats: "lats";
+        anterior_deltoids: "anterior_deltoids";
+        lateral_deltoids: "lateral_deltoids";
+        posterior_deltoids: "posterior_deltoids";
+        hip_flexors: "hip_flexors";
+        adductors: "adductors";
+        abductors: "abductors";
+        neck: "neck";
+        obliques: "obliques";
+        lower_back: "lower_back";
+        upper_back: "upper_back";
     }>>>>;
     equipment: z.ZodOptional<z.ZodArray<z.ZodEnum<{
+        other: "other";
+        none: "none";
         barbell: "barbell";
         dumbbell: "dumbbell";
         kettlebell: "kettlebell";
@@ -436,6 +476,14 @@ export declare const updateExerciseSchema: z.ZodObject<{
         squat_rack: "squat_rack";
         bench: "bench";
         pull_up_bar: "pull_up_bar";
+        plate_loaded_machine: "plate_loaded_machine";
+        smith_machine: "smith_machine";
+        treadmill: "treadmill";
+        stationary_bike: "stationary_bike";
+        rowing_machine: "rowing_machine";
+        elliptical: "elliptical";
+        stairmaster: "stairmaster";
+        jump_rope: "jump_rope";
     }>>>;
     difficulty: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodEnum<{
         BEGINNER: "BEGINNER";
@@ -543,16 +591,30 @@ export declare const muscleGroupSchema: z.ZodEnum<{
     shoulders: "shoulders";
     biceps: "biceps";
     triceps: "triceps";
+    forearms: "forearms";
     quadriceps: "quadriceps";
     hamstrings: "hamstrings";
     glutes: "glutes";
     calves: "calves";
     core: "core";
-    forearms: "forearms";
+    traps: "traps";
+    lats: "lats";
+    anterior_deltoids: "anterior_deltoids";
+    lateral_deltoids: "lateral_deltoids";
+    posterior_deltoids: "posterior_deltoids";
+    hip_flexors: "hip_flexors";
+    adductors: "adductors";
+    abductors: "abductors";
+    neck: "neck";
+    obliques: "obliques";
+    lower_back: "lower_back";
+    upper_back: "upper_back";
 }>;
 /** @deprecated Use EquipmentTypeSchema instead. Remove after 2026-05-01
  *  @removal-deadline 2026-05-01 */
 export declare const equipmentTypeSchema: z.ZodEnum<{
+    other: "other";
+    none: "none";
     barbell: "barbell";
     dumbbell: "dumbbell";
     kettlebell: "kettlebell";
@@ -563,6 +625,14 @@ export declare const equipmentTypeSchema: z.ZodEnum<{
     squat_rack: "squat_rack";
     bench: "bench";
     pull_up_bar: "pull_up_bar";
+    plate_loaded_machine: "plate_loaded_machine";
+    smith_machine: "smith_machine";
+    treadmill: "treadmill";
+    stationary_bike: "stationary_bike";
+    rowing_machine: "rowing_machine";
+    elliptical: "elliptical";
+    stairmaster: "stairmaster";
+    jump_rope: "jump_rope";
 }>;
 /** @deprecated Use DifficultyLevelSchema instead. Remove after 2026-05-01
  *  @removal-deadline 2026-05-01 */
