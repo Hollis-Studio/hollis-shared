@@ -5,7 +5,7 @@
  * Separate definitions for React Native and web platforms.
  */
 
-import { brandColors } from './brand';
+import { brandColors } from './brand.js';
 
 /** Shadow scale for React Native (iOS) */
 export const shadowsNativeIOS = {

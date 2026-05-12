@@ -5,7 +5,7 @@
  * Colors chosen for distinctiveness and colorblind-friendliness.
  */
 
-import { brandColors } from './brand';
+import { brandColors } from './brand.js';
 
 /** Light mode chart palette - darker values for contrast on light backgrounds */
 export const chartPaletteLight = [

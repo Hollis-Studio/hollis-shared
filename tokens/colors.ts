@@ -5,7 +5,7 @@
  * All UI should reference these semantic tokens, not raw hex values.
  */
 
-import { brandColors, brandShades } from "./brand";
+import { brandColors, brandShades } from "./brand.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ACCENT PALETTE (Warm-leaning pastels that complement brand)

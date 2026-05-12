@@ -15,4 +15,4 @@
  */
 
 // Re-export all tokens for convenience
-export * from './tokens';
+export * from './tokens/index.js';

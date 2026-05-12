@@ -9,10 +9,10 @@
  * not in this shared module.
  */
 
-import * as Tokens from '../tokens';
+import * as Tokens from '../tokens/index.js';
 
 // Re-export status colors for native consumers
-export type { GoalProgressStatus, StrategyStatusKey, TrendStatus } from '../tokens';
+export type { GoalProgressStatus, StrategyStatusKey, TrendStatus } from '../tokens/index.js';
 
 // Create new objects to avoid "property is not configurable" error with Metro bundler
 // These objects are frozen with 'as const', so we need to create fresh copies
@@ -279,4 +279,3 @@ export const radii = { ...Tokens.radii };
 export const roleBadgeColors = Tokens.roleBadgeColors;
 export const sleepColors = Tokens.sleepColors;
 export const spacing = { ...Tokens.spacing };
-

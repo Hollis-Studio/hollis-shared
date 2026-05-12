@@ -20,7 +20,7 @@ import {
     shadowsCss,
     spacingCss,
     transitionsCss,
-} from '../tokens';
+} from '../tokens/index.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // WEB THEME INTERFACE
@@ -212,5 +212,4 @@ ${accentVars.join('\n')}
 // CONVENIENCE RE-EXPORTS
 // ─────────────────────────────────────────────────────────────────────────────
 
-export { accentColors, brandColors, brandShades, chartPaletteDark, chartPaletteLight, darkColors, fontFamily, fontSizesCss, fontWeights, lightColors, lineHeightsCss, radiiCss, shadowsCss, spacingCss, transitionsCss } from '../tokens';
-
+export { accentColors, brandColors, brandShades, chartPaletteDark, chartPaletteLight, darkColors, fontFamily, fontSizesCss, fontWeights, lightColors, lineHeightsCss, radiiCss, shadowsCss, spacingCss, transitionsCss } from '../tokens/index.js';

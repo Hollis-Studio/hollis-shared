@@ -1,36 +1,44 @@
 {
   "name": "@hollis/design-tokens",
   "version": "1.0.0",
-  "private": true,
-  "main": "./index.ts",
-  "types": "./index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "exports": {
     ".": {
-      "types": "./index.ts",
-      "default": "./index.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./tokens": {
-      "types": "./tokens/index.ts",
-      "default": "./tokens/index.ts"
+      "types": "./dist/tokens/index.d.ts",
+      "import": "./dist/tokens/index.js",
+      "default": "./dist/tokens/index.js"
     },
     "./tokens/*": {
-      "types": "./tokens/*.ts",
-      "default": "./tokens/*.ts"
+      "types": "./dist/tokens/*.d.ts",
+      "import": "./dist/tokens/*.js",
+      "default": "./dist/tokens/*.js"
     },
     "./native": {
-      "types": "./native/index.ts",
-      "default": "./native/index.ts"
+      "types": "./dist/native/index.d.ts",
+      "import": "./dist/native/index.js",
+      "default": "./dist/native/index.js"
     },
     "./web": {
-      "types": "./web/index.ts",
-      "default": "./web/index.ts"
+      "types": "./dist/web/index.d.ts",
+      "import": "./dist/web/index.js",
+      "default": "./dist/web/index.js"
     }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
     "generate:css": "npx tsx scripts/generate-css-variables.ts",
-    "build": "tsc"
+    "build": "npm run clean && tsc"
   },
   "devDependencies": {
     "typescript": "5.9.2"
