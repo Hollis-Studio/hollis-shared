@@ -5,8 +5,8 @@
  */
 export { brandColors, brandShades, commonColors } from './brand.js';
 export type { BrandColor, BrandShade } from './brand.js';
-export { spacing, spacingCss, spacingRem } from './spacing.js';
-export type { SpacingKey } from './spacing.js';
+export { spacing, spacingBlue, spacingClay, spacingCss, spacingRem } from './spacing.js';
+export type { SpacingBlueKey, SpacingClayKey, SpacingKey } from './spacing.js';
 export { opacity, opacityCss } from './opacity.js';
 export type { OpacityKey } from './opacity.js';
 export { radii, radiiCss } from './radii.js';

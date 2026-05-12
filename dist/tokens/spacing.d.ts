@@ -4,7 +4,29 @@
  * Consistent spacing values for margins, padding, and gaps.
  * Based on a 4px base unit for precise alignment.
  */
-/** Spacing scale in numeric values (for React Native) */
+/** Blue/Health spacing scale in numeric values (for React Native) */
+export declare const spacingBlue: {
+    /** 4px - Minimal spacing */
+    readonly xs: 4;
+    /** 8px - Small spacing */
+    readonly sm: 8;
+    /** 16px - Medium/default spacing */
+    readonly md: 16;
+    /** 24px - Large spacing */
+    readonly lg: 24;
+    /** 32px - Extra large spacing */
+    readonly xl: 32;
+    /** 48px - 2x extra large spacing */
+    readonly xxl: 48;
+};
+/** Clay/Workouts spacing scale in numeric values (for React Native) */
+export declare const spacingClay: {
+    readonly md: 12;
+    readonly lg: 16;
+    readonly xl: 24;
+    readonly xxl: 32;
+};
+/** Default spacing remains the Blue/Health scale for backward compatibility. */
 export declare const spacing: {
     /** 4px - Minimal spacing */
     readonly xs: 4;
@@ -38,4 +60,6 @@ export declare const spacingRem: {
     readonly xxl: "3rem";
 };
 export type SpacingKey = keyof typeof spacing;
+export type SpacingBlueKey = keyof typeof spacingBlue;
+export type SpacingClayKey = keyof typeof spacingClay;
 //# sourceMappingURL=spacing.d.ts.map

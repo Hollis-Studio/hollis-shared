@@ -14,4 +14,6 @@
  *   import { webLightTheme, generateTailwindThemeBlock } from '@hollis/design-tokens/web';
  */
 export * from './tokens/index.js';
+export * from './clay.js';
+export * from './workouts/index.js';
 //# sourceMappingURL=index.d.ts.map

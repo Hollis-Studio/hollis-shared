@@ -6,7 +6,7 @@
 // Brand foundation
 export { brandColors, brandShades, commonColors } from './brand.js';
 // Spacing
-export { spacing, spacingCss, spacingRem } from './spacing.js';
+export { spacing, spacingBlue, spacingClay, spacingCss, spacingRem } from './spacing.js';
 // Opacity
 export { opacity, opacityCss } from './opacity.js';
 // Border radius

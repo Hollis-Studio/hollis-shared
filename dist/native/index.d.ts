@@ -549,7 +549,7 @@ export declare const brandShades: {
     };
 };
 export declare const chartPaletteDark: ("#93B3CD" | "#66BB6A" | "#9575CD" | "#FFAB91" | "#EF5350" | "#4DD0E1" | "#A1887F" | "#90A4AE")[];
-export declare const chartPaletteLight: ("#01314A" | "#C6B2A1" | "#2E7D32" | "#5E35B1" | "#E64A19" | "#00838F" | "#6D4C41" | "#455A64")[];
+export declare const chartPaletteLight: ("#C6B2A1" | "#01314A" | "#2E7D32" | "#5E35B1" | "#E64A19" | "#00838F" | "#6D4C41" | "#455A64")[];
 export declare const darkColors: {
     readonly primary: "#93B3CD";
     readonly primaryLight: "#B0D0EA";
