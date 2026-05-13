@@ -17,6 +17,7 @@
  * deps: @hollis/contracts, jsonwebtoken | consumers: hollis-health-app server, Hollis-Workouts server
  */
 
+import type { IncomingHttpHeaders } from "node:http";
 import jwt from "jsonwebtoken";
 import {
   AccessTokenClaimsSchema,
@@ -34,41 +35,47 @@ export { validateAudience, AudienceSchema, AUDIENCES } from "@hollis/contracts";
 // ============================================================================
 
 /**
- * Minimal Express-compatible request shape.
- * The middleware attaches `userId` and `tokenClaims` to the request object.
- * Consumer apps should augment this interface to get full type safety:
+ * Minimal request shape consumed by the auth-client middleware.
+ *
+ * `headers` uses Node's `IncomingHttpHeaders` — the same type Express's
+ * `Request.headers` resolves to — so an Express `Request` is structurally
+ * assignable to `AuthenticatedRequest` with no cast. The middleware reads
+ * `req.headers.authorization` and writes `req.userId` / `req.tokenClaims`,
+ * which consumers add to Express via module augmentation.
  *
  * @example
  * // express.d.ts in the consumer app
  * import type { AccessTokenClaims } from '@hollis/auth-client';
- * declare global {
- *   namespace Express {
- *     interface Request {
- *       userId: string;
- *       tokenClaims: AccessTokenClaims;
- *     }
+ * declare module 'express-serve-static-core' {
+ *   interface Request {
+ *     userId?: string;
+ *     tokenClaims?: AccessTokenClaims;
  *   }
  * }
  */
 export interface AuthenticatedRequest {
-  headers: { authorization?: string; [key: string]: string | string[] | undefined };
+  headers: IncomingHttpHeaders;
   userId?: string;
   tokenClaims?: import("@hollis/contracts").AccessTokenClaims;
-  [key: string]: unknown;
 }
 
-/** Express-style response with a minimal json/status surface */
+/** Minimal response shape — Express `Response` is structurally compatible. */
 export interface AuthResponse {
   status(code: number): this;
   json(body: unknown): unknown;
 }
 
-/** Express-style next function */
+/** Next callback — Express's `NextFunction` is structurally compatible. */
 export type AuthNextFunction = (err?: unknown) => void;
 
-/** Express-compatible middleware signature produced by createAuthClient */
-export type AuthClientMiddleware = (
-  req: AuthenticatedRequest,
+/**
+ * Middleware produced by createAuthClient.
+ *
+ * Generic over the request type so consumers can pass a tighter type (e.g.
+ * Express's `Request`) without casting. Defaults to `AuthenticatedRequest`.
+ */
+export type AuthClientMiddleware<TReq extends AuthenticatedRequest = AuthenticatedRequest> = (
+  req: TReq,
   res: AuthResponse,
   next: AuthNextFunction,
 ) => void | Promise<void>;
@@ -118,8 +125,11 @@ export interface AuthClient {
    * Express middleware. Extracts the Bearer token, verifies it, and attaches
    * `req.userId` and `req.tokenClaims` for downstream handlers.
    * Calls next(error) with an AppError on failure.
+   *
+   * Generic over the request type so callers can pass Express's `Request`
+   * directly (assuming module augmentation for `userId` / `tokenClaims`).
    */
-  requireAuth: () => AuthClientMiddleware;
+  requireAuth: <TReq extends AuthenticatedRequest = AuthenticatedRequest>() => AuthClientMiddleware<TReq>;
 
   /**
    * Low-level token verification. Returns parsed AccessTokenClaims on success
@@ -164,7 +174,7 @@ export function createAuthClient(opts: AuthClientOptions): AuthClient {
     return verifyTokenRemote(token, identityServiceUrl, audience, verifyTimeoutMs);
   }
 
-  function requireAuth(): AuthClientMiddleware {
+  function requireAuth<TReq extends AuthenticatedRequest = AuthenticatedRequest>(): AuthClientMiddleware<TReq> {
     return async (req, _res, next) => {
       const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
