@@ -37,7 +37,7 @@
     "build": "npm run clean && tsc"
   },
   "dependencies": {
-    "@hollis/contracts": "git+file:///Users/isaaclandes/Documents/SRC/hollis-shared#contracts-v0.1.0-alpha.1"
+    "@hollis/contracts": "*"
   },
   "devDependencies": {
     "typescript": "5.9.2"
