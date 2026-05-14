@@ -58,13 +58,15 @@ export declare const shadowsNativeAndroid: {
         readonly elevation: 16;
     };
 };
-/** Shadow scale for web (CSS box-shadow) */
+/** Shadow scale for web (CSS box-shadow) — opacities ~2x stock so white
+ * cards on the warmed background read with clear edges without becoming
+ * heavy. Still subtle; real elevation. */
 export declare const shadowsCss: {
-    readonly xs: "0 1px 2px 0 rgba(1, 49, 74, 0.03)";
-    readonly sm: "0 1px 3px 0 rgba(1, 49, 74, 0.05), 0 1px 2px 0 rgba(1, 49, 74, 0.03)";
-    readonly md: "0 4px 6px -1px rgba(1, 49, 74, 0.07), 0 2px 4px -1px rgba(1, 49, 74, 0.04)";
-    readonly lg: "0 10px 15px -3px rgba(1, 49, 74, 0.08), 0 4px 6px -2px rgba(1, 49, 74, 0.04)";
-    readonly xl: "0 20px 25px -5px rgba(1, 49, 74, 0.1), 0 10px 10px -5px rgba(1, 49, 74, 0.03)";
+    readonly xs: "0 1px 2px 0 rgba(1, 49, 74, 0.06)";
+    readonly sm: "0 1px 3px 0 rgba(1, 49, 74, 0.08), 0 1px 2px 0 rgba(1, 49, 74, 0.05)";
+    readonly md: "0 4px 6px -1px rgba(1, 49, 74, 0.10), 0 2px 4px -1px rgba(1, 49, 74, 0.06)";
+    readonly lg: "0 10px 15px -3px rgba(1, 49, 74, 0.12), 0 4px 6px -2px rgba(1, 49, 74, 0.07)";
+    readonly xl: "0 20px 25px -5px rgba(1, 49, 74, 0.16), 0 10px 10px -5px rgba(1, 49, 74, 0.06)";
 };
 export type ShadowKey = keyof typeof shadowsCss;
 //# sourceMappingURL=shadows.d.ts.map

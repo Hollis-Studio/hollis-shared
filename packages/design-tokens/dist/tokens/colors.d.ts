@@ -7,37 +7,43 @@
 export declare const accentColors: {
     /** Success - Muted Sage Green */
     readonly sage: {
-        readonly light: "#E8F0E8";
+        readonly light: "#D5E5D5";
         readonly DEFAULT: "#A8C5A8";
         readonly dark: "#5A7A5A";
     };
-    /** Error/Danger - Solid Pastel Red */
+    /**
+     * Destructive - Desaturated Dusty Rose
+     * Reserved for true destructive admin actions (irreversible delete).
+     * For client states or "needs attention", use `amber`, not `rose`.
+     * Reduced from Tailwind red-400 (78% saturation) to dusty terracotta
+     * (~30% saturation) so it sits inside the muted brand palette.
+     */
     readonly rose: {
-        readonly light: "#FEE2E2";
-        readonly DEFAULT: "#F87171";
-        readonly dark: "#EF4444";
+        readonly light: "#ECDAD7";
+        readonly DEFAULT: "#C99B96";
+        readonly dark: "#A77971";
     };
     /** Warning - Muted Amber/Terracotta */
     readonly amber: {
-        readonly light: "#F5EDE6";
+        readonly light: "#EADFD0";
         readonly DEFAULT: "#D4B896";
         readonly dark: "#8B6914";
     };
     /** Info - Soft Periwinkle */
     readonly periwinkle: {
-        readonly light: "#E8EBF5";
+        readonly light: "#D5DCEF";
         readonly DEFAULT: "#A5B4D4";
         readonly dark: "#5A6A8B";
     };
     /** Neutral - Warm Gray */
     readonly warmGray: {
-        readonly light: "#F5F3F1";
+        readonly light: "#E8E3DD";
         readonly DEFAULT: "#C4BFB9";
         readonly dark: "#6B6560";
     };
     /** Indigo/Purple - Muted Lavender */
     readonly lavender: {
-        readonly light: "#F0EAF5";
+        readonly light: "#DDD2EA";
         readonly DEFAULT: "#B7A5D4";
         readonly dark: "#6A5A8B";
     };
@@ -70,12 +76,12 @@ export declare const roleBadgeColors: {
  */
 export declare const trendColors: {
     readonly light: {
-        readonly improving: "#16a34a";
-        readonly improvingBg: "#dcfce7";
-        readonly declining: "#ef4444";
-        readonly decliningBg: "#fee2e2";
-        readonly stable: "#eab308";
-        readonly stableBg: "#fef9c3";
+        readonly improving: "#5A7A5A";
+        readonly improvingBg: "#D5E5D5";
+        readonly declining: "#8B6914";
+        readonly decliningBg: "#EADFD0";
+        readonly stable: "#5A6A8B";
+        readonly stableBg: "#D5DCEF";
     };
     readonly dark: {
         readonly improving: "#22c55e";
@@ -93,24 +99,24 @@ export declare const trendColors: {
 export declare const strategyStatusColors: {
     readonly light: {
         readonly active: {
-            readonly color: "#16a34a";
-            readonly bg: "#dcfce7";
+            readonly color: "#5A7A5A";
+            readonly bg: "#D5E5D5";
         };
         readonly completed: {
-            readonly color: "#2563eb";
-            readonly bg: "#dbeafe";
+            readonly color: "#01314A";
+            readonly bg: "#D5DCEF";
         };
         readonly paused: {
-            readonly color: "#ca8a04";
-            readonly bg: "#fef9c3";
+            readonly color: "#6B6560";
+            readonly bg: "#E8E3DD";
         };
         readonly draft: {
-            readonly color: "#6b7280";
-            readonly bg: "#f3f4f6";
+            readonly color: "#6B6560";
+            readonly bg: "#E8E3DD";
         };
         readonly archived: {
-            readonly color: "#9ca3af";
-            readonly bg: "#f3f4f6";
+            readonly color: "#6B6560";
+            readonly bg: "#E8E3DD";
         };
     };
     readonly dark: {
@@ -142,12 +148,12 @@ export declare const strategyStatusColors: {
  */
 export declare const goalProgressColors: {
     readonly light: {
-        readonly onTrack: "#16a34a";
-        readonly onTrackBg: "#dcfce7";
-        readonly atRisk: "#eab308";
-        readonly atRiskBg: "#fef9c3";
-        readonly offTrack: "#ef4444";
-        readonly offTrackBg: "#fee2e2";
+        readonly onTrack: "#5A7A5A";
+        readonly onTrackBg: "#D5E5D5";
+        readonly atRisk: "#8B6914";
+        readonly atRiskBg: "#EADFD0";
+        readonly offTrack: "#8B6914";
+        readonly offTrackBg: "#EADFD0";
     };
     readonly dark: {
         readonly onTrack: "#22c55e";
@@ -168,53 +174,53 @@ export declare const lightColors: {
     readonly secondary: "#C6B2A1";
     readonly secondaryLight: "#DBC7B6";
     readonly secondaryDark: "#A89485";
-    readonly background: "#F0F2F5";
-    readonly surface: "#E8EAED";
+    readonly background: "#F4F0EB";
+    readonly surface: "#EBE6DF";
     readonly surfaceElevated: "#FFFFFF";
     readonly card: "#FFFFFF";
     readonly text: "#01314A";
-    readonly textSecondary: "#374151";
-    readonly textTertiary: "#4B5563";
-    readonly textMuted: "#6B7280";
+    readonly textSecondary: "rgba(1, 49, 74, 0.78)";
+    readonly textTertiary: "rgba(1, 49, 74, 0.58)";
+    readonly textMuted: "rgba(1, 49, 74, 0.42)";
     readonly textInverse: "#FCFCFC";
-    readonly border: "#D1D5DB";
-    readonly borderLight: "#E5E7EB";
-    readonly borderSubtle: "#F1F5F9";
+    readonly border: "rgba(1, 49, 74, 0.14)";
+    readonly borderLight: "rgba(1, 49, 74, 0.08)";
+    readonly borderSubtle: "rgba(1, 49, 74, 0.04)";
     readonly borderFocus: "#01314A";
     readonly success: "#A8C5A8";
-    readonly successLight: "#E8F0E8";
+    readonly successLight: "#D5E5D5";
     readonly successDark: "#5A7A5A";
-    readonly error: "#F87171";
-    readonly errorLight: "#FEE2E2";
-    readonly errorDark: "#EF4444";
+    readonly error: "#C99B96";
+    readonly errorLight: "#ECDAD7";
+    readonly errorDark: "#A77971";
     readonly warning: "#D4B896";
-    readonly warningLight: "#F5EDE6";
+    readonly warningLight: "#EADFD0";
     readonly warningDark: "#8B6914";
     readonly info: "#A5B4D4";
-    readonly infoLight: "#E8EBF5";
+    readonly infoLight: "#D5DCEF";
     readonly infoDark: "#5A6A8B";
-    readonly hover: "rgba(1, 49, 74, 0.04)";
-    readonly active: "rgba(1, 49, 74, 0.08)";
-    readonly focus: "rgba(147, 179, 205, 0.3)";
+    readonly hover: "rgba(1, 49, 74, 0.06)";
+    readonly active: "rgba(1, 49, 74, 0.12)";
+    readonly focus: "rgba(147, 179, 205, 0.35)";
     readonly disabled: "#E2E8F0";
-    readonly inputBackground: "#FFFFFF";
-    readonly inputBorder: "#9CA3AF";
+    readonly inputBackground: "#F4F0EB";
+    readonly inputBorder: "rgba(1, 49, 74, 0.20)";
     readonly inputText: "#01314A";
-    readonly inputPlaceholder: "#6B7280";
+    readonly inputPlaceholder: "rgba(1, 49, 74, 0.45)";
     readonly tabBarBackground: "#FFFFFF";
-    readonly tabBarBorder: "#D1D5DB";
-    readonly tabIconDefault: "#6B7280";
+    readonly tabBarBorder: "rgba(1, 49, 74, 0.14)";
+    readonly tabIconDefault: "rgba(1, 49, 74, 0.55)";
     readonly tabIconSelected: "#01314A";
     readonly headerBackground: "#FFFFFF";
     readonly headerText: "#01314A";
     readonly modalBackground: "#FFFFFF";
-    readonly modalOverlay: "rgba(0, 0, 0, 0.5)";
-    readonly icon: "#6B7280";
-    readonly iconMuted: "#9CA3AF";
+    readonly modalOverlay: "rgba(1, 49, 74, 0.55)";
+    readonly icon: "rgba(1, 49, 74, 0.55)";
+    readonly iconMuted: "rgba(1, 49, 74, 0.35)";
     readonly chartPrimary: "#01314A";
     readonly chartSecondary: "#93B3CD";
     readonly chartTertiary: "#C6B2A1";
-    readonly chartGrid: "#D1D5DB";
+    readonly chartGrid: "rgba(1, 49, 74, 0.14)";
 };
 export declare const darkColors: {
     readonly primary: "#93B3CD";

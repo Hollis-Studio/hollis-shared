@@ -17,12 +17,12 @@ export declare const commonColors: {
 };
 export declare const goalProgressColors: {
     light: {
-        onTrack: "#16a34a";
-        onTrackBg: "#dcfce7";
-        atRisk: "#eab308";
-        atRiskBg: "#fef9c3";
-        offTrack: "#ef4444";
-        offTrackBg: "#fee2e2";
+        onTrack: "#5A7A5A";
+        onTrackBg: "#D5E5D5";
+        atRisk: "#8B6914";
+        atRiskBg: "#EADFD0";
+        offTrack: "#8B6914";
+        offTrackBg: "#EADFD0";
     };
     dark: {
         onTrack: "#22c55e";
@@ -36,24 +36,24 @@ export declare const goalProgressColors: {
 export declare const strategyStatusColors: {
     light: {
         active: {
-            readonly color: "#16a34a";
-            readonly bg: "#dcfce7";
+            readonly color: "#5A7A5A";
+            readonly bg: "#D5E5D5";
         };
         completed: {
-            readonly color: "#2563eb";
-            readonly bg: "#dbeafe";
+            readonly color: "#01314A";
+            readonly bg: "#D5DCEF";
         };
         paused: {
-            readonly color: "#ca8a04";
-            readonly bg: "#fef9c3";
+            readonly color: "#6B6560";
+            readonly bg: "#E8E3DD";
         };
         draft: {
-            readonly color: "#6b7280";
-            readonly bg: "#f3f4f6";
+            readonly color: "#6B6560";
+            readonly bg: "#E8E3DD";
         };
         archived: {
-            readonly color: "#9ca3af";
-            readonly bg: "#f3f4f6";
+            readonly color: "#6B6560";
+            readonly bg: "#E8E3DD";
         };
     };
     dark: {
@@ -81,12 +81,12 @@ export declare const strategyStatusColors: {
 };
 export declare const trendColors: {
     light: {
-        improving: "#16a34a";
-        improvingBg: "#dcfce7";
-        declining: "#ef4444";
-        decliningBg: "#fee2e2";
-        stable: "#eab308";
-        stableBg: "#fef9c3";
+        improving: "#5A7A5A";
+        improvingBg: "#D5E5D5";
+        declining: "#8B6914";
+        decliningBg: "#EADFD0";
+        stable: "#5A6A8B";
+        stableBg: "#D5DCEF";
     };
     dark: {
         improving: "#22c55e";
@@ -464,32 +464,32 @@ export declare const nativeThemePresets: {
 export type NativeThemePreset = keyof typeof nativeThemePresets;
 export declare const accentColors: {
     readonly sage: {
-        readonly light: "#E8F0E8";
+        readonly light: "#D5E5D5";
         readonly DEFAULT: "#A8C5A8";
         readonly dark: "#5A7A5A";
     };
     readonly rose: {
-        readonly light: "#FEE2E2";
-        readonly DEFAULT: "#F87171";
-        readonly dark: "#EF4444";
+        readonly light: "#ECDAD7";
+        readonly DEFAULT: "#C99B96";
+        readonly dark: "#A77971";
     };
     readonly amber: {
-        readonly light: "#F5EDE6";
+        readonly light: "#EADFD0";
         readonly DEFAULT: "#D4B896";
         readonly dark: "#8B6914";
     };
     readonly periwinkle: {
-        readonly light: "#E8EBF5";
+        readonly light: "#D5DCEF";
         readonly DEFAULT: "#A5B4D4";
         readonly dark: "#5A6A8B";
     };
     readonly warmGray: {
-        readonly light: "#F5F3F1";
+        readonly light: "#E8E3DD";
         readonly DEFAULT: "#C4BFB9";
         readonly dark: "#6B6560";
     };
     readonly lavender: {
-        readonly light: "#F0EAF5";
+        readonly light: "#DDD2EA";
         readonly DEFAULT: "#B7A5D4";
         readonly dark: "#6A5A8B";
     };
@@ -672,53 +672,53 @@ export declare const lightColors: {
     readonly secondary: "#C6B2A1";
     readonly secondaryLight: "#DBC7B6";
     readonly secondaryDark: "#A89485";
-    readonly background: "#F0F2F5";
-    readonly surface: "#E8EAED";
+    readonly background: "#F4F0EB";
+    readonly surface: "#EBE6DF";
     readonly surfaceElevated: "#FFFFFF";
     readonly card: "#FFFFFF";
     readonly text: "#01314A";
-    readonly textSecondary: "#374151";
-    readonly textTertiary: "#4B5563";
-    readonly textMuted: "#6B7280";
+    readonly textSecondary: "rgba(1, 49, 74, 0.78)";
+    readonly textTertiary: "rgba(1, 49, 74, 0.58)";
+    readonly textMuted: "rgba(1, 49, 74, 0.42)";
     readonly textInverse: "#FCFCFC";
-    readonly border: "#D1D5DB";
-    readonly borderLight: "#E5E7EB";
-    readonly borderSubtle: "#F1F5F9";
+    readonly border: "rgba(1, 49, 74, 0.14)";
+    readonly borderLight: "rgba(1, 49, 74, 0.08)";
+    readonly borderSubtle: "rgba(1, 49, 74, 0.04)";
     readonly borderFocus: "#01314A";
     readonly success: "#A8C5A8";
-    readonly successLight: "#E8F0E8";
+    readonly successLight: "#D5E5D5";
     readonly successDark: "#5A7A5A";
-    readonly error: "#F87171";
-    readonly errorLight: "#FEE2E2";
-    readonly errorDark: "#EF4444";
+    readonly error: "#C99B96";
+    readonly errorLight: "#ECDAD7";
+    readonly errorDark: "#A77971";
     readonly warning: "#D4B896";
-    readonly warningLight: "#F5EDE6";
+    readonly warningLight: "#EADFD0";
     readonly warningDark: "#8B6914";
     readonly info: "#A5B4D4";
-    readonly infoLight: "#E8EBF5";
+    readonly infoLight: "#D5DCEF";
     readonly infoDark: "#5A6A8B";
-    readonly hover: "rgba(1, 49, 74, 0.04)";
-    readonly active: "rgba(1, 49, 74, 0.08)";
-    readonly focus: "rgba(147, 179, 205, 0.3)";
+    readonly hover: "rgba(1, 49, 74, 0.06)";
+    readonly active: "rgba(1, 49, 74, 0.12)";
+    readonly focus: "rgba(147, 179, 205, 0.35)";
     readonly disabled: "#E2E8F0";
-    readonly inputBackground: "#FFFFFF";
-    readonly inputBorder: "#9CA3AF";
+    readonly inputBackground: "#F4F0EB";
+    readonly inputBorder: "rgba(1, 49, 74, 0.20)";
     readonly inputText: "#01314A";
-    readonly inputPlaceholder: "#6B7280";
+    readonly inputPlaceholder: "rgba(1, 49, 74, 0.45)";
     readonly tabBarBackground: "#FFFFFF";
-    readonly tabBarBorder: "#D1D5DB";
-    readonly tabIconDefault: "#6B7280";
+    readonly tabBarBorder: "rgba(1, 49, 74, 0.14)";
+    readonly tabIconDefault: "rgba(1, 49, 74, 0.55)";
     readonly tabIconSelected: "#01314A";
     readonly headerBackground: "#FFFFFF";
     readonly headerText: "#01314A";
     readonly modalBackground: "#FFFFFF";
-    readonly modalOverlay: "rgba(0, 0, 0, 0.5)";
-    readonly icon: "#6B7280";
-    readonly iconMuted: "#9CA3AF";
+    readonly modalOverlay: "rgba(1, 49, 74, 0.55)";
+    readonly icon: "rgba(1, 49, 74, 0.55)";
+    readonly iconMuted: "rgba(1, 49, 74, 0.35)";
     readonly chartPrimary: "#01314A";
     readonly chartSecondary: "#93B3CD";
     readonly chartTertiary: "#C6B2A1";
-    readonly chartGrid: "#D1D5DB";
+    readonly chartGrid: "rgba(1, 49, 74, 0.14)";
 };
 export declare const lineHeights: {
     tight: 1.2;

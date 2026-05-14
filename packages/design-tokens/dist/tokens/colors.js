@@ -11,37 +11,43 @@ import { brandColors, brandShades } from "./brand.js";
 export const accentColors = {
     /** Success - Muted Sage Green */
     sage: {
-        light: "#E8F0E8",
+        light: "#D5E5D5",
         DEFAULT: "#A8C5A8",
         dark: "#5A7A5A",
     },
-    /** Error/Danger - Solid Pastel Red */
+    /**
+     * Destructive - Desaturated Dusty Rose
+     * Reserved for true destructive admin actions (irreversible delete).
+     * For client states or "needs attention", use `amber`, not `rose`.
+     * Reduced from Tailwind red-400 (78% saturation) to dusty terracotta
+     * (~30% saturation) so it sits inside the muted brand palette.
+     */
     rose: {
-        light: "#FEE2E2",
-        DEFAULT: "#F87171",
-        dark: "#EF4444",
+        light: "#ECDAD7",
+        DEFAULT: "#C99B96",
+        dark: "#A77971",
     },
     /** Warning - Muted Amber/Terracotta */
     amber: {
-        light: "#F5EDE6",
+        light: "#EADFD0",
         DEFAULT: "#D4B896",
         dark: "#8B6914",
     },
     /** Info - Soft Periwinkle */
     periwinkle: {
-        light: "#E8EBF5",
+        light: "#D5DCEF",
         DEFAULT: "#A5B4D4",
         dark: "#5A6A8B",
     },
     /** Neutral - Warm Gray */
     warmGray: {
-        light: "#F5F3F1",
+        light: "#E8E3DD",
         DEFAULT: "#C4BFB9",
         dark: "#6B6560",
     },
     /** Indigo/Purple - Muted Lavender */
     lavender: {
-        light: "#F0EAF5",
+        light: "#DDD2EA",
         DEFAULT: "#B7A5D4",
         dark: "#6A5A8B",
     },
@@ -65,12 +71,12 @@ export const roleBadgeColors = {
  */
 export const trendColors = {
     light: {
-        improving: "#16a34a",
-        improvingBg: "#dcfce7",
-        declining: "#ef4444",
-        decliningBg: "#fee2e2",
-        stable: "#eab308",
-        stableBg: "#fef9c3",
+        improving: "#5A7A5A",
+        improvingBg: "#D5E5D5",
+        declining: "#8B6914",
+        decliningBg: "#EADFD0",
+        stable: "#5A6A8B",
+        stableBg: "#D5DCEF",
     },
     dark: {
         improving: "#22c55e",
@@ -87,11 +93,11 @@ export const trendColors = {
  */
 export const strategyStatusColors = {
     light: {
-        active: { color: "#16a34a", bg: "#dcfce7" },
-        completed: { color: "#2563eb", bg: "#dbeafe" },
-        paused: { color: "#ca8a04", bg: "#fef9c3" },
-        draft: { color: "#6b7280", bg: "#f3f4f6" },
-        archived: { color: "#9ca3af", bg: "#f3f4f6" },
+        active: { color: "#5A7A5A", bg: "#D5E5D5" },
+        completed: { color: "#01314A", bg: "#D5DCEF" },
+        paused: { color: "#6B6560", bg: "#E8E3DD" },
+        draft: { color: "#6B6560", bg: "#E8E3DD" },
+        archived: { color: "#6B6560", bg: "#E8E3DD" },
     },
     dark: {
         active: { color: "#22c55e", bg: "rgba(34, 197, 94, 0.15)" },
@@ -107,12 +113,12 @@ export const strategyStatusColors = {
  */
 export const goalProgressColors = {
     light: {
-        onTrack: "#16a34a",
-        onTrackBg: "#dcfce7",
-        atRisk: "#eab308",
-        atRiskBg: "#fef9c3",
-        offTrack: "#ef4444",
-        offTrackBg: "#fee2e2",
+        onTrack: "#5A7A5A",
+        onTrackBg: "#D5E5D5",
+        atRisk: "#8B6914",
+        atRiskBg: "#EADFD0",
+        offTrack: "#8B6914",
+        offTrackBg: "#EADFD0",
     },
     dark: {
         onTrack: "#22c55e",
@@ -135,21 +141,21 @@ export const lightColors = {
     secondary: brandColors.tan,
     secondaryLight: brandShades.tan.light,
     secondaryDark: brandShades.tan.dark,
-    // Surfaces
-    background: "#F0F2F5",
-    surface: "#E8EAED",
+    // Surfaces — warmed background so white cards lift off the page
+    background: "#F4F0EB",
+    surface: "#EBE6DF",
     surfaceElevated: "#FFFFFF",
     card: "#FFFFFF",
-    // Text hierarchy
+    // Text hierarchy — navy at decreasing opacity for brand-cohesive ramp
     text: brandColors.navy,
-    textSecondary: "#374151",
-    textTertiary: "#4B5563",
-    textMuted: "#6B7280",
+    textSecondary: "rgba(1, 49, 74, 0.78)",
+    textTertiary: "rgba(1, 49, 74, 0.58)",
+    textMuted: "rgba(1, 49, 74, 0.42)",
     textInverse: brandColors.offWhite,
-    // Borders
-    border: "#D1D5DB",
-    borderLight: "#E5E7EB",
-    borderSubtle: "#F1F5F9",
+    // Borders — re-tinted from cool gray to brand navy at low opacity
+    border: "rgba(1, 49, 74, 0.14)",
+    borderLight: "rgba(1, 49, 74, 0.08)",
+    borderSubtle: "rgba(1, 49, 74, 0.04)",
     borderFocus: brandColors.navy,
     // Semantic status
     success: accentColors.sage.DEFAULT,
@@ -164,34 +170,34 @@ export const lightColors = {
     info: accentColors.periwinkle.DEFAULT,
     infoLight: accentColors.periwinkle.light,
     infoDark: accentColors.periwinkle.dark,
-    // Interactive states
-    hover: "rgba(1, 49, 74, 0.04)",
-    active: "rgba(1, 49, 74, 0.08)",
-    focus: "rgba(147, 179, 205, 0.3)",
+    // Interactive states — slightly stronger so hover/active read clearly
+    hover: "rgba(1, 49, 74, 0.06)",
+    active: "rgba(1, 49, 74, 0.12)",
+    focus: "rgba(147, 179, 205, 0.35)",
     disabled: "#E2E8F0",
-    // Inputs
-    inputBackground: "#FFFFFF",
-    inputBorder: "#9CA3AF",
+    // Inputs — sunken treatment: tinted bg, navy-tinted border
+    inputBackground: "#F4F0EB",
+    inputBorder: "rgba(1, 49, 74, 0.20)",
     inputText: brandColors.navy,
-    inputPlaceholder: "#6B7280",
+    inputPlaceholder: "rgba(1, 49, 74, 0.45)",
     // Navigation
     tabBarBackground: "#FFFFFF",
-    tabBarBorder: "#D1D5DB",
-    tabIconDefault: "#6B7280",
+    tabBarBorder: "rgba(1, 49, 74, 0.14)",
+    tabIconDefault: "rgba(1, 49, 74, 0.55)",
     tabIconSelected: brandColors.navy,
     headerBackground: "#FFFFFF",
     headerText: brandColors.navy,
-    // Modal/Overlay
+    // Modal/Overlay — brand-tinted scrim instead of cold black
     modalBackground: "#FFFFFF",
-    modalOverlay: "rgba(0, 0, 0, 0.5)",
+    modalOverlay: "rgba(1, 49, 74, 0.55)",
     // Icons
-    icon: "#6B7280",
-    iconMuted: "#9CA3AF",
+    icon: "rgba(1, 49, 74, 0.55)",
+    iconMuted: "rgba(1, 49, 74, 0.35)",
     // Charts
     chartPrimary: brandColors.navy,
     chartSecondary: brandColors.lightBlue,
     chartTertiary: brandColors.tan,
-    chartGrid: "#D1D5DB",
+    chartGrid: "rgba(1, 49, 74, 0.14)",
 };
 // ─────────────────────────────────────────────────────────────────────────────
 // DARK THEME COLORS
