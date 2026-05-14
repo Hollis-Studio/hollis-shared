@@ -29,7 +29,9 @@ export type AppErrorCode = "AUTH_REQUIRED"
 /** @scope workouts-mobile */
  | "SYNC_FAILED"
 /** @scope workouts-mobile */
- | "SHARE_FAILED" | "NOT_IMPLEMENTED" | "UNKNOWN" | "FORBIDDEN" | "NOT_FOUND" | "RATE_LIMITED" | "INTERNAL_ERROR";
+ | "SHARE_FAILED"
+/** @scope workouts-mobile */
+ | "SHARE_UNAVAILABLE" | "NOT_IMPLEMENTED" | "UNKNOWN" | "FORBIDDEN" | "NOT_FOUND" | "RATE_LIMITED" | "INTERNAL_ERROR";
 export declare const APP_ERROR_CODES: {
     readonly AUTH_REQUIRED: "AUTH_REQUIRED";
     /** @scope workouts-mobile */
@@ -62,6 +64,8 @@ export declare const APP_ERROR_CODES: {
     readonly SYNC_FAILED: "SYNC_FAILED";
     /** @scope workouts-mobile */
     readonly SHARE_FAILED: "SHARE_FAILED";
+    /** @scope workouts-mobile */
+    readonly SHARE_UNAVAILABLE: "SHARE_UNAVAILABLE";
     readonly NOT_IMPLEMENTED: "NOT_IMPLEMENTED";
     readonly UNKNOWN: "UNKNOWN";
     readonly FORBIDDEN: "FORBIDDEN";

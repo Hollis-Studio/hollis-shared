@@ -74,4 +74,17 @@ export const MetricBasketSnapshotSchema = z.object({
     relativeStrengthScore: RelativeStrengthScoreSchema.nullable().optional(),
     repRangePivot: RepRangePivotSchema.nullable().optional(),
 });
+export const MetricBasketSnapshotCaptureKindSchema = z.enum([
+    "pre_session",
+    "post_session",
+    "manual",
+]);
+export const MetricBasketSnapshotRecordSchema = z.object({
+    id: z.string().min(1),
+    exerciseId: z.string().min(1),
+    capturedAt: z.coerce.date(),
+    captureKind: MetricBasketSnapshotCaptureKindSchema,
+    sourceSessionId: z.string().min(1).optional(),
+    snapshot: MetricBasketSnapshotSchema,
+});
 //# sourceMappingURL=metrics.js.map

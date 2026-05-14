@@ -30,6 +30,8 @@ export const APP_ERROR_CODES = {
     SYNC_FAILED: "SYNC_FAILED",
     /** @scope workouts-mobile */
     SHARE_FAILED: "SHARE_FAILED",
+    /** @scope workouts-mobile */
+    SHARE_UNAVAILABLE: "SHARE_UNAVAILABLE",
     NOT_IMPLEMENTED: "NOT_IMPLEMENTED",
     UNKNOWN: "UNKNOWN",
     FORBIDDEN: "FORBIDDEN",

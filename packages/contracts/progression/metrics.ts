@@ -84,6 +84,21 @@ export const MetricBasketSnapshotSchema = z.object({
   repRangePivot: RepRangePivotSchema.nullable().optional(),
 });
 
+export const MetricBasketSnapshotCaptureKindSchema = z.enum([
+  "pre_session",
+  "post_session",
+  "manual",
+]);
+
+export const MetricBasketSnapshotRecordSchema = z.object({
+  id: z.string().min(1),
+  exerciseId: z.string().min(1),
+  capturedAt: z.coerce.date(),
+  captureKind: MetricBasketSnapshotCaptureKindSchema,
+  sourceSessionId: z.string().min(1).optional(),
+  snapshot: MetricBasketSnapshotSchema,
+});
+
 export type MetricGateRejectReason = z.infer<typeof MetricGateRejectReasonSchema>;
 export type GatedE1RMSample = z.infer<typeof GatedE1RMSampleSchema>;
 export type BestQualifyingSet = z.infer<typeof BestQualifyingSetSchema>;
@@ -92,3 +107,7 @@ export type RelativeStrengthScore = z.infer<typeof RelativeStrengthScoreSchema>;
 export type RepRangePivot = z.infer<typeof RepRangePivotSchema>;
 export type ConfidenceBand = z.infer<typeof ConfidenceBandSchema>;
 export type MetricBasketSnapshot = z.infer<typeof MetricBasketSnapshotSchema>;
+export type MetricBasketSnapshotCaptureKind = z.infer<
+  typeof MetricBasketSnapshotCaptureKindSchema
+>;
+export type MetricBasketSnapshotRecord = z.infer<typeof MetricBasketSnapshotRecordSchema>;

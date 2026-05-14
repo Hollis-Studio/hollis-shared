@@ -130,6 +130,65 @@ export declare const MetricBasketSnapshotSchema: z.ZodObject<{
         acknowledged: z.ZodBoolean;
     }, z.core.$strip>>>;
 }, z.core.$strip>;
+export declare const MetricBasketSnapshotCaptureKindSchema: z.ZodEnum<{
+    manual: "manual";
+    pre_session: "pre_session";
+    post_session: "post_session";
+}>;
+export declare const MetricBasketSnapshotRecordSchema: z.ZodObject<{
+    id: z.ZodString;
+    exerciseId: z.ZodString;
+    capturedAt: z.ZodCoercedDate<unknown>;
+    captureKind: z.ZodEnum<{
+        manual: "manual";
+        pre_session: "pre_session";
+        post_session: "post_session";
+    }>;
+    sourceSessionId: z.ZodOptional<z.ZodString>;
+    snapshot: z.ZodObject<{
+        exerciseId: z.ZodString;
+        capturedAt: z.ZodOptional<z.ZodCoercedDate<unknown>>;
+        e1rmGated: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+            current: z.ZodNumber;
+            band: z.ZodObject<{
+                value: z.ZodNumber;
+                lowerKg: z.ZodNumber;
+                upperKg: z.ZodNumber;
+                sampleCount: z.ZodNumber;
+                widthKg: z.ZodNumber;
+            }, z.core.$strip>;
+            samples: z.ZodNumber;
+        }, z.core.$strip>>>;
+        bestQualifyingSet: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+            exerciseId: z.ZodString;
+            windowDays: z.ZodNumber;
+            weightKg: z.ZodNumber;
+            reps: z.ZodNumber;
+            rir: z.ZodNumber;
+            sessionId: z.ZodString;
+            setIndex: z.ZodNumber;
+            recordedAt: z.ZodCoercedDate<unknown>;
+            e1rmKg: z.ZodNumber;
+        }, z.core.$strip>>>;
+        relativeStrengthScore: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+            exerciseId: z.ZodString;
+            recordedAt: z.ZodCoercedDate<unknown>;
+            e1rmKg: z.ZodNumber;
+            bodyWeightKg: z.ZodNumber;
+            score: z.ZodNumber;
+            bodyWeightSourceAgeDays: z.ZodNumber;
+        }, z.core.$strip>>>;
+        repRangePivot: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+            exerciseId: z.ZodString;
+            detectedAt: z.ZodCoercedDate<unknown>;
+            priorMedianReps: z.ZodNumber;
+            currentMedianReps: z.ZodNumber;
+            deltaReps: z.ZodNumber;
+            windowDays: z.ZodLiteral<28>;
+            acknowledged: z.ZodBoolean;
+        }, z.core.$strip>>>;
+    }, z.core.$strip>;
+}, z.core.$strip>;
 export type MetricGateRejectReason = z.infer<typeof MetricGateRejectReasonSchema>;
 export type GatedE1RMSample = z.infer<typeof GatedE1RMSampleSchema>;
 export type BestQualifyingSet = z.infer<typeof BestQualifyingSetSchema>;
@@ -138,4 +197,6 @@ export type RelativeStrengthScore = z.infer<typeof RelativeStrengthScoreSchema>;
 export type RepRangePivot = z.infer<typeof RepRangePivotSchema>;
 export type ConfidenceBand = z.infer<typeof ConfidenceBandSchema>;
 export type MetricBasketSnapshot = z.infer<typeof MetricBasketSnapshotSchema>;
+export type MetricBasketSnapshotCaptureKind = z.infer<typeof MetricBasketSnapshotCaptureKindSchema>;
+export type MetricBasketSnapshotRecord = z.infer<typeof MetricBasketSnapshotRecordSchema>;
 //# sourceMappingURL=metrics.d.ts.map
