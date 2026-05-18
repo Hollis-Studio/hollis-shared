@@ -28,7 +28,7 @@ Phase I prime promoted Workouts domain, error/result, and design-token content i
 - `npm run typecheck`: passed.
 - `npm run smoke:import`: passed, 71 public entrypoints.
 - Targeted invariant test:
-  `npm --workspace @hollis/contracts run test -- --runInBand packages/contracts/__tests__/workouts-domain-promotion.test.ts -t "canonicalization status refinement"` passed.
+  `npm --workspace @hollis-studio/contracts run test -- --runInBand packages/contracts/__tests__/workouts-domain-promotion.test.ts -t "canonicalization status refinement"` passed.
 
 Preserved invariants:
 
@@ -40,10 +40,10 @@ Preserved invariants:
 
 ## Health Re-consumption
 
-Updated Health package refs to:
+Updated Health package refs. These were local git pins during the transition and have since been replaced by GitHub Packages semver pins:
 
-- `@hollis/contracts`: `git+file:///Users/isaaclandes/Documents/SRC/hollis-shared#contracts-v0.2.0-alpha.1`
-- `@hollis/design-tokens`: `git+file:///Users/isaaclandes/Documents/SRC/hollis-shared#design-tokens-v0.2.0-alpha.1`
+- `@hollis-studio/contracts`: `0.2.0-alpha.6`
+- `@hollis-studio/design-tokens`: `0.2.0-alpha.2`
 
 Verification:
 
@@ -63,9 +63,9 @@ Health blocker:
 Command:
 
 ```bash
-npm install @hollis/contracts@git+file:///Users/isaaclandes/Documents/SRC/hollis-shared#contracts-v0.2.0-alpha.1 --no-save --package-lock=false
+npm install @hollis-studio/contracts@0.2.0-alpha.6 --no-save --package-lock=false
 npm run typecheck
-rm -rf node_modules/@hollis && npm install
+npm install
 ```
 
 Result:
@@ -94,4 +94,3 @@ Completed:
 Not complete:
 
 - Health sanity did not stay 67/67 because `typecheck:server` failed on existing server TypeScript errors.
-

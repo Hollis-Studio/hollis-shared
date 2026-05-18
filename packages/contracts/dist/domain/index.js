@@ -102,7 +102,7 @@ export * from "./nutrition-plan.js";
 // NOTE: Excluding volume level re-exports (already exported from ../primitives)
 // NOTE: Excluding StrategyGenerationProgressSchema, StrategyGenerationResultSchema,
 //   StrategyClarificationNeededSchema to avoid conflicts with web-admin validation schemas.
-//   Import directly from '@hollis/contracts/domain/training-strategy' when needed.
+//   Import directly from '@hollis-studio/contracts/domain/training-strategy' when needed.
 export { CreateDetailedStrategyGoalSchema, CreateDetailedTrainingPhaseSchema, CreateDetailedTrainingStrategySchema, DetailedStrategyGoalSchema, DetailedTrainingPhaseSchema, DetailedTrainingStrategySchema, GOAL_SYNC_ERROR_CODES, GoalSyncResultSchema, StrategyDraftSchema, StrategyGenerationActivitySchema, StrategyGenerationResponseSchema, StrategyGoalDraftSchema, SyncAllGoalsResultSchema, TrainingPhaseDraftSchema, UpdateDetailedTrainingStrategySchema, calculateGoalProgress, calculateStrategyProgress, createMockDetailedStrategyGoal, createMockDetailedTrainingPhase, createMockDetailedTrainingStrategy, createMockStrategyClarificationNeeded, createMockStrategyDraft, createMockStrategyGenerationProgress, createMockStrategyGenerationResult, createMockStrategyGoalDraft, createMockTrainingPhaseDraft, getCurrentPhase } from "./training-strategy.js";
 // Enum Contract utilities - factory for creating type-safe enum contracts
 export * from "./enumContract.js";

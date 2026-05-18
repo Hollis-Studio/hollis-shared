@@ -29,7 +29,7 @@ import {
     workoutPlanGenerationResultSchema,
 } from "../ai-validation";
 
-import { WORKOUT_SECTION_TYPES } from "@hollis/contracts";
+import { WORKOUT_SECTION_TYPES } from "@hollis-studio/contracts";
 
 // ============================================================================
 // GENERATED EXERCISE SCHEMA TESTS

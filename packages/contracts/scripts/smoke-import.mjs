@@ -1,16 +1,16 @@
 const imports = [
-  ["@hollis/contracts", ["USER_TIER", "unwrapEnvelope"]],
-  ["@hollis/contracts/api", ["API_ROUTES", "unwrapEnvelope"]],
-  ["@hollis/contracts/domain", ["USER_TIER", "MASTER_OFFER_SHEET"]],
-  ["@hollis/contracts/schemas", ["emailSchema"]],
-  ["@hollis/contracts/constants", ["STORAGE_KEYS"]],
-  ["@hollis/contracts/admin", ["patientSummarySchema"]],
-  ["@hollis/contracts/ai", ["GeneratedExerciseSchema"]],
-  ["@hollis/contracts/public", ["ContactFormSchema"]],
-  ["@hollis/contracts/stripe", ["SubscriptionStatusSchema"]],
-  ["@hollis/contracts/password", ["passwordSchema"]],
-  ["@hollis/contracts/primitives", ["VolumeLevelSchema"]],
-  ["@hollis/contracts/errors", ["ApiError"]],
+  ["@hollis-studio/contracts", ["USER_TIER", "unwrapEnvelope"]],
+  ["@hollis-studio/contracts/api", ["API_ROUTES", "unwrapEnvelope"]],
+  ["@hollis-studio/contracts/domain", ["USER_TIER", "MASTER_OFFER_SHEET"]],
+  ["@hollis-studio/contracts/schemas", ["emailSchema"]],
+  ["@hollis-studio/contracts/constants", ["STORAGE_KEYS"]],
+  ["@hollis-studio/contracts/admin", ["patientSummarySchema"]],
+  ["@hollis-studio/contracts/ai", ["GeneratedExerciseSchema"]],
+  ["@hollis-studio/contracts/public", ["ContactFormSchema"]],
+  ["@hollis-studio/contracts/stripe", ["SubscriptionStatusSchema"]],
+  ["@hollis-studio/contracts/password", ["passwordSchema"]],
+  ["@hollis-studio/contracts/primitives", ["VolumeLevelSchema"]],
+  ["@hollis-studio/contracts/errors", ["ApiError"]],
 ];
 
 for (const [specifier, expectedExports] of imports) {

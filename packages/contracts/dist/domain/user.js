@@ -148,7 +148,7 @@ export const USER_ROLE_LABELS = {
     CLIENT: "Client",
 };
 /**
- * Role badge colors - inlined to avoid adding @hollis/design-tokens as a dependency of
+ * Role badge colors - inlined to avoid adding @hollis-studio/design-tokens as a dependency of
  * shared/contracts (which is consumed by server, web-admin, and mobile alike).
  *
  * IMPORTANT: These hex values are pinned to match `shared/design-tokens/tokens/colors.ts`
@@ -166,11 +166,11 @@ const ROLE_BADGE_COLORS = {
  * Role badge configuration mapped by user role.
  *
  * This is the cross-platform version used by web-admin and any consumer that cannot
- * depend on @hollis/design-tokens at runtime. Values are kept in sync with the design
+ * depend on @hollis-studio/design-tokens at runtime. Values are kept in sync with the design
  * tokens (see ROLE_BADGE_COLORS above).
  *
  * Mobile app: use ROLE_BADGE_CONFIG from src/contracts/commonEnums.ts instead, which
- * resolves colors via @hollis/design-tokens at runtime for dynamic theming.
+ * resolves colors via @hollis-studio/design-tokens at runtime for dynamic theming.
  */
 export const ROLE_BADGE_CONFIG = {
     ADMIN: {
@@ -741,7 +741,7 @@ export const MESSAGE_RECIPIENT_ROLE_LABELS = {
 // ============================================================================
 /**
  * UNIT_CONVERSION has been moved to shared/contracts/constants/index.ts
- * Import from @hollis/contracts or ../constants instead of this file.
+ * Import from @hollis-studio/contracts or ../constants instead of this file.
  *
  * This comment remains for backward compatibility references, but the export
  * has been removed to avoid duplicate exports in the barrel file.

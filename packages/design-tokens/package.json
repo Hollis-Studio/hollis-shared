@@ -1,9 +1,20 @@
 {
-  "name": "@hollis/design-tokens",
+  "name": "@hollis-studio/design-tokens",
   "version": "0.2.0-alpha.2",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hollis-Studio/hollis-shared.git",
+    "directory": "packages/design-tokens"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

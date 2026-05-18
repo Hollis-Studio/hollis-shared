@@ -773,7 +773,7 @@ export type PhiRoute = (typeof PHI_ROUTES)["LAB_TIMELINE"] | (typeof PHI_ROUTES)
  *
  * @example
  * ```ts
- * import { API_ROUTES } from '@hollis/contracts/api';
+ * import { API_ROUTES } from '@hollis-studio/contracts/api';
  *
  * // Static route
  * await apiClient.post(API_ROUTES.AUTH.LOGIN, credentials);

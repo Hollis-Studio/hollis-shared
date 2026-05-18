@@ -154,7 +154,7 @@ export const HTTP_STATUS = {
  * INVARIANT: All persisted biometrics use metric. Convert at display boundary only.
  *
  * IMPORTANT: All codebases (mobile, server, web-admin) must import these constants
- * from @hollis/contracts rather than defining local duplicates.
+ * from @hollis-studio/contracts rather than defining local duplicates.
  */
 export const UNIT_CONVERSION = {
   // Weight (base: kg)

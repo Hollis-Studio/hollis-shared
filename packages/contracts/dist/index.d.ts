@@ -2,7 +2,7 @@
  * @ai-context Shared Contracts Module | Single source of truth for all contracts across the monorepo
  *
  * CONVENTION: All domain enums use UPPER_CASE values to match Prisma enum definitions.
- * This is the canonical import alias: `@contracts` (or `@hollis/contracts`).
+ * This is the canonical import alias: `@contracts` (or `@hollis-studio/contracts`).
  *
  * This module provides:
  * - API route definitions and types

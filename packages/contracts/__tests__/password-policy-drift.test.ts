@@ -2,7 +2,7 @@
  * @ai-context Password Policy Drift Test | Ensures all codebases use shared PASSWORD_POLICY
  *
  * This test verifies that no endpoint or validation schema drifts from the
- * centralized PASSWORD_POLICY in @hollis/contracts/password.
+ * centralized PASSWORD_POLICY in @hollis-studio/contracts/password.
  *
  * If this test fails, you likely have a hardcoded password requirement somewhere.
  * Fix it by importing PASSWORD_POLICY from @contracts and using its values.

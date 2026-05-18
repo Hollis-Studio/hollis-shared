@@ -24,7 +24,7 @@
  *   PatientSummary,
  *   ADMIN_API_ROUTES,
  *   patientSummarySchema,
- * } from '@hollis/contracts/admin';
+ * } from '@hollis-studio/contracts/admin';
  * ```
  *
  * deps: zod, domain types | consumers: web-admin/services/*, server/src/routes/admin/*

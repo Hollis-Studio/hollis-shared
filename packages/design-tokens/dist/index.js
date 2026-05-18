@@ -1,17 +1,17 @@
 /**
  * @ai-context Design tokens: Root export
  *
- * @hollis/design-tokens - Single source of truth for design tokens
+ * @hollis-studio/design-tokens - Single source of truth for design tokens
  *
  * Usage:
  *   // Platform-agnostic tokens
- *   import { brandColors, spacing } from '@hollis/design-tokens';
+ *   import { brandColors, spacing } from '@hollis-studio/design-tokens';
  *
  *   // React Native specific
- *   import { nativeLightTheme, nativeDarkTheme } from '@hollis/design-tokens/native';
+ *   import { nativeLightTheme, nativeDarkTheme } from '@hollis-studio/design-tokens/native';
  *
  *   // Web/Next.js specific
- *   import { webLightTheme, generateTailwindThemeBlock } from '@hollis/design-tokens/web';
+ *   import { webLightTheme, generateTailwindThemeBlock } from '@hollis-studio/design-tokens/web';
  */
 // Re-export all tokens for convenience
 export * from './tokens/index.js';

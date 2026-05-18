@@ -18,10 +18,10 @@ export * from "./routes.js";
 // the legacy aggregator is retired.
 export { HEALTH_METRICS_ROUTES } from "./routes/health-metrics.js";
 // MFA and Assignment routes are defined in the modular routes/ directory (not in routes.ts).
-// Explicitly re-exported here so they are available via @hollis/contracts/api.
+// Explicitly re-exported here so they are available via @hollis-studio/contracts/api.
 export { ASSIGNMENT_ROUTES, MFA_ROUTES } from "./routes/mfa.js";
 // Workout Plans routes are defined in the modular routes/ directory (not in routes.ts).
-// Explicitly re-exported here so they are available via @hollis/contracts/api.
+// Explicitly re-exported here so they are available via @hollis-studio/contracts/api.
 export { WORKOUT_PLANS_ROUTES } from "./routes/workouts.js";
 // Health app route request/query/param schemas promoted from server validation.
 export * from "./routes/health-route-contracts.js";

@@ -33,6 +33,7 @@ export const SessionSetSchema = z.object({
   isOutlier: z.boolean(),
   completedAt: z.coerce.date(),
   isConfirmed: z.boolean().optional(),
+  skipped: z.boolean().optional(),
   restAfterSec: z.number().int().min(0).nullable(),
   setType: z.enum(["normal", "warmup", "drop_set", "rest_pause", "superset"]).default("normal"),
   setGroupId: z.string().nullable().optional(),

@@ -116,11 +116,11 @@ export interface RoleBadge {
  * Role badge configuration mapped by user role.
  *
  * This is the cross-platform version used by web-admin and any consumer that cannot
- * depend on @hollis/design-tokens at runtime. Values are kept in sync with the design
+ * depend on @hollis-studio/design-tokens at runtime. Values are kept in sync with the design
  * tokens (see ROLE_BADGE_COLORS above).
  *
  * Mobile app: use ROLE_BADGE_CONFIG from src/contracts/commonEnums.ts instead, which
- * resolves colors via @hollis/design-tokens at runtime for dynamic theming.
+ * resolves colors via @hollis-studio/design-tokens at runtime for dynamic theming.
  */
 export declare const ROLE_BADGE_CONFIG: Record<UserRole, RoleBadge>;
 /**
@@ -518,7 +518,7 @@ export declare const MESSAGE_RECIPIENT_ROLE: {
 export declare const MESSAGE_RECIPIENT_ROLE_LABELS: Record<MessagingRecipientRole, string>;
 /**
  * UNIT_CONVERSION has been moved to shared/contracts/constants/index.ts
- * Import from @hollis/contracts or ../constants instead of this file.
+ * Import from @hollis-studio/contracts or ../constants instead of this file.
  *
  * This comment remains for backward compatibility references, but the export
  * has been removed to avoid duplicate exports in the barrel file.

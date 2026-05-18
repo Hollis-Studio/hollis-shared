@@ -11,7 +11,7 @@
  * IMPORTANT: All revocation reason values MUST be imported from here.
  * Never use raw string literals for revokedReason.
  *
- * deps: zod | consumers: server, @hollis/auth-client
+ * deps: zod | consumers: server, @hollis-studio/auth-client
  */
 import { z } from "zod";
 // ============================================================================

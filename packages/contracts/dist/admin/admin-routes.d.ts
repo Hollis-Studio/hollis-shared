@@ -586,7 +586,7 @@ export declare const ADMIN_MARKETING_ROUTES: {
  *
  * @example
  * ```ts
- * import { ADMIN_API_ROUTES } from '@hollis/contracts/admin';
+ * import { ADMIN_API_ROUTES } from '@hollis-studio/contracts/admin';
  *
  * // Static route
  * await apiClient.get(ADMIN_API_ROUTES.PATIENTS.LIST);

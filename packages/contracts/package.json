@@ -1,10 +1,23 @@
 {
   "_comment_BUILD_001": "RESOLVED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Add explicit package.json exports only for currently consumed public subpaths. Do not add wildcard exports or local compatibility barrels. Reviewed: 2026-05-12 (Phase E/F shared extraction cleanup)",
-  "name": "@hollis/contracts",
-  "version": "0.2.0-alpha.6",
+  "name": "@hollis-studio/contracts",
+  "version": "0.2.0-alpha.7",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "SCHEMA_INDEX.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hollis-Studio/hollis-shared.git",
+    "directory": "packages/contracts"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -273,5 +286,84 @@
   },
   "peerDependencies": {
     "zod": "4.3.6"
+  },
+  "typesVersions": {
+    "*": {
+      "admin": [
+        "dist/admin/index.d.ts"
+      ],
+      "admin/*": [
+        "dist/admin/*.d.ts"
+      ],
+      "ai": [
+        "dist/ai/index.d.ts"
+      ],
+      "ai/*": [
+        "dist/ai/*.d.ts"
+      ],
+      "api": [
+        "dist/api/index.d.ts"
+      ],
+      "api/*": [
+        "dist/api/*.d.ts"
+      ],
+      "constants": [
+        "dist/constants/index.d.ts"
+      ],
+      "constants/*": [
+        "dist/constants/*.d.ts"
+      ],
+      "domain": [
+        "dist/domain/index.d.ts"
+      ],
+      "domain/*": [
+        "dist/domain/*.d.ts"
+      ],
+      "errors": [
+        "dist/errors/index.d.ts"
+      ],
+      "errors/*": [
+        "dist/errors/*.d.ts"
+      ],
+      "password": [
+        "dist/password/index.d.ts"
+      ],
+      "password/*": [
+        "dist/password/*.d.ts"
+      ],
+      "primitives": [
+        "dist/primitives/index.d.ts"
+      ],
+      "primitives/*": [
+        "dist/primitives/*.d.ts"
+      ],
+      "progression": [
+        "dist/progression/index.d.ts"
+      ],
+      "progression/*": [
+        "dist/progression/*.d.ts"
+      ],
+      "public": [
+        "dist/public/index.d.ts"
+      ],
+      "public/*": [
+        "dist/public/*.d.ts"
+      ],
+      "schemas": [
+        "dist/schemas/index.d.ts"
+      ],
+      "schemas/*": [
+        "dist/schemas/*.d.ts"
+      ],
+      "stripe": [
+        "dist/stripe/index.d.ts"
+      ],
+      "stripe/*": [
+        "dist/stripe/*.d.ts"
+      ],
+      "*": [
+        "dist/*.d.ts"
+      ]
+    }
   }
 }

@@ -42,14 +42,14 @@ Looking for a specific schema? See **[SCHEMA_INDEX.md](./SCHEMA_INDEX.md)** for 
 import { USER_ROLE, UserRoleSchema, type UserRole } from "@contracts";
 
 // Direct import (for shared-only items)
-import { API_ROUTES, HTTP_METHODS } from "@hollis/contracts";
+import { API_ROUTES, HTTP_METHODS } from "@hollis-studio/contracts";
 ```
 
 ### From the Server (`/server/src/*`)
 
 ```typescript
 // Use the alias
-import { USER_ROLE, API_ROUTES, isoDateSchema } from "@hollis/contracts";
+import { USER_ROLE, API_ROUTES, isoDateSchema } from "@hollis-studio/contracts";
 
 // Or via local contracts barrel
 import { USER_ROLES } from "@contracts";
@@ -62,7 +62,7 @@ import { USER_ROLES } from "@contracts";
 import {
   APPOINTMENT_STATUSES,
   AppointmentStatusSchema,
-} from "@hollis/contracts";
+} from "@hollis-studio/contracts";
 
 // Or via local contracts
 import { USER_TIERS } from "@contracts";
@@ -74,19 +74,19 @@ For tree-shaking and targeted imports, use subpath exports:
 
 ```typescript
 // Admin contracts (patient summaries, admin routes, etc.)
-import { PatientSummary, ADMIN_API_ROUTES } from "@hollis/contracts/admin";
+import { PatientSummary, ADMIN_API_ROUTES } from "@hollis-studio/contracts/admin";
 
 // AI/Agent contracts
-import { AgentMessageSchema, AI_ROUTES } from "@hollis/contracts/ai";
+import { AgentMessageSchema, AI_ROUTES } from "@hollis-studio/contracts/ai";
 
 // Public API contracts
-import { PublicRoutes } from "@hollis/contracts/public";
+import { PublicRoutes } from "@hollis-studio/contracts/public";
 
 // Stripe/Billing contracts
-import { StripeWebhookPayload } from "@hollis/contracts/stripe";
+import { StripeWebhookPayload } from "@hollis-studio/contracts/stripe";
 
 // Password validation contracts
-import { PasswordStrengthSchema } from "@hollis/contracts/password";
+import { PasswordStrengthSchema } from "@hollis-studio/contracts/password";
 ```
 
 ## Module Structure
@@ -315,8 +315,8 @@ export {
   YOUR_THING_LABELS,
   YourThingSchema,
   isYourThing,
-} from "@hollis/contracts";
-export type { YourThing } from "@hollis/contracts";
+} from "@hollis-studio/contracts";
+export type { YourThing } from "@hollis-studio/contracts";
 
 // Platform-specific extensions can be added below
 export const YOUR_THING_ICONS: Record<YourThing, string> = {
@@ -340,10 +340,10 @@ npm run check:contract-duplicates
 
 | Codebase  | Alias               | Points To                      |
 | --------- | ------------------- | ------------------------------ |
-| Mobile    | `@hollis/contracts` | `shared/contracts/index.ts`    |
+| Mobile    | `@hollis-studio/contracts` | `shared/contracts/index.ts`    |
 | Mobile    | `@contracts`        | `src/contracts/index.ts`       |
-| Server    | `@hollis/contracts` | `../shared/contracts/index.ts` |
-| Web Admin | `@hollis/contracts` | `../shared/contracts/index.ts` |
+| Server    | `@hollis-studio/contracts` | `../shared/contracts/index.ts` |
+| Web Admin | `@hollis-studio/contracts` | `../shared/contracts/index.ts` |
 | Web Admin | `@contracts`        | `contracts/index.ts`           |
 
 ## CI Integration

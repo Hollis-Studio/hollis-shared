@@ -13,8 +13,8 @@ module.exports = {
   rootDir: '.',
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
-    '^@hollis/contracts$': '<rootDir>/index.ts',
-    '^@hollis/contracts/(.*)$': '<rootDir>/$1',
+    '^@hollis-studio/contracts$': '<rootDir>/index.ts',
+    '^@hollis-studio/contracts/(.*)$': '<rootDir>/$1',
   },
   transform: {
     '^.+\\.tsx?$': [

@@ -5,7 +5,7 @@ import {
   formatUsd,
   getDiscountedMonthlyPriceDollars,
   getTierCardHighlights,
-} from "@hollis/contracts";
+} from "@hollis-studio/contracts";
 
 describe("master offer sheet", () => {
   it("keeps user tier prices aligned with the master offer sheet", () => {

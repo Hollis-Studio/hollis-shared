@@ -37,6 +37,7 @@ export declare const SessionSetSchema: z.ZodObject<{
     isOutlier: z.ZodBoolean;
     completedAt: z.ZodCoercedDate<unknown>;
     isConfirmed: z.ZodOptional<z.ZodBoolean>;
+    skipped: z.ZodOptional<z.ZodBoolean>;
     restAfterSec: z.ZodNullable<z.ZodNumber>;
     setType: z.ZodDefault<z.ZodEnum<{
         normal: "normal";
@@ -127,6 +128,7 @@ export declare const SessionExerciseSchema: z.ZodObject<{
         isOutlier: z.ZodBoolean;
         completedAt: z.ZodCoercedDate<unknown>;
         isConfirmed: z.ZodOptional<z.ZodBoolean>;
+        skipped: z.ZodOptional<z.ZodBoolean>;
         restAfterSec: z.ZodNullable<z.ZodNumber>;
         setType: z.ZodDefault<z.ZodEnum<{
             normal: "normal";
@@ -310,6 +312,7 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
             isOutlier: z.ZodBoolean;
             completedAt: z.ZodCoercedDate<unknown>;
             isConfirmed: z.ZodOptional<z.ZodBoolean>;
+            skipped: z.ZodOptional<z.ZodBoolean>;
             restAfterSec: z.ZodNullable<z.ZodNumber>;
             setType: z.ZodDefault<z.ZodEnum<{
                 normal: "normal";
@@ -477,6 +480,7 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
             isOutlier: z.ZodBoolean;
             completedAt: z.ZodCoercedDate<unknown>;
             isConfirmed: z.ZodOptional<z.ZodBoolean>;
+            skipped: z.ZodOptional<z.ZodBoolean>;
             restAfterSec: z.ZodNullable<z.ZodNumber>;
             setType: z.ZodDefault<z.ZodEnum<{
                 normal: "normal";

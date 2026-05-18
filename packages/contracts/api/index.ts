@@ -24,7 +24,7 @@ export {
 } from "./routes/health-metrics.js";
 
 // MFA and Assignment routes are defined in the modular routes/ directory (not in routes.ts).
-// Explicitly re-exported here so they are available via @hollis/contracts/api.
+// Explicitly re-exported here so they are available via @hollis-studio/contracts/api.
 export {
     ASSIGNMENT_ROUTES,
     MFA_ROUTES,
@@ -33,7 +33,7 @@ export {
 } from "./routes/mfa.js";
 
 // Workout Plans routes are defined in the modular routes/ directory (not in routes.ts).
-// Explicitly re-exported here so they are available via @hollis/contracts/api.
+// Explicitly re-exported here so they are available via @hollis-studio/contracts/api.
 export {
     WORKOUT_PLANS_ROUTES
 } from "./routes/workouts.js";

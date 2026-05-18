@@ -1076,7 +1076,7 @@ export type PhiRoute =
  *
  * @example
  * ```ts
- * import { API_ROUTES } from '@hollis/contracts/api';
+ * import { API_ROUTES } from '@hollis-studio/contracts/api';
  *
  * // Static route
  * await apiClient.post(API_ROUTES.AUTH.LOGIN, credentials);

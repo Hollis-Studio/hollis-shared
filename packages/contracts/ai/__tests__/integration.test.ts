@@ -37,7 +37,7 @@ import {
     type GeneratedWorkoutPlan,
     type GeneratedWorkoutSection,
     type WorkoutSectionType,
-} from "@hollis/contracts";
+} from "@hollis-studio/contracts";
 
 // ============================================================================
 // IMPORT VERIFICATION TESTS

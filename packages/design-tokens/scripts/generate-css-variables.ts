@@ -126,7 +126,7 @@ function generateDesignTokensCss(): string {
   }
 
   return `/* ═══════════════════════════════════════════════════════════════════════════
- * AUTO-GENERATED FROM @hollis/design-tokens
+ * AUTO-GENERATED FROM @hollis-studio/design-tokens
  * Do not edit manually - run: npx tsx shared/design-tokens/scripts/generate-css-variables.ts
  * ═══════════════════════════════════════════════════════════════════════════ */
 

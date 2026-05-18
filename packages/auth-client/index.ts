@@ -1,5 +1,5 @@
 /**
- * @ai-context @hollis/auth-client | Thin middleware for consumer apps to verify Identity Service tokens
+ * @ai-context @hollis-studio/auth-client | Thin middleware for consumer apps to verify Identity Service tokens
  *
  * Consumer apps (Health, Workouts) import this package instead of implementing
  * their own token verification. All verification ultimately delegates to the
@@ -11,10 +11,10 @@
  * - verifyToken         — low-level verification call to Identity Service /verify
  * - AuthClientMiddleware — Express middleware type
  *
- * Re-exports (so consumers import only from '@hollis/auth-client'):
+ * Re-exports (so consumers import only from '@hollis-studio/auth-client'):
  * - AccessTokenClaims, Audience, validateAudience
  *
- * deps: @hollis/contracts, jsonwebtoken | consumers: hollis-health-app server, Hollis-Workouts server
+ * deps: @hollis-studio/contracts, jsonwebtoken | consumers: hollis-health-app server, Hollis-Workouts server
  */
 
 import type { IncomingHttpHeaders } from "node:http";
@@ -24,11 +24,11 @@ import {
   APP_ERROR_CODES,
   type AppError,
   type Audience,
-} from "@hollis/contracts";
+} from "@hollis-studio/contracts";
 
 // Re-export contract types so consumers only need one import
-export type { AccessTokenClaims, Audience } from "@hollis/contracts";
-export { validateAudience, AudienceSchema, AUDIENCES } from "@hollis/contracts";
+export type { AccessTokenClaims, Audience } from "@hollis-studio/contracts";
+export { validateAudience, AudienceSchema, AUDIENCES } from "@hollis-studio/contracts";
 
 // ============================================================================
 // TYPES
@@ -45,7 +45,7 @@ export { validateAudience, AudienceSchema, AUDIENCES } from "@hollis/contracts";
  *
  * @example
  * // express.d.ts in the consumer app
- * import type { AccessTokenClaims } from '@hollis/auth-client';
+ * import type { AccessTokenClaims } from '@hollis-studio/auth-client';
  * declare module 'express-serve-static-core' {
  *   interface Request {
  *     userId?: string;
@@ -56,7 +56,7 @@ export { validateAudience, AudienceSchema, AUDIENCES } from "@hollis/contracts";
 export interface AuthenticatedRequest {
   headers: IncomingHttpHeaders;
   userId?: string;
-  tokenClaims?: import("@hollis/contracts").AccessTokenClaims;
+  tokenClaims?: import("@hollis-studio/contracts").AccessTokenClaims;
 }
 
 /** Minimal response shape — Express `Response` is structurally compatible. */
@@ -138,14 +138,14 @@ export interface AuthClient {
    * Use this when you need the claims outside of an Express middleware context
    * (e.g. WebSocket upgrade handlers, background jobs).
    */
-  verifyToken: (token: string) => Promise<import("@hollis/contracts").AccessTokenClaims>;
+  verifyToken: (token: string) => Promise<import("@hollis-studio/contracts").AccessTokenClaims>;
 }
 
 /**
  * Creates a configured auth client for a consumer app server.
  *
  * @example
- * import { createAuthClient } from '@hollis/auth-client';
+ * import { createAuthClient } from '@hollis-studio/auth-client';
  *
  * const auth = createAuthClient({
  *   identityServiceUrl: process.env.IDENTITY_SERVICE_URL,
@@ -161,7 +161,7 @@ export function createAuthClient(opts: AuthClientOptions): AuthClient {
 
   async function verifyToken(
     token: string,
-  ): Promise<import("@hollis/contracts").AccessTokenClaims> {
+  ): Promise<import("@hollis-studio/contracts").AccessTokenClaims> {
     // Fast path: local JWT verification when a secret/key is provided.
     // This avoids a network call to the Identity Service on every request.
     if (jwksSecret) {
@@ -213,7 +213,7 @@ function verifyTokenLocally(
   token: string,
   secret: string,
   audience: Audience,
-): import("@hollis/contracts").AccessTokenClaims {
+): import("@hollis-studio/contracts").AccessTokenClaims {
   let decoded: unknown;
   try {
     decoded = jwt.verify(token, secret);
@@ -251,7 +251,7 @@ async function verifyTokenRemote(
   identityServiceUrl: string,
   audience: Audience,
   timeoutMs: number,
-): Promise<import("@hollis/contracts").AccessTokenClaims> {
+): Promise<import("@hollis-studio/contracts").AccessTokenClaims> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -296,7 +296,7 @@ async function verifyTokenRemote(
 function parseClaims(
   raw: unknown,
   requiredAudience: Audience,
-): import("@hollis/contracts").AccessTokenClaims {
+): import("@hollis-studio/contracts").AccessTokenClaims {
   const result = AccessTokenClaimsSchema.safeParse(raw);
   if (!result.success) {
     const error: AppError = {

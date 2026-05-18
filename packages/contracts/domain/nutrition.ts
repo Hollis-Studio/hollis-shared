@@ -19,7 +19,7 @@ import { foodLogEntrySchema } from "../schemas/json-blobs.js";
 import { createPaginatedListSchema } from "./pagination.js";
 
 // Note: foodLogEntrySchema and FoodLogEntryContract are used internally but NOT re-exported
-// to avoid duplicate export errors in barrel files. Import them from @hollis/contracts/schemas.
+// to avoid duplicate export errors in barrel files. Import them from @hollis-studio/contracts/schemas.
 
 // ============================================================================
 // MEAL TYPES

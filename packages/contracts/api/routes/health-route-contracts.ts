@@ -8,7 +8,18 @@
  */
 
 import { z } from "zod";
-import { UPLOAD_LIMITS } from "../../constants/index.js";
+import { OAUTH_PROVIDERS, UPLOAD_LIMITS } from "../../constants/index.js";
+import {
+  APPOINTMENT_STATUSES,
+  APPOINTMENT_TYPES,
+} from "../../domain/appointments.js";
+import { UserEventTypeSchema } from "../../domain/businessAnalytics.js";
+import { BiometricSourceSchema } from "../../domain/clinical.js";
+import {
+  DOCUMENT_CATEGORIES,
+  DocumentCategorySchema,
+} from "../../domain/documents.js";
+import { SleepSourceSchema } from "../../domain/daily-metrics.js";
 import {
   DIFFICULTY_LEVELS,
   EQUIPMENT_TYPES,
@@ -37,12 +48,17 @@ import {
 } from "../../domain/sessions.js";
 import {
   BIOLOGICAL_SEXES,
+  MESSAGE_RECIPIENT_ROLES,
   PRIMARY_GOALS,
   REGISTRATION_BIOLOGICAL_SEX_OPTIONS,
   USER_TIERS,
   canonicalizeRegistrationBiologicalSex,
 } from "../../domain/user.js";
+import { MESSAGE_MAX_LENGTH } from "../../domain/messages.js";
+import { ASSIGNMENT_STATUS } from "../../domain/mfa.js";
 import { WEIGHT_UNITS } from "../../domain/units.js";
+import { wearableWorkoutSyncSchema } from "../../domain/workouts.js";
+import { passwordSchema } from "../../password/index.js";
 import { VOLUME_LEVELS } from "../../primitives/volume-level.js";
 import {
   BARCODE_REGEX,
@@ -68,6 +84,480 @@ const caseInsensitiveCanonicalEnum = <
     .string()
     .transform((value) => value.trim().toUpperCase())
     .pipe(z.enum(values));
+
+// ============================================================================
+// Smart Assist / AI Plans
+// ============================================================================
+
+export const generateWorkoutPlanBodySchema = z.object({
+  userId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+  weekStartDate: isoDateSchema,
+  customPrompt: z.string().max(2000, "Custom prompt too long").optional(),
+  overwriteMode: z
+    .enum(["overwrite", "fillEmpty"])
+    .optional()
+    .default("fillEmpty"),
+});
+export type GenerateWorkoutPlanBody = z.infer<
+  typeof generateWorkoutPlanBodySchema
+>;
+
+export const generateNutritionPlanBodySchema = z.object({
+  userId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+  weekStartDate: isoDateSchema,
+  customPrompt: z.string().max(2000, "Custom prompt too long").optional(),
+});
+export type GenerateNutritionPlanBody = z.infer<
+  typeof generateNutritionPlanBodySchema
+>;
+
+export const generateStrategyBodySchema = z.object({
+  userId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+  customPrompt: z
+    .string()
+    .min(10, "Prompt must be at least 10 characters")
+    .max(2000, "Prompt too long"),
+});
+export type GenerateStrategyBody = z.infer<typeof generateStrategyBodySchema>;
+
+export const continueStrategyGenerationBodySchema = z.object({
+  userId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+  requestId: z.string().uuid("Invalid request ID"),
+  clarificationResponse: z
+    .string()
+    .min(1, "Response required")
+    .max(2000, "Response too long"),
+});
+export type ContinueStrategyGenerationBody = z.infer<
+  typeof continueStrategyGenerationBodySchema
+>;
+
+// ============================================================================
+// Appointments
+// ============================================================================
+
+export const appointmentTypeSchema = z.enum(APPOINTMENT_TYPES);
+export const appointmentStatusSchema = z.enum(APPOINTMENT_STATUSES);
+
+export const createAppointmentBodySchema = z
+  .object({
+    providerId: z.string().min(1, "providerId is required"),
+    title: z.string().min(1, "title is required"),
+    startTime: z.string().datetime({
+      offset: true,
+      message: "Valid ISO datetime required for startTime",
+    }),
+    type: appointmentTypeSchema,
+    duration: z.number().int().positive().optional(),
+    location: z.string().max(500).optional(),
+    notes: z.string().max(2000).optional(),
+    meetingLink: z.string().url().optional(),
+  })
+  .strip();
+
+export const updateAppointmentBodySchema = z
+  .object({
+    title: z.string().min(1).optional(),
+    startTime: z.string().datetime({ offset: true }).optional(),
+    type: appointmentTypeSchema.optional(),
+    location: z.string().max(500).optional(),
+    notes: z.string().max(2000).optional(),
+    meetingLink: z.string().url().optional(),
+    status: appointmentStatusSchema.optional(),
+  })
+  .strip()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field must be provided for update",
+  });
+
+export const appointmentIdParamSchema = z.object({
+  userId: z.string().min(1, "userId is required"),
+  appointmentId: z.string().uuid("Invalid appointment ID format"),
+});
+
+export const appointmentsQuerySchema = z.object({
+  startDate: isoDateSchema.optional(),
+  endDate: isoDateSchema.optional(),
+  status: appointmentStatusSchema.optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+
+export type AppointmentsQuery = z.infer<typeof appointmentsQuerySchema>;
+export type CreateAppointmentBody = z.infer<typeof createAppointmentBodySchema>;
+export type UpdateAppointmentBody = z.infer<typeof updateAppointmentBodySchema>;
+
+// ============================================================================
+// Assignments
+// ============================================================================
+
+export const assignmentIdParamSchema = z.object({
+  id: z.string().uuid("Invalid assignment ID format"),
+});
+
+export const patientIdParamSchema = z.object({
+  patientId: z
+    .string()
+    .regex(USER_ID_REGEX, "patientId must be a valid user ID (HH-XXXXXX)"),
+});
+
+export const clinicianIdParamSchema = z.object({
+  clinicianId: z
+    .string()
+    .regex(USER_ID_REGEX, "clinicianId must be a valid user ID (HH-XXXXXX)"),
+});
+
+export const assignmentsListQuerySchema = z.object({
+  status: z
+    .enum([
+      ASSIGNMENT_STATUS.ACTIVE,
+      ASSIGNMENT_STATUS.REVOKED,
+      ASSIGNMENT_STATUS.PENDING,
+    ])
+    .optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  offset: z.coerce.number().int().min(0).max(10000).default(0),
+});
+
+// ============================================================================
+// Auth
+// ============================================================================
+
+export const logoutBodySchema = z
+  .object({
+    refreshToken: z.string().min(1, "Refresh token required").optional(),
+  })
+  .strip();
+export type LogoutBody = z.infer<typeof logoutBodySchema>;
+
+export const forgotPasswordBodySchema = z
+  .object({
+    email: emailSchema,
+  })
+  .strip();
+export type ForgotPasswordBody = z.infer<typeof forgotPasswordBodySchema>;
+
+export const resetPasswordBodySchema = z
+  .object({
+    token: z.string().min(20).max(512),
+    newPassword: passwordSchema,
+  })
+  .strip();
+export type ResetPasswordBody = z.infer<typeof resetPasswordBodySchema>;
+
+export const changePasswordBodySchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password required"),
+    newPassword: passwordSchema,
+  })
+  .strip();
+export type ChangePasswordBody = z.infer<typeof changePasswordBodySchema>;
+
+const oAuthFullNameSchema = z
+  .object({
+    givenName: z.string().nullable().optional(),
+    familyName: z.string().nullable().optional(),
+  })
+  .optional();
+
+export const oAuthSignInBodySchema = z
+  .object({
+    provider: z.enum(OAUTH_PROVIDERS),
+    idToken: z
+      .string()
+      .min(1, "id_token is required")
+      .max(4096, "id_token too long"),
+    nonce: z
+      .string()
+      .min(16, "OAuth nonce must be at least 16 characters")
+      .max(256, "OAuth nonce too long"),
+    state: z
+      .string()
+      .min(16, "OAuth state must be at least 16 characters")
+      .max(256, "OAuth state too long"),
+    authorizationCode: z.string().optional(),
+    fullName: oAuthFullNameSchema,
+    accessToken: z.string().optional(),
+  })
+  .strip();
+export type OAuthSignInBody = z.infer<typeof oAuthSignInBodySchema>;
+
+export const oAuthRegisterBodySchema = z
+  .object({
+    provider: z.enum(OAUTH_PROVIDERS),
+    idToken: z
+      .string()
+      .min(1, "id_token is required")
+      .max(4096, "id_token too long"),
+    nonce: z
+      .string()
+      .min(16, "OAuth nonce must be at least 16 characters")
+      .max(256, "OAuth nonce too long"),
+    state: z
+      .string()
+      .min(16, "OAuth state must be at least 16 characters")
+      .max(256, "OAuth state too long"),
+    code: z.string().regex(BARCODE_REGEX, "Invalid barcode format"),
+    displayName: z
+      .string()
+      .min(1, "Display name is required")
+      .max(100, "Display name must be 100 characters or less"),
+    authorizationCode: z.string().optional(),
+    fullName: oAuthFullNameSchema,
+    accessToken: z.string().optional(),
+  })
+  .strip();
+export type OAuthRegisterBody = z.infer<typeof oAuthRegisterBodySchema>;
+
+// ============================================================================
+// Biometrics
+// ============================================================================
+
+export const biometricParamsSchema = z.object({
+  userId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+  entryId: z.string().uuid("Invalid entry ID format"),
+});
+
+export const biometricQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(200).optional(),
+  offset: z.coerce.number().int().min(0).default(0),
+  metricCode: z.string().min(1).max(100).optional(),
+});
+
+export const biometricCreateBodySchema = z.object({
+  metricDefinitionId: z.string().uuid(),
+  value: z.number().finite().min(0).max(100000),
+  unit: z.string().min(1).max(50),
+  source: BiometricSourceSchema.default("USER_LOG"),
+  date: isoDateSchema,
+  notes: z.string().max(500).optional(),
+});
+export type BiometricCreateBody = z.infer<typeof biometricCreateBodySchema>;
+
+export const biometricAdminBodySchema = biometricCreateBodySchema.extend({
+  patientId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+});
+export type BiometricAdminBody = z.infer<typeof biometricAdminBodySchema>;
+
+// ============================================================================
+// CRM / Membership
+// ============================================================================
+
+const membershipRequestSchema = z.object({
+  id: z.string().optional(),
+  userId: z.string(),
+  tier: z.enum(USER_TIERS),
+  startedAt: z.string().datetime({ offset: true }),
+  endedAt: z.string().datetime({ offset: true }).optional().nullable(),
+  notes: z.string().optional().nullable(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
+});
+
+const userEventRequestSchema = z.object({
+  id: z.string().optional(),
+  userId: z.string(),
+  type: UserEventTypeSchema,
+  occurredAt: z.string().datetime({ offset: true }),
+  source: z.string().optional(),
+  metadata: z.record(z.string(), z.unknown()).optional().nullable(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
+});
+
+export const membershipQuerySchema = z.object({
+  userId: z.string().min(1, "userId is required"),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
+});
+export type MembershipQuery = z.infer<typeof membershipQuerySchema>;
+
+export const membershipBodySchema = membershipRequestSchema
+  .pick({
+    userId: true,
+    tier: true,
+    startedAt: true,
+    endedAt: true,
+    notes: true,
+  })
+  .extend({
+    startedAt: z.string().datetime({ offset: true }).optional(),
+    endedAt: z.string().datetime({ offset: true }).optional().nullable(),
+    notes: z.string().optional().nullable(),
+  });
+export type MembershipBody = z.infer<typeof membershipBodySchema>;
+
+export const crmEventsQuerySchema = z.object({
+  userId: z.string().min(1, "userId is required"),
+  type: UserEventTypeSchema.optional(),
+  rangeDays: z.coerce.number().int().positive().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
+});
+export type CrmEventsQuery = z.infer<typeof crmEventsQuerySchema>;
+
+export const crmEventBodySchema = userEventRequestSchema
+  .pick({
+    userId: true,
+    type: true,
+    occurredAt: true,
+    source: true,
+    metadata: true,
+  })
+  .extend({
+    occurredAt: z.string().datetime({ offset: true }),
+  });
+export type CrmEventBody = z.infer<typeof crmEventBodySchema>;
+
+// ============================================================================
+// Daily Metrics / Data Export / Documents / Events / Messages
+// ============================================================================
+
+export const dailyMetricsQuerySchema = z.object({
+  startDate: isoDateSchema,
+  endDate: isoDateSchema,
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+export type DailyMetricsQuery = z.infer<typeof dailyMetricsQuerySchema>;
+
+export const dailyMetricsUpdateBodySchema = z.object({
+  steps: z.number().int().min(0).optional(),
+  sleepHours: z.number().min(0).max(24).optional(),
+  restingHeartRate: z.number().int().min(20).max(250).optional(),
+  activeCalories: z.number().int().min(0).optional(),
+  flightsClimbed: z.number().int().min(0).optional(),
+  weight: z.number().min(0).optional(),
+  weightUnit: z.enum(WEIGHT_UNITS).default("kg").optional(),
+  deepSleepPercent: z.number().min(0).max(100).optional(),
+  remSleepPercent: z.number().min(0).max(100).optional(),
+  lightSleepPercent: z.number().min(0).max(100).optional(),
+  awakeMinutes: z.number().int().min(0).optional(),
+  sleepQuality: z.number().int().min(0).max(100).optional(),
+  sleepSource: SleepSourceSchema.optional(),
+  hrv: z.number().min(0).max(300).optional(),
+  hrvSdnn: z.number().min(0).max(300).optional(),
+  tdeeEstimate: z.number().int().min(0).optional(),
+  tdeeConfidence: z.number().min(0).max(1).optional(),
+  recoveryScore: z.number().int().min(0).max(100).optional(),
+  trainingLoad: z.number().int().min(0).optional(),
+  acuteChronicRatio: z.number().min(0).optional(),
+  notes: z.array(z.string()).optional(),
+  recommendations: z.array(z.string()).optional(),
+  workouts: z.array(wearableWorkoutSyncSchema).optional(),
+});
+export type DailyMetricsUpdateBody = z.infer<
+  typeof dailyMetricsUpdateBodySchema
+>;
+
+export const dataExportBodySchema = z
+  .object({
+    email: z.string().email().max(254),
+  })
+  .strip();
+export type DataExportBody = z.infer<typeof dataExportBodySchema>;
+
+export const documentsQuerySchema = z.object({
+  patientId: z.string().min(1, "patientId query parameter is required"),
+  category: DocumentCategorySchema.optional(),
+  startDate: isoDateSchema.optional(),
+  endDate: isoDateSchema.optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+});
+export type DocumentsQuery = z.infer<typeof documentsQuerySchema>;
+
+export const documentIdParamSchema = z.object({
+  id: z.string().uuid("Invalid document ID format"),
+});
+
+export const createDocumentBodySchema = z.object({
+  patientId: z.string().min(1),
+  uploaderId: z.string().optional(),
+  fileUrl: z.string().min(1),
+  fileType: z.string().min(1),
+  category: DocumentCategorySchema.optional().default("OTHER"),
+  tags: z.array(z.string()).optional(),
+  notes: z.string().optional(),
+});
+export type CreateDocumentBody = z.infer<typeof createDocumentBodySchema>;
+
+export const sseQuerySchema = z.object({
+  sseToken: z.string().optional(),
+  token: z.string().optional(),
+});
+
+export const messageConversationQuerySchema = z.object({
+  userId: z.string().min(1, "userId is required"),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+export type MessageConversationQuery = z.infer<
+  typeof messageConversationQuerySchema
+>;
+
+export const messageThreadQuerySchema =
+  messageConversationQuerySchema.extend({
+    partnerId: z.string().min(1, "partnerId is required"),
+  });
+
+export const messageUnreadQuerySchema = z.object({
+  userId: z.string().min(1, "userId is required"),
+});
+
+export const messageSearchQuerySchema = z.object({
+  q: z.string().min(2).optional(),
+  type: z.enum(["name", "email"]).optional(),
+});
+
+export const messageMarkReadBodySchema = z
+  .object({
+    userId: z.string().min(1, "userId is required"),
+    senderRole: z.enum(MESSAGE_RECIPIENT_ROLES).optional(),
+    senderUserId: z.string().optional(),
+  })
+  .refine((data) => data.senderRole || data.senderUserId, {
+    message: "senderRole or senderUserId required",
+    path: ["senderRole"],
+  });
+export type MessageMarkReadBody = z.infer<typeof messageMarkReadBodySchema>;
+
+export const sendMessageBodySchema = z
+  .object({
+    senderId: z.string().min(1).optional(),
+    receiverId: z.string().min(1, "receiverId is required").optional(),
+    recipientRole: z.enum(MESSAGE_RECIPIENT_ROLES).optional(),
+    content: z
+      .string()
+      .min(1, "content is required")
+      .max(MESSAGE_MAX_LENGTH, "Message content too long"),
+    attachmentUrl: z.string().url("Invalid attachment URL").optional(),
+  })
+  .refine((data) => data.receiverId ?? data.recipientRole, {
+    message: "Either receiverId or recipientRole is required",
+    path: ["receiverId"],
+  });
+export type SendMessageBody = z.infer<typeof sendMessageBodySchema>;
+
+export const messageDeleteParamsSchema = z.object({
+  messageId: z.string().uuid(),
+});
+
+export { DOCUMENT_CATEGORIES, DocumentCategorySchema };
 
 export const createExerciseBodySchema = z.object({
   name: z.string().min(1).max(100),

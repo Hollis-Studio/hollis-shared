@@ -1,6 +1,6 @@
 # Schema Index
 
-> Public-surface reference for `@hollis/contracts`. Internal file paths are
+> Public-surface reference for `@hollis-studio/contracts`. Internal file paths are
 > listed only to help maintain the package before extraction.
 
 **Last Updated:** 2026-05-12
@@ -9,12 +9,12 @@
 
 ## How to Use This Index
 
-1. **API request/response validation** → import from `@hollis/contracts` or `@hollis/contracts/api`; see [API Request/Response Schemas](#api-requestresponse-schemas)
-2. **Domain enums and types** → import from `@hollis/contracts` or `@hollis/contracts/domain`; see [Domain Schemas](#domain-schemas)
-3. **Prisma JSON field validation** → import from `@hollis/contracts/schemas`; see [JSON Blob Schemas](#json-blob-schemas)
-4. **Admin portal operations** → import from `@hollis/contracts/admin`; see [Admin Schemas](#admin-schemas)
-5. **AI/Agent function calls** → import from `@hollis/contracts/ai`; see [AI Schemas](#ai-schemas)
-6. **Password validation and reset** → import from `@hollis/contracts/password`; see [Password Schemas](#password-schemas)
+1. **API request/response validation** → import from `@hollis-studio/contracts` or `@hollis-studio/contracts/api`; see [API Request/Response Schemas](#api-requestresponse-schemas)
+2. **Domain enums and types** → import from `@hollis-studio/contracts` or `@hollis-studio/contracts/domain`; see [Domain Schemas](#domain-schemas)
+3. **Prisma JSON field validation** → import from `@hollis-studio/contracts/schemas`; see [JSON Blob Schemas](#json-blob-schemas)
+4. **Admin portal operations** → import from `@hollis-studio/contracts/admin`; see [Admin Schemas](#admin-schemas)
+5. **AI/Agent function calls** → import from `@hollis-studio/contracts/ai`; see [AI Schemas](#ai-schemas)
+6. **Password validation and reset** → import from `@hollis-studio/contracts/password`; see [Password Schemas](#password-schemas)
 7. **Mobile/web-specific schemas** → keep app-local schemas in the consuming app; see [Platform-Specific Schemas](#platform-specific-schemas)
 
 ---
@@ -27,49 +27,49 @@ documented here.
 
 | Public import | Surface |
 | --- | --- |
-| `@hollis/contracts` | Primary barrel for common contracts, constants, schemas, and helpers |
-| `@hollis/contracts/api` | API route constants and request/response contracts |
-| `@hollis/contracts/api/routes/workouts` | Workout route constants used directly by admin workout generation consumers |
-| `@hollis/contracts/domain` | Domain-level contracts intentionally exported as a grouped barrel |
-| `@hollis/contracts/domain/admin-notifications` | Admin notification constants re-exported by mobile compatibility contracts |
-| `@hollis/contracts/domain/admin-tasks` | Admin task constants and schemas used by admin task tests and consumers |
-| `@hollis/contracts/domain/appointment-config` | Appointment configuration constants re-exported by mobile compatibility contracts |
-| `@hollis/contracts/domain/appointments` | Appointment contracts re-exported by mobile compatibility contracts |
-| `@hollis/contracts/domain/biometrics` | Biometric contracts and test helpers used by mobile compatibility contracts |
-| `@hollis/contracts/domain/daily-metrics` | Daily metrics contracts re-exported by mobile compatibility contracts |
-| `@hollis/contracts/domain/exercise` | Exercise contracts re-exported by mobile compatibility contracts |
-| `@hollis/contracts/domain/health-metric-types` | Health metric type constants used by server goal data source logic |
-| `@hollis/contracts/domain/health-progress` | Health progress mocks and contract helpers used by mobile tests |
-| `@hollis/contracts/domain/journal` | Journal contracts re-exported by mobile compatibility contracts |
-| `@hollis/contracts/domain/labs` | Lab contracts, constants, and mocks used by server/mobile lab consumers |
-| `@hollis/contracts/domain/messages` | Messaging contracts used by mobile message contract tests |
-| `@hollis/contracts/domain/metric-definition` | Metric definition summaries re-exported by mobile compatibility contracts |
-| `@hollis/contracts/domain/nutrition` | Nutrition contracts re-exported by mobile compatibility contracts |
-| `@hollis/contracts/domain/nutrition-plan` | Nutrition plan contracts re-exported by mobile compatibility contracts |
-| `@hollis/contracts/domain/phi-audit` | PHI audit contracts re-exported by mobile compatibility contracts |
-| `@hollis/contracts/domain/push` | Push contracts re-exported by mobile compatibility contracts |
-| `@hollis/contracts/domain/realtime` | Realtime/SSE contracts re-exported by mobile compatibility contracts |
-| `@hollis/contracts/domain/registration` | Registration contracts used by preregistration compatibility modules |
-| `@hollis/contracts/domain/training` | Training constants and goal data source helpers used by server/admin consumers |
-| `@hollis/contracts/domain/training-strategy` | Training strategy generation contracts not re-exported by the domain barrel |
-| `@hollis/contracts/domain/user` | User role/tier constants used by mobile feature tests and compatibility code |
-| `@hollis/contracts/domain/workouts` | Workout contracts re-exported by mobile compatibility contracts |
-| `@hollis/contracts/schemas` | Shared route/query/body and JSON blob schemas |
-| `@hollis/contracts/constants` | Shared constants |
-| `@hollis/contracts/admin` | Admin portal contracts and schemas |
-| `@hollis/contracts/admin/admin-types` | Admin type definitions used directly by server AI service code |
-| `@hollis/contracts/admin/labs` | Admin lab operation contracts promoted as a stable narrow surface |
-| `@hollis/contracts/ai` | AI validation and generated-content contracts |
-| `@hollis/contracts/ai/ai-types` | AI type definitions used directly by server AI service code |
-| `@hollis/contracts/public` | Public web/contact/waitlist contracts |
-| `@hollis/contracts/public/contact` | Public contact and waitlist validation helpers used by server and web-public |
-| `@hollis/contracts/stripe` | Stripe-related contract helpers |
-| `@hollis/contracts/password` | Password policy, reset, and validation contracts |
-| `@hollis/contracts/primitives` | Cross-domain primitives and result helpers |
-| `@hollis/contracts/errors` | Shared error codes and result/error helpers |
+| `@hollis-studio/contracts` | Primary barrel for common contracts, constants, schemas, and helpers |
+| `@hollis-studio/contracts/api` | API route constants and request/response contracts |
+| `@hollis-studio/contracts/api/routes/workouts` | Workout route constants used directly by admin workout generation consumers |
+| `@hollis-studio/contracts/domain` | Domain-level contracts intentionally exported as a grouped barrel |
+| `@hollis-studio/contracts/domain/admin-notifications` | Admin notification constants re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/admin-tasks` | Admin task constants and schemas used by admin task tests and consumers |
+| `@hollis-studio/contracts/domain/appointment-config` | Appointment configuration constants re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/appointments` | Appointment contracts re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/biometrics` | Biometric contracts and test helpers used by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/daily-metrics` | Daily metrics contracts re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/exercise` | Exercise contracts re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/health-metric-types` | Health metric type constants used by server goal data source logic |
+| `@hollis-studio/contracts/domain/health-progress` | Health progress mocks and contract helpers used by mobile tests |
+| `@hollis-studio/contracts/domain/journal` | Journal contracts re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/labs` | Lab contracts, constants, and mocks used by server/mobile lab consumers |
+| `@hollis-studio/contracts/domain/messages` | Messaging contracts used by mobile message contract tests |
+| `@hollis-studio/contracts/domain/metric-definition` | Metric definition summaries re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/nutrition` | Nutrition contracts re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/nutrition-plan` | Nutrition plan contracts re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/phi-audit` | PHI audit contracts re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/push` | Push contracts re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/realtime` | Realtime/SSE contracts re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/registration` | Registration contracts used by preregistration compatibility modules |
+| `@hollis-studio/contracts/domain/training` | Training constants and goal data source helpers used by server/admin consumers |
+| `@hollis-studio/contracts/domain/training-strategy` | Training strategy generation contracts not re-exported by the domain barrel |
+| `@hollis-studio/contracts/domain/user` | User role/tier constants used by mobile feature tests and compatibility code |
+| `@hollis-studio/contracts/domain/workouts` | Workout contracts re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/schemas` | Shared route/query/body and JSON blob schemas |
+| `@hollis-studio/contracts/constants` | Shared constants |
+| `@hollis-studio/contracts/admin` | Admin portal contracts and schemas |
+| `@hollis-studio/contracts/admin/admin-types` | Admin type definitions used directly by server AI service code |
+| `@hollis-studio/contracts/admin/labs` | Admin lab operation contracts promoted as a stable narrow surface |
+| `@hollis-studio/contracts/ai` | AI validation and generated-content contracts |
+| `@hollis-studio/contracts/ai/ai-types` | AI type definitions used directly by server AI service code |
+| `@hollis-studio/contracts/public` | Public web/contact/waitlist contracts |
+| `@hollis-studio/contracts/public/contact` | Public contact and waitlist validation helpers used by server and web-public |
+| `@hollis-studio/contracts/stripe` | Stripe-related contract helpers |
+| `@hollis-studio/contracts/password` | Password policy, reset, and validation contracts |
+| `@hollis-studio/contracts/primitives` | Cross-domain primitives and result helpers |
+| `@hollis-studio/contracts/errors` | Shared error codes and result/error helpers |
 
 Private source paths are not public unless they appear in `exports`. Do not add
-wildcard exports such as `@hollis/contracts/domain/*`; promote narrow subpaths
+wildcard exports such as `@hollis-studio/contracts/domain/*`; promote narrow subpaths
 only when an existing consumer needs them and the source file is a deliberate
 contract boundary.
 
@@ -92,7 +92,7 @@ All list endpoints return a **single canonical paginated shape**:
 { data: T[], pagination: { total, limit, offset, hasMore } }
 ```
 
-Use `createPaginatedListSchema(itemSchema)` from `@hollis/contracts/domain` to define list response schemas. **Do not** use `z.union()` to accept both paginated and raw array shapes — unions were removed in the schema drift cleanup.
+Use `createPaginatedListSchema(itemSchema)` from `@hollis-studio/contracts/domain` to define list response schemas. **Do not** use `z.union()` to accept both paginated and raw array shapes — unions were removed in the schema drift cleanup.
 
 ### Nullable vs Optional
 
@@ -102,7 +102,7 @@ For fields sourced from nullable Prisma columns, use `.nullable().optional()` (a
 
 ## API Request/Response Schemas
 
-**Public import:** `@hollis/contracts/schemas`  
+**Public import:** `@hollis-studio/contracts/schemas`  
 **Internal source before extraction:** `schemas/index.ts`
 
 Core validation schemas for HTTP request/response payloads.
@@ -132,7 +132,7 @@ Core validation schemas for HTTP request/response payloads.
 ## Domain Schemas
 
 Domain-specific enum schemas live alongside their tuples/constants. Import from
-`@hollis/contracts` or `@hollis/contracts/domain` unless a narrower subpath is
+`@hollis-studio/contracts` or `@hollis-studio/contracts/domain` unless a narrower subpath is
 explicitly listed in [Public Package Exports](#public-package-exports).
 
 ### common.ts
@@ -372,7 +372,7 @@ explicitly listed in [Public Package Exports](#public-package-exports).
 
 ## JSON Blob Schemas
 
-**Public import:** `@hollis/contracts/schemas`  
+**Public import:** `@hollis-studio/contracts/schemas`  
 **Internal source before extraction:** `schemas/json-blobs.ts`
 
 Schemas for JSON fields stored in Prisma. Use these for validating data going into/out of JSON columns.
@@ -408,16 +408,16 @@ Some JSON field schemas are canonically defined in other modules:
 | `advancedUnitPreferencesSchema` | `src/contracts/user/preferences.ts` (mobile app only) | UserPreferences.advancedUnits     |
 | `notificationPreferencesSchema` | `src/contracts/user/preferences.ts` (mobile app only) | UserPreferences.notifications     |
 | `workoutSectionSchema[]`        | `domain/workouts.ts`                | WorkoutPlan.blocks                |
-| `MacroShorthandSchema`          | `@hollis/contracts/domain` (`domain/nutrition.ts` internally) | DailyLog.totalMacros              |
+| `MacroShorthandSchema`          | `@hollis-studio/contracts/domain` (`domain/nutrition.ts` internally) | DailyLog.totalMacros              |
 | ~~`mealSchema[]`~~              | _(removed — schema no longer exists)_ | DailyLog.meals                   |
 | `journalAssessmentSchema`       | `src/contracts/journal.ts`          | JournalEntry.aiAssessment         |
-| `SessionBalanceItemSchema[]`    | `@hollis/contracts/domain` (`domain/sessions.ts` internally) | SessionBalance.balances           |
+| `SessionBalanceItemSchema[]`    | `@hollis-studio/contracts/domain` (`domain/sessions.ts` internally) | SessionBalance.balances           |
 
 ---
 
 ## Admin Schemas
 
-**Public import:** `@hollis/contracts/admin`  
+**Public import:** `@hollis-studio/contracts/admin`  
 **Internal source before extraction:** `admin/admin-schemas.ts`
 
 Schemas for admin portal operations, patient management, and clinical workflows.
@@ -530,7 +530,7 @@ Schemas for admin portal operations, patient management, and clinical workflows.
 
 ## AI Schemas
 
-**Public import:** `@hollis/contracts/ai`  
+**Public import:** `@hollis-studio/contracts/ai`  
 **Internal source before extraction:** `ai/ai-validation.ts`
 
 Schemas for AI function call validation and generation request/response payloads.
@@ -582,7 +582,7 @@ Schemas for AI function call validation and generation request/response payloads
 
 ## Password Schemas
 
-**Public import:** `@hollis/contracts/password`  
+**Public import:** `@hollis-studio/contracts/password`  
 **Internal source before extraction:** `password/index.ts`
 
 Schemas for password validation and password reset flows.
@@ -600,11 +600,11 @@ Schemas for password validation and password reset flows.
 
 ## Platform-Specific Schemas
 
-**Location:** app-local `src/contracts/*.ts`; these are not part of the `@hollis/contracts` public package surface.
+**Location:** app-local `src/contracts/*.ts`; these are not part of the `@hollis-studio/contracts` public package surface.
 
 These schemas extend or supplement shared contracts with platform-specific (mobile/web) concerns.
 
-> **Note:** Many of these re-export from `@hollis/contracts`. Only platform-specific additions are listed here.
+> **Note:** Many of these re-export from `@hollis-studio/contracts`. Only platform-specific additions are listed here.
 
 ### auth.ts
 
@@ -722,7 +722,7 @@ Run `npm run check:contract-duplicates` to ensure no duplicate definitions exist
 The following internal domain contract files exist before extraction but are
 not individually public subpaths unless listed in
 [Public Package Exports](#public-package-exports). Import through
-`@hollis/contracts/domain` unless a subpath is deliberately promoted and
+`@hollis-studio/contracts/domain` unless a subpath is deliberately promoted and
 documented.
 
 | File                     | Location                        |
