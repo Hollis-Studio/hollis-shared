@@ -6,7 +6,7 @@
 > packages.
 
 This plan expands Step 6 and the auth portions of Steps 5, 7, and 8 in
-[`2026-05-11-suite-infrastructure-migration.md`](./2026-05-11-suite-infrastructure-migration.md).
+[`suite-infrastructure-migration.md`](./suite-infrastructure-migration.md).
 Use that plan for the full backend cutover sequence; use this document for the
 auth-specific readiness checklist.
 
@@ -14,15 +14,15 @@ auth-specific readiness checklist.
 
 Workouts is **not** on shared auth yet.
 
-| Area                    | Current state                                                                                                                     | Gap                                                                                                                                       |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Workouts mobile auth    | `src/services/auth.ts`, `src/services/firebase.ts`, and `src/state/auth.ts` still use Firebase Auth and Firebase UIDs.            | Replace with Hollis Identity client calls and canonical identity `userId`.                                                                |
-| Workouts backend        | `workouts-server/` has not been created in this repo yet.                                                                         | Add server auth middleware that consumes `@hollis-studio/auth-client`.                                                                           |
-| Shared contracts        | `@hollis-studio/contracts` exports token claims, audiences, auth token types, and revocation reasons.                                    | Add full identity request/response contracts, route schemas, profile shape, and migration mapping types.                                  |
-| Shared auth client      | `@hollis-studio/auth-client` exports `createAuthClient`, `requireAuth`, `verifyToken`, audience validation, and a remote `/verify` call. | Add the rest of the intended surface (`getMe`, `revokeToken`, refresh/session helpers, JWKS rotation path) and harden server integration. |
-| Hollis Identity Service | Planned as a new service extracted from Health auth.                                                                              | Build and deploy the service, then migrate Health before Workouts depends on it.                                                          |
-| Health auth             | Health mobile has an auth abstraction, but Health server auth is still the source implementation to extract.                      | Move auth ownership into `hollis-identity`; Health becomes a consumer.                                                                    |
-| Data identity           | Firestore documents are keyed by Firebase UID.                                                                                    | Create and verify Firebase UID → Hollis Identity userId mapping before ETL or client cutover.                                             |
+| Area                    | Current state                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Gap                                                                                                                                                                                                         |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Workouts mobile auth    | `src/services/auth.ts`, `src/services/firebase.ts`, and `src/state/auth.ts` still use Firebase Auth and Firebase UIDs.                                                                                                                                                                                                                                                                                                                                                                    | Replace with Hollis Identity client calls and canonical identity `userId`.                                                                                                                                  |
+| Workouts backend        | Sibling `hollis-workouts-server/` exists and typechecks with a minimal `@hollis-studio/auth-client`-style middleware for `hollis-workouts` audience, but it is still skeletal and untested.                                                                                                                                                                                                                                                                                               | Add real resource routes, normalize package naming to `@hollis-studio/*`, add service-token support, and cover auth errors/wrong audiences.                                                                 |
+| Shared contracts        | `@hollis-studio/contracts` exports token claims, audiences, auth token types, and revocation reasons.                                                                                                                                                                                                                                                                                                                                                                                     | Add full identity request/response contracts, route schemas, profile shape, and migration mapping types.                                                                                                    |
+| Shared auth client      | `@hollis-studio/auth-client` exports `createAuthClient`, `requireAuth`, `verifyToken`, audience validation, and a remote root `POST /verify` call now matched by Identity.                                                                                                                                                                                                                                                                                                                | Add or explicitly remove consumer cookie helpers, `getMe`, revoke/session helpers, JWKS fetch/cache, and integration tests.                                                                                 |
+| Hollis Identity Service | Standalone repo exists, typechecks/builds/tests, has Health auth code extracted, no longer sets cookies, emits suite-compatible claims, exposes `/verify` and `/v1/auth/verify`, publishes RS256 JWKS in production mode, uses PostgreSQL-backed token revocation state for production, has PostgreSQL account-lockout storage ready for login enforcement wiring, wires SES password reset email, and has Terraform IaC that validates/plans ECR/VPC/ALB/ECS/RDS/Secrets/CloudWatch/WAF. | Deploy to staging, create/review/run migrations, push image, configure DNS/ACM/SES, wire account lockout into login, expand full route/integration tests, harden auth-client, and complete security review. |
+| Health auth             | Health still runs production auth locally, but Health tokens are now shared-schema-compatible with `aud: ["hollis-health"]` and `claims.hollisHealth.*`.                                                                                                                                                                                                                                                                                                                                  | Add feature-flagged Identity delegation and then decommission local auth after soak.                                                                                                                        |
+| Data identity           | Firestore documents are keyed by Firebase UID.                                                                                                                                                                                                                                                                                                                                                                                                                                            | Create and verify Firebase UID → Hollis Identity userId mapping before ETL or client cutover.                                                                                                               |
 
 ## Target State
 
@@ -81,13 +81,16 @@ The migration is complete only when all of these are true:
 
 ### 2. Harden `@hollis-studio/auth-client`
 
-- Confirm the remote `/verify` request/response shape matches the final
-  Identity route contract.
+- Remote verification now has a working compatibility path: `@hollis-studio/auth-client`
+  calls root `POST /verify`, and Identity returns both `data` and `claims`.
 - Add `getMe(token)` and `revokeToken(jti)` or remove those names from the suite
-  plan if the final API intentionally differs.
+  plan if the final API intentionally differs. Identity currently exposes
+  `GET /v1/auth/me`; revoke/session routes remain open.
 - Add refresh/session helpers only if server consumers need them; mobile refresh
   can live in a separate identity client.
 - Add JWKS fetch and cache support for local JWT verification with key rotation.
+  Identity now publishes a production RS256 JWKS; the auth-client still lacks
+  the fetch/cache/rotation implementation.
 - Require explicit audience validation for:
   - `hollis-health`
   - `hollis-workouts`
@@ -101,32 +104,29 @@ The migration is complete only when all of these are true:
 
 ### 3. Build Hollis Identity Service
 
-- Create `hollis-identity` as its own service/repo unless the suite plan is
-  explicitly amended.
-- Extract or port Health auth ownership:
+- `hollis-identity` now exists as its own service/repo and has the core Health auth
+  code extracted and adapted to Identity's suite boundary:
   - password login/signup
   - password reset/change
   - Apple and Google credential exchange
   - refresh token storage and rotation
-  - session/device management
   - MFA setup and enforcement
   - token denylist/revocation
-  - auth audit logging.
-- Create the Identity Prisma schema for:
-  - `User`
-  - `Session`
-  - `MfaSetup`
-  - `TokenDenylist`
-  - `AuditLog`
-  - external identity provider links
-  - legacy Firebase UID mapping.
-- Implement and validate every shared route contract from Step 1.
-- Add JWT signing, JWKS publishing, key rotation, token revocation lookup,
-  password policy enforcement, rate limiting, audit logging, and structured
-  error mapping.
+- Prisma schema exists for the current auth core (`User`, `RefreshToken`,
+  `MfaCredential`, `MfaEvent`, `StepUpToken`, `PendingMfaSession`,
+  `PasswordResetToken`, `OAuthAccount`). Legacy Firebase UID mapping and a formal
+  session/device list are still open.
+- Runtime wiring, rate limiting, startup env validation, structured error
+  handling, cookie removal, RS256/JWKS publication, PostgreSQL-backed access
+  token revocation/account lockout, SES password-reset email delivery, and
+  Terraform IaC are locally complete.
+- Remaining hardening: validate every shared route contract, add full DB-backed
+  route tests, harden `@hollis-studio/auth-client`, deploy staging, and run a
+  staging security review.
 - Deploy staging infrastructure:
   ECS Fargate service, RDS Postgres, ALB, DNS for `identity.hollis.health`,
-  Secrets Manager, logs, metrics, alarms, and backup/restore policy.
+  Secrets Manager, logs, metrics, alarms, SES sender/domain verification, and
+  backup/restore policy.
 - Run a security review on token TTLs, refresh rotation, MFA bypass rules,
   account enumeration, brute-force protection, and audit retention.
 
@@ -267,12 +267,13 @@ Do not replace Workouts mobile Firebase Auth until all blockers are cleared:
 
 The next useful milestone is **shared-auth readiness in staging**:
 
-1. Finish identity contracts in `hollis-shared`.
-2. Finish `@hollis-studio/auth-client` server verification, JWKS, `getMe`, and
-   revocation APIs.
-3. Stand up `hollis-identity` staging.
+1. Finish identity contracts in `hollis-shared` for the already-wired Identity routes.
+2. Finish `@hollis-studio/auth-client` server hardening: JWKS, consumer cookie
+   helpers, `getMe`/revocation decision, and integration tests.
+3. Expand `hollis-identity` tests from smoke/invariant coverage to route-level
+   DB-backed coverage, then stand up staging.
 4. Point a Health staging server route at Identity through `@hollis-studio/auth-client`.
-5. Add a minimal Workouts server protected route that verifies a
+5. Add or verify a minimal Workouts server protected route that verifies a
    `hollis-workouts` audience token.
 
 Once that works, Workouts mobile can start replacing Firebase Auth behind a

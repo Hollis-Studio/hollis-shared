@@ -280,7 +280,7 @@ to match.
 **Phase G — Extract `hollis-shared` to a sibling local repo.** Once
 Phases A-F are green in Health repo:
 
-1. Create `~/Documents/SRC/hollis-shared/` (sibling to `hollis-health-app/`
+1. Create `~/Documents/SRC/Hollis/hollis-shared/` (sibling to `hollis-health-app/`
    and `Hollis-Workouts/`).
 2. Use `git filter-repo --path shared/` against a clone of `hollis-health-app`
    to preserve commit history for the extracted directory. Push to the
@@ -318,7 +318,7 @@ Phases A-F are green in Health repo:
 > below for the path Workouts took as an interim, plus the implications
 > for Health when it ports off `shared/`.
 
-*(Original plan, kept for context — do not copy the snippet verbatim:)*
+_(Original plan, kept for context — do not copy the snippet verbatim:)_
 Install via git-tag references in `package.json`, e.g. something like
 `git+ssh://...#tag` (with subdir selection that was never validated).
 Iterate as a 2-repo cycle for fixes: change in `hollis-shared` → bump
@@ -414,21 +414,21 @@ Not added until Phase I cutover.
 - After Phase E: all five gates green.
 - After Phase F: `typecheck`, `lint`, `check:suite:sanity`, and full
   `preflight` all green.
-- After Phase G: `hollis-shared` repo exists at `~/Documents/SRC/hollis-shared/`,
+- After Phase G: `hollis-shared` repo exists at `~/Documents/SRC/Hollis/hollis-shared/`,
   history preserved via `git filter-repo`, `v0.1.0-alpha.1` tagged, no
   consumer code yet.
-- After Phase H: Health consumes via git-tag ref, `shared/` deleted from
-  Health, all five gates + full preflight green. Workouts repo can clone
-  and `npm install` the sibling repo by git-tag ref (smoke-test only;
-  Workouts consumer adoption happens in Step 2 + Step 3 below).
+- Phase H/I status superseded: Health and Workouts now consume published
+  `@hollis-studio/*` packages from GitHub Packages by semver; Identity consumes
+  `@hollis-studio/contracts`. Workouts Server still needs package-name
+  normalization and registry consumption.
 - After Phase I′: all 9 schema-drift decisions in
   `05-reconciliation-decisions.md` are rulings (no "needs ruling" rows).
   `hollis-shared` tagged `v0.2.0-alpha.N` includes Workouts' contributions per
   decision. Health re-consumes the new tag with `typecheck`, `lint`, `check:suite:sanity`,
   and preflight green. Workouts can now `npm install` the new tag against its
   current types without runtime data corruption.
-- After Phase I (later): both apps consume via GitHub Packages at
-  `1.0.0`. A version bump flows via normal `npm update`.
+- Stable `1.0.0` remains future work; the current package line is alpha semver
+  through GitHub Packages.
 
 **Convention-alignment guidance (applies during Step 2 onward, not Phase I′ itself):**
 Where Workouts and Health diverge on **conventions** rather than **domain
@@ -452,7 +452,9 @@ PRs without a separate decision register.
 **Actions:**
 
 1. Diff `Hollis-Workouts/src/theme/tokens.ts` against `hollis-shared/packages/design-tokens/tokens/`. Identify Clay-specific tokens missing in shared.
-2. PR to `hollis-shared`: add Clay palette to the tokens package. Cut `@hollis-studio/design-tokens@1.1.0`.
+2. PR to `hollis-shared`: add Clay palette to the tokens package. This landed in
+   the alpha line; current package is `@hollis-studio/design-tokens@0.2.0-alpha.2`.
+   Do not reference `1.1.0` unless a stable release plan exists.
 3. In Workouts, replace `src/theme/tokens.ts` with a thin re-export from `@hollis-studio/design-tokens`. `src/theme/unistyles.ts` continues to register themes locally but pulls token values from the package.
 4. Health's web-admin and web-public pick up the Clay palette automatically on next `npm update`.
 
@@ -582,14 +584,14 @@ Hollis-Workouts/
 ### Step 6 — Extract Hollis Identity Service
 
 **Detailed backlog:** see
-[`2026-05-14-shared-auth-migration-checklist.md`](./2026-05-14-shared-auth-migration-checklist.md)
+[`shared-auth-migration-checklist.md`](./shared-auth-migration-checklist.md)
 for the dependency-ordered checklist covering shared identity contracts,
 `@hollis-studio/auth-client`, Health extraction, Workouts backend auth, mobile cutover,
 UID mapping, and production verification gates.
 
 **Source:** `hollis-health-app/server/src/services/authService.ts`, `server/src/middleware/auth.ts`, `server/src/middleware/mfa.ts`, `server/src/services/tokenDenylistService.ts`, related Prisma User/Session/MfaSetup models.
 
-**Target:** new top-level service `hollis-identity/` (could live in its own repo or as a sibling to `workouts-server`; recommend its own repo `hollis-identity` for clarity since it serves multiple apps).
+**Target:** standalone sibling repo `hollis-identity/`. It exists locally and now contains the extracted Health auth core adapted to Identity's suite boundary; it is not deployed yet.
 
 **Layout:**
 
@@ -597,26 +599,27 @@ UID mapping, and production verification gates.
 hollis-identity/
   src/
     routes/
-      auth.ts          (POST /login, /signup, /refresh, /logout)
+      auth.ts          (POST /login, /register, /refresh, /logout, /verify; GET /me)
       mfa.ts
-      tokens.ts        (deny, introspect)
     services/
     lib/
   prisma/
-    schema.prisma      (User, Session, MfaSetup, TokenDenylist, AuditLog)
+    schema.prisma      (User, RefreshToken, MfaCredential, MfaEvent, StepUpToken, PendingMfaSession, PasswordResetToken, OAuthAccount)
   package.json
   Dockerfile
 ```
 
 **Database:** own RDS Postgres instance. Source of truth for user identity across the suite. Each app's local DB has a `userId` foreign-key reference; user profile lives in identity service.
 
-**JWT claims:** `userId`, `role`, `jti`, `aud` (which apps the token is valid for — single-app or suite-wide), `exp`. Minimal — no PHI, no app-specific data.
+**JWT claims:** `userId`, `role`, `jti`, `aud` (which apps the token is valid for — single-app or suite-wide), `exp`, plus app-specific data under namespaced `claims.*` only. Identity currently dual-emits `claims.hollisHealth.{role, organizationId}` for Health compatibility during cutover.
 
-**Client libraries:** `@hollis-studio/contracts/auth-client` exports a small typed client (`verifyToken(token)`, `getMe(token)`, `revokeToken(jti)`) usable from any app's server middleware.
+**Client libraries:** `@hollis-studio/auth-client` exports `createAuthClient`, `requireAuth`, local JWT verification, audience validation, and a remote root `POST /verify` path. `getMe`, revocation/session helpers, and JWKS fetch/cache remain to finish or explicitly remove from the plan.
 
 **Health migration:** Health's mobile + web-admin + web-public switch from calling local `/api/auth/*` to calling `https://identity.hollis.health/*`. Health's `server/` keeps a thin auth-client middleware that delegates to the identity service. Health's User table stays — identity service owns auth state, Health server owns clinical-relationship state, linked by `userId`.
 
-**Workouts integration:** mobile app uses the same SDK. workouts-server's `middleware/auth-client.ts` calls `verifyToken` against identity service.
+**Workouts integration:** mobile needs a separate mobile Identity wrapper/client.
+Workouts Server currently wraps auth-client in `src/middleware/auth.ts`; normalize
+the dependency from `@hollis/auth-client` to `@hollis-studio/auth-client`.
 
 **Cutover plan for existing Health users:**
 
@@ -704,18 +707,18 @@ hollis-identity/
 
 ## 5. Risk register
 
-| Risk                                                                       | Mitigation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `hollis-shared` boundary remains fuzzy after extraction                    | Health-side `check:shared-extraction` must go to zero before cutover; equivalent package/consumer gates move into `hollis-shared` CI afterward                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Risk                                                                       | Mitigation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hollis-shared` boundary remains fuzzy after extraction                    | Health-side `check:shared-extraction` must go to zero before cutover; equivalent package/consumer gates move into `hollis-shared` CI afterward                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Boundary gates report green while consumers are still coupled              | **Realized 2026-05-12.** Local "compatibility barrel" directories (`src/contracts/`, `web-admin/contracts/`, `server/src/contracts/`) re-export shared types under a per-consumer alias, defeating the named gates without resolving coupling. Mitigation: `check:shared-no-local-barrels` flags any `**/contracts/**.ts` outside the package that re-exports `@hollis-studio/*` or `shared/*`. Plus a Node ESM smoke import in CI so a passing gate suite proves the package is actually consumable, not just statically clean. Never declare a category done from gates alone — typecheck + lint + sanity + smoke import must also be green. |
 | Package emits invalid Node ESM (extensionless directory exports in `dist`) | **Realized 2026-05-12.** `tsc` output re-exports directory paths without `/index.js` or extension, so `import { ... } from "@hollis-studio/contracts"` fails from a plain Node process even though the gates pass. Mitigation: emit fully-resolved file paths in re-exports (or explicit `exports` entries for every subpath) and verify with `check:shared-node-esm-smoke` running a real Node ESM import in CI.                                                                                                                                                                                                                              |
-| `hollis-shared` releases break consumers silently                          | Semver discipline + automated typecheck of every consumer against pre-release versions in CI. During the alpha-tag period (Phase H), every consumer bumps deliberately and runs full preflight; no auto-update.                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Two-repo iteration friction during the alpha-tag period                    | Originally planned: git-tag refs with `&path=` subdir selection. That npm syntax doesn't exist — see Phase H correction (2026-05-17). Actual interim for Workouts: vendor `packages/<name>/{dist,package.json}` into `Hollis-Workouts/vendor/@hollis-studio/<name>` and reference via `file:./vendor/@hollis-studio/<name>`. Use uncommitted local `file:../hollis-shared` overrides only for dev-loop iteration; the vendored copy is the committed reference. Phase I cutover (real registry) supersedes both.                                                                                                                                                                                                                                                                                                                                                      |
-| Health identity service downtime takes down all apps                       | Identity service runs on multi-AZ ECS, RDS Multi-AZ. Tokens are stateless JWTs — short outages only affect login, not active sessions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Workouts Firestore → Postgres ETL drops data                               | Read-only window + atomic per-user transactions + sample integrity check. Keep Firestore data for 90 days after cutover for restore-from-source                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Offline behavior regresses after Firebase removal                          | Build the local SQLite cache + sync queue _before_ cutover. Verify against cruise-test golden paths                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Cross-app JWT validation adds latency to every API call                    | Cache verification results in workouts-server for the token's `exp` window (still respects denylist via short-TTL denylist check)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| Health team can't ship features during shared-repo extraction              | Step 1 is a single PR with a same-day cutover. No long-running fork                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `hollis-shared` releases break consumers silently                          | Semver discipline + automated typecheck of every consumer against pre-release versions in CI. During the alpha-tag period (Phase H), every consumer bumps deliberately and runs full preflight; no auto-update.                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Two-repo iteration friction during the alpha-tag period                    | Originally planned: git-tag refs with `&path=` subdir selection. That npm syntax doesn't exist — see Phase H correction (2026-05-17). Actual interim for Workouts: vendor `packages/<name>/{dist,package.json}` into `Hollis-Workouts/vendor/@hollis-studio/<name>` and reference via `file:./vendor/@hollis-studio/<name>`. Use uncommitted local `file:../hollis-shared` overrides only for dev-loop iteration; the vendored copy is the committed reference. Phase I cutover (real registry) supersedes both.                                                                                                                               |
+| Health identity service downtime takes down all apps                       | Planned mitigation: deploy Identity on multi-AZ ECS with RDS Multi-AZ. Until AWS deployment is complete, this is not an active mitigation. Tokens are stateless JWTs — short outages only affect login, not active sessions                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Workouts Firestore → Postgres ETL drops data                               | Read-only window + atomic per-user transactions + sample integrity check. Keep Firestore data for 90 days after cutover for restore-from-source                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Offline behavior regresses after Firebase removal                          | Build the local SQLite cache + sync queue _before_ cutover. Verify against cruise-test golden paths                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Cross-app JWT validation adds latency to every API call                    | Cache verification results in workouts-server for the token's `exp` window (still respects denylist via short-TTL denylist check)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Health team can't ship features during shared-repo extraction              | Step 1 is a single PR with a same-day cutover. No long-running fork                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 ---
 

@@ -1,12 +1,17 @@
 # Hollis Suite — Unified Long-Term Vision
 
-> **Status:** Canonical north star, 2026-05-18.
+> **⚠️ SUPERSEDED 2026-05-19 by [`2026-05-19-suite-vision.md`](2026-05-19-suite-vision.md).** This document is preserved for historical context only. The 2026-05-19 rewrite reflects the Hollis Health LLC bifurcation into two business units (Hollis Health clinic + Hollis Studio consumer suite under Samuel), the concrete server topology decisions, the 4-app slate decision (down from 6), the India-primary international expansion plan, the China-deferred verdict, and the PHI/data-sovereignty Bridge model. Read the 2026-05-19 doc for current direction.
+>
+> ---
+>
+> **Status:** Canonical north star, 2026-05-18. **Superseded 2026-05-19.**
 > **Owner:** Isaac Landes / Hollis Health LLC.
 > **Supersedes:** any prior per-app strategy doc when in conflict.
 > **Revision log:**
 > - 2026-05-18 — initial capture.
 > - 2026-05-18 (same-day addendum 1) — folded in four execution caveats: (1) explicit time-to-suite-value risk and narrower defensible niche framing (deep strength + clinical, not breadth-of-signal); (2) data-acquisition strategy required before machine-aware gym translation is claimed as a moat; (3) kill criterion before Phase 4 (Recovery); (4) "AI explains. Hollis verifies. You decide." promoted as the explicit consumer line, with Strength rebrand timed before paid launch.
 > - 2026-05-18 (same-day addendum 2 — **strategic refinement**) — sharpened the primary thesis from "six apps producing one health brain" to **"the only consumer fitness app that a clinician will trust."** The clinician/trainer-interoperability wedge becomes the moat; the six-app consumer suite becomes the long-term expansion, gated on the wedge funding it. Added a "Suite leverage" section with five moves to make the suite useful with fewer apps (cross-promote from Health, web dashboard before native apps, external-data integration, server-side Compass before Phase 4, B2B trainer/clinician fleet sales). Engineering rigor reframed as hedge, not moat.
+> - 2026-05-19 — **SUPERSEDED by bifurcation rewrite.** See [`2026-05-19-suite-vision.md`](2026-05-19-suite-vision.md).
 
 ---
 

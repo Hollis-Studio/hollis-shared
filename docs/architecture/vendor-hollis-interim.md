@@ -1,10 +1,16 @@
 # Vendoring `@hollis-studio/*` into Workouts — interim Phase H
 
 **Date:** 2026-05-17 (commit `71fcbb5`, `v1.9.2`)
-**Status:** Active interim. Phase I cutover (real registry) still pending.
+**Status:** Historical. Superseded by GitHub Packages semver consumption in
+Workouts; retained only for the 2026-05-17 EAS incident record.
 **Related:** [`suite-infrastructure-migration.md`](./suite-infrastructure-migration.md), Workouts [`docs/TODO.md`](https://github.com/hollis-studio/Hollis-Workouts/blob/main/docs/TODO.md) §C.3
 
 ## TL;DR
+
+This document is no longer the active package-consumption plan. Workouts now
+consumes `@hollis-studio/*` packages from GitHub Packages by semver. The details
+below explain the short-lived vendoring fix that unblocked a 2026-05-17 EAS
+build failure.
 
 EAS iOS production builds were failing at the Metro bundle step with
 `ENOENT: ... /Users/expo/workingdir/hollis-shared`. `metro.config.js`
@@ -68,7 +74,8 @@ the entire fragment after `#` as a single git ref. The `&path=` (or
 community proxy) — none of them are npm-native.
 
 If a future plan revisits git-URL installs, options that actually work:
-- pure git URL pointing at a repo whose root *is* the package
+
+- pure git URL pointing at a repo whose root _is_ the package
   (i.e. split each `@hollis-studio/*` into its own repo)
 - a third-party proxy like `gitpkg`
 - a `prepare` script that runs the build post-install (requires dev deps
@@ -86,6 +93,7 @@ gh api orgs/hollis   → 404
 
 The sibling repo lives at `idlandes04/hollis-shared`. To publish
 `@hollis-studio/contracts` to GH Packages you have to either:
+
 - create a GitHub org named `hollis` and transfer `hollis-shared` into it
 - rename packages to `@idlandes04/*` (huge mechanical churn across three
   repos)
@@ -105,7 +113,7 @@ work than the user wanted for the immediate TestFlight unblock.
 ### `hollis-shared` (sibling repo, pushed to `origin/main`)
 
 - Commit `a642eeb`: `build: regenerate dist across packages + sync
-  pending source updates`. Rebuilt all four workspaces and committed
+pending source updates`. Rebuilt all four workspaces and committed
   outstanding local source changes (contracts + design-tokens) plus the
   regenerated dist so source/dist are consistent at HEAD.
 - New tag `utils-v0.1.0-alpha.3` at `a642eeb` — the first `@hollis-studio/utils`
@@ -135,7 +143,7 @@ work than the user wanted for the immediate TestFlight unblock.
   `ios/` is gitignored so this didn't land in the commit, but the local
   state now passes `check:native-modules`.
 
-### What was *not* committed
+### What was _not_ committed
 
 - `.serena/` in `hollis-shared` (Serena MCP local state)
 - Any of Workouts' `ios/` regeneration output (gitignored)
@@ -146,12 +154,12 @@ When `hollis-shared` ships a new `dist/`:
 
 ```bash
 # in hollis-shared (or wherever a fresh dist lives)
-cd ~/Documents/SRC/hollis-shared
+cd ~/Documents/SRC/Hollis/hollis-shared
 npm run build   # ensure dist is fresh
 # tag + push if you want a record (optional while vendored)
 
 # in Workouts
-cd ~/Documents/SRC/Hollis-Workouts
+cd ~/Documents/SRC/Hollis/hollis-workouts
 for p in contracts design-tokens utils; do
   rm -rf vendor/@hollis-studio/$p/dist
   cp -R ../hollis-shared/packages/$p/dist vendor/@hollis-studio/$p/
@@ -234,6 +242,7 @@ in App Store Connect.
 ```
 
 This is unrelated to the vendoring work. Likely causes:
+
 - App record with bundle ID `com.hollis.workouts` doesn't exist in App
   Store Connect for team `HXWNA7C5C4`
 - The ASC App ID `6761510420` in `eas.json` points at a record with a

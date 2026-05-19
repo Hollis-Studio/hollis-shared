@@ -10,7 +10,7 @@
 > **Prioritization note (2026-05-18 strategic refinement):** the end-state
 > architecture below — six apps, shared identity, typed contracts, separate
 > per-app backends, cross-app reads — is unchanged. What changed is the
-> *order* and *commitment*: the wedge is **Strength + external-data
+> _order_ and _commitment_: the wedge is **Strength + external-data
 > integration + Compass intelligence service + B2B trainer/clinician fleet
 > sales**, not "six consumer apps producing one health brain." Phase 4
 > consumer apps (Nutrition / Recovery / Move / Mind) are now explicitly
@@ -27,11 +27,11 @@
 Hollis Health LLC operates a suite of 6 planned apps under one brand,
 one identity, one design language, and one set of shared contracts.
 
-| App | Status | Stack |
-|---|---|---|
-| Hollis Health (mobile + admin + public) | Shipped at `hollis.health` | Express + Prisma + Postgres + RDS, ECS Fargate, Next.js 16, RN/Expo |
-| Hollis Workouts | v1.6.3 on Firebase; migrating to suite stack | RN/Expo + (target: Express + Prisma + Postgres + ECS Fargate) |
-| 4 additional apps | Planned | Will scaffold on suite stack from day one |
+| App                                     | Status                                       | Stack                                                               |
+| --------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------- |
+| Hollis Health (mobile + admin + public) | Shipped at `hollis.health`                   | Express + Prisma + Postgres + RDS, ECS Fargate, Next.js 16, RN/Expo |
+| Hollis Workouts                         | v1.6.3 on Firebase; migrating to suite stack | RN/Expo + (target: Express + Prisma + Postgres + ECS Fargate)       |
+| 4 additional apps                       | Planned                                      | Will scaffold on suite stack from day one                           |
 
 Each app has its own backend, own database, own deployment, own release
 cadence. They share: contracts, design tokens, utilities, and identity.
@@ -57,26 +57,28 @@ Published to GitHub Packages, consumed by every app via pinned semver:
 - Extracted from Health's current `server/src/services/authService.ts` + `middleware/auth.ts` + `middleware/mfa.ts` + `services/tokenDenylistService.ts`.
 - Owns: user identity, password hashes, MFA setup, token denylist, identity audit log.
 - Issues JWTs valid across the suite. Each token carries `aud` claim listing which apps it's valid for.
-- Every app server has a thin `auth-client` middleware (from `@hollis-studio/auth-client`, published in hollis-shared) that delegates `verifyToken` / `getMe` / `revokeToken` to this service.
+- Every app server will use `@hollis-studio/auth-client` for `requireAuth` and
+  `verifyToken` today. `getMe`, revocation/session helpers, JWKS fetch/cache,
+  and cookie helpers are planned gaps or need to be removed from the target
+  surface explicitly.
 
-**Current state (2026-05-18)**: scaffolded at `~/Documents/SRC/hollis-identity/` to roughly 70%. Express + Prisma + Zod, routes wired (`/login`, `/register`, `/logout`, `/refresh`, `/verify`, `/oauth`, `/forgot-password`, `/reset-password`, `/change-password`, `/biometric-token`, MFA router), `cookieConfig.ts` + `tokenDenylistService.ts` + `passwordResetService.ts` + `pendingMfaSessionService.ts` + `mfaService.ts` already lifted from Health, Prisma schema with 8 auth models, ECS task def placeholder, `@hollis-studio/contracts` consumed via `file:` ref. **Pushed to GitHub `Hollis-Studio/hollis-identity` 2026-05-18.** Never deployed to AWS.
+**Current state (2026-05-19 update)**: `~/Documents/SRC/Hollis/hollis-identity/` is now a buildable standalone Express + Prisma + Zod service with Health auth code extracted and adapted rather than rewritten. Routes are wired for `/login`, `/register`, `/logout`, `/refresh`, `/verify`, `/me`, `/oauth`, `/forgot-password`, `/reset-password`, `/change-password`, `/biometric-token`, and MFA. Identity is cookie-agnostic: it returns JSON token envelopes only, has no `cookieConfig.ts`, and exposes root `POST /verify` plus `/v1/auth/verify` for the current `@hollis-studio/auth-client` remote verification shape. Runtime wiring is in place for CORS, request IDs/log context, auth rate limiters, central error handling, and startup env validation. Access tokens emit suite audiences and `claims.hollisHealth.{role, organizationId}`. Production signing uses RS256 and publishes `/.well-known/jwks.json`; local/test can still use HS256. Access-token revocation and account lockout state are PostgreSQL-backed for ECS horizontal scaling. Password-reset email delivery is wired through SES. Terraform IaC validates and plans ECR, VPC, ALB, ECS Fargate, RDS Postgres, Secrets Manager, CloudWatch logs, and WAF in AWS account `344345273019`. `npm run typecheck`, `npm run build`, `npm test`, and Terraform validation pass. The service is still **not deployed to AWS** and remains pre-cutover.
 
 **Health-side D4 hard blocker CLOSED v3.7.67**: `server/src/services/authService.ts::generateAccessTokenWithJti` now emits `aud: ["hollis-health"]` and dual-emits `claims.hollisHealth.{role, organizationId}` alongside legacy top-level fields. All 4 Hollis-token `jwt.verify` sites in Health enforce `audience: AUDIENCES[0]`. Tokens are now `AccessTokenClaimsSchema.safeParse()`-compatible, unblocking any future `@hollis-studio/auth-client` consumption. 75 new tests cover the change.
 
-**Outstanding for identity prod cutover** (Randy 8-phase plan, ~48-67 engineering hours, ~2-3 wks calendar, gated on 5 ODs for Isaac):
+**Outstanding for identity prod cutover**:
 
-- **Phase 0 — Test scaffolding**: Vitest setup, smoke tests for `authService`, `tokenDenylistService`, routes. Gate for everything else.
-- **Phase 1 — P1 runtime wiring**: install + mount `cookie-parser` and `cors`; mount `errorHandler` and rate limiters in `src/index.ts`; call `validateEnvOnStartup()` at startup. Service does not run locally without this.
-- **Phase 1b — D2 cookie removal**: 7 call sites in `routes/auth.ts` + `routes/mfa.ts` call `setAuthCookies`/`clearAuthCookies`; delete those and `lib/cookieConfig.ts`. Parallelizable with Phase 1.
-- **Phase 2 — D4 claims namespace**: `HollisHealthClaimsSchema` sub-schema in `@hollis-studio/contracts`; `generateAccessTokenWithJti` in identity grows `appClaims` parameter; Health's `req.user` population reads from `claims.hollisHealth.*` with top-level fallback (grace window dual-read).
-- **Phase 3 — `@hollis-studio/auth-client` gaps**: configurable `setAuthCookies(res, tokens, posture)` / `clearAuthCookies(res, posture)` helpers; cookie-or-Bearer token extractor; JWKS-fetching path (via `jose` 6.2.3); wire actual HTTP call in `verifyTokenRemote`.
-- **Phase 4 — RS256/JWKS in identity**: `lib/keyStore.ts` with 2-key rotation (current + previous); `jose` `SignJWT` with `RS256` + `kid`; `/.well-known/jwks.json` returns real key set; HS256 verification path stays alive during grace window.
-- **Phase 5 — External denylist**: `ioredis` + `RedisDenylistStore` (preferred) or shared-Postgres backing.
-- **Phase 6 — AWS infra**: ECR repo + ECS cluster + RDS `db.t4g.small` (separate DB for HIPAA blast-radius isolation) + ALB + Route53 record for `identity.hollis.health` + ACM cert + Secrets Manager + KMS. ~$140-145/mo us-east-1.
+- **Phase 0/1/1b/4/5/6 local implementation now exists**: basic Node test harness exists, runtime middleware is mounted, startup env validation runs, Identity no longer sets/clears cookies, `rejectUnauthorized: false` was removed from Identity's Postgres pool helper, RS256/JWKS is implemented, production token revocation state is database-backed, account-lockout storage has PostgreSQL backing pending login enforcement wiring, SES password-reset delivery exists, and Terraform IaC validates/plans.
+- **Remaining test work**: expand from smoke/route-boundary coverage to route-level auth-matrix tests for login/register/refresh/logout/MFA/password reset/OAuth, plus DB-backed refresh-token rotation and reuse-detection tests.
+- **Phase 2 — claims namespace finalization**: formalize app-claim schemas such as `HollisHealthClaimsSchema` in `@hollis-studio/contracts`; Health's `req.user` population should read `claims.hollisHealth.*` with a short top-level fallback window.
+- **Phase 3 — `@hollis-studio/auth-client` gaps**: configurable consumer cookie helpers, cookie-or-Bearer token extractor for consumer apps, JWKS-fetching path (via `jose` 6.2.3), and integration tests against Identity outage/timeout/wrong-audience cases.
+- **Phase 4 — RS256/JWKS in identity**: locally implemented with Node crypto/jsonwebtoken; production requires `JWT_ALGORITHM=RS256`, `JWT_PRIVATE_KEY`, and `JWT_KEY_ID`; JWKS publishes the public RSA key. Remaining: formal key-rotation runbook and old-key grace behavior.
+- **Phase 5 — External denylist/lockout**: locally implemented with PostgreSQL-backed `AccessTokenDenylistEntry`, `UserTokenDenylistEntry`, and `AccountLockoutEntry` models. Remaining: run migrations in staging/prod and load-test the DB path.
+- **Phase 6 — AWS infra**: Terraform now plans ECR, VPC, ALB, ECS Fargate, RDS Postgres, Secrets Manager, CloudWatch, and WAF in account `344345273019`. Remaining: reviewed apply, backend/state setup, DNS for `identity.hollis.health`, ACM cert, SES sender/domain verification, image push, migrations, and staging smoke tests.
 - **Phase 7 — Health-side cutover**: `USE_IDENTITY_SERVICE` env flag; `server/src/middleware/authIdentity.ts` thin auth-client wrapper does post-verify domain enrichment from Health's Prisma; logout orchestrates `identityClient.logout → pushService.deleteDevicesForUser → clearAuthCookies` (D3); 7-day soak.
 - **Phase 8 — Decommission**: remove grace-window dual-reads; remove Health's local auth routes; `middleware/auth.ts` shrinks 214 → ~30 lines.
 
-**5 open product decisions tracked in `docs/CTO_AGENT.md` Item 37 (OD-1..OD-5)**: `onboardingCompleted` ownership, password-reset email mechanism (SES vs webhook), denylist backing (Redis vs Postgres), RS256 rotation mode (Lambda vs manual ops), `UserRole` enum location (shared in `@hollis-studio/contracts` vs duplicated per service).
+**Still-open decisions**: `onboardingCompleted` ownership, RS256 rotation operations, final `UserRole` enum ownership, and final `@hollis-studio/auth-client` surface for JWKS/getMe/revocation/cookie helpers.
 
 ---
 
@@ -85,6 +87,7 @@ Published to GitHub Packages, consumed by every app via pinned semver:
 ### Why extract identity instead of using Cognito
 
 Health's current auth is already:
+
 - HIPAA-aware (tokens carry no PHI; PHI audit log integration is built-in).
 - Dual-mode: httpOnly cookie for web, Authorization Bearer for mobile.
 - Equipped with MFA, token denylist, bcrypt password hashing with high cost factor.
@@ -92,17 +95,18 @@ Health's current auth is already:
 - Tested in production with paying clients.
 
 Cognito would add zero capability and force one of:
+
 - A forced password reset for every existing client (poor UX).
 - A custom Cognito migration Lambda that validates against bcrypt on first sign-in and rewrites the hash (multi-week build, replaces tested code with new code).
 
-**Cognito stays on the table only if/when federated identity (Sign in with Google/Apple) becomes a product requirement.** At that point, we put Cognito *in front of* the Hollis identity service as an OIDC federation source, not as a replacement.
+**Cognito stays on the table only if/when federated identity (Sign in with Google/Apple) becomes a product requirement.** At that point, we put Cognito _in front of_ the Hollis identity service as an OIDC federation source, not as a replacement.
 
 ### Identity Service architecture decisions (resolved 2026-05-17)
 
 Five decisions resolved by Isaac after Tier-2 research wave; these set the contract identity exposes to every suite consumer.
 
 - **Cross-DB coupling at login — HYBRID**. Identity issues thin claims only: `{ userId, role, jti, aud }`. Consumer apps enrich domain state post-verify from their own DBs (Health → `organizationId`, `onboardingCompleted`, org-status; Workouts → its own membership/tier state). Identity never opens cross-service DB connections. Tradeoff: one extra per-request lookup in each consumer, matching today's `requireActiveUser` pattern.
-- **Cookie strategy — FEDERATED with per-app posture**. Identity returns tokens in JSON body only — never sets cookies. Each consumer app sets its OWN cookies with its OWN security posture: Health uses httpOnly Secure SameSite=Lax (HIPAA-strict). Mass-market suite apps (Workouts and beyond) may choose different postures: JS-readable tokens for analytics, longer TTLs, refresh-on-resume UX. `@hollis-studio/auth-client` exposes `setAuthCookies()` and `clearAuthCookies()` as configurable helpers — not opinionated defaults. Identity stays cookie-agnostic. **No `.hollis.health` parent-domain cookies** — the centralized-cookie path was rejected to avoid forcing one cookie posture across HIPAA and non-HIPAA apps and to keep CORS/SameSite footprint per-app rather than suite-wide.
+- **Cookie strategy — FEDERATED with per-app posture**. Identity returns tokens in JSON body only — never sets cookies. Each consumer app sets its OWN cookies with its OWN security posture: Health uses httpOnly Secure SameSite=Lax (HIPAA-strict). Mass-market suite apps (Workouts and beyond) may choose different postures: JS-readable tokens for analytics, longer TTLs, refresh-on-resume UX. Cookie helpers remain consumer-owned today; `@hollis-studio/auth-client` may expose configurable helpers in a future hardening pass. Identity stays cookie-agnostic. **No `.hollis.health` parent-domain cookies** — the centralized-cookie path was rejected to avoid forcing one cookie posture across HIPAA and non-HIPAA apps and to keep CORS/SameSite footprint per-app rather than suite-wide.
 - **Logout side effects — CONSUMER THIN-CLIENT WRAPPER**. Health's `/auth/logout` handler calls identity `/logout`, then performs Health-domain cleanup (`pushService.deleteDevicesForUser`) before clearing cookies. Same pattern for Workouts if it has logout-time cleanup. Identity stays application-agnostic. No webhook/event-bus infrastructure required.
 - **JWT claims migration in Health — DUAL-EMIT GRACE WINDOW**. `generateAccessTokenWithJti` adds `aud: ["hollis-health"]` and dual-emits `claims.hollisHealth.{role, organizationId}` alongside the legacy top-level fields for one release cycle. Middleware reads both locations during grace window; legacy reads removed in follow-up commit. 15-min access TTL makes the cutover invisible to users. Key-rotation alternative was rejected (forced re-login at cutover).
 - **Suite design implication**: every new suite app implements its own consumer-side auth wrapper (`@hollis-studio/auth-client` middleware + cookie helpers + post-verify domain enrichment). The boilerplate is small (~30-line middleware + ~20-line cookie config). Workouts will mirror Health's pattern with Workouts-specific domain enrichment and a mass-market cookie posture.
@@ -112,7 +116,7 @@ Tracked under `docs/CTO_AGENT.md` Item 37 and `docs/audits/POST_LAUNCH_BACKLOG.m
 ### Why a separate `hollis-shared` repo and not workspaces inside Health
 
 - Health stops being a privileged consumer. It becomes one app of six, all on equal footing.
-- "Ground truth" becomes a property of *discipline*, not *hosting*. Health earns ground-truth status by being the most disciplined consumer with the strongest contribution norms — not by virtue of holding the package.
+- "Ground truth" becomes a property of _discipline_, not _hosting_. Health earns ground-truth status by being the most disciplined consumer with the strongest contribution norms — not by virtue of holding the package.
 - A separate repo makes versioning explicit: every consumer pins a version, upgrades deliberately, and breaking changes require a coordinated migration. Workspaces silently couple cadences.
 - New suite apps scaffold from the shared package without cloning Health.
 
@@ -206,7 +210,7 @@ Step 1 sequence:
 6. **Phase F — Drive medial cascade to zero:** typecheck, lint,
    `check:suite:sanity`, and preflight must pass.
 7. **Phase G — Extract `hollis-shared`:** create the sibling repo at
-   `~/Documents/SRC/hollis-shared/` via `git filter-repo`, preserve history,
+   `~/Documents/SRC/Hollis/hollis-shared/` via `git filter-repo`, preserve history,
    build packages, and tag `v0.1.0-alpha.1`.
 8. **Phase H — Health consumes sibling repo:** install pinned git-tag package
    refs, delete Health's `shared/`, and rerun the full bar.
@@ -228,6 +232,7 @@ shape that is not public, the package exports it deliberately and documents the
 decision in `SCHEMA_INDEX.md`.
 
 **After Step 1 of the migration plan (extraction):**
+
 - `shared/` is deleted from this repo. Replaced by `npm install @hollis-studio/contracts @hollis-studio/design-tokens @hollis-studio/utils` from GitHub Packages.
 - Every import already using `@hollis-studio/contracts` aliases continues to work — only the resolution target changes.
 - Adding a new shared type means a PR to `hollis-shared`, releasing a new version, then upgrading Health's pinned version. **This adds review friction by design** — shared types affect every consumer.
@@ -236,12 +241,13 @@ decision in `SCHEMA_INDEX.md`.
   entrypoint. Package exports are the boundary.
 
 **After Step 6 (identity extraction):**
+
 - `server/src/services/authService.ts` shrinks to a thin client of the identity service.
 - `server/src/middleware/auth.ts` becomes ~30 lines that verify the JWT via the identity service (Gary inventory 2026-05-17 refined the earlier ~20-line estimate; cookie extraction + claim mapping to `req.user` shape stays in Health's wrapper).
-- Health's User table stays — identity service owns *authentication state*, Health server owns *clinical-relationship state*. Linked by `userId` string (no cross-service DB FK).
+- Health's User table stays — identity service owns _authentication state_, Health server owns _clinical-relationship state_. Linked by `userId` string (no cross-service DB FK).
 - `npm run check:phi-logging` and all other PHI audit checks continue to apply unchanged on Health's domain code.
 
-**Step 6 current state (2026-05-17)**: scaffolding ~70% done in `~/Documents/SRC/hollis-identity/` (see §2 above). Lift-and-shift estimate from Gary's auth surface inventory: ~1,550 lines lift cleanly, ~200 lines need real adaptation (claims format, cookie wrapper), ~750 lines deleted from Health, ~600 lines OAuth/MFA stay in Health initially. Realistic delivery: ~30-46 engineering hours + 7-day grace-window soak. Hard prerequisite in Health: ship `aud: ["hollis-health"]` claim + dual-emit `claims.hollisHealth.{role, organizationId}` so `AccessTokenClaimsSchema.parseClaims()` in `@hollis-studio/auth-client` accepts existing tokens.
+**Step 6 current state (2026-05-19 update)**: the lift-and-shift strategy is now implemented locally for the Identity service core and production-hardening surfaces. Health's D4 claim blocker is closed; Identity emits shared-schema-compatible access tokens, publishes RS256 JWKS in production mode, has PostgreSQL-backed token revocation state, has PostgreSQL account-lockout storage pending login enforcement wiring, has SES password-reset delivery, and has Terraform IaC that validates/plans. Remaining work is live deployment and cutover: full DB-backed route tests, auth-client hardening, staging AWS apply/migrations/image/DNS/ACM/SES, login lockout enforcement, Health feature-flag delegation, and a 7-day soak before decommissioning Health local auth.
 
 ---
 
@@ -262,15 +268,15 @@ the `[SUITE]` items and runs in parallel without blocking the Launch Gate.
 
 ## 6. Cross-repo coordination
 
-| Question | Where to look |
-|---|---|
-| What is Hollis as a product? | [`../vision/2026-05-18-suite-vision.md`](../vision/2026-05-18-suite-vision.md) |
-| Why is the suite structured this way? | This doc |
-| What is the migration plan with concrete steps? | [`./suite-infrastructure-migration.md`](./suite-infrastructure-migration.md) |
-| What are the deferred Health-side suite items? | [`hollis-health-app/docs/audits/POST_LAUNCH_BACKLOG.md`](https://github.com/hollis-studio/hollis-health-app/blob/main/docs/audits/POST_LAUNCH_BACKLOG.md) — `[SUITE]` entries |
-| What is Workouts' overall product roadmap? | [`Hollis-Workouts/docs/archive/plans/2026-05-11-mass-market-todo.md`](https://github.com/hollis-studio/Hollis-Workouts/blob/main/docs/archive/plans/2026-05-11-mass-market-todo.md) |
-| What are the shared package exports? | [`hollis-shared/README.md`](../../README.md) |
-| What verifies extraction readiness? | CI in `hollis-shared` (post-extraction); legacy `npm run check:shared-extraction` ran in Health pre-extraction |
+| Question                                        | Where to look                                                                                                                                                                       |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| What is Hollis as a product?                    | [`../vision/2026-05-18-suite-vision.md`](../vision/2026-05-18-suite-vision.md)                                                                                                      |
+| Why is the suite structured this way?           | This doc                                                                                                                                                                            |
+| What is the migration plan with concrete steps? | [`./suite-infrastructure-migration.md`](./suite-infrastructure-migration.md)                                                                                                        |
+| What are the deferred Health-side suite items?  | [`hollis-health-app/docs/audits/POST_LAUNCH_BACKLOG.md`](https://github.com/hollis-studio/hollis-health-app/blob/main/docs/audits/POST_LAUNCH_BACKLOG.md) — `[SUITE]` entries       |
+| What is Workouts' overall product roadmap?      | [`Hollis-Workouts/docs/archive/plans/2026-05-11-mass-market-todo.md`](https://github.com/hollis-studio/Hollis-Workouts/blob/main/docs/archive/plans/2026-05-11-mass-market-todo.md) |
+| What are the shared package exports?            | [`hollis-shared/README.md`](../../README.md)                                                                                                                                        |
+| What verifies extraction readiness?             | CI in `hollis-shared` (post-extraction); legacy `npm run check:shared-extraction` ran in Health pre-extraction                                                                      |
 
 Any change that affects suite architecture must update both this doc and
 the Workouts plan doc in the same change set.
