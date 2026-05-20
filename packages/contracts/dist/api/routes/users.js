@@ -62,6 +62,18 @@ export const USER_ROUTES = {
      * @param userId - User's unique identifier
      */
     dataExport: (userId) => `/users/${userId}/data-export`,
+    /**
+     * POST /users/:userId/intake - Submit patient clinical intake form (v1)
+     * @param userId - User's unique identifier
+     * @ai-context PHI: clinic-launch patient intake; requires auth + selfOrAdmin
+     * Added by: patient-intake agent (2026-05-19); version bump handled by consent-route agent
+     */
+    intake: (userId) => `/users/${userId}/intake`,
+    /**
+     * GET /users/:userId/intake - Fetch existing patient intake (for status check)
+     * @param userId - User's unique identifier
+     */
+    getIntake: (userId) => `/users/${userId}/intake`,
 };
 // ============================================================================
 // DAILY METRICS ROUTES

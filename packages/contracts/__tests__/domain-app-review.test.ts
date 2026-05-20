@@ -1,25 +1,22 @@
-import {
-  APP_REVIEW_ACCOUNTS,
-  APP_REVIEW_CREDENTIALS,
-  APP_REVIEW_PASSWORD,
-} from "../domain/app-review";
+import { APP_REVIEW_ACCOUNTS } from "../domain/app-review";
 
 describe("App review credential contracts", () => {
-  it("keeps credential emails aligned with the canonical reviewer accounts", () => {
-    expect(APP_REVIEW_CREDENTIALS.primaryClient.email).toBe(
-      APP_REVIEW_ACCOUNTS.primaryClient.email,
-    );
-    expect(APP_REVIEW_CREDENTIALS.reviewerAdmin.email).toBe(
-      APP_REVIEW_ACCOUNTS.reviewerAdmin.email,
+  it("exposes the canonical primaryClient reviewer account", () => {
+    expect(APP_REVIEW_ACCOUNTS.primaryClient.id).toBe("HH-REV001");
+    expect(APP_REVIEW_ACCOUNTS.primaryClient.email).toBe(
+      "testuser@hollis.health",
     );
   });
 
-  it("shares one published password across both reviewer accounts", () => {
-    expect(APP_REVIEW_CREDENTIALS.primaryClient.password).toBe(
-      APP_REVIEW_PASSWORD,
-    );
-    expect(APP_REVIEW_CREDENTIALS.reviewerAdmin.password).toBe(
-      APP_REVIEW_PASSWORD,
+  it("exposes the canonical reviewerAdmin account", () => {
+    expect(APP_REVIEW_ACCOUNTS.reviewerAdmin.id).toBe("HH-REV002");
+    expect(APP_REVIEW_ACCOUNTS.reviewerAdmin.email).toBe(
+      "testadmin@hollis.health",
     );
   });
+
+  // APP_REVIEW_PASSWORD and APP_REVIEW_CREDENTIALS have been removed from the
+  // public contracts package. The password is now read from the
+  // APP_REVIEW_PASSWORD environment variable in server-side seed scripts only.
+  // Mobile and web-admin bundles must never import the password.
 });

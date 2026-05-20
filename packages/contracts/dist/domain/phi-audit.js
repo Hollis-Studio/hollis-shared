@@ -56,6 +56,7 @@ export const PHI_RESOURCES = [
     "billing_dispute",
     "data_export",
     "wearable_workout",
+    "consent_record",
 ];
 export const PhiResourceSchema = z.enum(PHI_RESOURCES);
 /**
@@ -102,6 +103,7 @@ export const PHI_RESOURCE = {
     BILLING_DISPUTE: "billing_dispute",
     DATA_EXPORT: "data_export",
     WEARABLE_WORKOUT: "wearable_workout",
+    CONSENT_RECORD: "consent_record",
 };
 // ============================================================================
 // PHI ACTION TYPES

@@ -5,6 +5,10 @@ const imports = [
   ["@hollis-studio/contracts/schemas", ["emailSchema"]],
   ["@hollis-studio/contracts/constants", ["STORAGE_KEYS"]],
   ["@hollis-studio/contracts/admin", ["patientSummarySchema"]],
+  [
+    "@hollis-studio/contracts/admin/legal-documents",
+    ["DOCUMENT_REGISTRY", "renderSignedDocumentContent"],
+  ],
   ["@hollis-studio/contracts/ai", ["GeneratedExerciseSchema"]],
   ["@hollis-studio/contracts/public", ["ContactFormSchema"]],
   ["@hollis-studio/contracts/stripe", ["SubscriptionStatusSchema"]],

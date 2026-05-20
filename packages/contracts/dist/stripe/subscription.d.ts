@@ -235,7 +235,7 @@ export declare const CreateSubscriptionRequestSchema: z.ZodObject<{
     }>>>;
     billingOrganizationId: z.ZodOptional<z.ZodString>;
     paymentMethodId: z.ZodOptional<z.ZodString>;
-    pendingConsentKey: z.ZodOptional<z.ZodString>;
+    pendingConsentKey: z.ZodString;
 }, z.core.$strip>;
 export type CreateSubscriptionRequest = z.infer<typeof CreateSubscriptionRequestSchema>;
 export declare const EarlyTerminationQuoteSchema: z.ZodObject<{

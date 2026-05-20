@@ -59,6 +59,18 @@ export declare const USER_ROUTES: {
      * @param userId - User's unique identifier
      */
     readonly dataExport: (userId: string) => `/users/${string}/data-export`;
+    /**
+     * POST /users/:userId/intake - Submit patient clinical intake form (v1)
+     * @param userId - User's unique identifier
+     * @ai-context PHI: clinic-launch patient intake; requires auth + selfOrAdmin
+     * Added by: patient-intake agent (2026-05-19); version bump handled by consent-route agent
+     */
+    readonly intake: (userId: string) => `/users/${string}/intake`;
+    /**
+     * GET /users/:userId/intake - Fetch existing patient intake (for status check)
+     * @param userId - User's unique identifier
+     */
+    readonly getIntake: (userId: string) => `/users/${string}/intake`;
 };
 /** Type for user route values */
 export type UserRoute = {

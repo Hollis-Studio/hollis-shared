@@ -1,7 +1,7 @@
 {
   "_comment_BUILD_001": "RESOLVED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Add explicit package.json exports only for currently consumed public subpaths. Do not add wildcard exports or local compatibility barrels. Reviewed: 2026-05-12 (Phase E/F shared extraction cleanup)",
   "name": "@hollis-studio/contracts",
-  "version": "0.2.0-alpha.7",
+  "version": "0.2.0-alpha.8",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -214,6 +214,16 @@
       "import": "./dist/admin/index.js",
       "default": "./dist/admin/index.js"
     },
+    "./admin/consent-schemas": {
+      "types": "./dist/admin/consent-schemas.d.ts",
+      "import": "./dist/admin/consent-schemas.js",
+      "default": "./dist/admin/consent-schemas.js"
+    },
+    "./admin/legal-documents": {
+      "types": "./dist/admin/legal-documents/index.d.ts",
+      "import": "./dist/admin/legal-documents/index.js",
+      "default": "./dist/admin/legal-documents/index.js"
+    },
     "./admin/admin-types": {
       "types": "./dist/admin/admin-types.d.ts",
       "import": "./dist/admin/admin-types.js",
@@ -291,6 +301,9 @@
     "*": {
       "admin": [
         "dist/admin/index.d.ts"
+      ],
+      "admin/legal-documents": [
+        "dist/admin/legal-documents/index.d.ts"
       ],
       "admin/*": [
         "dist/admin/*.d.ts"

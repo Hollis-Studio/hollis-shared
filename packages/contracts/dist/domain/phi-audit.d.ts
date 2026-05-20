@@ -12,7 +12,7 @@ import { z } from "zod";
 /**
  * Types of PHI resources that can be accessed
  */
-export declare const PHI_RESOURCES: readonly ["user", "user-account", "clinical_profile", "lab_panel", "lab_result", "clinical_note", "patient_document", "document", "biometric_entry", "biometrics", "appointment", "health_metric_goal", "health_goal", "health_snapshot", "medication", "limitation", "crm", "health_progress", "daily_metrics", "daily_summary", "daily_log", "measurement", "session", "journal", "phi", "message", "push", "push_token", "upload", "ai_permanent_note", "client_intake", "registration", "workout_plan", "nutrition_plan", "ai_context", "training_strategy", "exercise_logs", "billing_dispute", "data_export", "wearable_workout"];
+export declare const PHI_RESOURCES: readonly ["user", "user-account", "clinical_profile", "lab_panel", "lab_result", "clinical_note", "patient_document", "document", "biometric_entry", "biometrics", "appointment", "health_metric_goal", "health_goal", "health_snapshot", "medication", "limitation", "crm", "health_progress", "daily_metrics", "daily_summary", "daily_log", "measurement", "session", "journal", "phi", "message", "push", "push_token", "upload", "ai_permanent_note", "client_intake", "registration", "workout_plan", "nutrition_plan", "ai_context", "training_strategy", "exercise_logs", "billing_dispute", "data_export", "wearable_workout", "consent_record"];
 export declare const PhiResourceSchema: z.ZodEnum<{
     message: "message";
     push: "push";
@@ -54,6 +54,7 @@ export declare const PhiResourceSchema: z.ZodEnum<{
     billing_dispute: "billing_dispute";
     data_export: "data_export";
     wearable_workout: "wearable_workout";
+    consent_record: "consent_record";
 }>;
 export type PhiResource = z.infer<typeof PhiResourceSchema>;
 /**
@@ -100,6 +101,7 @@ export declare const PHI_RESOURCE: {
     readonly BILLING_DISPUTE: "billing_dispute";
     readonly DATA_EXPORT: "data_export";
     readonly WEARABLE_WORKOUT: "wearable_workout";
+    readonly CONSENT_RECORD: "consent_record";
 };
 /**
  * Actions that can be performed on PHI
@@ -197,6 +199,7 @@ export declare const phiResourceSchema: z.ZodEnum<{
     billing_dispute: "billing_dispute";
     data_export: "data_export";
     wearable_workout: "wearable_workout";
+    consent_record: "consent_record";
 }>;
 /** @deprecated Use PhiActionSchema instead */
 export declare const phiActionSchema: z.ZodEnum<{
@@ -263,6 +266,7 @@ export declare const phiAuditLogEntrySchema: z.ZodObject<{
         billing_dispute: "billing_dispute";
         data_export: "data_export";
         wearable_workout: "wearable_workout";
+        consent_record: "consent_record";
     }>;
     action: z.ZodEnum<{
         READ: "READ";

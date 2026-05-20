@@ -83,9 +83,11 @@ export type InformedConsentInitialsKey = (typeof INFORMED_CONSENT_INITIALS)[keyo
  */
 export declare const PHOTO_VIDEO_USE_TYPES: {
     readonly MARKETING_SOCIAL: "marketing_social";
-    readonly TRAINING_REVIEW: "training_review";
-    readonly TESTIMONIAL: "testimonial";
-    readonly INTERNAL_RECORDS: "internal_records";
+    readonly TESTIMONIAL_WRITTEN: "testimonial_written";
+    readonly TESTIMONIAL_RECORDED: "testimonial_recorded";
+    readonly BEFORE_AFTER: "before_after";
+    readonly PROGRESS_METRICS: "progress_metrics";
+    readonly SOCIAL_MEDIA: "social_media";
 };
 export type PhotoVideoUseType = (typeof PHOTO_VIDEO_USE_TYPES)[keyof typeof PHOTO_VIDEO_USE_TYPES];
 /**
@@ -98,11 +100,15 @@ export type PhotoVideoUseType = (typeof PHOTO_VIDEO_USE_TYPES)[keyof typeof PHOT
  *   Present for documents that require per-section initials.
  * @field optInSelections - Optional map of use type → boolean.
  *   Present for PHOTO_VIDEO_RELEASE only.
- * @field contentHash - Optional SHA-256 hash of the document content at signing time.
- *   Enables tamper-detection post-signing.
- * @field documentContent - Optional full substituted document text at signing time.
- *   Sent by the client so the server can embed the actual text in the PDF and
- *   compute the content hash. Treated as legally sensitive — never log.
+ * @field displayedContentHash - SHA-256 hex digest of the canonical rendered
+ *   legal text displayed by the client at signing time. The server should
+ *   independently render the same canonical text from shared contracts and
+ *   compare hashes before accepting the signature.
+ * @field contentHash - Deprecated legacy client-provided content hash. Servers
+ *   should compute stored legal content hashes from canonical rendering.
+ * @field documentContent - Deprecated legacy full substituted document text.
+ *   Kept only for migration compatibility; servers must not trust this as the
+ *   legal source of truth.
  */
 export declare const SignedDocumentPayloadSchema: z.ZodObject<{
     documentType: z.ZodEnum<{
@@ -113,35 +119,59 @@ export declare const SignedDocumentPayloadSchema: z.ZodObject<{
         PHOTO_VIDEO_RELEASE: "PHOTO_VIDEO_RELEASE";
     }>;
     documentVersion: z.ZodString;
+    displayedSigningDate: z.ZodOptional<z.ZodString>;
     signatureDataUrl: z.ZodString;
     initialsData: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
     optInSelections: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodBoolean>>;
+    displayedContentHash: z.ZodString;
     contentHash: z.ZodOptional<z.ZodString>;
     documentContent: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type SignedDocumentPayload = z.infer<typeof SignedDocumentPayloadSchema>;
-/**
- * Enrollment Summary (Exhibit A of the Membership Agreement).
- * Generated from the tier + contract duration selections made earlier in the flow.
- * Embedded in the composite PDF cover page.
- */
-export declare const EnrollmentSummarySchema: z.ZodObject<{
+export declare const SigningClientInfoSchema: z.ZodObject<{
+    name: z.ZodString;
+    email: z.ZodString;
+    dateOfBirth: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    phone: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    address: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    cityStateZip: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    emergencyContactName: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    emergencyContactPhone: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    startDate: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    endDate: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    memberId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    selectedTier: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+        ESSENTIALS: "ESSENTIALS";
+        CORE: "CORE";
+        CONCIERGE: "CONCIERGE";
+    }>>>;
+    contractDurationMonths: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+}, z.core.$strip>;
+export type SigningClientInfo = z.infer<typeof SigningClientInfoSchema>;
+export declare const EnrollmentSummarySchema: z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodObject<{
     tier: z.ZodEnum<{
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
     }>;
+    tierDisplayName: z.ZodOptional<z.ZodString>;
     contractDuration: z.ZodNumber;
+    contractDurationMonths: z.ZodOptional<z.ZodNumber>;
     startDate: z.ZodString;
     endDate: z.ZodString;
     monthlyRateCents: z.ZodNumber;
+    monthlyRateDollars: z.ZodOptional<z.ZodNumber>;
+    monthlyRateFormatted: z.ZodOptional<z.ZodString>;
     discountPercent: z.ZodNumber;
     totalContractCents: z.ZodNumber;
+    totalContractDollars: z.ZodOptional<z.ZodNumber>;
+    totalContractFormatted: z.ZodOptional<z.ZodString>;
     includedServices: z.ZodArray<z.ZodObject<{
         label: z.ZodString;
         value: z.ZodString;
     }, z.core.$strip>>;
-}, z.core.$strip>;
+    separatelyBilledItems: z.ZodOptional<z.ZodArray<z.ZodString>>;
+}, z.core.$strip>>;
 export type EnrollmentSummary = z.infer<typeof EnrollmentSummarySchema>;
 /**
  * Request body for POST /api/admin/consent.
@@ -159,29 +189,57 @@ export declare const SubmitConsentRequestSchema: z.ZodObject<{
             PHOTO_VIDEO_RELEASE: "PHOTO_VIDEO_RELEASE";
         }>;
         documentVersion: z.ZodString;
+        displayedSigningDate: z.ZodOptional<z.ZodString>;
         signatureDataUrl: z.ZodString;
         initialsData: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
         optInSelections: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodBoolean>>;
+        displayedContentHash: z.ZodString;
         contentHash: z.ZodOptional<z.ZodString>;
         documentContent: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>>;
-    enrollmentSummary: z.ZodObject<{
+    signingClientInfo: z.ZodObject<{
+        name: z.ZodString;
+        email: z.ZodString;
+        dateOfBirth: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        phone: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        address: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        cityStateZip: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        emergencyContactName: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        emergencyContactPhone: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        startDate: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        endDate: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        memberId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        selectedTier: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+            ESSENTIALS: "ESSENTIALS";
+            CORE: "CORE";
+            CONCIERGE: "CONCIERGE";
+        }>>>;
+        contractDurationMonths: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    }, z.core.$strip>;
+    enrollmentSummary: z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodObject<{
         tier: z.ZodEnum<{
             ESSENTIALS: "ESSENTIALS";
             CORE: "CORE";
             CONCIERGE: "CONCIERGE";
         }>;
+        tierDisplayName: z.ZodOptional<z.ZodString>;
         contractDuration: z.ZodNumber;
+        contractDurationMonths: z.ZodOptional<z.ZodNumber>;
         startDate: z.ZodString;
         endDate: z.ZodString;
         monthlyRateCents: z.ZodNumber;
+        monthlyRateDollars: z.ZodOptional<z.ZodNumber>;
+        monthlyRateFormatted: z.ZodOptional<z.ZodString>;
         discountPercent: z.ZodNumber;
         totalContractCents: z.ZodNumber;
+        totalContractDollars: z.ZodOptional<z.ZodNumber>;
+        totalContractFormatted: z.ZodOptional<z.ZodString>;
         includedServices: z.ZodArray<z.ZodObject<{
             label: z.ZodString;
             value: z.ZodString;
         }, z.core.$strip>>;
-    }, z.core.$strip>;
+        separatelyBilledItems: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    }, z.core.$strip>>;
 }, z.core.$strip>;
 export type SubmitConsentRequest = z.infer<typeof SubmitConsentRequestSchema>;
 /**

@@ -810,6 +810,30 @@ export const PHI_ROUTES = {
     provider: (memberId) => `/phi/providers/${memberId}`,
 };
 // ============================================================================
+// PATIENT CONSENT ROUTES
+// ============================================================================
+/**
+ * Patient-scoped consent API routes.
+ * Base path: /api/consent
+ *
+ * These routes are patient-self-scoped: userId is derived from the authenticated
+ * session (req.user.userId), so a patient cannot access another patient's records.
+ *
+ * @group CONSENT
+ */
+export const CONSENT_ROUTES = {
+    /**
+     * GET /api/consent/me/pdf — Download own signed consent PDF (presigned S3 URL).
+     * Returns 404 if no PDF is on file. Cache-Control: no-store.
+     */
+    MY_PDF: "/api/consent/me/pdf",
+    /**
+     * GET /api/consent/me — List own consent record metadata (no signature blobs).
+     * Returns an array ordered by most recent first.
+     */
+    MY_LIST: "/api/consent/me",
+};
+// ============================================================================
 // AGGREGATED API ROUTES
 // ============================================================================
 /**
@@ -852,6 +876,7 @@ export const API_ROUTES = {
     ACCOUNT: ACCOUNT_ROUTES,
     PHI: PHI_ROUTES,
     PUBLIC_BILLING: PUBLIC_BILLING_ROUTES,
+    CONSENT: CONSENT_ROUTES,
 };
 // ============================================================================
 // ROUTE METADATA (for documentation/validation)

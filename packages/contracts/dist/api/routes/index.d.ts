@@ -62,6 +62,8 @@ export declare const API_ROUTES: {
         readonly healthGoals: (userId: string) => `/users/${string}/health-goals`;
         readonly compliance: (userId: string) => `/users/${string}/compliance`;
         readonly dataExport: (userId: string) => `/users/${string}/data-export`;
+        readonly intake: (userId: string) => `/users/${string}/intake`;
+        readonly getIntake: (userId: string) => `/users/${string}/intake`;
     };
     readonly DAILY_METRICS: {
         readonly get: (userId: string, date: string) => `/users/${string}/daily-metrics/${string}`;

@@ -67,9 +67,9 @@ function validAuditEntry() {
 
 describe('PHI Audit Domain Contracts', () => {
   describe('PHI_RESOURCES', () => {
-    it('should contain exactly 40 resource types', () => {
+    it('should contain exactly 41 resource types', () => {
       // Update this count when adding/removing PHI resources — deliberate protection against silent removal
-      expect(PHI_RESOURCES).toHaveLength(40);
+      expect(PHI_RESOURCES).toHaveLength(41);
     });
 
     it('should contain common PHI resource types', () => {
@@ -83,6 +83,7 @@ describe('PHI Audit Domain Contracts', () => {
       expect(PHI_RESOURCES).toContain('nutrition_plan');
       expect(PHI_RESOURCES).toContain('training_strategy');
       expect(PHI_RESOURCES).toContain('billing_dispute');
+      expect(PHI_RESOURCES).toContain('consent_record');
     });
 
     it.each(PHI_RESOURCES)('PhiResourceSchema should accept: %s', (value) => {
@@ -114,6 +115,7 @@ describe('PHI Audit Domain Contracts', () => {
         expect(PHI_RESOURCE.NUTRITION_PLAN).toBe('nutrition_plan');
         expect(PHI_RESOURCE.TRAINING_STRATEGY).toBe('training_strategy');
         expect(PHI_RESOURCE.BILLING_DISPUTE).toBe('billing_dispute');
+        expect(PHI_RESOURCE.CONSENT_RECORD).toBe('consent_record');
       });
 
       it('should have all constant values present in the tuple', () => {

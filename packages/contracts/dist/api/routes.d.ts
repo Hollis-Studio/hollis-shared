@@ -768,6 +768,29 @@ export declare const PHI_ROUTES: {
 /** Type for PHI route values */
 export type PhiRoute = (typeof PHI_ROUTES)["LAB_TIMELINE"] | (typeof PHI_ROUTES)["ALL_TRENDS"] | (typeof PHI_ROUTES)["PROVIDERS"] | ReturnType<typeof PHI_ROUTES.labPanel> | ReturnType<typeof PHI_ROUTES.labResult> | ReturnType<typeof PHI_ROUTES.metricTrend> | ReturnType<typeof PHI_ROUTES.provider>;
 /**
+ * Patient-scoped consent API routes.
+ * Base path: /api/consent
+ *
+ * These routes are patient-self-scoped: userId is derived from the authenticated
+ * session (req.user.userId), so a patient cannot access another patient's records.
+ *
+ * @group CONSENT
+ */
+export declare const CONSENT_ROUTES: {
+    /**
+     * GET /api/consent/me/pdf — Download own signed consent PDF (presigned S3 URL).
+     * Returns 404 if no PDF is on file. Cache-Control: no-store.
+     */
+    readonly MY_PDF: "/api/consent/me/pdf";
+    /**
+     * GET /api/consent/me — List own consent record metadata (no signature blobs).
+     * Returns an array ordered by most recent first.
+     */
+    readonly MY_LIST: "/api/consent/me";
+};
+/** Type for patient consent route values */
+export type ConsentRoute = (typeof CONSENT_ROUTES)[keyof typeof CONSENT_ROUTES];
+/**
  * Complete API routes registry.
  * Use this for centralized access to all route definitions.
  *
@@ -1341,6 +1364,18 @@ export declare const API_ROUTES: {
          * Returns 400 for malformed tokens and 401 for expired/invalid tokens.
          */
         readonly VERIFY_TOKEN: "/public/billing/verify-token";
+    };
+    readonly CONSENT: {
+        /**
+         * GET /api/consent/me/pdf — Download own signed consent PDF (presigned S3 URL).
+         * Returns 404 if no PDF is on file. Cache-Control: no-store.
+         */
+        readonly MY_PDF: "/api/consent/me/pdf";
+        /**
+         * GET /api/consent/me — List own consent record metadata (no signature blobs).
+         * Returns an array ordered by most recent first.
+         */
+        readonly MY_LIST: "/api/consent/me";
     };
 };
 /**

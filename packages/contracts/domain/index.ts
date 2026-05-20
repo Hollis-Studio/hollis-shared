@@ -146,6 +146,9 @@ export * from "./organization.js";
 export * from "./appointment-config.js";
 export * from "./documents.js";
 
+// Consent domain - patient consent record types and endpoint constants
+export * from "./consent.js";
+
 // Realtime domain - SSE resource types, event types
 export * from "./realtime.js";
 

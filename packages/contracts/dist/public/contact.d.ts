@@ -27,8 +27,8 @@ export declare const ContactSourceSchema: z.ZodEnum<{
     REFERRAL: "REFERRAL";
     OTHER: "OTHER";
     GOOGLE: "GOOGLE";
-    WEBSITE: "WEBSITE";
     SOCIAL_MEDIA: "SOCIAL_MEDIA";
+    WEBSITE: "WEBSITE";
 }>;
 export type ContactSource = z.infer<typeof ContactSourceSchema>;
 /**
@@ -59,8 +59,8 @@ export declare const ContactFormSchema: z.ZodObject<{
         REFERRAL: "REFERRAL";
         OTHER: "OTHER";
         GOOGLE: "GOOGLE";
-        WEBSITE: "WEBSITE";
         SOCIAL_MEDIA: "SOCIAL_MEDIA";
+        WEBSITE: "WEBSITE";
     }>>;
     submissionIntent: z.ZodOptional<z.ZodEnum<{
         GENERAL: "GENERAL";
@@ -85,8 +85,8 @@ export declare const ContactInquirySchema: z.ZodObject<{
         REFERRAL: "REFERRAL";
         OTHER: "OTHER";
         GOOGLE: "GOOGLE";
-        WEBSITE: "WEBSITE";
         SOCIAL_MEDIA: "SOCIAL_MEDIA";
+        WEBSITE: "WEBSITE";
     }>>;
     submissionIntent: z.ZodOptional<z.ZodEnum<{
         GENERAL: "GENERAL";
@@ -114,8 +114,8 @@ export declare const NewsletterSignupSchema: z.ZodObject<{
         REFERRAL: "REFERRAL";
         OTHER: "OTHER";
         GOOGLE: "GOOGLE";
-        WEBSITE: "WEBSITE";
         SOCIAL_MEDIA: "SOCIAL_MEDIA";
+        WEBSITE: "WEBSITE";
     }>>;
 }, z.core.$strip>;
 export type NewsletterSignupInput = z.infer<typeof NewsletterSignupSchema>;

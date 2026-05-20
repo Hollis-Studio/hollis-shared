@@ -296,7 +296,7 @@ export const CreateSubscriptionRequestSchema = z.object({
    * When present, the server links the consent PDF to the created subscription record.
    * Set after a successful POST /api/admin/consent call in the ConsultationFlowModal.
    */
-  pendingConsentKey: z.string().optional(),
+  pendingConsentKey: z.string().min(1),
 });
 export type CreateSubscriptionRequest = z.infer<
   typeof CreateSubscriptionRequestSchema
