@@ -126,6 +126,10 @@ export const ADMIN_PATIENT_ROUTES = {
   submitIntake: (userId: string) =>
     `/api/admin/patients/${userId}/intake` as const,
 
+  /** GET - Fetch patient clinical intake v1 (admin-scoped read) */
+  intakeV1: (userId: string) =>
+    `/api/admin/patients/${userId}/intake-v1` as const,
+
   /** PUT - Update patient profile */
   updateProfile: (userId: string) =>
     `/api/admin/patients/${userId}/profile` as const,

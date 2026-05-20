@@ -74,6 +74,8 @@ export const ADMIN_PATIENT_ROUTES = {
     intakeQuestionnaire: (userId) => `/api/admin/patients/${userId}/intake-questionnaire`,
     /** POST - Submit client intake */
     submitIntake: (userId) => `/api/admin/patients/${userId}/intake`,
+    /** GET - Fetch patient clinical intake v1 (admin-scoped read) */
+    intakeV1: (userId) => `/api/admin/patients/${userId}/intake-v1`,
     /** PUT - Update patient profile */
     updateProfile: (userId) => `/api/admin/patients/${userId}/profile`,
     /** PUT - Update patient goals */

@@ -34,6 +34,10 @@ import type {
 } from "./routes/types.js";
 import { HTTP_METHODS as _HTTP_METHODS } from "./routes/types.js";
 
+// USER_ROUTES is now defined in the modular ./routes/users.ts.
+// Import here so API_ROUTES.USERS stays intact in the legacy aggregator.
+import { USER_ROUTES } from "./routes/users.js";
+
 /**
  * HTTP methods supported by the API.
  * @deprecated Import from './routes/types' instead
@@ -89,90 +93,8 @@ export const AUTH_ROUTES = {
 /** Type for auth route values */
 export type AuthRoute = (typeof AUTH_ROUTES)[keyof typeof AUTH_ROUTES];
 
-// ============================================================================
-// USER ROUTES
-// ============================================================================
-
-/**
- * User data API routes.
- * Base path: /users/:userId
- *
- * @group USERS
- */
-export const USER_ROUTES = {
-  /**
-   * GET /users/me - Get current authenticated user's profile
-   */
-  ME: "/users/me",
-
-  /**
-   * GET /users/:userId - Get user account data
-   * @param userId - User's unique identifier
-   */
-  get: (userId: string) => `/users/${userId}` as const,
-
-  /**
-   * PUT /users/:userId/profile - Update user profile
-   * @param userId - User's unique identifier
-   */
-  updateProfile: (userId: string) => `/users/${userId}/profile` as const,
-
-  /**
-   * PATCH /users/:userId/preferences - Update user preferences
-   * @param userId - User's unique identifier
-   */
-  updatePreferences: (userId: string) =>
-    `/users/${userId}/preferences` as const,
-
-  /**
-   * GET /users/:userId/goals - Get user goals
-   * @param userId - User's unique identifier
-   */
-  goals: (userId: string) => `/users/${userId}/goals` as const,
-
-  /**
-   * PUT /users/:userId/goals - Update user goals
-   * @param userId - User's unique identifier
-   */
-  updateGoals: (userId: string) => `/users/${userId}/goals` as const,
-
-  /**
-   * GET /users/:userId/health-progress - Get health progress analytics
-   * @param userId - User's unique identifier
-   */
-  healthProgress: (userId: string) =>
-    `/users/${userId}/health-progress` as const,
-
-  /**
-   * GET /users/:userId/health-progress/history - Get historical health progress
-   * @param userId - User's unique identifier
-   */
-  healthProgressHistory: (userId: string) =>
-    `/users/${userId}/health-progress/history` as const,
-
-  /**
-   * GET /users/:userId/health-goals - Get health metric goals
-   * @param userId - User's unique identifier
-   */
-  healthGoals: (userId: string) => `/users/${userId}/health-goals` as const,
-
-  /**
-   * GET /users/:userId/compliance - Get compliance metrics
-   * @param userId - User's unique identifier
-   */
-  compliance: (userId: string) => `/users/${userId}/compliance` as const,
-
-  /**
-   * POST /users/:userId/data-export - HIPAA §164.524 right-of-access data export
-   * @param userId - User's unique identifier
-   */
-  dataExport: (userId: string) => `/users/${userId}/data-export` as const,
-} as const;
-
-/** Type for user route values */
-export type UserRoute =
-  | typeof USER_ROUTES.ME
-  | ReturnType<Exclude<(typeof USER_ROUTES)[keyof typeof USER_ROUTES], string>>;
+// NOTE: USER_ROUTES is defined in ./routes/users.ts (the modular source of truth).
+// It is explicitly re-exported via api/index.ts. Do NOT re-declare it here.
 
 // ============================================================================
 // DAILY METRICS ROUTES

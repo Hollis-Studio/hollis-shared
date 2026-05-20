@@ -13,6 +13,7 @@ export * from "./endpoints.js";
 export * from "./health-clinical-schemas.js";
 export * from "./response.js";
 export * from "./routes.js";
+export { USER_ROUTES, type UserRoute } from "./routes/users.js";
 export { HEALTH_METRICS_ROUTES, type HealthMetricsRoute } from "./routes/health-metrics.js";
 export { ASSIGNMENT_ROUTES, MFA_ROUTES, type AssignmentRoute, type MfaRoute } from "./routes/mfa.js";
 export { WORKOUT_PLANS_ROUTES } from "./routes/workouts.js";

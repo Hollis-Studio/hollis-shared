@@ -64,70 +64,6 @@ export declare const AUTH_ROUTES: {
 /** Type for auth route values */
 export type AuthRoute = (typeof AUTH_ROUTES)[keyof typeof AUTH_ROUTES];
 /**
- * User data API routes.
- * Base path: /users/:userId
- *
- * @group USERS
- */
-export declare const USER_ROUTES: {
-    /**
-     * GET /users/me - Get current authenticated user's profile
-     */
-    readonly ME: "/users/me";
-    /**
-     * GET /users/:userId - Get user account data
-     * @param userId - User's unique identifier
-     */
-    readonly get: (userId: string) => `/users/${string}`;
-    /**
-     * PUT /users/:userId/profile - Update user profile
-     * @param userId - User's unique identifier
-     */
-    readonly updateProfile: (userId: string) => `/users/${string}/profile`;
-    /**
-     * PATCH /users/:userId/preferences - Update user preferences
-     * @param userId - User's unique identifier
-     */
-    readonly updatePreferences: (userId: string) => `/users/${string}/preferences`;
-    /**
-     * GET /users/:userId/goals - Get user goals
-     * @param userId - User's unique identifier
-     */
-    readonly goals: (userId: string) => `/users/${string}/goals`;
-    /**
-     * PUT /users/:userId/goals - Update user goals
-     * @param userId - User's unique identifier
-     */
-    readonly updateGoals: (userId: string) => `/users/${string}/goals`;
-    /**
-     * GET /users/:userId/health-progress - Get health progress analytics
-     * @param userId - User's unique identifier
-     */
-    readonly healthProgress: (userId: string) => `/users/${string}/health-progress`;
-    /**
-     * GET /users/:userId/health-progress/history - Get historical health progress
-     * @param userId - User's unique identifier
-     */
-    readonly healthProgressHistory: (userId: string) => `/users/${string}/health-progress/history`;
-    /**
-     * GET /users/:userId/health-goals - Get health metric goals
-     * @param userId - User's unique identifier
-     */
-    readonly healthGoals: (userId: string) => `/users/${string}/health-goals`;
-    /**
-     * GET /users/:userId/compliance - Get compliance metrics
-     * @param userId - User's unique identifier
-     */
-    readonly compliance: (userId: string) => `/users/${string}/compliance`;
-    /**
-     * POST /users/:userId/data-export - HIPAA §164.524 right-of-access data export
-     * @param userId - User's unique identifier
-     */
-    readonly dataExport: (userId: string) => `/users/${string}/data-export`;
-};
-/** Type for user route values */
-export type UserRoute = typeof USER_ROUTES.ME | ReturnType<Exclude<(typeof USER_ROUTES)[keyof typeof USER_ROUTES], string>>;
-/**
  * Daily metrics API routes.
  * Base path: /users/:userId/daily-metrics
  *
@@ -834,60 +770,18 @@ export declare const API_ROUTES: {
         readonly CHANGE_PASSWORD: "/auth/change-password";
     };
     readonly USERS: {
-        /**
-         * GET /users/me - Get current authenticated user's profile
-         */
         readonly ME: "/users/me";
-        /**
-         * GET /users/:userId - Get user account data
-         * @param userId - User's unique identifier
-         */
         readonly get: (userId: string) => `/users/${string}`;
-        /**
-         * PUT /users/:userId/profile - Update user profile
-         * @param userId - User's unique identifier
-         */
         readonly updateProfile: (userId: string) => `/users/${string}/profile`;
-        /**
-         * PATCH /users/:userId/preferences - Update user preferences
-         * @param userId - User's unique identifier
-         */
         readonly updatePreferences: (userId: string) => `/users/${string}/preferences`;
-        /**
-         * GET /users/:userId/goals - Get user goals
-         * @param userId - User's unique identifier
-         */
-        readonly goals: (userId: string) => `/users/${string}/goals`;
-        /**
-         * PUT /users/:userId/goals - Update user goals
-         * @param userId - User's unique identifier
-         */
         readonly updateGoals: (userId: string) => `/users/${string}/goals`;
-        /**
-         * GET /users/:userId/health-progress - Get health progress analytics
-         * @param userId - User's unique identifier
-         */
         readonly healthProgress: (userId: string) => `/users/${string}/health-progress`;
-        /**
-         * GET /users/:userId/health-progress/history - Get historical health progress
-         * @param userId - User's unique identifier
-         */
         readonly healthProgressHistory: (userId: string) => `/users/${string}/health-progress/history`;
-        /**
-         * GET /users/:userId/health-goals - Get health metric goals
-         * @param userId - User's unique identifier
-         */
         readonly healthGoals: (userId: string) => `/users/${string}/health-goals`;
-        /**
-         * GET /users/:userId/compliance - Get compliance metrics
-         * @param userId - User's unique identifier
-         */
         readonly compliance: (userId: string) => `/users/${string}/compliance`;
-        /**
-         * POST /users/:userId/data-export - HIPAA §164.524 right-of-access data export
-         * @param userId - User's unique identifier
-         */
         readonly dataExport: (userId: string) => `/users/${string}/data-export`;
+        readonly intake: (userId: string) => `/users/${string}/intake`;
+        readonly getIntake: (userId: string) => `/users/${string}/intake`;
     };
     readonly DAILY_METRICS: {
         /**

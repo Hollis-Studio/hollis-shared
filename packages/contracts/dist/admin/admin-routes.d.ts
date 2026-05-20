@@ -71,6 +71,8 @@ export declare const ADMIN_PATIENT_ROUTES: {
     readonly intakeQuestionnaire: (userId: string) => `/api/admin/patients/${string}/intake-questionnaire`;
     /** POST - Submit client intake */
     readonly submitIntake: (userId: string) => `/api/admin/patients/${string}/intake`;
+    /** GET - Fetch patient clinical intake v1 (admin-scoped read) */
+    readonly intakeV1: (userId: string) => `/api/admin/patients/${string}/intake-v1`;
     /** PUT - Update patient profile */
     readonly updateProfile: (userId: string) => `/api/admin/patients/${string}/profile`;
     /** PUT - Update patient goals */
@@ -651,6 +653,8 @@ export declare const ADMIN_API_ROUTES: {
         readonly intakeQuestionnaire: (userId: string) => `/api/admin/patients/${string}/intake-questionnaire`;
         /** POST - Submit client intake */
         readonly submitIntake: (userId: string) => `/api/admin/patients/${string}/intake`;
+        /** GET - Fetch patient clinical intake v1 (admin-scoped read) */
+        readonly intakeV1: (userId: string) => `/api/admin/patients/${string}/intake-v1`;
         /** PUT - Update patient profile */
         readonly updateProfile: (userId: string) => `/api/admin/patients/${string}/profile`;
         /** PUT - Update patient goals */

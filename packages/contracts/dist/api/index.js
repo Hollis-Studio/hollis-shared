@@ -16,6 +16,10 @@ export * from "./routes.js";
 // Legacy ./routes.ts takes precedence over ./routes/index.ts during resolution,
 // so route modules added under ./routes/* need explicit re-exports here until
 // the legacy aggregator is retired.
+// USER_ROUTES is the modular source of truth (includes .intake). The legacy
+// routes.ts no longer declares USER_ROUTES — this explicit export resolves the
+// prior export * collision that caused USER_ROUTES.intake to be unreachable.
+export { USER_ROUTES } from "./routes/users.js";
 export { HEALTH_METRICS_ROUTES } from "./routes/health-metrics.js";
 // MFA and Assignment routes are defined in the modular routes/ directory (not in routes.ts).
 // Explicitly re-exported here so they are available via @hollis-studio/contracts/api.

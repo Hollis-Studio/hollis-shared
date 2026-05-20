@@ -16,6 +16,9 @@
  * deps: none | consumers: src/services/*, web-admin/services/*, server/src/*
  */
 import { HTTP_METHODS as _HTTP_METHODS } from "./routes/types.js";
+// USER_ROUTES is now defined in the modular ./routes/users.ts.
+// Import here so API_ROUTES.USERS stays intact in the legacy aggregator.
+import { USER_ROUTES } from "./routes/users.js";
 /**
  * HTTP methods supported by the API.
  * @deprecated Import from './routes/types' instead
@@ -57,71 +60,8 @@ export const AUTH_ROUTES = {
     /** POST - Change password for authenticated user (invalidates all sessions) */
     CHANGE_PASSWORD: "/auth/change-password",
 };
-// ============================================================================
-// USER ROUTES
-// ============================================================================
-/**
- * User data API routes.
- * Base path: /users/:userId
- *
- * @group USERS
- */
-export const USER_ROUTES = {
-    /**
-     * GET /users/me - Get current authenticated user's profile
-     */
-    ME: "/users/me",
-    /**
-     * GET /users/:userId - Get user account data
-     * @param userId - User's unique identifier
-     */
-    get: (userId) => `/users/${userId}`,
-    /**
-     * PUT /users/:userId/profile - Update user profile
-     * @param userId - User's unique identifier
-     */
-    updateProfile: (userId) => `/users/${userId}/profile`,
-    /**
-     * PATCH /users/:userId/preferences - Update user preferences
-     * @param userId - User's unique identifier
-     */
-    updatePreferences: (userId) => `/users/${userId}/preferences`,
-    /**
-     * GET /users/:userId/goals - Get user goals
-     * @param userId - User's unique identifier
-     */
-    goals: (userId) => `/users/${userId}/goals`,
-    /**
-     * PUT /users/:userId/goals - Update user goals
-     * @param userId - User's unique identifier
-     */
-    updateGoals: (userId) => `/users/${userId}/goals`,
-    /**
-     * GET /users/:userId/health-progress - Get health progress analytics
-     * @param userId - User's unique identifier
-     */
-    healthProgress: (userId) => `/users/${userId}/health-progress`,
-    /**
-     * GET /users/:userId/health-progress/history - Get historical health progress
-     * @param userId - User's unique identifier
-     */
-    healthProgressHistory: (userId) => `/users/${userId}/health-progress/history`,
-    /**
-     * GET /users/:userId/health-goals - Get health metric goals
-     * @param userId - User's unique identifier
-     */
-    healthGoals: (userId) => `/users/${userId}/health-goals`,
-    /**
-     * GET /users/:userId/compliance - Get compliance metrics
-     * @param userId - User's unique identifier
-     */
-    compliance: (userId) => `/users/${userId}/compliance`,
-    /**
-     * POST /users/:userId/data-export - HIPAA §164.524 right-of-access data export
-     * @param userId - User's unique identifier
-     */
-    dataExport: (userId) => `/users/${userId}/data-export`,
-};
+// NOTE: USER_ROUTES is defined in ./routes/users.ts (the modular source of truth).
+// It is explicitly re-exported via api/index.ts. Do NOT re-declare it here.
 // ============================================================================
 // DAILY METRICS ROUTES
 // ============================================================================
