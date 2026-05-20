@@ -45,6 +45,7 @@ const SENSITIVE_FIELD_NAMES = new Set([
   "healthRecords",
   "heartRate",
   "height",
+  "id",
   "insuranceId",
   "ip_address",
   "labPanel",

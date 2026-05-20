@@ -318,6 +318,127 @@ export const patientDocumentSchema = baseDocumentSchema.extend({
     extractedData: extractedDataSchema.optional(),
 });
 // ============================================================================
+// PATIENT SCHEMA
+// ============================================================================
+/**
+ * Full patient profile schema for clinic use.
+ * Composes the canonical UserProfileSchema shape with clinic-specific fields.
+ *
+ * Clinic-specific additions:
+ *   clinicMembershipId   — physical clinic membership / chart ID (e.g. "CM-00142")
+ *   primaryClinicianId   — assigned clinician (maps to User.id with CLINICIAN role)
+ *   clinicEnrolledAt     — ISO timestamp when the patient was enrolled at the clinic
+ *   clinicStatus         — whether the patient is currently active at the clinic
+ *   clinicNotes          — free-text internal notes (visible to CLINICAL_ROLES only)
+ *
+ * All user-profile fields mirror UserProfileSchema from domain/user.ts.
+ * Import UserProfileContract from there for the full profile shape without clinic fields.
+ */
+export const PatientSchema = z.object({
+    // Core identity (mirrors UserProfileSchema key fields)
+    userId: z.string().max(20),
+    email: z.string().email().max(255),
+    fullName: z.string().min(1).max(200),
+    preferredName: z.string().nullable().optional(),
+    dateOfBirth: z.string().nullable().optional(),
+    biologicalSex: z
+        .enum([
+        "female",
+        "male",
+        "non_binary",
+        "intersex",
+        "prefer_not_to_say",
+    ])
+        .nullable()
+        .optional(),
+    heightCm: z.number().min(0).max(300).nullable().optional(),
+    weightKg: z.number().min(0).max(500).nullable().optional(),
+    timezone: z.string().nullable().optional(),
+    stateOfResidence: z.string().max(10).nullable().optional(),
+    avatarUrl: z.string().url().nullable().optional(),
+    // Role / tier
+    role: z
+        .enum(["ADMIN", "CLINICIAN", "TRAINER", "CLIENT"])
+        .default("CLIENT"),
+    tier: z.enum(["ESSENTIALS", "CORE", "CONCIERGE"]).optional(),
+    // Staff assignments
+    assignedClinicianId: z.string().nullable().optional(),
+    assignedTrainerId: z.string().nullable().optional(),
+    // Clinical PHI arrays
+    medications: z.array(medicationSchema).nullable().optional(),
+    limitations: z.array(limitationSchema).nullable().optional(),
+    injuries: z.array(injurySchema).nullable().optional(),
+    medicalConditions: z.array(medicalConditionSchema).nullable().optional(),
+    // Account meta
+    onboardingCompleted: z.boolean(),
+    isActive: z.boolean().optional(),
+    accountSuspended: z.boolean().optional(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    // ── Clinic-specific fields ────────────────────────────────────────────────
+    /** Clinic chart / membership identifier (e.g. "CM-00142"). Null for pre-enrollment patients. */
+    clinicMembershipId: z.string().max(50).nullable().optional(),
+    /** User ID of the primary assigned clinician for in-clinic care. */
+    primaryClinicianId: z.string().nullable().optional(),
+    /** ISO timestamp when the patient was formally enrolled at the physical clinic. */
+    clinicEnrolledAt: z.string().nullable().optional(),
+    /** Whether the patient is currently active at the clinic. */
+    clinicStatus: z
+        .enum(["active", "inactive", "on_hold", "discharged"])
+        .nullable()
+        .optional(),
+    /** Free-text internal clinic notes (CLINICAL_ROLES only). */
+    clinicNotes: z.string().max(10_000).nullable().optional(),
+});
+// ============================================================================
+// LAB ORDER SCHEMA
+// ============================================================================
+/**
+ * Input schema for creating or updating a lab order.
+ *
+ * Status values mirror LabOrderStatusSchema from domain/businessAnalytics.ts.
+ * Timestamp fields are all optional on update; required by the server for transitions.
+ *
+ * panelType: human-readable panel label (e.g. "Comprehensive Metabolic Panel",
+ *   "Testosterone + SHBG", "Lipid Panel"). Not an enum — lab catalog evolves.
+ * externalReference: vendor or LIMS order ID for cross-referencing external systems.
+ */
+export const LabOrderSchema = z.object({
+    /** Server-assigned UUID. Required on update, omit on create. */
+    id: z.string().optional(),
+    /** User ID of the patient this order belongs to. */
+    patientUserId: z.string().min(1),
+    /** User ID of the clinician who placed the order. */
+    orderedByUserId: z.string().min(1),
+    /** Human-readable panel or test name (e.g. "Comprehensive Metabolic Panel"). */
+    panelType: z.string().min(1).max(200),
+    /** Current status of the lab order workflow. */
+    status: z.enum([
+        "ORDERED",
+        "KIT_SENT",
+        "SAMPLE_RECEIVED",
+        "RESULTS_PENDING",
+        "RESULTS_REVIEWED",
+        "RESULTS_PUBLISHED",
+    ]),
+    /** ISO timestamp when the order was placed. */
+    orderedAt: z.string().datetime(),
+    /** ISO timestamp when the collection kit was sent to the patient. */
+    kitSentAt: z.string().datetime().nullable().optional(),
+    /** ISO timestamp when the sample was received at the lab. */
+    sampleReceivedAt: z.string().datetime().nullable().optional(),
+    /** ISO timestamp when results entered pending-review state. */
+    resultsPendingAt: z.string().datetime().nullable().optional(),
+    /** ISO timestamp when a clinician reviewed the results. */
+    resultsReviewedAt: z.string().datetime().nullable().optional(),
+    /** ISO timestamp when results were published and made visible to the patient. */
+    resultsPublishedAt: z.string().datetime().nullable().optional(),
+    /** Optional external LIMS / vendor order reference for cross-system traceability. */
+    externalReference: z.string().max(200).nullable().optional(),
+    /** Free-text clinical notes on this order (CLINICAL_ROLES only). */
+    notes: z.string().max(5_000).nullable().optional(),
+});
+// ============================================================================
 // MOCK FACTORIES
 // ============================================================================
 /**

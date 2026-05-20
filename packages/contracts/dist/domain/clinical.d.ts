@@ -370,6 +370,148 @@ export declare const patientDocumentSchema: z.ZodObject<{
 }, z.core.$strip>;
 export type PatientDocument = z.infer<typeof patientDocumentSchema>;
 /**
+ * Full patient profile schema for clinic use.
+ * Composes the canonical UserProfileSchema shape with clinic-specific fields.
+ *
+ * Clinic-specific additions:
+ *   clinicMembershipId   — physical clinic membership / chart ID (e.g. "CM-00142")
+ *   primaryClinicianId   — assigned clinician (maps to User.id with CLINICIAN role)
+ *   clinicEnrolledAt     — ISO timestamp when the patient was enrolled at the clinic
+ *   clinicStatus         — whether the patient is currently active at the clinic
+ *   clinicNotes          — free-text internal notes (visible to CLINICAL_ROLES only)
+ *
+ * All user-profile fields mirror UserProfileSchema from domain/user.ts.
+ * Import UserProfileContract from there for the full profile shape without clinic fields.
+ */
+export declare const PatientSchema: z.ZodObject<{
+    userId: z.ZodString;
+    email: z.ZodString;
+    fullName: z.ZodString;
+    preferredName: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    dateOfBirth: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    biologicalSex: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+        female: "female";
+        male: "male";
+        non_binary: "non_binary";
+        intersex: "intersex";
+        prefer_not_to_say: "prefer_not_to_say";
+    }>>>;
+    heightCm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    weightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    timezone: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    stateOfResidence: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    avatarUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    role: z.ZodDefault<z.ZodEnum<{
+        ADMIN: "ADMIN";
+        CLINICIAN: "CLINICIAN";
+        TRAINER: "TRAINER";
+        CLIENT: "CLIENT";
+    }>>;
+    tier: z.ZodOptional<z.ZodEnum<{
+        ESSENTIALS: "ESSENTIALS";
+        CORE: "CORE";
+        CONCIERGE: "CONCIERGE";
+    }>>;
+    assignedClinicianId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    assignedTrainerId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    medications: z.ZodOptional<z.ZodNullable<z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        name: z.ZodString;
+        dosage: z.ZodString;
+        frequency: z.ZodString;
+        notes: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>>>;
+    limitations: z.ZodOptional<z.ZodNullable<z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        description: z.ZodString;
+        severity: z.ZodOptional<z.ZodEnum<{
+            moderate: "moderate";
+            mild: "mild";
+            severe: "severe";
+        }>>;
+        notes: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>>>;
+    injuries: z.ZodOptional<z.ZodNullable<z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        description: z.ZodString;
+        bodyPart: z.ZodOptional<z.ZodString>;
+        occurredAt: z.ZodOptional<z.ZodString>;
+        severity: z.ZodOptional<z.ZodEnum<{
+            moderate: "moderate";
+            mild: "mild";
+            severe: "severe";
+        }>>;
+        recoveryStatus: z.ZodOptional<z.ZodEnum<{
+            active: "active";
+            recovering: "recovering";
+            healed: "healed";
+            chronic: "chronic";
+        }>>;
+        notes: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>>>;
+    medicalConditions: z.ZodOptional<z.ZodNullable<z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        name: z.ZodString;
+        status: z.ZodEnum<{
+            active: "active";
+            managed: "managed";
+            resolved: "resolved";
+            monitoring: "monitoring";
+        }>;
+        diagnosisDate: z.ZodOptional<z.ZodString>;
+        notes: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>>>;
+    onboardingCompleted: z.ZodBoolean;
+    isActive: z.ZodOptional<z.ZodBoolean>;
+    accountSuspended: z.ZodOptional<z.ZodBoolean>;
+    createdAt: z.ZodString;
+    updatedAt: z.ZodString;
+    clinicMembershipId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    primaryClinicianId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    clinicEnrolledAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    clinicStatus: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+        active: "active";
+        inactive: "inactive";
+        on_hold: "on_hold";
+        discharged: "discharged";
+    }>>>;
+    clinicNotes: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+}, z.core.$strip>;
+export type PatientContract = z.infer<typeof PatientSchema>;
+/**
+ * Input schema for creating or updating a lab order.
+ *
+ * Status values mirror LabOrderStatusSchema from domain/businessAnalytics.ts.
+ * Timestamp fields are all optional on update; required by the server for transitions.
+ *
+ * panelType: human-readable panel label (e.g. "Comprehensive Metabolic Panel",
+ *   "Testosterone + SHBG", "Lipid Panel"). Not an enum — lab catalog evolves.
+ * externalReference: vendor or LIMS order ID for cross-referencing external systems.
+ */
+export declare const LabOrderSchema: z.ZodObject<{
+    id: z.ZodOptional<z.ZodString>;
+    patientUserId: z.ZodString;
+    orderedByUserId: z.ZodString;
+    panelType: z.ZodString;
+    status: z.ZodEnum<{
+        ORDERED: "ORDERED";
+        KIT_SENT: "KIT_SENT";
+        SAMPLE_RECEIVED: "SAMPLE_RECEIVED";
+        RESULTS_PENDING: "RESULTS_PENDING";
+        RESULTS_REVIEWED: "RESULTS_REVIEWED";
+        RESULTS_PUBLISHED: "RESULTS_PUBLISHED";
+    }>;
+    orderedAt: z.ZodString;
+    kitSentAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    sampleReceivedAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    resultsPendingAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    resultsReviewedAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    resultsPublishedAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    externalReference: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    notes: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+}, z.core.$strip>;
+export type LabOrderContract = z.infer<typeof LabOrderSchema>;
+/**
  * Mock factory for Medication (testing)
  */
 export declare const createMockMedication: (overrides?: Partial<Medication>) => Medication;

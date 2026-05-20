@@ -244,7 +244,12 @@ Data stores summary:
 - **Hostname:** `api.hollis.health`
 - **Stack:** Express 5 / Prisma 7 / Postgres 15 / Redis / Vertex AI Gemini. **Already substantially production-ready** per the 2026-05-19 backend audit: multi-tenant MSO with organization scoping, tamper-evident hash-chained PHI audit log, MFA step-up on every PHI route, AES-256-GCM field encryption, Vertex AI under Google BAA.
 - **Owns:** clinical records, appointments, labs (LabPanel / LabReport / LabObservation), DXA scans, clinical notes, messaging, patient documents (S3-backed), Stripe subscriptions for Health-side, recovery EMA engine (`metricsEngine.ts`), `MetricDefinition` registry, biometric ingest from HealthKit / Health Connect.
-- **Gaps to close before central-clinic-API promotion:** (1) integrate `@hollis-studio/auth-client` against hollis-identity (currently issues its own JWTs); (2) enable PostgreSQL RLS on `PhiAccessLog`; (3) codify S3 SSE-KMS configuration; (4) implement the audit-archival job to S3 Glacier (HIPAA 6-year retention); (5) extract the recovery EMA + TDEE Kalman filter into `@hollis-studio/metrics` so Compass can share without duplication.
+- **Gaps to close before central-clinic-API promotion (3 of 5 remaining as of 2026-05-20):**
+  - (1) integrate `@hollis-studio/auth-client` against hollis-identity (currently issues its own JWTs) — **OPEN**
+  - ~~(2) enable PostgreSQL RLS on `PhiAccessLog`~~ — **(CLOSED 2026-05-20, Agent B)** via Prisma migration `server/prisma/migrations/20260520000000_phi_access_log_rls/migration.sql`. Owner must `ALTER ROLE <app_service> BYPASSRLS;` before applying.
+  - (3) codify S3 SSE-KMS configuration — **OPEN**
+  - (4) implement the audit-archival job to S3 Glacier (HIPAA 6-year retention) — **(PARTIAL 2026-05-20, Agent B)** daily `verifyAuditChain()` cron added at `server/src/jobs/auditChainVerifyJob.ts` (04:00 UTC; 3-channel surfacing: pino FATAL + Sentry + AdminTask URGENT). Glacier transition itself **still TBD** via Terraform.
+  - (5) extract the recovery EMA + TDEE Kalman filter into `@hollis-studio/metrics` so Compass can share without duplication — **OPEN** (Note 2026-05-20: Agent C wired `UserMetricsContract` zeros to `metricsEngine.ts` and gave `readinessScore` a distinct weighted HRV+training-load model, no longer aliased to `recoveryScore`. Kalman-to-shared-package extraction is unchanged/still pending.)
 - **JWT audiences accepted:** `hollis-health`, plus outbound use of `service:clinic-workouts-read` to call studio-api.
 
 ### 4.4 studio-api (promote from `hollis-workouts-server`)
@@ -412,7 +417,7 @@ The `@hollis-studio/contracts` package currently ships 100+ files spanning ident
 
 ### Security item (urgent, ship before any 2026-05-19 release)
 
-**`APP_REVIEW_CREDENTIALS` and `APP_REVIEW_PASSWORD` are hardcoded** in `domain/app-review.ts` and currently ship inside every consumer bundle that imports `@hollis-studio/contracts`. Reviewer credentials are publicly bundled. Extract to a dev-only package or env-gate. Independent of the broader split decision.
+~~**`APP_REVIEW_CREDENTIALS` and `APP_REVIEW_PASSWORD` are hardcoded** in `domain/app-review.ts` and currently ship inside every consumer bundle that imports `@hollis-studio/contracts`. Reviewer credentials are publicly bundled. Extract to a dev-only package or env-gate. Independent of the broader split decision.~~ **(CLOSED 2026-05-20, Agent J)** — Agent J replaced the hardcoded export with `getAppReviewCredentials()` env-reader in `hollis-shared`. Credentials no longer ship in the bundle.
 
 ---
 
@@ -490,7 +495,7 @@ The Hollis Health app currently does too much. The re-scope removes consumer-fit
 
 | Week | Work | Risk |
 | ---- | ---- | ---- |
-| **W1-2 (NOW, pre-clinic-opening)** | Fix the 7 clinic-readiness gaps (see below). Feature-flag consumer tiles OFF for *new* registrations only. Existing users unchanged. Harden Appointments, Messages, Documents. Smoke-test booking flow on physical devices. | Low (additive) |
+| **W1-2 (NOW, pre-clinic-opening)** | ~~Fix the 7 clinic-readiness gaps (see below)~~ **(CLOSED 2026-05-20 — all 7 closed, see below)**. Feature-flag consumer tiles OFF for *new* registrations only. Existing users unchanged. Harden Appointments, Messages, Documents. Smoke-test booking flow on physical devices. | Low (additive) |
 | **W2 (clinic opens)** | Clinic goes live. Freeze all changes to booking, messaging, billing. Incident-response posture only. | Medium |
 | **W3-4 (stabilization)** | Monitor crash rates, fix any P0s from real-patient usage. Do NOT touch consumer features. | Medium |
 | **W5** | Send "Heads Up" email to existing users announcing Hollis Strength is coming. No action required from them. | Low |
@@ -501,15 +506,15 @@ The Hollis Health app currently does too much. The re-scope removes consumer-fit
 | **W10** | App Store approval. Staged rollout 10% → 50% → 100% over 48h. | Low |
 | **W11-12** | Backend: mark consumer API routes deprecated with sunset headers. Add clinic-only features: appointment reminders (24h/1h), lab result ready notifications, prescription-plan clinician UI. | Low |
 
-### Clinic-readiness gaps that MUST close before W2
+### Clinic-readiness gaps that MUST close before W2 (0 of 7 remaining as of 2026-05-20 — all CLOSED)
 
-1. **The Appointments tab is currently hidden** (`href: null` in `app/(tabs)/_layout.tsx:243`). Screen exists and works; tab bar doesn't expose it. **Most urgent single fix.**
-2. **No push when a clinician creates / modifies / cancels an appointment.** Patients need real-time notification.
-3. **No lab-result-ready push.** Patients won't know when results are published.
-4. **No 24h / 1h pre-appointment reminders.** Table-stakes for clinic; absent causes no-shows.
-5. **No patient-facing intake form in the mobile app.** Only admin-assisted intake exists in web-admin.
-6. **No in-app access to signed consent PDFs** post-signing (`compositeContractKey` stored but no patient-facing download route).
-7. **No "message your care team" onboarding prompt** for new clinic patients.
+1. ~~**The Appointments tab is currently hidden** (`href: null` in `app/(tabs)/_layout.tsx:243`). Screen exists and works; tab bar doesn't expose it. **Most urgent single fix.**~~ **(CLOSED 2026-05-20, 12-agent hardening pass)**
+2. ~~**No push when a clinician creates / modifies / cancels an appointment.** Patients need real-time notification.~~ **(CLOSED 2026-05-20, 12-agent hardening pass)**
+3. ~~**No lab-result-ready push.** Patients won't know when results are published.~~ **(CLOSED 2026-05-20, Agent A)** — push was already firing from `businessAnalytics.ts` PATCH `/labs/:labId/status`; Agent A added a defensive call in admin Order-First PATCH observations at `server/src/routes/admin/labs.ts`.
+4. ~~**No 24h / 1h pre-appointment reminders.** Table-stakes for clinic; absent causes no-shows.~~ **(CLOSED 2026-05-20, 12-agent hardening pass)**
+5. ~~**No patient-facing intake form in the mobile app.** Only admin-assisted intake exists in web-admin.~~ **(CLOSED 2026-05-20, 12-agent hardening pass)**
+6. ~~**No in-app access to signed consent PDFs** post-signing (`compositeContractKey` stored but no patient-facing download route).~~ **(CLOSED 2026-05-20, 12-agent hardening pass)**
+7. ~~**No "message your care team" onboarding prompt** for new clinic patients.~~ **(CLOSED 2026-05-20, 12-agent hardening pass)**
 
 ### User-data migration (no forced movement)
 
@@ -905,10 +910,11 @@ Two people + AI dev velocity. Tracks below run in parallel where feasible.
 4. **Compass without W5c.** Compass cannot read from Strength until workouts-server CRUD handlers exist and Workouts is off Firestore. Sequencing in §14 keeps these dependencies honest.
 5. **Time-to-suite-value.** The "Hollis knows why today is different" promise activates when ≥3 data sources exist for a user. External-data integrations (Phase 2.5 from prior vision, preserved here) collapse the timeline from years to months and reframe competitive narrative from "Hollis vs WHOOP" to "Hollis interprets WHOOP."
 6. **Schema drift across parallel app teams.** With 2 people building Strength + Compass + Health re-scope concurrently, contracts package design has to lead the apps, not co-evolve. §6 split is the structural defense.
-7. **Hardcoded reviewer credentials in shipped bundles.** `APP_REVIEW_CREDENTIALS` ships in every consumer app importing `@hollis-studio/contracts`. Security finding. Fix before any 2026-05-19 release.
+7. ~~**Hardcoded reviewer credentials in shipped bundles.** `APP_REVIEW_CREDENTIALS` ships in every consumer app importing `@hollis-studio/contracts`. Security finding. Fix before any 2026-05-19 release.~~ **(CLOSED 2026-05-20, Agent J)** — replaced with `getAppReviewCredentials()` env-reader.
 8. **Firebase as PHI hard stop.** No HIPAA BAA available. Any PHI in Firestore is a violation. Migration must complete before clinic-side data crosses into Firestore-touching code paths.
 9. **Romanticizing China.** Population number is real; the path to those users through a legitimate Western indie-scale product is not. §10.3 preconditions are non-negotiable.
 10. **Six-app commitment as default direction.** Even sequenced, the cumulative App Store / paywall / onboarding / support / marketing overhead is enormous. 4-app slate (§2) is the right answer.
+11. **(NEW 2026-05-20) Live API keys committed to `hollis-workouts` git history.** Agent L's audit found Apple APNs key (`VRKZM2SVVH`), Apple StoreKit key (`CWWTG47HZJ`), Gemini API key (`AIzaSyBxLr…`), and Google Places key committed to `hollis-workouts` history. The repo is **private**, so keys are not publicly exposed today, but they are baked into the git object graph. Any future repo visibility change, contributor addition, or git archive leak exposes them. **Required actions:** rotate all four keys immediately; consider BFG / `git filter-repo` history scrub; add pre-commit secret scanning (e.g., `git-secrets` or Gitleaks) to the `hollis-workouts` and `hollis-health-app` repos. Do not defer rotation.
 
 ---
 
@@ -1016,8 +1022,8 @@ Cards 1, 2, 5, 7, 8, 10 viable with Strength + external imports (no other Hollis
 
 | # | Decision                                                            | Owner          | Deadline                                  | Status              |
 | - | ------------------------------------------------------------------- | -------------- | ----------------------------------------- | ------------------- |
-| 1 | Corporate-entity HIPAA structure (single LLC vs subsidiary)         | Legal counsel  | Before any cross-business code ships      | Open, urgent        |
-| 2 | Anthropic BAA scope confirmation                                    | Legal counsel  | Before any PHI in LLM prompts             | Open                |
+| 1 | Corporate-entity HIPAA structure (single LLC vs subsidiary)         | Legal counsel  | Before any cross-business code ships      | **STILL OPEN — highest priority (2026-05-20)** |
+| 2 | Anthropic BAA scope confirmation                                    | Legal counsel  | Before any PHI in LLM prompts             | **STILL OPEN — BAA unsigned (2026-05-20)**     |
 | 3 | Firebase deadline for full PHI exit                                 | Legal counsel  | Before Compass cross-boundary federation  | Open                |
 | 4 | Machine-aware gym translation data-acquisition (user / curated / hybrid) | Isaac     | Before marketing the moat                 | Open (from 2026-05-18) |
 | 5 | Nutrition native build greenlight (vs import-only indefinitely)     | Samuel + Isaac | Month 9 (post import-quality measurement) | Pending data        |
@@ -1026,5 +1032,46 @@ Cards 1, 2, 5, 7, 8, 10 viable with Strength + external imports (no other Hollis
 | 8 | China feasibility re-evaluation                                     | Isaac          | At $2M ARR + dedicated China lead         | Deferred            |
 | 9 | App slate re-expansion to 5/6 apps                                  | Both           | At wedge revenue + cross-app activation floors | Deferred       |
 | 10| Workouts-server → Studio-server rename                              | Samuel         | Before Nutrition native build, if greenlit | Pending dependency |
+
+---
+
+## Appendix C — 2026-05-20 status update
+
+**Batch:** 12-agent parallel hardening pass, 2026-05-20. All changes below are verified against the working tree. This appendix supersedes the "Open, urgent" designations in §8, §4.3, §6, and §16 where noted.
+
+### C.1 §8 clinic-readiness gaps — ALL 7 CLOSED
+
+All 7 gaps listed in §8 are closed. The clinic is launch-ready from a mobile-app-gaps perspective.
+
+- **Gap #3 (lab-result-ready push)** — was already firing from `businessAnalytics.ts` PATCH `/labs/:labId/status`. Agent A added a defensive call in admin Order-First PATCH observations: `server/src/routes/admin/labs.ts`.
+- Gaps #1, #2, #4, #5, #6, #7 — closed by the 12-agent hardening pass; individual agent attribution not captured at the item level beyond the batch.
+
+### C.2 §4.3 clinic-api gaps — 3 of 5 remaining
+
+| Gap | Status (2026-05-20) | File / migration |
+|-----|---------------------|-----------------|
+| #1 — auth-client integration | **OPEN** | — |
+| #2 — PostgreSQL RLS on PhiAccessLog | **CLOSED (Agent B)** | `server/prisma/migrations/20260520000000_phi_access_log_rls/migration.sql`. Owner must `ALTER ROLE <app_service> BYPASSRLS;` before applying. |
+| #3 — S3 SSE-KMS codification | **OPEN** | — |
+| #4 — Audit-archival job to S3 Glacier | **PARTIAL (Agent B)** | Daily `verifyAuditChain()` cron: `server/src/jobs/auditChainVerifyJob.ts`. Runs 04:00 UTC. Surfacing: pino FATAL + Sentry + AdminTask URGENT. Glacier Terraform transition still TBD. |
+| #5 — Recovery EMA / TDEE Kalman extraction | **OPEN** (model improved, extraction not done) | Agent C wired `UserMetricsContract` zeros to `metricsEngine.ts`; `readinessScore` now has a distinct weighted HRV+training-load model (no longer aliased to `recoveryScore`). Kalman extraction to `@hollis-studio/metrics` shared package unchanged/still pending. |
+
+### C.3 §6 hardcoded credentials — CLOSED
+
+`APP_REVIEW_CREDENTIALS` / `APP_REVIEW_PASSWORD` hardcoded export — closed by Agent J in `hollis-shared`. `domain/app-review.ts` now exports `getAppReviewCredentials()` env-reader. No credentials in consumer bundles.
+
+### C.4 §11 HIPAA / legal — NO CHANGE
+
+None of the §11 / §16 / Appendix B legal items are closed:
+- **BAAs:** Sentry, WHH (WHOOP Health Hub), Stripe, Anthropic — all **unsigned**.
+- **Counsel opinion on single-LLC HIPAA scope** — **still open**, highest priority.
+
+### C.5 §16 risk register — new risk added
+
+**Risk #11 (NEW):** Live API keys (Apple APNs `VRKZM2SVVH`, Apple StoreKit `CWWTG47HZJ`, Gemini `AIzaSyBxLr…`, Google Places) found committed to `hollis-workouts` git history (Agent L audit). Repo is private; keys are not currently public. **Required actions:** rotate all four keys; consider history scrub via BFG / `git filter-repo`; add pre-commit secret scanning. Do not defer rotation.
+
+### C.6 suite-strategy.md §2 — Identity Service progress
+
+See `hollis-shared/docs/architecture/suite-strategy.md` §2 for the full identity service progress update recorded 2026-05-20. Summary: email verification, OIDC discovery, Sentry, SIGTERM shutdown, DB-aware health, and audit logging are now implemented. CI/CD, Terraform apply, ECS, DNS, ACM, SES domain verification, account-lockout tests, and Health cutover remain open.
 
 End of document.

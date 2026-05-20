@@ -46,8 +46,8 @@ export const generatedExerciseSchema = z.object({
     weight: z.string().optional(),
     duration: z.string().optional(),
     notes: z.string().optional(),
-    // Accept only valid URLs or omit entirely
-    link: z.string().url().optional(),
+    // Accept only valid URLs or omit entirely. AI/tool UIs sometimes send "".
+    link: z.preprocess((value) => (value === "" ? undefined : value), z.string().url().optional()),
 });
 // ============================================================================
 // Workout Section Schemas

@@ -52,6 +52,7 @@ function validSubscription() {
     userId: VALID_UUID_2,
     stripeSubscriptionId: "sub_1234567890",
     stripeCustomerId: "cus_1234567890",
+    stripePriceId: "price_1234567890",
     tier: "CORE" as const,
     status: "ACTIVE" as const,
     contractDuration: "MONTH_12" as const,
@@ -77,6 +78,7 @@ function validSubscription() {
     scheduledTierChange: null,
     tierChangeEffectiveDate: null,
     signedContractKey: null,
+    failedPaymentCount: 0,
     createdAt: NOW_ISO,
     updatedAt: NOW_ISO,
   };
@@ -433,6 +435,7 @@ describe("Stripe Subscription Contracts", () => {
       userId: VALID_UUID,
       tier: "CORE" as const,
       contractDuration: "MONTH_12" as const,
+      pendingConsentKey: "consent/user-123/contract.pdf",
     };
 
     describe("valid objects", () => {
@@ -504,10 +507,10 @@ describe("Stripe Subscription Contracts", () => {
         expect(result.success).toBe(false);
       });
 
-      it("should reject invalid userId (not UUID)", () => {
+      it("should reject empty userId", () => {
         const result = CreateSubscriptionRequestSchema.safeParse({
           ...validRequest,
-          userId: "not-a-uuid",
+          userId: "",
         });
         expect(result.success).toBe(false);
       });

@@ -400,7 +400,7 @@ describe('MFA Domain Contracts', () => {
         user: {
           userId: 'user-123',
           email: VALID_EMAIL,
-          role: 'PATIENT',
+          role: 'CLIENT',
         },
       });
       expect(result.success).toBe(true);
@@ -427,7 +427,7 @@ describe('MFA Domain Contracts', () => {
         sessionToken: 'token',
         availableMethods: ['TOTP'],
         expiresIn: 300,
-        user: { userId: 'user-123', email: VALID_EMAIL, role: 'PATIENT' },
+        user: { userId: 'user-123', email: VALID_EMAIL, role: 'CLIENT' },
       });
       expect(result.success).toBe(false);
     });
@@ -532,7 +532,7 @@ describe('MFA Domain Contracts', () => {
       const result = authSessionProfileSchema.safeParse({
         userId: 'user-123',
         email: VALID_EMAIL,
-        role: 'PATIENT',
+        role: 'CLIENT',
       });
       expect(result.success).toBe(true);
     });
@@ -541,7 +541,7 @@ describe('MFA Domain Contracts', () => {
       expect(authSessionProfileSchema.safeParse({
         userId: 'user-123',
         email: 'not-an-email',
-        role: 'PATIENT',
+        role: 'CLIENT',
       }).success).toBe(false);
     });
 

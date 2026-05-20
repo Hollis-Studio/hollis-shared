@@ -154,6 +154,7 @@ export function getTierCardHighlights(tier: UserTier): string[] {
     `Clinician visits: ${clinicianVisits}`,
     `Lab panels: ${labPanels}`,
     `Care coordination: ${careCoordination}`,
+    MASTER_OFFER_SHEET.policies.thirdPartyDisclosure,
     MASTER_OFFER_SHEET.policies.partnerFacilityDisclosure,
   ];
 }

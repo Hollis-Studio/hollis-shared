@@ -66,15 +66,27 @@ docs/
 │       ├── 04-schema-parity-audit.md
 │       ├── 05-reconciliation-decisions.md
 │       └── 06-steps-2-3-adoption-report.md
-└── reports/                                     Dated phase snapshots
-    ├── 2026-05-12-extraction-triage.md
-    ├── 2026-05-12-legacy-contract-alias-audit.md
-    ├── 2026-05-12-phase-d-baseline.md
-    ├── 2026-05-12-phase-d-public-export-candidates.md
-    ├── 2026-05-12-phase-i-prime-followup-report.md
-    ├── 2026-05-12-phase-i-prime-report.md
-    ├── 2026-05-12-shared-extraction-phase-gh-report.md
-    └── 2026-05-13-shared-deps-distribution.md
+├── reports/                                     Dated phase snapshots
+│   ├── 2026-05-12-extraction-triage.md
+│   ├── 2026-05-12-legacy-contract-alias-audit.md
+│   ├── 2026-05-12-phase-d-baseline.md
+│   ├── 2026-05-12-phase-d-public-export-candidates.md
+│   ├── 2026-05-12-phase-i-prime-followup-report.md
+│   ├── 2026-05-12-phase-i-prime-report.md
+│   ├── 2026-05-12-shared-extraction-phase-gh-report.md
+│   └── 2026-05-13-shared-deps-distribution.md
+└── operations/                                  Clinic operational SOPs (day-1 and ongoing)
+    ├── day-1-clinic-runbook.md                  Master day-1 checklist; opening, check-in, outages, payment fallbacks
+    ├── walk-in-and-phone-sop.md                 Triage scripts for walk-ins and phone calls; emergency redirect
+    ├── no-show-cancellation-policy.md           Patient-facing policy + manual Stripe fee workflow
+    ├── after-hours-messaging-sop.md             Response SLA, auto-reply text, emergency redirect, no on-call
+    ├── prescribing-workflow-sop.md              Paper Rx process + legal disclaimer (no e-prescribing at launch)
+    ├── imaging-and-referrals-sop.md             Referral letter template + chart tag tracking for imaging/referrals
+    ├── labs-manual-workflow.md                  Specimen handoff → external lab → PDF upload pipeline
+    ├── breach-notification-runbook.md           HIPAA 60-day rule, HHS steps, patient letter template, counsel triggers
+    ├── baa-tracker.md                           Vendor BAA status table; next-step owner for each unsigned BAA
+    ├── hipaa-npp-content.md                     Full NPP text for ConsentDocumentType.HIPAA_NPP (attorney review required)
+    └── roi-form-template.md                     HIPAA-compliant Release of Information form template
 ```
 
 ---

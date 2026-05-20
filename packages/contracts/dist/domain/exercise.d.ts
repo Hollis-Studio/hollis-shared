@@ -541,9 +541,9 @@ export declare const createExerciseLogSchema: z.ZodObject<{
     date: z.ZodString;
     notes: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     tags: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    userId: z.ZodString;
     weight: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     distance: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
-    userId: z.ZodString;
     duration: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     estimated1RM: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     reps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;

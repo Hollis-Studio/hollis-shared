@@ -328,7 +328,7 @@ describe("Shared Contracts Compilation", () => {
       expect(contracts.USER_ROLE_LABELS).toBeDefined();
       expect(contracts.USER_ROLE_LABELS.ADMIN).toBe("Admin");
       expect(contracts.USER_ROLE_LABELS.CLINICIAN).toBe("Clinician");
-      expect(contracts.USER_ROLE_LABELS.TRAINER).toBe("Trainer");
+      expect(contracts.USER_ROLE_LABELS.TRAINER).toBe("Performance Coach");
       expect(contracts.USER_ROLE_LABELS.CLIENT).toBe("Client");
     });
 

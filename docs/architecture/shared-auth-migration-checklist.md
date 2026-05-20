@@ -10,6 +10,73 @@ This plan expands Step 6 and the auth portions of Steps 5, 7, and 8 in
 Use that plan for the full backend cutover sequence; use this document for the
 auth-specific readiness checklist.
 
+---
+
+## 2026-05-20 — Agent I batch update
+
+**Summary:** Agent I landed a substantial `hollis-identity` batch on 2026-05-19
+covering Prisma schema expansion, email-verification infrastructure, audit
+logging, Sentry observability, OIDC discovery, graceful shutdown, and full
+audit-log wiring across every auth route. The items below are now reflected
+throughout Section 3.
+
+### Marked DONE
+
+- `prisma/schema.prisma`: added `emailVerified DateTime?` on `User`;
+  added `EmailVerificationToken` and `AuthAuditLog` models;
+  added `AuthAuditEventType` enum.
+- `prisma/migrations/20260519000000_initial/migration.sql` created — full
+  initial schema (all tables, enums, indexes, FKs). **Not yet applied**; owner
+  must run `prisma migrate deploy` against the target DB.
+- `prisma/migrations/migration_lock.toml` created.
+- `src/services/emailVerificationService.ts` — token create/consume implemented.
+- `src/services/authAuditService.ts` — `writeAuditLog()` and `extractIp()` implemented.
+- `src/services/emailService.ts` — `buildVerifyUrl()` and
+  `sendEmailVerificationEmail()` implemented.
+- `src/routes/auth.ts` — `POST /v1/auth/verify-email/send` and
+  `GET /v1/auth/verify-email/confirm?token=` added; `writeAuditLog` wired into
+  login (success + failure), register (success + failure), logout, token
+  refresh (success + failure), forgot-password, and reset-password.
+- `src/index.ts` — Sentry init, OIDC discovery endpoint at
+  `/.well-known/openid-configuration`, DB-aware `/health`, SIGTERM/SIGINT
+  graceful shutdown with 15 s drain, `unhandledRejection`/`uncaughtException`
+  global handlers.
+- `src/lib/env.ts` — `VERIFY_EMAIL_URL`, `SENTRY_DSN`, `SENTRY_ENVIRONMENT`,
+  `SENTRY_TRACES_SAMPLE_RATE` added; production warning on missing `SENTRY_DSN`.
+- `.env.example` — new env vars documented.
+
+### Required env vars for production (newly surfaced)
+
+| Var | Notes |
+|---|---|
+| `EMAIL_PROVIDER=ses` | Must be set |
+| `AWS_REGION` | Must be set |
+| `EMAIL_FROM` | Must be an SES-verified sender address |
+| `VERIFY_EMAIL_URL` | Base URL for email-verification link |
+| `SENTRY_DSN` | Warns but does not crash if absent in prod |
+| `JWT_PRIVATE_KEY`, `JWT_KEY_ID`, etc. | Pre-existing; no change |
+
+### Still OPEN — owners + next steps
+
+| Item | Owner | Next step |
+|---|---|---|
+| Run `prisma migrate deploy` against target DB | Infra/Deploy | Block staging deploy on this |
+| CI/CD: no `.github/workflows/` directory | DevOps | Create lint → test → build → push pipeline |
+| Terraform module + ECS service for identity-api | Infra | Author module; plan against staging AWS account |
+| DNS record `identity.hollis.health` | Infra | Create after ECS service is up |
+| ACM cert for `identity.hollis.health` | Infra | Request + validate alongside DNS |
+| SES domain verification for `hollis.health` (sandbox exit) | Infra/Business | Submit production-access request to AWS |
+| ECR image push pipeline | DevOps | Wire into CI/CD workflow |
+| `ClinicMembership`, `StudioSubscription`, `ConsentGrant`, `ServiceAccount` Prisma models | Backend | Deferred; add when respective product domains are ready |
+| WebAuthn routes (`src/routes/mfa.ts:749-766`) | Backend | Still stub; implement or gate behind feature flag |
+| Key rotation: single-kid JWKS, no dual-key support | Backend/Security | Design dual-kid rotation; update auth-client JWKS cache |
+| Logout webhook (`authService.ts:435` TODO) | Backend | Implement or explicitly defer with a documented decision |
+| `onboardingCompleted` ownership (Identity vs. app DB) | Product/Backend | Make explicit decision; document in Open Decisions below |
+| Feature-flag-gated Health cutover + 7-day soak | Backend/Health team | Wire flag; plan soak window |
+| Account-lockout enforcement: full route-level DB-backed tests | QA/Backend | Expand from smoke coverage to route-level tests |
+
+---
+
 ## Current State
 
 Workouts is **not** on shared auth yet.
@@ -20,7 +87,7 @@ Workouts is **not** on shared auth yet.
 | Workouts backend        | Sibling `hollis-workouts-server/` exists and typechecks with a minimal `@hollis-studio/auth-client`-style middleware for `hollis-workouts` audience, but it is still skeletal and untested.                                                                                                                                                                                                                                                                                               | Add real resource routes, normalize package naming to `@hollis-studio/*`, add service-token support, and cover auth errors/wrong audiences.                                                                 |
 | Shared contracts        | `@hollis-studio/contracts` exports token claims, audiences, auth token types, and revocation reasons.                                                                                                                                                                                                                                                                                                                                                                                     | Add full identity request/response contracts, route schemas, profile shape, and migration mapping types.                                                                                                    |
 | Shared auth client      | `@hollis-studio/auth-client` exports `createAuthClient`, `requireAuth`, `verifyToken`, audience validation, and a remote root `POST /verify` call now matched by Identity.                                                                                                                                                                                                                                                                                                                | Add or explicitly remove consumer cookie helpers, `getMe`, revoke/session helpers, JWKS fetch/cache, and integration tests.                                                                                 |
-| Hollis Identity Service | Standalone repo exists, typechecks/builds/tests, has Health auth code extracted, no longer sets cookies, emits suite-compatible claims, exposes `/verify` and `/v1/auth/verify`, publishes RS256 JWKS in production mode, uses PostgreSQL-backed token revocation state for production, has PostgreSQL account-lockout storage ready for login enforcement wiring, wires SES password reset email, and has Terraform IaC that validates/plans ECR/VPC/ALB/ECS/RDS/Secrets/CloudWatch/WAF. | Deploy to staging, create/review/run migrations, push image, configure DNS/ACM/SES, wire account lockout into login, expand full route/integration tests, harden auth-client, and complete security review. |
+| Hollis Identity Service | *(Updated 2026-05-20)* Standalone repo exists; typechecks/builds/tests. Health auth code extracted. No cookies. Suite-compatible claims. `/verify`, `/v1/auth/verify`, `/.well-known/openid-configuration`. RS256 JWKS in production mode. PostgreSQL-backed token revocation + account-lockout storage. SES password-reset email. Terraform IaC (ECR/VPC/ALB/ECS/RDS/Secrets/CloudWatch/WAF) validates/plans locally. Email-verification flow complete (`EmailVerificationToken` model, `emailVerificationService.ts`, `POST /v1/auth/verify-email/send`, `GET /v1/auth/verify-email/confirm`). Audit logging via `AuthAuditLog`/`AuthAuditEventType` wired across all auth routes (`authAuditService.ts`). Sentry observability, OIDC discovery, graceful shutdown, and global error handlers live in `src/index.ts`. Initial Prisma migration SQL generated (not yet applied). | Run `prisma migrate deploy`; build CI/CD pipeline; deploy staging ECS/RDS/ALB/DNS/ACM; SES sandbox exit; expand route-level DB-backed tests; WebAuthn stubs; key-rotation dual-kid JWKS; logout webhook; `onboardingCompleted` ownership decision; feature-flag Health cutover + 7-day soak. |
 | Health auth             | Health still runs production auth locally, but Health tokens are now shared-schema-compatible with `aud: ["hollis-health"]` and `claims.hollisHealth.*`.                                                                                                                                                                                                                                                                                                                                  | Add feature-flagged Identity delegation and then decommission local auth after soak.                                                                                                                        |
 | Data identity           | Firestore documents are keyed by Firebase UID.                                                                                                                                                                                                                                                                                                                                                                                                                                            | Create and verify Firebase UID → Hollis Identity userId mapping before ETL or client cutover.                                                                                                               |
 
@@ -104,31 +171,78 @@ The migration is complete only when all of these are true:
 
 ### 3. Build Hollis Identity Service
 
-- `hollis-identity` now exists as its own service/repo and has the core Health auth
-  code extracted and adapted to Identity's suite boundary:
-  - password login/signup
-  - password reset/change
-  - Apple and Google credential exchange
-  - refresh token storage and rotation
-  - MFA setup and enforcement
-  - token denylist/revocation
-- Prisma schema exists for the current auth core (`User`, `RefreshToken`,
-  `MfaCredential`, `MfaEvent`, `StepUpToken`, `PendingMfaSession`,
-  `PasswordResetToken`, `OAuthAccount`). Legacy Firebase UID mapping and a formal
-  session/device list are still open.
-- Runtime wiring, rate limiting, startup env validation, structured error
+<!-- Last updated: 2026-05-20 — reflects Agent I batch landed 2026-05-19 -->
+
+**DONE — locally complete as of 2026-05-19:**
+
+- [x] `hollis-identity` repo exists; core Health auth code extracted and adapted
+  to Identity's suite boundary: password login/signup, password reset/change,
+  Apple and Google credential exchange, refresh token storage and rotation,
+  MFA setup and enforcement, token denylist/revocation.
+- [x] Prisma schema: `User`, `RefreshToken`, `MfaCredential`, `MfaEvent`,
+  `StepUpToken`, `PendingMfaSession`, `PasswordResetToken`, `OAuthAccount`,
+  plus (new 2026-05-19) `EmailVerificationToken`, `AuthAuditLog`,
+  `AuthAuditEventType` enum, and `emailVerified` on `User`.
+- [x] Runtime wiring, rate limiting, startup env validation, structured error
   handling, cookie removal, RS256/JWKS publication, PostgreSQL-backed access
   token revocation/account lockout, SES password-reset email delivery, and
-  Terraform IaC are locally complete.
-- Remaining hardening: validate every shared route contract, add full DB-backed
-  route tests, harden `@hollis-studio/auth-client`, deploy staging, and run a
-  staging security review.
-- Deploy staging infrastructure:
-  ECS Fargate service, RDS Postgres, ALB, DNS for `identity.hollis.health`,
-  Secrets Manager, logs, metrics, alarms, SES sender/domain verification, and
-  backup/restore policy.
-- Run a security review on token TTLs, refresh rotation, MFA bypass rules,
-  account enumeration, brute-force protection, and audit retention.
+  Terraform IaC — locally complete.
+- [x] Email verification service (`emailVerificationService.ts`): token
+  create/consume; `sendEmailVerificationEmail()` + `buildVerifyUrl()` in
+  `emailService.ts`; routes `POST /v1/auth/verify-email/send` and
+  `GET /v1/auth/verify-email/confirm?token=` live in `src/routes/auth.ts`.
+- [x] Audit logging: `authAuditService.ts` (`writeAuditLog()`, `extractIp()`)
+  wired into every auth route (login success/failure, register success/failure,
+  logout, refresh success/failure, forgot-password, reset-password).
+- [x] Observability: Sentry init in `src/index.ts`; `SENTRY_DSN`,
+  `SENTRY_ENVIRONMENT`, `SENTRY_TRACES_SAMPLE_RATE` env vars; production
+  warning on missing DSN.
+- [x] OIDC discovery: `/.well-known/openid-configuration` endpoint.
+- [x] Graceful shutdown: SIGTERM/SIGINT with 15 s drain;
+  `unhandledRejection`/`uncaughtException` global handlers.
+- [x] Initial Prisma migration SQL generated
+  (`prisma/migrations/20260519000000_initial/migration.sql` +
+  `migration_lock.toml`). **Schema is finalized locally.**
+
+**IN PROGRESS:**
+
+- [ ] Run `prisma migrate deploy` against target DB — migration file exists but
+  has NOT been applied. **Blocks staging deploy.** Owner: Infra.
+- [ ] Full route-level DB-backed tests — account-lockout enforcement has smoke
+  coverage only; needs expansion to route-level tests. Owner: Backend/QA.
+- [ ] Validate every shared route contract against `@hollis-studio/contracts`.
+  Owner: Backend.
+
+**OPEN / NOT STARTED:**
+
+- [ ] Deploy staging infrastructure: ECS Fargate service, RDS Postgres, ALB,
+  DNS `identity.hollis.health`, ACM cert, Secrets Manager, logs, metrics,
+  alarms, SES sender/domain verification (sandbox exit required), backup/restore
+  policy. Owner: Infra. Next: author Terraform module; plan against staging AWS
+  account.
+- [ ] CI/CD pipeline: no `.github/workflows/` directory. Owner: DevOps.
+  Next: lint → test → build → ECR push workflow.
+- [ ] WebAuthn routes: `src/routes/mfa.ts:749-766` are still stubs. Owner:
+  Backend. Next: implement or gate behind a named feature flag.
+- [ ] Key rotation: JWKS currently single-kid; no dual-key overlap support.
+  Owner: Backend/Security. Next: design dual-kid rotation scheme; update
+  auth-client JWKS cache to handle multiple kids.
+- [ ] Logout webhook: `authService.ts:435` TODO unresolved. Owner: Backend.
+  Next: implement or document explicit deferral.
+- [ ] `ClinicMembership`, `StudioSubscription`, `ConsentGrant`,
+  `ServiceAccount` Prisma models — deferred. Owner: Backend.
+  Next: add when respective product domains are ready.
+- [ ] Staging security review: token TTLs, refresh rotation, MFA bypass rules,
+  account enumeration, brute-force protection, audit retention. Owner:
+  Security/Backend. Blocked on staging deploy.
+
+**OPEN DECISIONS (Identity-specific):**
+
+- [ ] `onboardingCompleted` field — who owns it: Identity or app DB?
+  Owner: Product + Backend. Next: explicit decision, document below in
+  Open Decisions section.
+- [ ] Feature-flag-gated Health cutover + 7-day soak: flag not yet wired.
+  Owner: Backend/Health team. Next: design flag; plan soak window.
 
 ### 4. Migrate Health To Be A Consumer
 
@@ -262,6 +376,9 @@ Do not replace Workouts mobile Firebase Auth until all blockers are cleared:
 - Does Identity own suite subscription/entitlement claims, or does Workouts keep
   RevenueCat as the app-local entitlement source until a later entitlement
   service exists?
+- **`onboardingCompleted` ownership** *(surfaced 2026-05-20)*: does Identity
+  own this field, or does each app DB track it independently? Unresolved.
+  Assign to Product + Backend; decision required before Health cutover.
 
 ## First Executable Milestone
 

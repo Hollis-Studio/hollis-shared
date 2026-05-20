@@ -45,10 +45,11 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "build": "npm run clean && tsc"
+    "build": "npm run clean && tsc",
+    "prepublishOnly": "npm run build && npm run typecheck"
   },
   "dependencies": {
-    "@hollis-studio/contracts": "*"
+    "@hollis-studio/contracts": "0.2.0-alpha.8"
   },
   "devDependencies": {
     "typescript": "5.9.2"

@@ -32,7 +32,7 @@ export declare const generatedExerciseSchema: z.ZodObject<{
     weight: z.ZodOptional<z.ZodString>;
     duration: z.ZodOptional<z.ZodString>;
     notes: z.ZodOptional<z.ZodString>;
-    link: z.ZodOptional<z.ZodString>;
+    link: z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodOptional<z.ZodString>>;
 }, z.core.$strip>;
 export type GeneratedExerciseInput = z.infer<typeof generatedExerciseSchema>;
 /**
@@ -53,7 +53,7 @@ export declare const generatedSectionSchema: z.ZodObject<{
         weight: z.ZodOptional<z.ZodString>;
         duration: z.ZodOptional<z.ZodString>;
         notes: z.ZodOptional<z.ZodString>;
-        link: z.ZodOptional<z.ZodString>;
+        link: z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodOptional<z.ZodString>>;
     }, z.core.$strip>>;
 }, z.core.$strip>;
 export type GeneratedSectionInput = z.infer<typeof generatedSectionSchema>;
@@ -79,7 +79,7 @@ export declare const generatedDaySchema: z.ZodObject<{
             weight: z.ZodOptional<z.ZodString>;
             duration: z.ZodOptional<z.ZodString>;
             notes: z.ZodOptional<z.ZodString>;
-            link: z.ZodOptional<z.ZodString>;
+            link: z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodOptional<z.ZodString>>;
         }, z.core.$strip>>;
     }, z.core.$strip>>;
 }, z.core.$strip>;
@@ -107,7 +107,7 @@ export declare const generateWorkoutPlanArgsSchema: z.ZodObject<{
                 weight: z.ZodOptional<z.ZodString>;
                 duration: z.ZodOptional<z.ZodString>;
                 notes: z.ZodOptional<z.ZodString>;
-                link: z.ZodOptional<z.ZodString>;
+                link: z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodOptional<z.ZodString>>;
             }, z.core.$strip>>;
         }, z.core.$strip>>;
     }, z.core.$strip>>;
@@ -137,7 +137,7 @@ export declare const generatedWorkoutPlanSchema: z.ZodObject<{
                 weight: z.ZodOptional<z.ZodString>;
                 duration: z.ZodOptional<z.ZodString>;
                 notes: z.ZodOptional<z.ZodString>;
-                link: z.ZodOptional<z.ZodString>;
+                link: z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodOptional<z.ZodString>>;
             }, z.core.$strip>>;
         }, z.core.$strip>>;
     }, z.core.$strip>>;
@@ -184,7 +184,7 @@ export declare const workoutPlanGenerationResultSchema: z.ZodObject<{
                     weight: z.ZodOptional<z.ZodString>;
                     duration: z.ZodOptional<z.ZodString>;
                     notes: z.ZodOptional<z.ZodString>;
-                    link: z.ZodOptional<z.ZodString>;
+                    link: z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodOptional<z.ZodString>>;
                 }, z.core.$strip>>;
             }, z.core.$strip>>;
         }, z.core.$strip>>;

@@ -192,15 +192,15 @@ describe('Password Policy Drift Detection', () => {
 
   it('should export PASSWORD_POLICY from @contracts index', async () => {
     // Verify the shared contracts properly export PASSWORD_POLICY
-    const sharedContractsPath = path.join(WORKSPACE_ROOT, 'shared/contracts/index.ts');
+    const sharedContractsPath = path.join(WORKSPACE_ROOT, 'packages/contracts/index.ts');
     const content = fs.readFileSync(sharedContractsPath, 'utf-8');
     
     expect(content).toContain('PASSWORD_POLICY');
   });
 
   it('should have PASSWORD_POLICY re-exported from src/contracts', async () => {
-    // Verify mobile/feature contracts re-export PASSWORD_POLICY
-    const srcContractsPath = path.join(WORKSPACE_ROOT, 'src/contracts/index.ts');
+    // Verify package consumers can import PASSWORD_POLICY through the public index.
+    const srcContractsPath = path.join(WORKSPACE_ROOT, 'packages/contracts/index.ts');
     const content = fs.readFileSync(srcContractsPath, 'utf-8');
     
     expect(content).toContain('PASSWORD_POLICY');

@@ -27,7 +27,7 @@ import { z } from "zod";
  */
 export const PASSWORD_POLICY = {
     /** Minimum password length. */
-    MIN_LENGTH: 6,
+    MIN_LENGTH: 10,
     /** Maximum password length. Prevents DoS; bcrypt only uses first 72 bytes anyway. */
     MAX_LENGTH: 128,
     /** Minimum zxcvbn score required (0-4 scale). 3 = "Strong" */

@@ -50,3 +50,44 @@ export const APP_REVIEW_ACCOUNTS = {
     label: "App review admin",
   },
 } satisfies Record<AppReviewAccountKey, AppReviewAccountConfig>;
+
+/**
+ * Returns app-review credentials sourced exclusively from environment variables.
+ *
+ * Consumers: server-side seed scripts and auth middleware only.
+ * Mobile and web-admin must NOT call this — use APP_REVIEW_ACCOUNTS.*.email
+ * for dev-mode UI hints and rely on the normal auth flow for sign-in.
+ *
+ * Required env vars:
+ *   APP_REVIEW_USERNAME — email address of the primary app-review account
+ *   APP_REVIEW_PASSWORD — shared password for the app-review accounts
+ *
+ * Throws if either variable is missing, so misconfigured environments
+ * fail loudly rather than silently using empty strings.
+ */
+export function getAppReviewCredentials(): {
+  username: string;
+  password: string;
+} {
+  const username = (
+    typeof process !== "undefined" ? process.env["APP_REVIEW_USERNAME"] : undefined
+  );
+  const password = (
+    typeof process !== "undefined" ? process.env["APP_REVIEW_PASSWORD"] : undefined
+  );
+
+  if (!username) {
+    throw new Error(
+      "APP_REVIEW_USERNAME environment variable is not set. " +
+        "Set it in your .env file (dev) or AWS Secrets Manager (prod).",
+    );
+  }
+  if (!password) {
+    throw new Error(
+      "APP_REVIEW_PASSWORD environment variable is not set. " +
+        "Set it in your .env file (dev) or AWS Secrets Manager (prod).",
+    );
+  }
+
+  return { username, password };
+}

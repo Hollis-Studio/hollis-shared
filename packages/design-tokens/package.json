@@ -60,7 +60,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "build": "npm run clean && tsc"
+    "build": "npm run clean && tsc",
+    "prepublishOnly": "npm run build && npm run typecheck"
   },
   "devDependencies": {
     "typescript": "5.9.2"

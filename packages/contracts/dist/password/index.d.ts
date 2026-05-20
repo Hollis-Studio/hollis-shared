@@ -24,7 +24,7 @@ import { z } from "zod";
  */
 export declare const PASSWORD_POLICY: {
     /** Minimum password length. */
-    readonly MIN_LENGTH: 6;
+    readonly MIN_LENGTH: 10;
     /** Maximum password length. Prevents DoS; bcrypt only uses first 72 bytes anyway. */
     readonly MAX_LENGTH: 128;
     /** Minimum zxcvbn score required (0-4 scale). 3 = "Strong" */

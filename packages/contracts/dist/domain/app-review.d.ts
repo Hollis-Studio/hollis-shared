@@ -46,4 +46,22 @@ export declare const APP_REVIEW_ACCOUNTS: {
         label: string;
     };
 };
+/**
+ * Returns app-review credentials sourced exclusively from environment variables.
+ *
+ * Consumers: server-side seed scripts and auth middleware only.
+ * Mobile and web-admin must NOT call this — use APP_REVIEW_ACCOUNTS.*.email
+ * for dev-mode UI hints and rely on the normal auth flow for sign-in.
+ *
+ * Required env vars:
+ *   APP_REVIEW_USERNAME — email address of the primary app-review account
+ *   APP_REVIEW_PASSWORD — shared password for the app-review accounts
+ *
+ * Throws if either variable is missing, so misconfigured environments
+ * fail loudly rather than silently using empty strings.
+ */
+export declare function getAppReviewCredentials(): {
+    username: string;
+    password: string;
+};
 //# sourceMappingURL=app-review.d.ts.map

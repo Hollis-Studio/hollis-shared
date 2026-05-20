@@ -80,8 +80,8 @@ export declare const patientSummarySchema: z.ZodObject<{
     lastLog: z.ZodNullable<z.ZodString>;
     accountStatus: z.ZodEnum<{
         active: "active";
-        suspended: "suspended";
         inactive: "inactive";
+        suspended: "suspended";
         archived: "archived";
     }>;
 }, z.core.$strip>;
@@ -110,8 +110,8 @@ export declare const patientListResponseSchema: z.ZodObject<{
         lastLog: z.ZodNullable<z.ZodString>;
         accountStatus: z.ZodEnum<{
             active: "active";
-            suspended: "suspended";
             inactive: "inactive";
+            suspended: "suspended";
             archived: "archived";
         }>;
     }, z.core.$strip>>;
@@ -344,8 +344,8 @@ export declare const patientAdminControlsPayloadSchema: z.ZodObject<{
     assignedTrainerId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     accountStatus: z.ZodOptional<z.ZodEnum<{
         active: "active";
-        suspended: "suspended";
         inactive: "inactive";
+        suspended: "suspended";
     }>>;
     timezone: z.ZodOptional<z.ZodNullable<z.ZodString>>;
 }, z.core.$strip>;

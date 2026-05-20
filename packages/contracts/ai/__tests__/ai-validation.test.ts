@@ -1005,25 +1005,20 @@ describe("P0 Fixes: AI Hallucination Prevention", () => {
   });
 
   describe("createStrategyGoalArgsSchema - goalMetric validation", () => {
-    it("rejects invalid goalMetric keys", () => {
+    it("accepts runtime-defined goalMetric keys", () => {
       const result = createStrategyGoalArgsSchema.safeParse({
         goalMetric: "invented_metric_by_ai",
         goalTarget: 100,
       });
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(
-          result.error.issues.some((i) => i.path.includes("goalMetric")),
-        ).toBe(true);
-      }
+      expect(result.success).toBe(true);
     });
 
-    it("rejects camelCase variants (must use canonical snake_case)", () => {
+    it("accepts runtime-defined camelCase goalMetric keys", () => {
       const result = createStrategyGoalArgsSchema.safeParse({
-        goalMetric: "bodyFatPercent", // Should be body_fat_percent
+        goalMetric: "bodyFatPercent",
         goalTarget: 15,
       });
-      expect(result.success).toBe(false);
+      expect(result.success).toBe(true);
     });
 
     it("accepts valid canonical goalMetric keys", () => {

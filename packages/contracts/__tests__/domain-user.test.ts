@@ -630,8 +630,8 @@ describe("User Domain Contracts", () => {
   // ============================================================================
 
   describe("PrimaryGoal", () => {
-    it("should contain exactly 4 values", () => {
-      expect(PRIMARY_GOALS).toHaveLength(4);
+    it("should contain exactly 5 values", () => {
+      expect(PRIMARY_GOALS).toHaveLength(5);
     });
 
     it.each(PRIMARY_GOALS)("PrimaryGoalSchema should accept: %s", (value) => {

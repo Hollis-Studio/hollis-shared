@@ -39,6 +39,11 @@
       "import": "./dist/domain/index.js",
       "default": "./dist/domain/index.js"
     },
+    "./domain/clinical": {
+      "types": "./dist/domain/clinical.d.ts",
+      "import": "./dist/domain/clinical.js",
+      "default": "./dist/domain/clinical.js"
+    },
     "./domain/admin-notifications": {
       "types": "./dist/domain/admin-notifications.d.ts",
       "import": "./dist/domain/admin-notifications.js",
@@ -279,6 +284,7 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
+    "prepublishOnly": "npm run build && npm run typecheck",
     "test": "jest --config jest.config.cjs",
     "smoke:import": "npm run build && node scripts/smoke-import.mjs"
   },

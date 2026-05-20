@@ -388,21 +388,21 @@ export declare const SETTABLE_ACCOUNT_STATUSES: readonly ["active", "suspended",
 export declare const PATIENT_ACCOUNT_STATUS_FILTERS: readonly ["active", "suspended", "inactive", "archived", "all"];
 export declare const SettableAccountStatusSchema: z.ZodEnum<{
     active: "active";
-    suspended: "suspended";
     inactive: "inactive";
+    suspended: "suspended";
 }>;
 export type SettableAccountStatus = z.infer<typeof SettableAccountStatusSchema>;
 export declare const AccountStatusSchema: z.ZodEnum<{
     active: "active";
-    suspended: "suspended";
     inactive: "inactive";
+    suspended: "suspended";
     archived: "archived";
 }>;
 export type AccountStatus = z.infer<typeof AccountStatusSchema>;
 export declare const PatientAccountStatusFilterSchema: z.ZodEnum<{
     active: "active";
-    suspended: "suspended";
     inactive: "inactive";
+    suspended: "suspended";
     archived: "archived";
     all: "all";
 }>;

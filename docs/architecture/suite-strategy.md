@@ -64,21 +64,35 @@ Published to GitHub Packages, consumed by every app via pinned semver:
 
 **Current state (2026-05-19 update)**: `~/Documents/SRC/Hollis/hollis-identity/` is now a buildable standalone Express + Prisma + Zod service with Health auth code extracted and adapted rather than rewritten. Routes are wired for `/login`, `/register`, `/logout`, `/refresh`, `/verify`, `/me`, `/oauth`, `/forgot-password`, `/reset-password`, `/change-password`, `/biometric-token`, and MFA. Identity is cookie-agnostic: it returns JSON token envelopes only, has no `cookieConfig.ts`, and exposes root `POST /verify` plus `/v1/auth/verify` for the current `@hollis-studio/auth-client` remote verification shape. Runtime wiring is in place for CORS, request IDs/log context, auth rate limiters, central error handling, and startup env validation. Access tokens emit suite audiences and `claims.hollisHealth.{role, organizationId}`. Production signing uses RS256 and publishes `/.well-known/jwks.json`; local/test can still use HS256. Access-token revocation and account lockout state are PostgreSQL-backed for ECS horizontal scaling. Password-reset email delivery is wired through SES. Terraform IaC validates and plans ECR, VPC, ALB, ECS Fargate, RDS Postgres, Secrets Manager, CloudWatch logs, and WAF in AWS account `344345273019`. `npm run typecheck`, `npm run build`, `npm test`, and Terraform validation pass. The service is still **not deployed to AWS** and remains pre-cutover.
 
+**2026-05-20 update (12-agent hardening pass):** The following were added to `hollis-identity` by the hardening batch:
+- **Initial Prisma migration committed:** `hollis-identity/prisma/migrations/20260519000000_initial/migration.sql`.
+- **Email verification:** `emailVerified` column + `EmailVerificationToken` model added to schema. `POST /v1/auth/verify-email/send` and `GET /v1/auth/verify-email/confirm` routes wired.
+- **OIDC discovery:** `/.well-known/openid-configuration` endpoint added.
+- **Observability + lifecycle:** Sentry init added; SIGTERM graceful shutdown handler added; `/health` endpoint is now DB-aware (checks Prisma connectivity before returning 200).
+- **Audit logging:** `AuthAuditLog` model added to schema; writes from login, register, logout, refresh, and password-reset handlers confirmed.
+
 **Health-side D4 hard blocker CLOSED v3.7.67**: `server/src/services/authService.ts::generateAccessTokenWithJti` now emits `aud: ["hollis-health"]` and dual-emits `claims.hollisHealth.{role, organizationId}` alongside legacy top-level fields. All 4 Hollis-token `jwt.verify` sites in Health enforce `audience: AUDIENCES[0]`. Tokens are now `AccessTokenClaimsSchema.safeParse()`-compatible, unblocking any future `@hollis-studio/auth-client` consumption. 75 new tests cover the change.
 
-**Outstanding for identity prod cutover**:
+**Outstanding for identity prod cutover (updated 2026-05-20)**:
 
 - **Phase 0/1/1b/4/5/6 local implementation now exists**: basic Node test harness exists, runtime middleware is mounted, startup env validation runs, Identity no longer sets/clears cookies, `rejectUnauthorized: false` was removed from Identity's Postgres pool helper, RS256/JWKS is implemented, production token revocation state is database-backed, account-lockout storage has PostgreSQL backing pending login enforcement wiring, SES password-reset delivery exists, and Terraform IaC validates/plans.
-- **Remaining test work**: expand from smoke/route-boundary coverage to route-level auth-matrix tests for login/register/refresh/logout/MFA/password reset/OAuth, plus DB-backed refresh-token rotation and reuse-detection tests.
-- **Phase 2 — claims namespace finalization**: formalize app-claim schemas such as `HollisHealthClaimsSchema` in `@hollis-studio/contracts`; Health's `req.user` population should read `claims.hollisHealth.*` with a short top-level fallback window.
-- **Phase 3 — `@hollis-studio/auth-client` gaps**: configurable consumer cookie helpers, cookie-or-Bearer token extractor for consumer apps, JWKS-fetching path (via `jose` 6.2.3), and integration tests against Identity outage/timeout/wrong-audience cases.
-- **Phase 4 — RS256/JWKS in identity**: locally implemented with Node crypto/jsonwebtoken; production requires `JWT_ALGORITHM=RS256`, `JWT_PRIVATE_KEY`, and `JWT_KEY_ID`; JWKS publishes the public RSA key. Remaining: formal key-rotation runbook and old-key grace behavior.
-- **Phase 5 — External denylist/lockout**: locally implemented with PostgreSQL-backed `AccessTokenDenylistEntry`, `UserTokenDenylistEntry`, and `AccountLockoutEntry` models. Remaining: run migrations in staging/prod and load-test the DB path.
-- **Phase 6 — AWS infra**: Terraform now plans ECR, VPC, ALB, ECS Fargate, RDS Postgres, Secrets Manager, CloudWatch, and WAF in account `344345273019`. Remaining: reviewed apply, backend/state setup, DNS for `identity.hollis.health`, ACM cert, SES sender/domain verification, image push, migrations, and staging smoke tests.
-- **Phase 7 — Health-side cutover**: `USE_IDENTITY_SERVICE` env flag; `server/src/middleware/authIdentity.ts` thin auth-client wrapper does post-verify domain enrichment from Health's Prisma; logout orchestrates `identityClient.logout → pushService.deleteDevicesForUser → clearAuthCookies` (D3); 7-day soak.
-- **Phase 8 — Decommission**: remove grace-window dual-reads; remove Health's local auth routes; `middleware/auth.ts` shrinks 214 → ~30 lines.
+- ~~Initial Prisma migration~~ **(DONE 2026-05-20)** — `hollis-identity/prisma/migrations/20260519000000_initial/migration.sql` committed.
+- ~~Email verification routes and model~~ **(DONE 2026-05-20)** — `emailVerified` column + `EmailVerificationToken` model + `POST /v1/auth/verify-email/send` + `GET /v1/auth/verify-email/confirm`.
+- ~~OIDC discovery endpoint~~ **(DONE 2026-05-20)** — `/.well-known/openid-configuration` added.
+- ~~Sentry init~~ **(DONE 2026-05-20)**
+- ~~SIGTERM graceful shutdown~~ **(DONE 2026-05-20)**
+- ~~DB-aware `/health` endpoint~~ **(DONE 2026-05-20)**
+- ~~`AuthAuditLog` model + writes from login/register/logout/refresh/password-reset~~ **(DONE 2026-05-20)**
+- **Remaining test work** — OPEN: expand from smoke/route-boundary coverage to route-level auth-matrix tests for login/register/refresh/logout/MFA/password reset/OAuth, plus DB-backed refresh-token rotation and reuse-detection tests. Account-lockout DB tests specifically outstanding.
+- **Phase 2 — claims namespace finalization** — OPEN: formalize app-claim schemas such as `HollisHealthClaimsSchema` in `@hollis-studio/contracts`; Health's `req.user` population should read `claims.hollisHealth.*` with a short top-level fallback window.
+- **Phase 3 — `@hollis-studio/auth-client` gaps** — OPEN: configurable consumer cookie helpers, cookie-or-Bearer token extractor for consumer apps, JWKS-fetching path (via `jose` 6.2.3), and integration tests against Identity outage/timeout/wrong-audience cases.
+- **Phase 4 — RS256/JWKS in identity** — OPEN: locally implemented; production requires `JWT_ALGORITHM=RS256`, `JWT_PRIVATE_KEY`, and `JWT_KEY_ID`. Remaining: formal key-rotation runbook and dual-kid old-key grace behavior (currently single-key only).
+- **Phase 5 — External denylist/lockout** — OPEN: locally implemented with PostgreSQL-backed models. Remaining: run migrations in staging/prod and load-test the DB path.
+- **Phase 6 — AWS infra** — OPEN: Terraform plans exist. Remaining: reviewed apply, backend/state setup, DNS for `identity.hollis.health`, ACM cert, SES domain verification, image push, migrations, and staging smoke tests. CI/CD pipeline, Terraform module, and ECS service definition also outstanding.
+- **Phase 7 — Health-side cutover** — OPEN: `USE_IDENTITY_SERVICE` feature flag + 7-day soak. `ClinicMembership`, `StudioSubscription`, `ConsentGrant`, and `ServiceAccount` schema additions deferred. WebAuthn still stub.
+- **Phase 8 — Decommission** — OPEN: remove grace-window dual-reads; remove Health's local auth routes; `middleware/auth.ts` shrinks 214 → ~30 lines.
 
-**Still-open decisions**: `onboardingCompleted` ownership, RS256 rotation operations, final `UserRole` enum ownership, and final `@hollis-studio/auth-client` surface for JWKS/getMe/revocation/cookie helpers.
+**Still-open decisions**: `onboardingCompleted` ownership, RS256 key-rotation runbook (dual-kid), final `UserRole` enum ownership, and final `@hollis-studio/auth-client` surface for JWKS/getMe/revocation/cookie helpers.
 
 ---
 
@@ -248,6 +262,8 @@ decision in `SCHEMA_INDEX.md`.
 - `npm run check:phi-logging` and all other PHI audit checks continue to apply unchanged on Health's domain code.
 
 **Step 6 current state (2026-05-19 update)**: the lift-and-shift strategy is now implemented locally for the Identity service core and production-hardening surfaces. Health's D4 claim blocker is closed; Identity emits shared-schema-compatible access tokens, publishes RS256 JWKS in production mode, has PostgreSQL-backed token revocation state, has PostgreSQL account-lockout storage pending login enforcement wiring, has SES password-reset delivery, and has Terraform IaC that validates/plans. Remaining work is live deployment and cutover: full DB-backed route tests, auth-client hardening, staging AWS apply/migrations/image/DNS/ACM/SES, login lockout enforcement, Health feature-flag delegation, and a 7-day soak before decommissioning Health local auth.
+
+**Step 6 additional progress (2026-05-20 hardening pass)**: email verification routes and model, `/.well-known/openid-configuration`, Sentry init, SIGTERM graceful shutdown, DB-aware `/health`, and `AuthAuditLog` model + writes all added. Initial Prisma migration (`hollis-identity/prisma/migrations/20260519000000_initial/migration.sql`) committed. Outstanding: CI/CD pipeline, Terraform apply, ECS service definition, DNS (`identity.hollis.health`), ACM cert, SES domain verification, account-lockout DB tests, Health cutover feature flag + 7-day soak, `ClinicMembership`/`StudioSubscription`/`ConsentGrant`/`ServiceAccount` schema additions, WebAuthn (still stub), and key-rotation dual-kid (currently single-key).
 
 ---
 
