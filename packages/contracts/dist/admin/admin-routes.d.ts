@@ -445,6 +445,8 @@ export declare const ADMIN_SUBSCRIPTION_ROUTES: {
     readonly getContract: (id: string) => `/api/admin/subscriptions/${string}/contract`;
     /** DELETE - Delete signed contract */
     readonly deleteContract: (id: string) => `/api/admin/subscriptions/${string}/contract`;
+    /** POST - Retry subscription creation for a user with existing User+ConsentRecord but no Subscription */
+    readonly retryForUser: (userId: string) => `/api/admin/subscriptions/${string}/retry`;
 };
 /**
  * Admin Stripe Terminal (POS) routes.
@@ -555,8 +557,12 @@ export declare const ADMIN_TASK_ROUTES: {
 export declare const ADMIN_LEADS_ROUTES: {
     /** GET - List leads with optional filters */
     readonly LIST: "/api/admin/leads";
+    /** POST - Create a lead manually (phone call / walk-in) */
+    readonly CREATE: "/api/admin/leads";
     /** PATCH - Update lead stage */
     readonly updateStage: (id: string) => `/api/admin/leads/${string}/stage`;
+    /** PATCH - Update lead fields (consultationDate, etc.) */
+    readonly update: (id: string) => `/api/admin/leads/${string}`;
 };
 /**
  * Admin consent / legal document signing routes.
@@ -947,6 +953,8 @@ export declare const ADMIN_API_ROUTES: {
         readonly getContract: (id: string) => `/api/admin/subscriptions/${string}/contract`;
         /** DELETE - Delete signed contract */
         readonly deleteContract: (id: string) => `/api/admin/subscriptions/${string}/contract`;
+        /** POST - Retry subscription creation for a user with existing User+ConsentRecord but no Subscription */
+        readonly retryForUser: (userId: string) => `/api/admin/subscriptions/${string}/retry`;
     };
     readonly TERMINAL: {
         /** GET - Check if Terminal is enabled */
@@ -1029,8 +1037,12 @@ export declare const ADMIN_API_ROUTES: {
     readonly LEADS: {
         /** GET - List leads with optional filters */
         readonly LIST: "/api/admin/leads";
+        /** POST - Create a lead manually (phone call / walk-in) */
+        readonly CREATE: "/api/admin/leads";
         /** PATCH - Update lead stage */
         readonly updateStage: (id: string) => `/api/admin/leads/${string}/stage`;
+        /** PATCH - Update lead fields (consultationDate, etc.) */
+        readonly update: (id: string) => `/api/admin/leads/${string}`;
     };
     readonly CONSENT: {
         /** POST - Submit all signed documents for a user (atomic) */

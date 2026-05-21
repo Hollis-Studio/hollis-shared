@@ -28,7 +28,6 @@ export const isoDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/u, "Must be ISO date (YYYY-MM-DD)")
   .refine((value) => {
-    // Additional validation: ensure date components are valid
     const [year, month, day] = value.split("-").map(Number);
     if (month < 1 || month > 12) return false;
     if (day < 1 || day > 31) return false;

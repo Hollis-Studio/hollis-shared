@@ -149,7 +149,7 @@ Firebase Auth gets replaced by the Hollis identity service in the same cutover.
 
 **Source:** `hollis-health-app/shared/{contracts,design-tokens,utils}/`
 
-**Target:** new repo `hollis-shared/` containing three workspace packages.
+**Target:** new repo `hollis-shared/` containing four workspace packages.
 
 **Boundary standard (updated 2026-05-12, revised 2026-05-12 PM):** zero
 exceptions. The extraction is not complete until Health and Workouts
@@ -284,8 +284,8 @@ Phases A-F are green in Health repo:
    and `Hollis-Workouts/`).
 2. Use `git filter-repo --path shared/` against a clone of `hollis-health-app`
    to preserve commit history for the extracted directory. Push to the
-   sibling repo (local-only initially; a private GitHub repo at
-   `idlandes04/hollis-shared` is created and pushed when ready).
+   sibling repo (local-only initially; pushed to `Hollis-Studio/hollis-shared`
+   on GitHub under the `Hollis-Studio` org).
 3. Restructure as an npm workspace:
    ```
    hollis-shared/
@@ -293,17 +293,19 @@ Phases A-F are green in Health repo:
        contracts/         (was shared/contracts/)
        design-tokens/     (was shared/design-tokens/)
        utils/             (was shared/utils/)
+       auth-client/       (thin server-side JWT verification middleware)
      package.json         (workspaces: ["packages/*"])
      .github/workflows/
        publish.yml        (publish on tag push — wired but dormant)
        typecheck.yml      (PR gate)
    ```
+   Note: no `.github/workflows/` directory exists in the repo as of 2026-05-19; CI/CD pipeline is still outstanding.
 4. Update each package's `package.json`:
    - `"name": "@hollis-studio/contracts"` (already correct)
    - `"version": "0.1.0-alpha.1"` (alpha tags during transition; cut to
      `1.0.0` only when Workouts also consumes cleanly)
    - `"publishConfig": { "registry": "https://npm.pkg.github.com" }`
-   - `"repository": "https://github.com/idlandes04/hollis-shared"`
+   - `"repository": "https://github.com/Hollis-Studio/hollis-shared"`
 5. Verify `main`, `types`, and every `exports` target point at compiled
    `dist` (re-confirm Phase C still holds after the move).
 6. Tag `v0.1.0-alpha.1` in the sibling repo.
@@ -417,10 +419,7 @@ Not added until Phase I cutover.
 - After Phase G: `hollis-shared` repo exists at `~/Documents/SRC/Hollis/hollis-shared/`,
   history preserved via `git filter-repo`, `v0.1.0-alpha.1` tagged, no
   consumer code yet.
-- Phase H/I status superseded: Health and Workouts now consume published
-  `@hollis-studio/*` packages from GitHub Packages by semver; Identity consumes
-  `@hollis-studio/contracts`. Workouts Server still needs package-name
-  normalization and registry consumption.
+- Phase H/I status superseded: `hollis-shared` repo exists and publishes to GitHub Packages under `Hollis-Studio` org. <!-- UNVERIFIED: whether Health and Workouts are both actively consuming from GitHub Packages by semver — cannot confirm consumer-side lockfiles from this repo --> Identity consuming `@hollis-studio/contracts` is per the plan. Workouts Server still needs package-name normalization and registry consumption.
 - After Phase I′: all 9 schema-drift decisions in
   `05-reconciliation-decisions.md` are rulings (no "needs ruling" rows).
   `hollis-shared` tagged `v0.2.0-alpha.N` includes Workouts' contributions per
@@ -599,15 +598,22 @@ UID mapping, and production verification gates.
 hollis-identity/
   src/
     routes/
-      auth.ts          (POST /login, /register, /refresh, /logout, /verify; GET /me)
+      auth.ts          (POST /login, /register, /logout, /refresh, /verify, /me, /oauth,
+                        /forgot-password, /reset-password, /change-password, /biometric-token,
+                        /v1/auth/verify, /v1/auth/verify-email/send, /v1/auth/verify-email/confirm)
       mfa.ts
     services/
     lib/
   prisma/
-    schema.prisma      (User, RefreshToken, MfaCredential, MfaEvent, StepUpToken, PendingMfaSession, PasswordResetToken, OAuthAccount)
+    schema.prisma      (User, RefreshToken, MfaCredential, MfaEvent, StepUpToken,
+                        PendingMfaSession, PasswordResetToken, OAuthAccount,
+                        EmailVerificationToken, AuthAuditLog; AuthAuditEventType enum)
+    migrations/
+      20260519000000_initial/migration.sql
   package.json
   Dockerfile
 ```
+<!-- Route layout updated 2026-05-19 to match locally-implemented state per suite-strategy.md -->
 
 **Database:** own RDS Postgres instance. Source of truth for user identity across the suite. Each app's local DB has a `userId` foreign-key reference; user profile lives in identity service.
 

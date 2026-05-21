@@ -5,6 +5,8 @@
 - **Shared source inspected:** hollis-health-app shared/contracts @ v1.0.0 (locally, publishing as `@hollis-studio/contracts`)
 - **Auditor:** Claude Code (read-only; no code modified)
 
+> **2026-05-19 status note:** The highest-risk collisions identified below have been resolved on the `hollis-shared` side. `MuscleGroup` now has the 23-value set (per §Highest-risk #1) in `packages/contracts/domain/muscles.ts`. `EquipmentType` is the merged superset with `cable` (not `cable_machine`) resolving the `cable` vs `cable_machine` discrepancy (per §Highest-risk #2) in `packages/contracts/domain/equipment.ts`. `Result<T>` / `ok()` / `err()` have been promoted to `packages/contracts/errors/result.ts` (resolving the NO_OVERLAP finding). The Workouts-side `ExerciseCategory` → `TrackingMode` rename (§Highest-risk #3 resolution) was completed in Workouts `v1.6.8`. `WorkoutSession` was renamed `TrainingSessionLog` on the Workouts side (§Highest-risk #4 resolution, A.4). See `05-reconciliation-decisions.md` §D for the full execution status.
+
 ---
 
 ## Summary

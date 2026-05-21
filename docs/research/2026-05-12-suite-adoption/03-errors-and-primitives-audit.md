@@ -4,6 +4,8 @@
 - **Workouts version inspected:** v1.6.3
 - **Shared source inspected:** hollis-health-app@v3.7.45 / @hollis-studio/contracts@1.0.0
 
+> **2026-05-19 status note:** The primary recommendation of this audit — promoting `Result<T>`, `ok()`, `err()`, and `AppErrorCode` to `@hollis-studio/contracts` — has been completed. As of the current codebase, `packages/contracts/errors/result.ts` exports `Result<T>`, `ok()`, `err()`, `isOk()`, and `isErr()` with field-for-field identical signatures to Workouts' original implementation. `packages/contracts/errors/app-error-code.ts` exports the `AppErrorCode` union superset with `@scope workouts-mobile` JSDoc tags and Health alias constants (`UNAUTHORIZED`, `VALIDATION_ERROR`, `CONFLICT`). The migration risk items in §5 are resolved for the shared-package side; Cloud Functions `functions/src/utils/result.ts` cleanup (risk #4) remains pending in the Workouts repo.
+
 ---
 
 ## 1. Result\<T\> shape comparison

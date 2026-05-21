@@ -762,6 +762,10 @@ export const ADMIN_SUBSCRIPTION_ROUTES = {
   /** DELETE - Delete signed contract */
   deleteContract: (id: string) =>
     `/api/admin/subscriptions/${id}/contract` as const,
+
+  /** POST - Retry subscription creation for a user with existing User+ConsentRecord but no Subscription */
+  retryForUser: (userId: string) =>
+    `/api/admin/subscriptions/${userId}/retry` as const,
 } as const;
 
 // ============================================================================
@@ -948,8 +952,14 @@ export const ADMIN_LEADS_ROUTES = {
   /** GET - List leads with optional filters */
   LIST: "/api/admin/leads",
 
+  /** POST - Create a lead manually (phone call / walk-in) */
+  CREATE: "/api/admin/leads",
+
   /** PATCH - Update lead stage */
   updateStage: (id: string) => `/api/admin/leads/${id}/stage` as const,
+
+  /** PATCH - Update lead fields (consultationDate, etc.) */
+  update: (id: string) => `/api/admin/leads/${id}` as const,
 } as const;
 
 // ============================================================================

@@ -52,7 +52,7 @@ import {
 import { createPaginatedListSchema } from "../domain/pagination.js";
 import { DynamicMetricGoalDataSourceSchema } from "../domain/training.js";
 import { VolumeLevelSchema } from "../primitives/volume-level.js";
-import { USER_ID_REGEX, bodyWeightKgSchema, heightCmSchema } from "../schemas/index.js";
+import { USER_ID_REGEX, bodyWeightKgSchema, heightCmSchema, uuidSchema } from "../schemas/index.js";
 import { FulfillmentStatusSchema } from "../stripe/order.js";
 import { SubscriptionStatusSchema } from "../stripe/subscription.js";
 
@@ -1199,6 +1199,12 @@ export type AdminConsentUserIdParam = z.infer<
 
 export const adminLeadStageUpdateBodySchema = z.object({
   stage: LeadStageSchema,
+  /**
+   * Optional: set the convertedUserId on the lead row when transitioning to
+   * ACTIVE_MEMBER.  Ignored by existing callers that omit it — fully backward-
+   * compatible.
+   */
+  convertedUserId: uuidSchema.optional(),
 });
 export type AdminLeadStageUpdateBody = z.infer<
   typeof adminLeadStageUpdateBodySchema

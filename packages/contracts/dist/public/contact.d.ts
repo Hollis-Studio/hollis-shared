@@ -21,16 +21,34 @@ export declare const ContactTypeSchema: z.ZodEnum<{
 export type ContactType = z.infer<typeof ContactTypeSchema>;
 /**
  * Lead sources for tracking marketing attribution.
+ * Includes admin-only sources (PHONE_CALL, WALK_IN) for manually-created leads.
  */
-export declare const CONTACT_SOURCES: readonly ["WEBSITE", "REFERRAL", "SOCIAL_MEDIA", "GOOGLE", "OTHER"];
+export declare const CONTACT_SOURCES: readonly ["PHONE_CALL", "WALK_IN", "WEBSITE", "REFERRAL", "SOCIAL_MEDIA", "GOOGLE", "OTHER"];
 export declare const ContactSourceSchema: z.ZodEnum<{
     REFERRAL: "REFERRAL";
     OTHER: "OTHER";
     GOOGLE: "GOOGLE";
     SOCIAL_MEDIA: "SOCIAL_MEDIA";
+    PHONE_CALL: "PHONE_CALL";
+    WALK_IN: "WALK_IN";
     WEBSITE: "WEBSITE";
 }>;
 export type ContactSource = z.infer<typeof ContactSourceSchema>;
+/**
+ * Alias for ContactSourceSchema — use when referencing lead pipeline sources
+ * in admin routes and services.
+ */
+export declare const LeadSourceSchema: z.ZodEnum<{
+    REFERRAL: "REFERRAL";
+    OTHER: "OTHER";
+    GOOGLE: "GOOGLE";
+    SOCIAL_MEDIA: "SOCIAL_MEDIA";
+    PHONE_CALL: "PHONE_CALL";
+    WALK_IN: "WALK_IN";
+    WEBSITE: "WEBSITE";
+}>;
+export type LeadSource = ContactSource;
+export declare const LEAD_SOURCES: readonly ["PHONE_CALL", "WALK_IN", "WEBSITE", "REFERRAL", "SOCIAL_MEDIA", "GOOGLE", "OTHER"];
 /**
  * Submission intent for public form flows that share the same endpoint.
  */
@@ -60,6 +78,8 @@ export declare const ContactFormSchema: z.ZodObject<{
         OTHER: "OTHER";
         GOOGLE: "GOOGLE";
         SOCIAL_MEDIA: "SOCIAL_MEDIA";
+        PHONE_CALL: "PHONE_CALL";
+        WALK_IN: "WALK_IN";
         WEBSITE: "WEBSITE";
     }>>;
     submissionIntent: z.ZodOptional<z.ZodEnum<{
@@ -86,6 +106,8 @@ export declare const ContactInquirySchema: z.ZodObject<{
         OTHER: "OTHER";
         GOOGLE: "GOOGLE";
         SOCIAL_MEDIA: "SOCIAL_MEDIA";
+        PHONE_CALL: "PHONE_CALL";
+        WALK_IN: "WALK_IN";
         WEBSITE: "WEBSITE";
     }>>;
     submissionIntent: z.ZodOptional<z.ZodEnum<{
@@ -115,6 +137,8 @@ export declare const NewsletterSignupSchema: z.ZodObject<{
         OTHER: "OTHER";
         GOOGLE: "GOOGLE";
         SOCIAL_MEDIA: "SOCIAL_MEDIA";
+        PHONE_CALL: "PHONE_CALL";
+        WALK_IN: "WALK_IN";
         WEBSITE: "WEBSITE";
     }>>;
 }, z.core.$strip>;

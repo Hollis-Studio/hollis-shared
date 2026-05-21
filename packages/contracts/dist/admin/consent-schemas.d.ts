@@ -17,13 +17,14 @@ import { z } from "zod";
  * All legal document types that may be signed during the onboarding flow.
  * Maps 1:1 to the ConsentDocumentType Prisma enum.
  */
-export declare const CONSENT_DOCUMENT_TYPES: readonly ["MEMBERSHIP_AGREEMENT", "LIABILITY_WAIVER", "INFORMED_CONSENT", "ELECTRONIC_COMMS_CONSENT", "PHOTO_VIDEO_RELEASE"];
+export declare const CONSENT_DOCUMENT_TYPES: readonly ["MEMBERSHIP_AGREEMENT", "LIABILITY_WAIVER", "INFORMED_CONSENT", "ELECTRONIC_COMMS_CONSENT", "PHOTO_VIDEO_RELEASE", "HIPAA_NPP"];
 export declare const ConsentDocumentTypeSchema: z.ZodEnum<{
     MEMBERSHIP_AGREEMENT: "MEMBERSHIP_AGREEMENT";
     LIABILITY_WAIVER: "LIABILITY_WAIVER";
     INFORMED_CONSENT: "INFORMED_CONSENT";
     ELECTRONIC_COMMS_CONSENT: "ELECTRONIC_COMMS_CONSENT";
     PHOTO_VIDEO_RELEASE: "PHOTO_VIDEO_RELEASE";
+    HIPAA_NPP: "HIPAA_NPP";
 }>;
 export type ConsentDocumentType = z.infer<typeof ConsentDocumentTypeSchema>;
 /** Centralized consent document type constants for equality checks */
@@ -33,12 +34,14 @@ export declare const CONSENT_DOCUMENT_TYPE: {
     readonly INFORMED_CONSENT: "INFORMED_CONSENT";
     readonly ELECTRONIC_COMMS_CONSENT: "ELECTRONIC_COMMS_CONSENT";
     readonly PHOTO_VIDEO_RELEASE: "PHOTO_VIDEO_RELEASE";
+    readonly HIPAA_NPP: "HIPAA_NPP";
 };
 /**
- * The 4 documents that MUST be signed before payment may proceed.
+ * The 5 documents that MUST be signed before payment may proceed.
+ * HIPAA_NPP must be acknowledged at or before first service (45 CFR §164.520).
  * PHOTO_VIDEO_RELEASE is optional and excluded from this list.
  */
-export declare const REQUIRED_CONSENT_DOCS: readonly ["MEMBERSHIP_AGREEMENT", "LIABILITY_WAIVER", "INFORMED_CONSENT", "ELECTRONIC_COMMS_CONSENT"];
+export declare const REQUIRED_CONSENT_DOCS: readonly ["HIPAA_NPP", "MEMBERSHIP_AGREEMENT", "LIABILITY_WAIVER", "INFORMED_CONSENT", "ELECTRONIC_COMMS_CONSENT"];
 /**
  * Documents that are optional — the user may skip without blocking payment.
  */
@@ -117,6 +120,7 @@ export declare const SignedDocumentPayloadSchema: z.ZodObject<{
         INFORMED_CONSENT: "INFORMED_CONSENT";
         ELECTRONIC_COMMS_CONSENT: "ELECTRONIC_COMMS_CONSENT";
         PHOTO_VIDEO_RELEASE: "PHOTO_VIDEO_RELEASE";
+        HIPAA_NPP: "HIPAA_NPP";
     }>;
     documentVersion: z.ZodString;
     displayedSigningDate: z.ZodOptional<z.ZodString>;
@@ -187,6 +191,7 @@ export declare const SubmitConsentRequestSchema: z.ZodObject<{
             INFORMED_CONSENT: "INFORMED_CONSENT";
             ELECTRONIC_COMMS_CONSENT: "ELECTRONIC_COMMS_CONSENT";
             PHOTO_VIDEO_RELEASE: "PHOTO_VIDEO_RELEASE";
+            HIPAA_NPP: "HIPAA_NPP";
         }>;
         documentVersion: z.ZodString;
         displayedSigningDate: z.ZodOptional<z.ZodString>;
@@ -255,6 +260,7 @@ export declare const ConsentRecordResponseSchema: z.ZodObject<{
         INFORMED_CONSENT: "INFORMED_CONSENT";
         ELECTRONIC_COMMS_CONSENT: "ELECTRONIC_COMMS_CONSENT";
         PHOTO_VIDEO_RELEASE: "PHOTO_VIDEO_RELEASE";
+        HIPAA_NPP: "HIPAA_NPP";
     }>;
     documentVersion: z.ZodString;
     signedAt: z.ZodString;

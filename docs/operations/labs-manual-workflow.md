@@ -42,7 +42,7 @@ Complete one requisition form per lab company. Include:
 
 ### 2.2 Chart documentation
 Before drawing any specimen:
-- Create a Lab Order entry in web-admin (web-admin > Patient > Lab Orders > New) with:
+- Create a Lab Order entry in web-admin (web-admin > Analytics > Lab Pipeline Kanban > "+ New Lab Order") with:
   - Test name(s)
   - Lab company
   - Date ordered

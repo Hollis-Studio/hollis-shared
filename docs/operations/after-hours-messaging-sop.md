@@ -41,7 +41,7 @@ Record this as your outgoing voicemail message:
 
 ### 3.2 Secure messaging / app auto-reply
 
-Configure this text as the auto-reply for messages received outside clinic hours (activate via web-admin > Settings > Messaging):
+Configure this text as the auto-reply for messages received outside clinic hours (Note: as of 2026-05-19, the web-admin Settings page has Profile, Availability, and Security tabs only — no Messaging tab exists yet; this configuration is pending platform implementation):
 
 > "Thank you for your message. Hollis Health clinic is currently closed. I'll respond on the next business day by noon.
 >

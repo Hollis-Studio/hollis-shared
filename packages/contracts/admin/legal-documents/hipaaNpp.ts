@@ -1,20 +1,30 @@
-# HIPAA Notice of Privacy Practices — Full Text
+/**
+ * HIPAA Notice of Privacy Practices — static document content.
+ *
+ * Source: hollis-shared/docs/operations/hipaa-npp-content.md
+ *
+ * Per 45 CFR §164.520, the NPP must be acknowledged at or before the time of
+ * first service. This is an acknowledgment-only document — the member
+ * acknowledges receipt, not agreement to negotiated terms.
+ *
+ * ATTORNEY REVIEW NOTE: See source document for required legal-counsel review
+ * items before this is published as a final instrument.
+ */
 
-**Purpose:** Provide the complete text of Hollis Health's HIPAA Notice of Privacy Practices (NPP) for use in the consent system. This text is designed to be stored as a consent record. Note: the `ConsentDocumentType` enum (server/prisma/schema.prisma) does not currently include `HIPAA_NPP`; the closest existing value is `INFORMED_CONSENT`, or a new enum value must be added before implementing. Patients must acknowledge receipt of the NPP before or at the time of first service.
+export const meta = {
+  title: "HIPAA Notice of Privacy Practices",
+  version: "1.0.0",
+  effectiveDate: "2026-06-01",
+  contentHash: "hipaa-npp-v1",
+} as const;
 
-**Developer note:** Paste this content into the NPP consent document record. Use the same token-replacement pattern as the Membership Agreement. The NPP is not a negotiated document — patients acknowledge receipt, not agreement to terms.
-
-**Attorney review required before final publication.** The language below follows HHS model NPP guidance (45 CFR §164.520) and is drafted for Hollis Health's specific operations. It is not a substitute for legal counsel review.
-
----
-
-## NOTICE OF PRIVACY PRACTICES
+export const content = `# NOTICE OF PRIVACY PRACTICES
 
 **Hollis Health LLC**
 691 S Seguin, New Braunfels, TX 78130
 (210) 891-9005 | isaac@hollis.health
 
-**Effective Date:** 2026-06-01 *(update to actual effective date before publishing)*
+**Effective Date:** 2026-06-01
 
 ---
 
@@ -141,11 +151,9 @@ isaac@hollis.health
 
 ### Complaints
 
-If you believe your privacy rights have been violated, you may file a complaint with Hollis Health or with the Secretary of the U.S. Department of Health and Human Services. To file a complaint with HHS, go to:
-https://www.hhs.gov/hipaa/filing-a-complaint/
+If you believe your privacy rights have been violated, you may file a complaint with Hollis Health or with the Secretary of the U.S. Department of Health and Human Services. To file a complaint with HHS, go to: https://www.hhs.gov/hipaa/filing-a-complaint/
 
-To file a complaint with Hollis Health, contact the Privacy Officer at:
-isaac@hollis.health or (210) 891-9005
+To file a complaint with Hollis Health, contact the Privacy Officer at: isaac@hollis.health or (210) 891-9005
 
 We will not retaliate against you for filing a complaint.
 
@@ -168,8 +176,13 @@ isaac@hollis.health
 
 ---
 
-**ATTORNEY REVIEW NOTE:** This NPP draft is based on HHS model guidance and Hollis Health's operational profile as of 2026-05-19. The following items require attorney confirmation before publication: (1) Texas-specific requirements beyond federal HIPAA minimums; (2) whether Hollis's clinical role triggers any additional NPP disclosure obligations under Texas Health & Safety Code Chapter 181 (Texas Medical Privacy Act); (3) the effective date and whether this NPP must be provided to existing members at a specific time. Do not publish this as a final document without legal review.
+By signing below, I, {{MEMBER_NAME}}, acknowledge that I have received and reviewed the Hollis Health LLC Notice of Privacy Practices. I understand how my protected health information may be used and disclosed and that I have the rights described in this Notice.
 
----
+Signature: {{SIGNATURE}} Date: {{SIGNING_DATE}}
 
-Last reviewed: 2026-05-19
+Printed Name: {{MEMBER_NAME}}`;
+
+/**
+ * No initials sections for this document — acknowledgment only, signature required.
+ */
+export const initialsSections = [] as const;

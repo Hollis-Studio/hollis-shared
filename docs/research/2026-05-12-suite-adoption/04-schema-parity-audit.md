@@ -5,6 +5,8 @@
 - **Shared source inspected:** `hollis-health-app/shared/contracts` at `@hollis-studio/contracts@1.0.0` (local source; published registry version tracked separately)
 - **Zod version:** Both repos pin `zod@4.3.6` — no version-skew risk at time of audit
 
+> **2026-05-19 status note:** The following WORKOUTS_PROMOTE items from the §4 promotion candidates have been confirmed in the current `hollis-shared` codebase: `ProgressionBaselineSchema` + `BaselineEntrySchema` are in `packages/contracts/progression/baseline.ts`; `SessionSetSchema` + `SessionExerciseSchema` + `WorkoutSessionSchema` (as `TrainingSessionLog`) are in `packages/contracts/domain/training-session-log.ts`; `CardioSessionDataSchema` + `CardioIntervalSchema` are in `packages/contracts/domain/cardio-session.ts`; the metric basket schemas (`GatedE1RMSampleSchema`, `BestQualifyingSetSchema`, `WeeklyHardSetsEntrySchema`, `RelativeStrengthScoreSchema`, `RepRangePivotSchema`, `ConfidenceBandSchema`, `MetricBasketSnapshotSchema`) are in `packages/contracts/progression/metrics.ts`; the `ProgramSchema` family is in `packages/contracts/progression/program.ts`. The `bodyWeightKgSchema` / `loadWeightKgSchema` split (B.4) is in `packages/contracts/schemas/weight.ts`. The `WeightUnitSchema` EXACT_REPLACE from `domain/units` remains unchanged. Zod version still `4.3.6` (confirmed in `packages/contracts/package.json`).
+
 ---
 
 ## 1. Schema Inventory Comparison

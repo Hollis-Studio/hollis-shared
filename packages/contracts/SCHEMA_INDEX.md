@@ -1,9 +1,9 @@
 # Schema Index
 
-> Public-surface reference for `@hollis-studio/contracts`. Internal file paths are
-> listed only to help maintain the package before extraction.
+> Public-surface reference for `@hollis-studio/contracts`. Internal source file paths are
+> listed to help maintain the package; the package is fully extracted and published from the `hollis-shared` workspace.
 
-**Last Updated:** 2026-05-12
+**Last Updated:** 2026-05-19
 
 ---
 
@@ -54,11 +54,19 @@ documented here.
 | `@hollis-studio/contracts/domain/training-strategy` | Training strategy generation contracts not re-exported by the domain barrel |
 | `@hollis-studio/contracts/domain/user` | User role/tier constants used by mobile feature tests and compatibility code |
 | `@hollis-studio/contracts/domain/workouts` | Workout contracts re-exported by mobile compatibility contracts |
+| `@hollis-studio/contracts/domain/clinical` | Clinical limitation, biometric, medication, and medical condition schemas |
+| `@hollis-studio/contracts/domain/muscles` | Muscle group enum split out from exercise.ts |
+| `@hollis-studio/contracts/domain/equipment` | Equipment type enum split out from exercise.ts |
+| `@hollis-studio/contracts/domain/training-session-log` | Training session log schemas used by progression module |
+| `@hollis-studio/contracts/domain/cardio-session` | Cardio interval and session data schemas |
 | `@hollis-studio/contracts/schemas` | Shared route/query/body and JSON blob schemas |
+| `@hollis-studio/contracts/schemas/weight` | Body weight and load weight validation schemas |
 | `@hollis-studio/contracts/constants` | Shared constants |
 | `@hollis-studio/contracts/admin` | Admin portal contracts and schemas |
 | `@hollis-studio/contracts/admin/admin-types` | Admin type definitions used directly by server AI service code |
 | `@hollis-studio/contracts/admin/labs` | Admin lab operation contracts promoted as a stable narrow surface |
+| `@hollis-studio/contracts/admin/consent-schemas` | Legal consent document type, signing payload, and submission request schemas |
+| `@hollis-studio/contracts/admin/legal-documents` | Rendered legal document contracts (membership agreement, liability waiver, etc.) |
 | `@hollis-studio/contracts/ai` | AI validation and generated-content contracts |
 | `@hollis-studio/contracts/ai/ai-types` | AI type definitions used directly by server AI service code |
 | `@hollis-studio/contracts/public` | Public web/contact/waitlist contracts |
@@ -67,6 +75,10 @@ documented here.
 | `@hollis-studio/contracts/password` | Password policy, reset, and validation contracts |
 | `@hollis-studio/contracts/primitives` | Cross-domain primitives and result helpers |
 | `@hollis-studio/contracts/errors` | Shared error codes and result/error helpers |
+| `@hollis-studio/contracts/progression` | Progression barrel (baseline, metrics, program, training-session-log) |
+| `@hollis-studio/contracts/progression/baseline` | Progression baseline entry and e1RM schemas |
+| `@hollis-studio/contracts/progression/metrics` | Gated e1RM sample and metric gate schemas |
+| `@hollis-studio/contracts/progression/program` | Program structure, set type, and progression mode schemas |
 
 Private source paths are not public unless they appear in `exports`. Do not add
 wildcard exports such as `@hollis-studio/contracts/domain/*`; promote narrow subpaths
@@ -103,7 +115,7 @@ For fields sourced from nullable Prisma columns, use `.nullable().optional()` (a
 ## API Request/Response Schemas
 
 **Public import:** `@hollis-studio/contracts/schemas`  
-**Internal source before extraction:** `schemas/index.ts`
+**Internal source:** `schemas/index.ts`
 
 Core validation schemas for HTTP request/response payloads.
 
@@ -243,17 +255,17 @@ explicitly listed in [Public Package Exports](#public-package-exports).
 
 | Schema                   | Purpose                             |
 | ------------------------ | ----------------------------------- |
-| `ExerciseCategorySchema` | strength, cardio, flexibility, etc. |
+| `ExerciseCategorySchema` | COMPOUND, ISOLATION, CARDIO, MOBILITY, PLYOMETRIC |
 | `MovementPatternSchema`  | push, pull, squat, hinge, etc.      |
-| `MuscleGroupSchema`      | chest, back, legs, shoulders, etc.  |
-| `EquipmentTypeSchema`    | barbell, dumbbell, cable, etc.      |
-| `DifficultyLevelSchema`  | beginner, intermediate, advanced    |
+| `MuscleGroupSchema`      | chest, back, shoulders, quadriceps, hamstrings, glutes, etc. (re-exported from `domain/muscles`) |
+| `EquipmentTypeSchema`    | barbell, dumbbell, cable, machine, bodyweight, etc. (re-exported from `domain/equipment`)        |
+| `DifficultyLevelSchema`  | BEGINNER, INTERMEDIATE, ADVANCED, EXPERT                                                          |
 
 ### workouts.ts
 
 | Schema                     | Purpose                            |
 | -------------------------- | ---------------------------------- |
-| `WorkoutSectionTypeSchema` | warmup, main, cooldown, superset   |
+| `WorkoutSectionTypeSchema` | warmup, working, cooldown          |
 | `workoutSetSchema`         | Set structure (reps, weight, etc.) |
 | `workoutSectionSchema`     | Section with exercises             |
 | `workoutSessionSchema`     | Complete workout session           |
@@ -373,7 +385,7 @@ explicitly listed in [Public Package Exports](#public-package-exports).
 ## JSON Blob Schemas
 
 **Public import:** `@hollis-studio/contracts/schemas`  
-**Internal source before extraction:** `schemas/json-blobs.ts`
+**Internal source:** `schemas/json-blobs.ts`
 
 Schemas for JSON fields stored in Prisma. Use these for validating data going into/out of JSON columns.
 
@@ -418,7 +430,7 @@ Some JSON field schemas are canonically defined in other modules:
 ## Admin Schemas
 
 **Public import:** `@hollis-studio/contracts/admin`  
-**Internal source before extraction:** `admin/admin-schemas.ts`
+**Internal source:** `admin/admin-schemas.ts`
 
 Schemas for admin portal operations, patient management, and clinical workflows.
 
@@ -531,7 +543,7 @@ Schemas for admin portal operations, patient management, and clinical workflows.
 ## AI Schemas
 
 **Public import:** `@hollis-studio/contracts/ai`  
-**Internal source before extraction:** `ai/ai-validation.ts`
+**Internal source:** `ai/ai-validation.ts`
 
 Schemas for AI function call validation and generation request/response payloads.
 
@@ -583,7 +595,7 @@ Schemas for AI function call validation and generation request/response payloads
 ## Password Schemas
 
 **Public import:** `@hollis-studio/contracts/password`  
-**Internal source before extraction:** `password/index.ts`
+**Internal source:** `password/index.ts`
 
 Schemas for password validation and password reset flows.
 
@@ -719,31 +731,38 @@ Run `npm run check:contract-duplicates` to ensure no duplicate definitions exist
 
 ## Internal Modules Pending Public-Surface Documentation
 
-The following internal domain contract files exist before extraction but are
-not individually public subpaths unless listed in
-[Public Package Exports](#public-package-exports). Import through
+The following internal domain contract files are not individually public subpaths
+unless listed in [Public Package Exports](#public-package-exports). Import through
 `@hollis-studio/contracts/domain` unless a subpath is deliberately promoted and
 documented.
 
-| File                     | Location                        |
-| ------------------------ | ------------------------------- |
-| `admin-notifications.ts` | `domain/admin-notifications.ts` |
-| `admin-tasks.ts`         | `domain/admin-tasks.ts`         |
-| `auth-tokens.ts`         | `domain/auth-tokens.ts`         |
-| `billing.ts`             | `domain/billing.ts`             |
-| `businessAnalytics.ts`   | `domain/businessAnalytics.ts`   |
-| `daily-metrics.ts`       | `domain/daily-metrics.ts`       |
-| `enumContract.ts`        | `domain/enumContract.ts`        |
-| `health-metric-types.ts` | `domain/health-metric-types.ts` |
-| `health-metrics.ts`      | `domain/health-metrics.ts`      |
-| `jobs.ts`                | `domain/jobs.ts`                |
-| `messages.ts`            | `domain/messages.ts`            |
-| `metric-codes.ts`        | `domain/metric-codes.ts`        |
-| `metric-definition.ts`   | `domain/metric-definition.ts`   |
-| `mfa.ts`                 | `domain/mfa.ts`                 |
-| `nutrition-plan.ts`      | `domain/nutrition-plan.ts`      |
-| `offer-sheet.ts`         | `domain/offer-sheet.ts`         |
-| `pagination.ts`          | `domain/pagination.ts`          |
-| `sleep.ts`               | `domain/sleep.ts`               |
-| `training-strategy.ts`   | `domain/training-strategy.ts`   |
-| `units.ts`               | `domain/units.ts`               |
+| File                       | Location                          |
+| -------------------------- | --------------------------------- |
+| `admin-notifications.ts`   | `domain/admin-notifications.ts`   |
+| `admin-tasks.ts`           | `domain/admin-tasks.ts`           |
+| `app-review.ts`            | `domain/app-review.ts`            |
+| `auth-tokens.ts`           | `domain/auth-tokens.ts`           |
+| `billing.ts`               | `domain/billing.ts`               |
+| `businessAnalytics.ts`     | `domain/businessAnalytics.ts`     |
+| `cardio-session.ts`        | `domain/cardio-session.ts`        |
+| `consent.ts`               | `domain/consent.ts`               |
+| `daily-metrics.ts`         | `domain/daily-metrics.ts`         |
+| `enumContract.ts`          | `domain/enumContract.ts`          |
+| `equipment.ts`             | `domain/equipment.ts`             |
+| `health-metric-types.ts`   | `domain/health-metric-types.ts`   |
+| `health-metrics.ts`        | `domain/health-metrics.ts`        |
+| `jobs.ts`                  | `domain/jobs.ts`                  |
+| `marketing.ts`             | `domain/marketing.ts`             |
+| `messages.ts`              | `domain/messages.ts`              |
+| `metric-codes.ts`          | `domain/metric-codes.ts`          |
+| `metric-definition.ts`     | `domain/metric-definition.ts`     |
+| `mfa.ts`                   | `domain/mfa.ts`                   |
+| `muscles.ts`               | `domain/muscles.ts`               |
+| `nutrition-plan.ts`        | `domain/nutrition-plan.ts`        |
+| `offer-sheet.ts`           | `domain/offer-sheet.ts`           |
+| `pagination.ts`            | `domain/pagination.ts`            |
+| `recovery-sessions.ts`     | `domain/recovery-sessions.ts`     |
+| `sleep.ts`                 | `domain/sleep.ts`                 |
+| `training-session-log.ts`  | `domain/training-session-log.ts`  |
+| `training-strategy.ts`     | `domain/training-strategy.ts`     |
+| `units.ts`                 | `domain/units.ts`                 |

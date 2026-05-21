@@ -1,6 +1,6 @@
 # Shared Contracts Module
 
-> **Single source of truth** for all contracts across the Hollis Health monorepo.
+> **Single source of truth** for all contracts across the Hollis suite, published as `@hollis-studio/contracts` from the `hollis-shared` workspace.
 
 ## Overview
 
@@ -92,7 +92,7 @@ import { PasswordStrengthSchema } from "@hollis-studio/contracts/password";
 ## Module Structure
 
 ```
-shared/contracts/
+packages/contracts/
 ├── index.ts           # Main barrel file
 ├── api/
 │   ├── index.ts       # API module barrel
@@ -100,8 +100,8 @@ shared/contracts/
 │   ├── endpoints.ts   # Endpoint definitions
 │   ├── response.ts    # Response shape contracts
 │   ├── routes.ts      # HTTP route definitions
-│   └── routes/        # Route sub-module
-├── domain/            # 41 domain contract files + 1 barrel index (`index.ts`)
+│   └── routes/        # Route sub-module (admin, ai, appointments, auth, ...)
+├── domain/            # 50+ domain contract files + barrel index (`index.ts`)
 │   ├── index.ts       # Domain barrel
 │   ├── user.ts        # User roles, tiers
 │   ├── offer-sheet.ts # Master commercial offer sheet wrapper + helpers
@@ -115,7 +115,9 @@ shared/contracts/
 │   ├── labs.ts        # Lab observation types
 │   ├── messages.ts    # Messaging types
 │   ├── journal.ts     # Journal entry types
-│   ├── exercise.ts    # Exercise categories, types
+│   ├── exercise.ts    # Exercise categories, types (re-exports muscles + equipment)
+│   ├── muscles.ts     # Muscle group enum (split out from exercise.ts)
+│   ├── equipment.ts   # Equipment type enum (split out from exercise.ts)
 │   ├── documents.ts   # Document types
 │   ├── analytics.ts   # Analytics types
 │   ├── mfa.ts         # MFA credential types
@@ -123,13 +125,27 @@ shared/contracts/
 │   ├── metric-definition.ts # Unified metric definitions
 │   ├── compliance.ts  # Compliance types
 │   ├── organization.ts # Organization types
-│   └── ...            # + 22 more domain files (daily-metrics, sleep, workouts, etc.)
+│   ├── consent.ts     # Patient consent record response schemas
+│   ├── recovery-sessions.ts # Recovery modality logging (sauna, ice bath, etc.)
+│   ├── cardio-session.ts # Cardio interval and session data schemas
+│   ├── training-session-log.ts # Training session log schemas (used by progression)
+│   ├── marketing.ts   # AI-generated marketing image contracts
+│   ├── app-review.ts  # App review/demo credential constants
+│   └── ...            # + additional domain files (daily-metrics, sleep, workouts, etc.)
+├── progression/       # Progression and program contracts
+│   ├── index.ts       # Progression barrel (re-exports baseline, metrics, program, training-session-log)
+│   ├── baseline.ts    # Progression baseline entry schemas
+│   ├── metrics.ts     # Gated e1RM and metric gate schemas
+│   └── program.ts     # Program structure, set type, and progression mode schemas
 ├── admin/             # Admin-specific contracts
 │   ├── index.ts       # Admin module barrel
 │   ├── admin-routes.ts # Admin route definitions
 │   ├── admin-schemas.ts # Admin Zod validation schemas
 │   ├── admin-types.ts # Admin TypeScript types
+│   ├── consent-schemas.ts # Legal consent document signing schemas
+│   ├── dxa.ts         # DXA extraction and ingest payload schemas
 │   ├── labs.ts        # Lab admin contracts
+│   ├── legal-documents/ # Rendered legal document rendering contracts
 │   └── notifications.ts # Admin notification contracts
 ├── ai/                # AI/Agent contracts
 │   ├── index.ts       # AI module barrel
@@ -139,23 +155,32 @@ shared/contracts/
 ├── errors/            # Error class contracts
 │   ├── index.ts       # Errors module barrel
 │   ├── ApiError.ts    # Base API error class
-│   └── RateLimitError.ts # Rate-limit error class
+│   ├── RateLimitError.ts # Rate-limit error class
+│   ├── app-error-code.ts # Application error code enum
+│   ├── errorResponseSchema.ts # Error response shape
+│   ├── normalizeErrorPayload.ts # Error normalization helpers
+│   └── result.ts      # Result type helpers
 ├── public/            # Public API contracts
 ├── stripe/            # Stripe/Billing contracts
 ├── password/          # Password validation contracts
 ├── errorSanitization.ts # PHI-safe error sanitization helpers
+├── sentrySanitization.ts # Sentry-safe error sanitization helpers
 ├── schemas/
-│   └── index.ts       # Zod validation schemas
+│   ├── index.ts       # Zod validation schemas
+│   └── weight.ts      # Body weight and load weight validation schemas
 ├── constants/
 │   └── index.ts       # Storage keys, config values
 ├── primitives/        # Cross-domain shared primitives
+│   ├── index.ts       # Primitives barrel
+│   ├── typeGuards.ts  # Shared type guards
+│   └── volume-level.ts # Volume level enum (low, moderate, high)
 └── __tests__/
     └── compile.test.ts # Contract validation tests
 ```
 
 ## What's Included
 
-### API Routes (`shared/contracts/api`)
+### API Routes (`packages/contracts/api`)
 
 - `API_ROUTES` - Base API route paths
 - `AUTH_ROUTES` - Authentication endpoints
@@ -163,7 +188,7 @@ shared/contracts/
 - `ADMIN_ROUTES` - Admin-only endpoints
 - `HTTP_METHODS` - HTTP method constants
 
-### Domain Contracts (`shared/contracts/domain`)
+### Domain Contracts (`packages/contracts/domain`)
 
 - **User**: `USER_ROLES`, `USER_TIERS`, `UserRoleSchema`, `UserTierSchema`
 - **Commercial Offer**: `MASTER_OFFER_SHEET`, `MASTER_OFFER_TERMS`, offer comparison rows, pricing helpers
@@ -173,7 +198,7 @@ shared/contracts/
 - **Clinical**: `LIMITATION_SEVERITIES`, `BIOMETRIC_SOURCES`
 - **Sessions**: `SESSION_TYPES`, `RESET_FREQUENCIES`
 
-### Zod Schemas (`shared/contracts/schemas`)
+### Zod Schemas (`packages/contracts/schemas`)
 
 - `isoDateSchema` - ISO date validation (YYYY-MM-DD)
 - `isoTimestampSchema` - ISO timestamp validation
@@ -183,7 +208,7 @@ shared/contracts/
 - `paginationQuerySchema` - Pagination parameters
 - `dateRangeQuerySchema` - Date range parameters
 
-### Constants (`shared/contracts/constants`)
+### Constants (`packages/contracts/constants`)
 
 - `STORAGE_KEYS` - AsyncStorage/localStorage keys
 - `UNIT_SYSTEMS` - Metric/Imperial/Advanced (lives in `domain/units.ts`)
@@ -244,7 +269,7 @@ export const VOLUME_LEVELS = ["low", "moderate", "high"] as const;
 
 ```bash
 # Count domain modules that import this type
-grep -r "import.*MyType" shared/contracts/domain/*.ts | wc -l
+grep -r "import.*MyType" packages/contracts/domain/*.ts | wc -l
 
 # If result < 3, DON'T extract to primitives
 ```
@@ -271,7 +296,7 @@ The CI pipeline automatically checks for circular dependencies on every push.
 ### Adding a New Domain Constant
 
 ```typescript
-// In shared/contracts/domain/your-domain.ts
+// In packages/contracts/domain/your-domain.ts
 
 import { z } from "zod";
 
@@ -306,7 +331,7 @@ export const isYourThing = (value: unknown): value is YourThing =>
 ### Re-exporting in Local Contracts
 
 ```typescript
-// In src/contracts/your-domain.ts
+// In the consuming app's src/contracts/your-domain.ts
 
 // Re-export from shared contracts (source of truth)
 export {
@@ -338,13 +363,13 @@ npm run check:contract-duplicates
 
 ## Path Aliases
 
-| Codebase  | Alias               | Points To                      |
-| --------- | ------------------- | ------------------------------ |
-| Mobile    | `@hollis-studio/contracts` | `shared/contracts/index.ts`    |
-| Mobile    | `@contracts`        | `src/contracts/index.ts`       |
-| Server    | `@hollis-studio/contracts` | `../shared/contracts/index.ts` |
-| Web Admin | `@hollis-studio/contracts` | `../shared/contracts/index.ts` |
-| Web Admin | `@contracts`        | `contracts/index.ts`           |
+| Codebase  | Alias               | Points To                                    |
+| --------- | ------------------- | -------------------------------------------- |
+| Mobile    | `@hollis-studio/contracts` | `node_modules/@hollis-studio/contracts` (GitHub Packages) |
+| Mobile    | `@contracts`        | `src/contracts/index.ts` (app-local barrel)  |
+| Server    | `@hollis-studio/contracts` | `node_modules/@hollis-studio/contracts` (GitHub Packages) |
+| Web Admin | `@hollis-studio/contracts` | `node_modules/@hollis-studio/contracts` (GitHub Packages) |
+| Web Admin | `@contracts`        | `contracts/index.ts` (app-local barrel)      |
 
 ## CI Integration
 

@@ -26,8 +26,11 @@ export type ContactType = z.infer<typeof ContactTypeSchema>;
 
 /**
  * Lead sources for tracking marketing attribution.
+ * Includes admin-only sources (PHONE_CALL, WALK_IN) for manually-created leads.
  */
 export const CONTACT_SOURCES = [
+  "PHONE_CALL",
+  "WALK_IN",
   "WEBSITE",
   "REFERRAL",
   "SOCIAL_MEDIA",
@@ -37,6 +40,14 @@ export const CONTACT_SOURCES = [
 
 export const ContactSourceSchema = z.enum(CONTACT_SOURCES);
 export type ContactSource = z.infer<typeof ContactSourceSchema>;
+
+/**
+ * Alias for ContactSourceSchema — use when referencing lead pipeline sources
+ * in admin routes and services.
+ */
+export const LeadSourceSchema = ContactSourceSchema;
+export type LeadSource = ContactSource;
+export const LEAD_SOURCES = CONTACT_SOURCES;
 
 /**
  * Submission intent for public form flows that share the same endpoint.

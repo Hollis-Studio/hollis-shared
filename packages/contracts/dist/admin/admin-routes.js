@@ -509,6 +509,8 @@ export const ADMIN_SUBSCRIPTION_ROUTES = {
     getContract: (id) => `/api/admin/subscriptions/${id}/contract`,
     /** DELETE - Delete signed contract */
     deleteContract: (id) => `/api/admin/subscriptions/${id}/contract`,
+    /** POST - Retry subscription creation for a user with existing User+ConsentRecord but no Subscription */
+    retryForUser: (userId) => `/api/admin/subscriptions/${userId}/retry`,
 };
 // ============================================================================
 // ADMIN TERMINAL ROUTES
@@ -640,8 +642,12 @@ export const ADMIN_TASK_ROUTES = {
 export const ADMIN_LEADS_ROUTES = {
     /** GET - List leads with optional filters */
     LIST: "/api/admin/leads",
+    /** POST - Create a lead manually (phone call / walk-in) */
+    CREATE: "/api/admin/leads",
     /** PATCH - Update lead stage */
     updateStage: (id) => `/api/admin/leads/${id}/stage`,
+    /** PATCH - Update lead fields (consultationDate, etc.) */
+    update: (id) => `/api/admin/leads/${id}`,
 };
 // ============================================================================
 // ADMIN CONSENT ROUTES

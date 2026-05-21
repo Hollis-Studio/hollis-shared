@@ -396,6 +396,8 @@ The engine spec is good if it can produce a defined set of 10 concrete Today Car
 
 ## 6. Contracts package strategy
 
+> **2026-05-19 architectural status note:** As of 2026-05-19, the `hollis-shared` repo still ships a **single `@hollis-studio/contracts` package** (at `packages/contracts/`). The 4-package split described below is the approved target architecture and is **not yet implemented**. The contracts-core extraction is the first non-breaking step; the others follow via re-export shims. The current single package contains all the types enumerated in the table — verify against `packages/contracts/package.json` exports for the live surface. (Security item `APP_REVIEW_CREDENTIALS` is confirmed resolved — see note at end of §6.)
+
 The `@hollis-studio/contracts` package currently ships 100+ files spanning identity, training, nutrition, sleep, biometrics, labs, PHI, admin, AI, billing — across both business units. Shipping the full set inside a consumer Strength bundle is wrong: clinical-bound types should not live in a consumer SDK, and the inverse is wasted weight in the clinic.
 
 **Decision:** Split into 4 packages, with `core` first (non-breaking), the rest in a 6-week transition via re-export shims.

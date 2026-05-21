@@ -2,7 +2,7 @@
 
 **Purpose:** Provide the standard text for a HIPAA-compliant patient Authorization for Release of Information form. Use this when a patient requests that Hollis Health share their PHI with a third party (another provider, attorney, insurer, or other person), or when a third party requests PHI with patient authorization.
 
-**Developer note:** This form text can be used as the basis for a `ConsentDocumentType.ROI` or similar authorization record. Each signed authorization should be stored in the patient's record with the date signed and the scope of the authorization.
+**Developer note:** This form text can be used as the basis for a new `ConsentDocumentType` enum value (e.g., `RELEASE_OF_INFORMATION`) in server/prisma/schema.prisma. `ConsentDocumentType.ROI` does not currently exist in the schema. Each signed authorization should be stored in the patient's record with the date signed and the scope of the authorization.
 
 ---
 

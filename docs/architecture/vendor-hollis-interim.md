@@ -83,22 +83,17 @@ If a future plan revisits git-URL installs, options that actually work:
 
 ### Publishing `@hollis-studio/*` to GitHub Packages today
 
+> **2026-05-19 update:** This section describes the blocker as it existed on 2026-05-17. It has since been resolved. The `Hollis-Studio` GitHub org was created and `hollis-shared` was transferred into it. GitHub Packages publishing under `@hollis-studio` is now the canonical path. See Route B in "What's still pending" below, which is marked DONE.
+
 GitHub Packages requires the npm scope to match a real GitHub user or
-org name. Verified 2026-05-17:
+org name. Verified 2026-05-17 (at the time of this incident, before `Hollis-Studio` org existed):
 
 ```
 gh api users/hollis  → 404
 gh api orgs/hollis   → 404
 ```
 
-The sibling repo lives at `idlandes04/hollis-shared`. To publish
-`@hollis-studio/contracts` to GH Packages you have to either:
-
-- create a GitHub org named `hollis` and transfer `hollis-shared` into it
-- rename packages to `@idlandes04/*` (huge mechanical churn across three
-  repos)
-
-Either is a real Phase I task, not a "quick unblock".
+At the time, options were either create a GitHub org and transfer, or rename packages. This was resolved by creating the `Hollis-Studio` org and transferring the repo — a real Phase I task that has since been completed.
 
 ### Publishing to npmjs.org today
 
@@ -194,11 +189,8 @@ each from `hollis-shared`. Workouts deps become standard semver:
 `"@hollis-studio/contracts": "^0.2.0-alpha.6"`. No `.npmrc` needed. No EAS
 secrets needed.
 
-**Route B — GitHub Packages (matches original suite plan).** Create a
-`hollis` GitHub org, transfer `hollis-shared` into it. Add
-`publishConfig.registry: https://npm.pkg.github.com` +
-`repository: ...hollis/hollis-shared` to each package. Add `.npmrc` with
-`@hollis:registry=...` and `NPM_TOKEN` to EAS as a secret.
+**Route B — GitHub Packages (matches original suite plan).** ~~Create a
+`hollis` GitHub org~~ **DONE**: the `Hollis-Studio` GitHub org was created and `hollis-shared` transferred into it. `publishConfig.registry: https://npm.pkg.github.com` and `repository: github.com/Hollis-Studio/hollis-shared` are set in each package's `package.json`. Consumers need an `.npmrc` with `@hollis-studio:registry=https://npm.pkg.github.com` and `NODE_AUTH_TOKEN`.
 
 Either way, the Workouts cleanup is the same:
 

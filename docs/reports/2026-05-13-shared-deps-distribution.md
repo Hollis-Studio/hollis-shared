@@ -47,12 +47,16 @@ The shared package `dist/` is produced and published by `hollis-shared`; consume
 
 ## Consumer pin convention
 
-All current consumer `package.json` files:
+Pin to the exact version published. As of 2026-05-19, the latest published versions are:
 
 ```json
-"@hollis-studio/contracts": "0.2.0-alpha.7",
+"@hollis-studio/contracts": "0.2.0-alpha.10",
+"@hollis-studio/design-tokens": "0.2.0-alpha.2",
+"@hollis-studio/utils": "0.1.0-alpha.1",
 "@hollis-studio/auth-client": "0.1.0-alpha.3"
 ```
+
+(Verify against the GitHub Packages registry for the current latest before pinning; versions above reflect the `hollis-shared` workspace versions as of 2026-05-19.)
 
 Do not switch back to `git+https://...#tag` or sibling `file:` refs.
 

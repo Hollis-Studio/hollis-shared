@@ -27,6 +27,7 @@ export const CONSENT_DOCUMENT_TYPES = [
     "INFORMED_CONSENT",
     "ELECTRONIC_COMMS_CONSENT",
     "PHOTO_VIDEO_RELEASE",
+    "HIPAA_NPP",
 ];
 export const ConsentDocumentTypeSchema = z.enum(CONSENT_DOCUMENT_TYPES);
 /** Centralized consent document type constants for equality checks */
@@ -36,12 +37,15 @@ export const CONSENT_DOCUMENT_TYPE = {
     INFORMED_CONSENT: "INFORMED_CONSENT",
     ELECTRONIC_COMMS_CONSENT: "ELECTRONIC_COMMS_CONSENT",
     PHOTO_VIDEO_RELEASE: "PHOTO_VIDEO_RELEASE",
+    HIPAA_NPP: "HIPAA_NPP",
 };
 /**
- * The 4 documents that MUST be signed before payment may proceed.
+ * The 5 documents that MUST be signed before payment may proceed.
+ * HIPAA_NPP must be acknowledged at or before first service (45 CFR §164.520).
  * PHOTO_VIDEO_RELEASE is optional and excluded from this list.
  */
 export const REQUIRED_CONSENT_DOCS = [
+    CONSENT_DOCUMENT_TYPE.HIPAA_NPP,
     CONSENT_DOCUMENT_TYPE.MEMBERSHIP_AGREEMENT,
     CONSENT_DOCUMENT_TYPE.LIABILITY_WAIVER,
     CONSENT_DOCUMENT_TYPE.INFORMED_CONSENT,

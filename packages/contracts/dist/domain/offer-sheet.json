@@ -65,7 +65,7 @@
         {
             "key": "recoveryAccess",
             "category": "Fitness",
-            "label": "Recovery modalities (unlimited)",
+            "label": "Recovery modality access",
             "values": {
                 "ESSENTIALS": "Infrared sauna, cold plunge, red light",
                 "CORE": "Infrared sauna, cold plunge, red light",
@@ -139,7 +139,7 @@
             "values": {
                 "ESSENTIALS": "Add-on",
                 "CORE": "Add-on",
-                "CONCIERGE": "Included (initial diagnostic)"
+                "CONCIERGE": "Initial diagnostic CGM allowance included"
             }
         },
         {

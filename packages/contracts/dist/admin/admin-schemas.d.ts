@@ -1898,6 +1898,7 @@ export declare const adminLeadStageUpdateBodySchema: z.ZodObject<{
         ACTIVE_MEMBER: "ACTIVE_MEMBER";
         CHURNED: "CHURNED";
     }>;
+    convertedUserId: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type AdminLeadStageUpdateBody = z.infer<typeof adminLeadStageUpdateBodySchema>;
 export declare const adminMessagesThreadParamsSchema: z.ZodObject<{

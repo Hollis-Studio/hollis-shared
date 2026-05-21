@@ -6,6 +6,8 @@
 - **Workouts theme home:** `src/theme/tokens.ts`, `src/theme/unistyles.ts`, `src/theme/types.ts`
 - **Shared token source root:** `/Users/isaaclandes/Documents/SRC/hollis-health-app/shared/design-tokens/`
 
+> **2026-05-19 status note:** The adoption blockers C.1–C.6 identified in §C have been resolved. Clay palette tokens (`clayLightColors`, `clayDarkColors`, `clayBrand`) are now in `packages/design-tokens/clay.ts`. The `spacingClay` scale (resolving C.2) is exported from `packages/design-tokens/spacing-clay.ts`. Workouts-specific tokens (RIR scale, heatmap opacity, chart geometry — C.5) are in `packages/design-tokens/workouts/`. The Workouts-side renames for C.3 (`extraBold` → `heavy`) and C.4 (shadow `Platform.select` shape) were completed in Workouts `v1.6.7`. The Unistyles architecture (C.6) was kept — Workouts feeds the Clay `NativeTheme` into `UnistylesRegistry` from the shared tokens source. The audit findings remain accurate as a historical description of the state before adoption; §C.1 ("No Clay palette in shared") is the key finding that is now resolved.
+
 ---
 
 ## A. Palette Parity

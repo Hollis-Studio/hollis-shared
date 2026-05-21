@@ -31,12 +31,14 @@ import {
   type ConsentDocumentType,
 } from "../consent-schemas.js";
 import * as ElectronicCommsConsent from "./electronicCommsConsent.js";
+import * as HipaaNpp from "./hipaaNpp.js";
 import * as InformedConsent from "./informedConsent.js";
 import * as LiabilityWaiver from "./liabilityWaiver.js";
 import * as MembershipAgreement from "./membershipAgreement.js";
 import * as PhotoVideoRelease from "./photoVideoRelease.js";
 
 export * as electronicCommsConsent from "./electronicCommsConsent.js";
+export * as hipaaNpp from "./hipaaNpp.js";
 export * as informedConsent from "./informedConsent.js";
 export * as liabilityWaiver from "./liabilityWaiver.js";
 export * as membershipAgreement from "./membershipAgreement.js";
@@ -44,6 +46,7 @@ export * as photoVideoRelease from "./photoVideoRelease.js";
 
 export {
   ElectronicCommsConsent,
+  HipaaNpp,
   InformedConsent,
   LiabilityWaiver,
   MembershipAgreement,
@@ -94,6 +97,7 @@ export const DOCUMENT_REGISTRY = {
   INFORMED_CONSENT: InformedConsent,
   ELECTRONIC_COMMS_CONSENT: ElectronicCommsConsent,
   PHOTO_VIDEO_RELEASE: PhotoVideoRelease,
+  HIPAA_NPP: HipaaNpp,
 } as const;
 
 export type DocumentRegistryKey = keyof typeof DOCUMENT_REGISTRY;

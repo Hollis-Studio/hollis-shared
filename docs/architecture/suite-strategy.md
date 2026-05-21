@@ -45,11 +45,12 @@ like a convenient folder inside Health.
 
 ### `hollis-shared` repo (separate from any app repo)
 
-Published to GitHub Packages, consumed by every app via pinned semver:
+Published to GitHub Packages under the `Hollis-Studio` org, consumed by every app via pinned semver:
 
-- **`@hollis-studio/contracts`** — types, Zod schemas, error codes, primitives, API contracts. Pure TypeScript + Zod, no platform code.
-- **`@hollis-studio/design-tokens`** — palettes (Blue light/dark, Clay light/dark), typography, spacing, radii. Consumed by all visual surfaces.
-- **`@hollis-studio/utils`** — pure utilities (date, currency, unit conversion, CSRF). No I/O.
+- **`@hollis-studio/contracts`** — types, Zod schemas, error codes, primitives, API contracts. Pure TypeScript + Zod, no platform code. Current: `0.2.0-alpha.10`.
+- **`@hollis-studio/design-tokens`** — palettes (Blue light/dark, Clay light/dark), typography, spacing, radii. Consumed by all visual surfaces. Current: `0.2.0-alpha.2`.
+- **`@hollis-studio/utils`** — pure utilities (date, currency, unit conversion). CSRF is available as a subpath export (`@hollis-studio/utils/csrf`) but is not re-exported from the main index. No I/O. Current: `0.1.0-alpha.1`.
+- **`@hollis-studio/auth-client`** — thin Express middleware for consumer app servers to verify Identity Service tokens. Exports `createAuthClient`, `requireAuth`, `verifyToken`, `AuthClientMiddleware`, and re-exports `AccessTokenClaims`, `Audience`, `validateAudience` from contracts. Current: `0.1.0-alpha.3`.
 
 ### `hollis-identity` service (separate from any app repo)
 
@@ -85,7 +86,7 @@ Published to GitHub Packages, consumed by every app via pinned semver:
 - ~~`AuthAuditLog` model + writes from login/register/logout/refresh/password-reset~~ **(DONE 2026-05-20)**
 - **Remaining test work** — OPEN: expand from smoke/route-boundary coverage to route-level auth-matrix tests for login/register/refresh/logout/MFA/password reset/OAuth, plus DB-backed refresh-token rotation and reuse-detection tests. Account-lockout DB tests specifically outstanding.
 - **Phase 2 — claims namespace finalization** — OPEN: formalize app-claim schemas such as `HollisHealthClaimsSchema` in `@hollis-studio/contracts`; Health's `req.user` population should read `claims.hollisHealth.*` with a short top-level fallback window.
-- **Phase 3 — `@hollis-studio/auth-client` gaps** — OPEN: configurable consumer cookie helpers, cookie-or-Bearer token extractor for consumer apps, JWKS-fetching path (via `jose` 6.2.3), and integration tests against Identity outage/timeout/wrong-audience cases.
+- **Phase 3 — `@hollis-studio/auth-client` gaps** — OPEN: configurable consumer cookie helpers, cookie-or-Bearer token extractor for consumer apps, JWKS-fetching path (current implementation uses `jsonwebtoken`; a JWKS-fetch/cache path is a TODO in the source but the dependency on `jose` mentioned in earlier drafts is not present — auth-client uses `jsonwebtoken`), and integration tests against Identity outage/timeout/wrong-audience cases.
 - **Phase 4 — RS256/JWKS in identity** — OPEN: locally implemented; production requires `JWT_ALGORITHM=RS256`, `JWT_PRIVATE_KEY`, and `JWT_KEY_ID`. Remaining: formal key-rotation runbook and dual-kid old-key grace behavior (currently single-key only).
 - **Phase 5 — External denylist/lockout** — OPEN: locally implemented with PostgreSQL-backed models. Remaining: run migrations in staging/prod and load-test the DB path.
 - **Phase 6 — AWS infra** — OPEN: Terraform plans exist. Remaining: reviewed apply, backend/state setup, DNS for `identity.hollis.health`, ACM cert, SES domain verification, image push, migrations, and staging smoke tests. CI/CD pipeline, Terraform module, and ECS service definition also outstanding.
@@ -142,8 +143,8 @@ tree other apps can reach into.
 
 Hard rules:
 
-- Consumers import only `@hollis-studio/contracts`, `@hollis-studio/design-tokens`, and
-  `@hollis-studio/utils` public exports. No `@contracts` compatibility alias.
+- Consumers import only `@hollis-studio/contracts`, `@hollis-studio/design-tokens`,
+  `@hollis-studio/utils`, and `@hollis-studio/auth-client` public exports. No `@contracts` compatibility alias.
 - Consumers never import `shared/*` by relative path.
 - Consumers never depend on `file:../shared/*`.
 - Tooling must not alias `@hollis-studio/*` packages back to local source after
@@ -247,7 +248,7 @@ decision in `SCHEMA_INDEX.md`.
 
 **After Step 1 of the migration plan (extraction):**
 
-- `shared/` is deleted from this repo. Replaced by `npm install @hollis-studio/contracts @hollis-studio/design-tokens @hollis-studio/utils` from GitHub Packages.
+- `shared/` is deleted from this repo. Replaced by `npm install @hollis-studio/contracts @hollis-studio/design-tokens @hollis-studio/utils @hollis-studio/auth-client` from GitHub Packages.
 - Every import already using `@hollis-studio/contracts` aliases continues to work — only the resolution target changes.
 - Adding a new shared type means a PR to `hollis-shared`, releasing a new version, then upgrading Health's pinned version. **This adds review friction by design** — shared types affect every consumer.
 - Deep imports are no longer implicitly acceptable. Either expose the subpath

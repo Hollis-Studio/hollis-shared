@@ -14,7 +14,7 @@ Canonical home for cross-suite docs: vision, architecture, research, and dated p
 
 The shared package distribution cutover is complete. `hollis-shared` publishes private GitHub Packages under the `@hollis-studio` scope:
 
-- `@hollis-studio/contracts@0.2.0-alpha.7`
+- `@hollis-studio/contracts@0.2.0-alpha.10`
 - `@hollis-studio/design-tokens@0.2.0-alpha.2`
 - `@hollis-studio/utils@0.1.0-alpha.1`
 - `@hollis-studio/auth-client@0.1.0-alpha.3`

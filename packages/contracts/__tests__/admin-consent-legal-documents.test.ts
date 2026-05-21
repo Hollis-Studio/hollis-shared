@@ -28,6 +28,7 @@ describe("admin consent legal document contracts", () => {
   it("exposes a canonical document registry and signing order", () => {
     expect(Object.keys(DOCUMENT_REGISTRY)).toEqual([...CONSENT_DOCUMENT_TYPES]);
     expect(REQUIRED_CONSENT_DOCS).toEqual([
+      "HIPAA_NPP",
       "MEMBERSHIP_AGREEMENT",
       "LIABILITY_WAIVER",
       "INFORMED_CONSENT",

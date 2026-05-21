@@ -2,6 +2,8 @@
 
 Date: 2026-05-12
 
+> **2026-05-19 status note:** Two naming facts in this document reflect the state at extraction time and have since changed: (1) the sibling repo path was `/Users/isaaclandes/Documents/SRC/hollis-shared` (lowercase) at extraction; it is now at `/Users/isaaclandes/Documents/SRC/Hollis/hollis-shared` (capitalized). (2) The initial package scope in the extraction was `@hollis/contracts` / `@hollis/design-tokens` / `@hollis/utils`; those were renamed to `@hollis-studio/contracts`, `@hollis-studio/design-tokens`, `@hollis-studio/utils`, and `@hollis-studio/auth-client` (a new package added post-extraction). Distribution is now via GitHub Packages under the `hollis-studio` org scope — see `2026-05-13-shared-deps-distribution.md` for the current distribution model.
+
 ## Scope
 
 Phases G and H moved the in-tree `shared/` packages out of Hollis Health into a sibling local Git repo and rewired Hollis Health to consume the extracted packages from pinned local Git tags.

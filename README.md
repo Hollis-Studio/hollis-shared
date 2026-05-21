@@ -13,7 +13,7 @@ Canonical consumption is through GitHub Packages under the Hollis Studio org. Cu
 ```json
 {
   "dependencies": {
-    "@hollis-studio/contracts": "0.2.0-alpha.7",
+    "@hollis-studio/contracts": "0.2.0-alpha.12",
     "@hollis-studio/design-tokens": "0.2.0-alpha.2",
     "@hollis-studio/utils": "0.1.0-alpha.1",
     "@hollis-studio/auth-client": "0.1.0-alpha.3"
