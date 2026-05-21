@@ -20,3 +20,6 @@ yarn-error.log*
 
 .temp/
 tmp/
+
+# Serena MCP tool cache (not project state)
+.serena/
