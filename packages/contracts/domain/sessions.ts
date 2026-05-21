@@ -193,7 +193,7 @@ export const FREE_MAX_ROLLOVER = 4;
  * - 2x DXA Scans/year (initial + 6mo)
  * - 2x Sleep Screenings/year (biannual)
  *
- * CORE ($1599/mo):
+ * CORE ($1449/mo):
  * - 8x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
  * - 4x Labwork/year (quarterly)

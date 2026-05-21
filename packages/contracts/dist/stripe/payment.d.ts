@@ -36,8 +36,11 @@ export type StripeMetadata = z.infer<typeof StripeMetadataSchema>;
 export declare const CollectPaymentRequestSchema: z.ZodObject<{
     userId: z.ZodString;
     amountInCents: z.ZodNumber;
-    description: z.ZodString;
-    metadata: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodString>>;
+    paymentPurpose: z.ZodDefault<z.ZodOptional<z.ZodEnum<{
+        one_time_payment: "one_time_payment";
+    }>>>;
+    description: z.ZodOptional<z.ZodNever>;
+    metadata: z.ZodOptional<z.ZodNever>;
 }, z.core.$strip>;
 export type CollectPaymentRequest = z.infer<typeof CollectPaymentRequestSchema>;
 /** @deprecated Use StripeConfig (derived from StripeConfigSchema) instead */

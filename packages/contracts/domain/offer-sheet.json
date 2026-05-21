@@ -1,7 +1,7 @@
 {
   "meta": {
-    "version": "2.1.0",
-    "effectiveDate": "2026-04-09",
+    "version": "2.1.1",
+    "effectiveDate": "2026-05-21",
     "status": "draft"
   },
   "terms": [
@@ -39,7 +39,7 @@
     },
     "CORE": {
       "displayName": "Core",
-      "baseMonthlyPriceDollars": 1599,
+      "baseMonthlyPriceDollars": 1449,
       "tagline": "Higher frequency, deeper insight",
       "publicDescription": "Twice-weekly private coaching with quarterly clinician visits, lab panels, and a baseline DEXA scan, all coordinated between your performance coach and White Horse Holistic Health.",
       "isPopular": true

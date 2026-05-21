@@ -386,7 +386,7 @@ describe('Stripe Payment Contracts', () => {
     const validPaymentRequest = {
       userId: VALID_UUID,
       amountInCents: 5000,
-      description: 'Session charge',
+      paymentPurpose: 'one_time_payment' as const,
     };
 
     describe('valid objects', () => {
@@ -396,18 +396,18 @@ describe('Stripe Payment Contracts', () => {
         if (result.success) {
           expect(result.data.userId).toBe(VALID_UUID);
           expect(result.data.amountInCents).toBe(5000);
-          expect(result.data.description).toBe('Session charge');
+          expect(result.data.paymentPurpose).toBe('one_time_payment');
         }
       });
 
-      it('should accept payment request with metadata', () => {
+      it('should default paymentPurpose when omitted', () => {
         const result = CollectPaymentRequestSchema.safeParse({
-          ...validPaymentRequest,
-          metadata: { sessionId: 'sess_123', type: 'training' },
+          userId: VALID_UUID,
+          amountInCents: 5000,
         });
         expect(result.success).toBe(true);
         if (result.success) {
-          expect(result.data.metadata).toEqual({ sessionId: 'sess_123', type: 'training' });
+          expect(result.data.paymentPurpose).toBe('one_time_payment');
         }
       });
 
@@ -475,9 +475,11 @@ describe('Stripe Payment Contracts', () => {
         expect(result.success).toBe(true);
       });
 
-      it('should reject missing description', () => {
-        const { description: _d, ...rest } = validPaymentRequest;
-        const result = CollectPaymentRequestSchema.safeParse(rest);
+      it('should reject caller-provided free-form description', () => {
+        const result = CollectPaymentRequestSchema.safeParse({
+          ...validPaymentRequest,
+          description: 'Session charge',
+        });
         expect(result.success).toBe(false);
       });
 
@@ -492,22 +494,18 @@ describe('Stripe Payment Contracts', () => {
         expect(result.success).toBe(false);
       });
 
-      it('should reject metadata value exceeding 500 characters', () => {
+      it('should reject caller-provided metadata', () => {
         const result = CollectPaymentRequestSchema.safeParse({
           ...validPaymentRequest,
-          metadata: { longValue: 'x'.repeat(501) },
+          metadata: { sessionId: 'sess_123', type: 'training' },
         });
         expect(result.success).toBe(false);
       });
 
-      it('should reject metadata with more than 50 keys', () => {
-        const metadata: Record<string, string> = {};
-        for (let i = 0; i < 51; i++) {
-          metadata[`key${i}`] = `value${i}`;
-        }
+      it('should reject unknown paymentPurpose values', () => {
         const result = CollectPaymentRequestSchema.safeParse({
           ...validPaymentRequest,
-          metadata,
+          paymentPurpose: 'session_charge',
         });
         expect(result.success).toBe(false);
       });

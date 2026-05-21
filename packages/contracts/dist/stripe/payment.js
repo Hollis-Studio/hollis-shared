@@ -41,8 +41,9 @@ export const CollectPaymentRequestSchema = z.object({
     // values before amountInCents reaches createPaymentIntent(). Max $5,000 cap
     // prevents accidental over-charge. (audit Cat4 #12)
     amountInCents: z.number().int().positive().max(500_000), // Max $5,000
-    description: z.string(),
-    metadata: StripeMetadataSchema.optional(),
+    paymentPurpose: z.enum(["one_time_payment"]).optional().default("one_time_payment"),
+    description: z.never().optional(),
+    metadata: z.never().optional(),
 });
 export const StripeConfigSchema = z.object({
     publishableKey: z.string(),

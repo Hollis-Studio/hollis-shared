@@ -271,7 +271,7 @@ export function getRoleBadge(
 /**
  * Membership tiers for Hollis Health.
  * - ESSENTIALS ($799/mo): 4 fitness sessions, basic clinical access
- * - CORE ($1599/mo): 8 fitness sessions, enhanced clinical access
+ * - CORE ($1449/mo): 8 fitness sessions, enhanced clinical access
  * - CONCIERGE ($2499/mo): 16 fitness sessions, full clinical access
  */
 export const USER_TIERS = ["ESSENTIALS", "CORE", "CONCIERGE"] as const;
