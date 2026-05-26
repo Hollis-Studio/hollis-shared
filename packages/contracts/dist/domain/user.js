@@ -216,9 +216,9 @@ export function getRoleBadge(role) {
 // ============================================================================
 /**
  * Membership tiers for Hollis Health.
- * - ESSENTIALS ($799/mo): 4 fitness sessions, basic clinical access
- * - CORE ($1449/mo): 12 fitness sessions, enhanced clinical access
- * - CONCIERGE ($2499/mo): 20 fitness sessions, full clinical access
+ * - ESSENTIALS ($649/mo): 4 fitness sessions
+ * - CORE ($1349/mo): 12 fitness sessions
+ * - CONCIERGE ($1949/mo): 20 fitness sessions
  */
 export const USER_TIERS = ["ESSENTIALS", "CORE", "CONCIERGE"];
 export const UserTierSchema = z.enum(USER_TIERS);
@@ -236,12 +236,12 @@ export const USER_TIER_LABELS = {
 };
 /**
  * Monthly pricing for each tier in whole dollars.
- * Note: These are dollar amounts (e.g., 799 = $799), not cents.
+ * Note: These are dollar amounts (e.g., 649 = $649), not cents.
  * Convert to cents with `USER_TIER_PRICES_DOLLARS[tier] * 100` when needed for Stripe.
  *
  * @example
- * USER_TIER_PRICES_DOLLARS.ESSENTIALS // 799 ($799/month)
- * USER_TIER_PRICES_DOLLARS.ESSENTIALS * 100 // 79900 cents for Stripe
+ * USER_TIER_PRICES_DOLLARS.ESSENTIALS // 649 ($649/month)
+ * USER_TIER_PRICES_DOLLARS.ESSENTIALS * 100 // 64900 cents for Stripe
  */
 export const USER_TIER_PRICES_DOLLARS = {
     ESSENTIALS: offerSheetData.tiers.ESSENTIALS.baseMonthlyPriceDollars,

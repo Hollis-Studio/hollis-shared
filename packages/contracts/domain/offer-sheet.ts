@@ -142,17 +142,11 @@ export function getTierCardHighlights(tier: UserTier): string[] {
     getOfferComparisonValue("nutritionCoaching", tier) ?? "Included";
   const careCoordination =
     getOfferComparisonValue("careCoordination", tier) ?? "Included";
-  const clinicianVisits =
-    getOfferComparisonValue("clinicianVisits", tier) ?? "Included";
-  const labPanels =
-    getOfferComparisonValue("labPanels", tier) ?? "Included";
 
   return [
     `Private coaching sessions: ${coachingSessions}`,
     `Recovery modality access: ${recoveryAccess}`,
     `Nutrition coaching: ${nutritionCoaching}`,
-    `Clinician visits: ${clinicianVisits}`,
-    `Lab panels: ${labPanels}`,
     `Care coordination: ${careCoordination}`,
     MASTER_OFFER_SHEET.policies.thirdPartyDisclosure,
     MASTER_OFFER_SHEET.policies.partnerFacilityDisclosure,

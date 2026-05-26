@@ -195,7 +195,7 @@ export declare const FREE_MAX_ROLLOVER = 4;
 /**
  * Default tier allocations based on Hollis Health membership structure
  *
- * ESSENTIALS ($799/mo):
+ * ESSENTIALS ($649/mo):
  * - 4x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
  * - 2x Labwork/year (biannual)
@@ -204,7 +204,7 @@ export declare const FREE_MAX_ROLLOVER = 4;
  * - 2x DXA Scans/year (initial + 6mo)
  * - 2x Sleep Screenings/year (biannual)
  *
- * CORE ($1449/mo):
+ * CORE ($1349/mo):
  * - 8x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
  * - 4x Labwork/year (quarterly)
@@ -213,7 +213,7 @@ export declare const FREE_MAX_ROLLOVER = 4;
  * - 4x DXA Scans/year (quarterly)
  * - 2x Sleep Screenings/month
  *
- * CONCIERGE ($2499/mo):
+ * CONCIERGE ($1949/mo):
  * - 16x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
  * - 12x Labwork/year (monthly)

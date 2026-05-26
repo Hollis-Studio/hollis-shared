@@ -135,18 +135,18 @@ The specific commercial and operational details of Member's selected membership 
 - Monthly rate;
 - Start Date and End Date;
 - Any included supplement allowance or curated supplement package;
-- Any included diagnostic, screening, or assessment allowance;
+- Any included non-clinical screening or assessment allowance;
 - Any add-on services;
 - The initial program location, if one has been designated as of the Effective Date; and
 - Any separately billed third-party clinical services disclosed at enrollment.
 
 ### 2.3 Third-Party Clinical Services and Pass-Through Charges
 
-Member acknowledges that Hollis Health LLC is a wellness company and not a hospital, clinic, physician practice, or licensed medical provider. Certain services associated with Member's program may be furnished by independent third parties, including contracted licensed physicians, laboratories, imaging providers, or other specialty providers. Unless a specific third-party service or allowance is expressly listed as included in Exhibit A, those third-party charges are **not** included in Membership fees and may be billed separately by the applicable provider.
+Member acknowledges that Hollis Health LLC is a wellness company and not a hospital, clinic, physician practice, or licensed medical provider. Hollis Health does not practice medicine and does not bill for or sell medical services. Medical care, clinical evaluations, laboratory services, imaging, prescriptions, and other clinical services are furnished only by independent licensed providers chosen by Member, including providers in Company's referral network. Those third-party charges are **not** included in Membership fees and may be billed separately by the applicable provider.
 
 ${MASTER_OFFER_SHEET.policies.partnerFacilityDisclosure}
 
-The following items are billed separately unless the signed Enrollment Summary and Service Schedule expressly lists them as included:
+The following items are billed separately by independent providers or third parties and are not included in Hollis Health membership fees:
 
 ${generateSeparatelyBilledItems()}
 
@@ -236,7 +236,7 @@ If a physical program location has been designated as of the Effective Date, it 
 
 ### 5.4 Services Not Included
 
-The following are not included in Membership fees unless expressly listed in Exhibit A: medical diagnosis, medical treatment, prescriptions, insurance-billed clinical services, and any other service furnished by an independent third party that is not specifically identified as included.
+The following are not included in Membership fees: medical diagnosis, medical treatment, prescriptions, insurance-billed clinical services, and any other medical service furnished by an independent third party. Hollis Health does not bill for or sell medical services.
 
 ---
 
@@ -292,13 +292,13 @@ Member's Initials Acknowledging Assumption of Risk and Release: {{INITIALS_ASSUM
 
 Member acknowledges that information provided directly to Company, including account information, payment information, scheduling history, training information, wellness questionnaires, supplement preferences, and non-clinical communications, is governed by Company's Privacy Policy and related member-facing privacy notices.
 
-### 8.2 Clinical Information and Partner Providers
+### 8.2 Clinical Information and Independent Providers
 
-To the extent independent licensed physicians, laboratories, or other clinical providers furnish services, order tests, interpret results, or transmit clinical information for Member's program, those providers remain responsible for their own clinical decisions and their own notices of privacy practices where applicable. Company may receive and handle certain health information from or on behalf of those providers for care coordination, platform display, or administrative support, subject to applicable law and contractual arrangements.
+To the extent independent licensed physicians, laboratories, or other clinical providers furnish services, order tests, interpret results, or transmit clinical information for Member's program, those providers remain responsible for their own clinical decisions, billing, records, and notices of privacy practices where applicable. With Member's written consent or as otherwise permitted by law, Company may receive and handle certain health information from those providers for care coordination, platform display, or administrative support, subject to applicable law and contractual arrangements.
 
 ### 8.3 Authorization for Program Coordination
 
-Member authorizes Company to share Member's wellness-program information, training data, screening data, supplement usage records, and other program-related information with independent partner clinicians and providers to the extent reasonably necessary for care coordination, program administration, safety review, or related services requested by Member. Member also authorizes Company to receive information from such providers when reasonably necessary to coordinate Member's program or display results through Company's systems.
+Member authorizes Company to share Member's wellness-program information, training data, screening data, supplement usage records, and other program-related information with independent clinicians and providers to the extent reasonably necessary for care coordination, program administration, safety review, or related services requested by Member. Member also authorizes Company to receive information from such providers when reasonably necessary to coordinate Member's program or display results through Company's systems.
 
 ### 8.4 Applicable Notices
 
@@ -412,8 +412,8 @@ Title: ______________________________________
 
 export const meta = {
   title: "Membership Agreement",
-  version: "2.1.0",
-  effectiveDate: "2026-04-17",
+  version: "2.2.0",
+  effectiveDate: "2026-05-26",
   /** Placeholder — will be recalculated by npm run sync:legal-docs */
   contentHash: "PENDING_SYNC",
 };

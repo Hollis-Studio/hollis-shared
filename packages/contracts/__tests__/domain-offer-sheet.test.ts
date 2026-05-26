@@ -21,14 +21,14 @@ describe("master offer sheet", () => {
   });
 
   it("calculates discounted monthly rates exactly for the legal agreement table", () => {
-    expect(getDiscountedMonthlyPriceDollars(799, 5)).toBe(759.05);
-    expect(getDiscountedMonthlyPriceDollars(1449, 5)).toBe(1376.55);
-    expect(getDiscountedMonthlyPriceDollars(2499, 10)).toBe(2249.1);
+    expect(getDiscountedMonthlyPriceDollars(649, 5)).toBe(616.55);
+    expect(getDiscountedMonthlyPriceDollars(1349, 5)).toBe(1281.55);
+    expect(getDiscountedMonthlyPriceDollars(1949, 10)).toBe(1754.1);
   });
 
   it("formats dollars consistently for site and legal surfaces", () => {
-    expect(formatUsd(799)).toBe("$799");
-    expect(formatUsd(1376.55)).toBe("$1,376.55");
+    expect(formatUsd(649)).toBe("$649");
+    expect(formatUsd(1281.55)).toBe("$1,281.55");
   });
 
   it("includes the third-party disclosure in tier card highlights", () => {
