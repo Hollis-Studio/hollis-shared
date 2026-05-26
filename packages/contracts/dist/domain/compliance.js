@@ -105,8 +105,8 @@ export const TierComplianceRequirementsSchema = z.object({
  * Used by calculateTierAwareCompliance and the canonical compliance engine.
  *
  * ESSENTIALS: minimal tracking expectations — 1 check-in/wk, no food logging required, 1 workout/wk
- * CORE:       moderate engagement — bi-weekly check-ins, 4 food logs/wk, 2 workouts/wk
- * CONCIERGE:  full engagement — daily check-ins, daily food logs, 4 workouts/wk
+ * CORE:       moderate engagement — bi-weekly check-ins, 4 food logs/wk, 3 workouts/wk
+ * CONCIERGE:  full engagement — daily check-ins, daily food logs, 5 workouts/wk
  */
 export const TIER_COMPLIANCE_REQUIREMENTS = {
     ESSENTIALS: {
@@ -117,12 +117,12 @@ export const TIER_COMPLIANCE_REQUIREMENTS = {
     CORE: {
         checkinsPerWeek: 0.5,
         foodLogsPerWeek: 4,
-        workoutsPerWeek: 2,
+        workoutsPerWeek: 3,
     },
     CONCIERGE: {
         checkinsPerWeek: 7,
         foodLogsPerWeek: 7,
-        workoutsPerWeek: 4,
+        workoutsPerWeek: 5,
     },
 };
 // ============================================================================
@@ -165,13 +165,13 @@ export const TIER_COMPLIANCE_THRESHOLDS = {
     CORE: {
         checkinsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CORE.checkinsPerWeek * 4, // 2
         foodLogsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CORE.foodLogsPerWeek * 4, // 16
-        workoutsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CORE.workoutsPerWeek * 4, // 8
+        workoutsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CORE.workoutsPerWeek * 4, // 12
         wearableDaysPerMonth: 20, // More regular sync (~2/3 of days)
     },
     CONCIERGE: {
         checkinsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CONCIERGE.checkinsPerWeek * 4, // 28
         foodLogsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CONCIERGE.foodLogsPerWeek * 4, // 28
-        workoutsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CONCIERGE.workoutsPerWeek * 4, // 16
+        workoutsPerMonth: TIER_COMPLIANCE_REQUIREMENTS.CONCIERGE.workoutsPerWeek * 4, // 20
         wearableDaysPerMonth: 28, // Near-continuous sync
     },
 };

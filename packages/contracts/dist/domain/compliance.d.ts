@@ -83,8 +83,8 @@ export type TierComplianceRequirements = z.infer<typeof TierComplianceRequiremen
  * Used by calculateTierAwareCompliance and the canonical compliance engine.
  *
  * ESSENTIALS: minimal tracking expectations — 1 check-in/wk, no food logging required, 1 workout/wk
- * CORE:       moderate engagement — bi-weekly check-ins, 4 food logs/wk, 2 workouts/wk
- * CONCIERGE:  full engagement — daily check-ins, daily food logs, 4 workouts/wk
+ * CORE:       moderate engagement — bi-weekly check-ins, 4 food logs/wk, 3 workouts/wk
+ * CONCIERGE:  full engagement — daily check-ins, daily food logs, 5 workouts/wk
  */
 export declare const TIER_COMPLIANCE_REQUIREMENTS: Record<UserTier, TierComplianceRequirements>;
 /**

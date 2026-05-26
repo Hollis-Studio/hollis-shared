@@ -452,7 +452,7 @@ export const CHURN_RISK_LEVEL = {
 /**
  * Tier-specific thresholds for churn risk calculation (in days of inactivity)
  *
- * Concierge clients train 4x/week so gaps are more concerning
+ * Concierge clients train 5x/week so gaps are more concerning
  * Essentials clients train 1x/week so longer gaps are expected
  */
 export const TIER_CHURN_THRESHOLDS = {

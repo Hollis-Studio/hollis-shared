@@ -41,14 +41,14 @@
       "displayName": "Core",
       "baseMonthlyPriceDollars": 1449,
       "tagline": "Higher frequency, deeper insight",
-      "publicDescription": "Twice-weekly private coaching with quarterly clinician visits, lab panels, and a baseline DEXA scan, all coordinated between your performance coach and White Horse Holistic Health.",
+      "publicDescription": "Three private coaching sessions per week with quarterly clinician visits, lab panels, and a baseline DEXA scan, all coordinated between your performance coach and White Horse Holistic Health.",
       "isPopular": true
     },
     "CONCIERGE": {
       "displayName": "Concierge",
       "baseMonthlyPriceDollars": 2499,
       "tagline": "Full-spectrum coordinated care",
-      "publicDescription": "Our most comprehensive membership: four private coaching sessions per week, monthly clinician visits, monthly labs, quarterly DEXA scans, and continuous glucose monitoring, fully coordinated between your performance coach and White Horse Holistic Health."
+      "publicDescription": "Our most comprehensive membership: five private coaching sessions per week, monthly clinician visits, monthly labs, quarterly DEXA scans, and continuous glucose monitoring, fully coordinated between your performance coach and White Horse Holistic Health."
     }
   },
   "comparisonRows": [
@@ -58,8 +58,8 @@
       "label": "Private coaching sessions",
       "values": {
         "ESSENTIALS": "1 / week",
-        "CORE": "2 / week",
-        "CONCIERGE": "4 / week"
+        "CORE": "3 / week",
+        "CONCIERGE": "5 / week"
       }
     },
     {

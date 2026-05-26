@@ -213,7 +213,7 @@ export const DEFAULT_TIER_ALLOCATIONS = {
     CORE: [
         {
             sessionType: SESSION_TYPE.FITNESS_SESSION,
-            quantity: 8,
+            quantity: 12,
             resetFrequency: RESET_FREQUENCY.MONTHLY,
         },
         {
@@ -250,7 +250,7 @@ export const DEFAULT_TIER_ALLOCATIONS = {
     CONCIERGE: [
         {
             sessionType: SESSION_TYPE.FITNESS_SESSION,
-            quantity: 16,
+            quantity: 20,
             resetFrequency: RESET_FREQUENCY.MONTHLY,
         },
         {
