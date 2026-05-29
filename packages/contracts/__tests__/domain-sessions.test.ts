@@ -502,12 +502,12 @@ describe('Session Domain Contracts', () => {
     });
 
     describe('ESSENTIALS tier', () => {
-      it('should have 4 fitness sessions per month', () => {
+      it('should have 8 fitness sessions per month', () => {
         const fitness = DEFAULT_TIER_ALLOCATIONS.ESSENTIALS.find(
           (a) => a.sessionType === 'FITNESS_SESSION',
         );
         expect(fitness).toBeDefined();
-        expect(fitness!.quantity).toBe(4);
+        expect(fitness!.quantity).toBe(8);
         expect(fitness!.resetFrequency).toBe('MONTHLY');
       });
 
@@ -546,12 +546,12 @@ describe('Session Domain Contracts', () => {
     });
 
     describe('CORE tier', () => {
-      it('should have 12 fitness sessions per month', () => {
+      it('should have 16 fitness sessions per month', () => {
         const fitness = DEFAULT_TIER_ALLOCATIONS.CORE.find(
           (a) => a.sessionType === 'FITNESS_SESSION',
         );
         expect(fitness).toBeDefined();
-        expect(fitness!.quantity).toBe(12);
+        expect(fitness!.quantity).toBe(16);
         expect(fitness!.resetFrequency).toBe('MONTHLY');
       });
 
@@ -590,12 +590,12 @@ describe('Session Domain Contracts', () => {
     });
 
     describe('CONCIERGE tier', () => {
-      it('should have 20 fitness sessions per month', () => {
+      it('should have 24 fitness sessions per month', () => {
         const fitness = DEFAULT_TIER_ALLOCATIONS.CONCIERGE.find(
           (a) => a.sessionType === 'FITNESS_SESSION',
         );
         expect(fitness).toBeDefined();
-        expect(fitness!.quantity).toBe(20);
+        expect(fitness!.quantity).toBe(24);
         expect(fitness!.resetFrequency).toBe('MONTHLY');
       });
 

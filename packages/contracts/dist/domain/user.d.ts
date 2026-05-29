@@ -131,9 +131,9 @@ export declare const ROLE_BADGE_CONFIG: Record<UserRole, RoleBadge>;
 export declare function getRoleBadge(role: string | undefined | null): RoleBadge | null;
 /**
  * Membership tiers for Hollis Health.
- * - ESSENTIALS ($649/mo): 4 fitness sessions
- * - CORE ($1349/mo): 12 fitness sessions
- * - CONCIERGE ($1949/mo): 20 fitness sessions
+ * - ESSENTIALS ($749/mo): 8 fitness sessions
+ * - CORE ($1349/mo): 16 fitness sessions
+ * - CONCIERGE ($1949/mo): 24 fitness sessions
  */
 export declare const USER_TIERS: readonly ["ESSENTIALS", "CORE", "CONCIERGE"];
 export declare const UserTierSchema: z.ZodEnum<{
@@ -152,12 +152,12 @@ export declare const DEFAULT_USER_TIER: UserTier;
 export declare const USER_TIER_LABELS: Record<UserTier, string>;
 /**
  * Monthly pricing for each tier in whole dollars.
- * Note: These are dollar amounts (e.g., 649 = $649), not cents.
+ * Note: These are dollar amounts (e.g., 749 = $749), not cents.
  * Convert to cents with `USER_TIER_PRICES_DOLLARS[tier] * 100` when needed for Stripe.
  *
  * @example
- * USER_TIER_PRICES_DOLLARS.ESSENTIALS // 649 ($649/month)
- * USER_TIER_PRICES_DOLLARS.ESSENTIALS * 100 // 64900 cents for Stripe
+ * USER_TIER_PRICES_DOLLARS.ESSENTIALS // 749 ($749/month)
+ * USER_TIER_PRICES_DOLLARS.ESSENTIALS * 100 // 74900 cents for Stripe
  */
 export declare const USER_TIER_PRICES_DOLLARS: Record<UserTier, number>;
 /**

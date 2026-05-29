@@ -270,9 +270,9 @@ export function getRoleBadge(
 
 /**
  * Membership tiers for Hollis Health.
- * - ESSENTIALS ($649/mo): 4 fitness sessions
- * - CORE ($1349/mo): 12 fitness sessions
- * - CONCIERGE ($1949/mo): 20 fitness sessions
+ * - ESSENTIALS ($749/mo): 8 fitness sessions
+ * - CORE ($1349/mo): 16 fitness sessions
+ * - CONCIERGE ($1949/mo): 24 fitness sessions
  */
 export const USER_TIERS = ["ESSENTIALS", "CORE", "CONCIERGE"] as const;
 
@@ -296,12 +296,12 @@ export const USER_TIER_LABELS: Record<UserTier, string> = {
 
 /**
  * Monthly pricing for each tier in whole dollars.
- * Note: These are dollar amounts (e.g., 649 = $649), not cents.
+ * Note: These are dollar amounts (e.g., 749 = $749), not cents.
  * Convert to cents with `USER_TIER_PRICES_DOLLARS[tier] * 100` when needed for Stripe.
  *
  * @example
- * USER_TIER_PRICES_DOLLARS.ESSENTIALS // 649 ($649/month)
- * USER_TIER_PRICES_DOLLARS.ESSENTIALS * 100 // 64900 cents for Stripe
+ * USER_TIER_PRICES_DOLLARS.ESSENTIALS // 749 ($749/month)
+ * USER_TIER_PRICES_DOLLARS.ESSENTIALS * 100 // 74900 cents for Stripe
  */
 export const USER_TIER_PRICES_DOLLARS: Record<UserTier, number> = {
   ESSENTIALS: offerSheetData.tiers.ESSENTIALS.baseMonthlyPriceDollars,

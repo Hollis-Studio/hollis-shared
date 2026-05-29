@@ -184,31 +184,31 @@ export const FREE_MAX_ROLLOVER = 4;
 /**
  * Default tier allocations based on Hollis Health membership structure
  *
- * ESSENTIALS ($649/mo):
- * - 4x Fitness Sessions/mo
+ * ESSENTIALS ($749/mo):
+ * - 8x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
  * - 2x Labwork/year (biannual)
  * - 1x Initial Clinician Consult (annual)
  * - 1x Clinician Followup/year
- * - 2x DXA Scans/year (initial + 6mo)
+ * - 1x DXA Scan/year
  * - 2x Sleep Screenings/year (biannual)
  *
  * CORE ($1349/mo):
- * - 8x Fitness Sessions/mo
+ * - 16x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
  * - 4x Labwork/year (quarterly)
  * - 1x Initial Clinician Consult (annual)
  * - 2x Clinician Followups/year (biannual)
- * - 4x DXA Scans/year (quarterly)
+ * - 2x DXA Scans/year (biannual)
  * - 2x Sleep Screenings/month
  *
  * CONCIERGE ($1949/mo):
- * - 16x Fitness Sessions/mo
+ * - 24x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
  * - 12x Labwork/year (monthly)
  * - 1x Initial Clinician Consult (annual)
  * - 12x Clinician Followups/year (monthly)
- * - 12x DXA Scans/year (monthly)
+ * - 4x DXA Scans/year (quarterly)
  * - 4x Sleep Screenings/month (weekly)
  */
 export const DEFAULT_TIER_ALLOCATIONS: Record<
@@ -218,7 +218,7 @@ export const DEFAULT_TIER_ALLOCATIONS: Record<
   ESSENTIALS: [
     {
       sessionType: SESSION_TYPE.FITNESS_SESSION,
-      quantity: 4,
+      quantity: 8,
       resetFrequency: RESET_FREQUENCY.MONTHLY,
     },
     {
@@ -244,7 +244,7 @@ export const DEFAULT_TIER_ALLOCATIONS: Record<
     {
       sessionType: SESSION_TYPE.DXA_SCAN,
       quantity: 1,
-      resetFrequency: RESET_FREQUENCY.BIANNUAL,
+      resetFrequency: RESET_FREQUENCY.ANNUAL,
     },
     {
       sessionType: SESSION_TYPE.SLEEP_SCREENING,
@@ -255,7 +255,7 @@ export const DEFAULT_TIER_ALLOCATIONS: Record<
   CORE: [
     {
       sessionType: SESSION_TYPE.FITNESS_SESSION,
-      quantity: 12,
+      quantity: 16,
       resetFrequency: RESET_FREQUENCY.MONTHLY,
     },
     {
@@ -281,7 +281,7 @@ export const DEFAULT_TIER_ALLOCATIONS: Record<
     {
       sessionType: SESSION_TYPE.DXA_SCAN,
       quantity: 1,
-      resetFrequency: RESET_FREQUENCY.QUARTERLY,
+      resetFrequency: RESET_FREQUENCY.BIANNUAL,
     },
     {
       sessionType: SESSION_TYPE.SLEEP_SCREENING,
@@ -292,7 +292,7 @@ export const DEFAULT_TIER_ALLOCATIONS: Record<
   CONCIERGE: [
     {
       sessionType: SESSION_TYPE.FITNESS_SESSION,
-      quantity: 20,
+      quantity: 24,
       resetFrequency: RESET_FREQUENCY.MONTHLY,
     },
     {
@@ -318,7 +318,7 @@ export const DEFAULT_TIER_ALLOCATIONS: Record<
     {
       sessionType: SESSION_TYPE.DXA_SCAN,
       quantity: 1,
-      resetFrequency: RESET_FREQUENCY.MONTHLY,
+      resetFrequency: RESET_FREQUENCY.QUARTERLY,
     },
     {
       sessionType: SESSION_TYPE.SLEEP_SCREENING,

@@ -26,6 +26,9 @@ export const METRIC_HRV_RMSSD = "hrv_rmssd";
  */
 export const METRIC_HRV_SDNN = "hrv_sdnn";
 export const METRIC_ACTIVE_CALORIES = "active_calories";
+export const METRIC_FLIGHTS_CLIMBED = "flights_climbed";
+export const METRIC_DAILY_DISTANCE = "daily_distance";
+export const METRIC_ACTIVE_HEART_RATE = "active_heart_rate";
 // ── Blood Pressure ───────────────────────────────────────────
 export const METRIC_BP_SYSTOLIC = "blood_pressure_systolic";
 export const METRIC_BP_DIASTOLIC = "blood_pressure_diastolic";
@@ -63,6 +66,9 @@ export const KNOWN_WEARABLE_CODES = [
     METRIC_HRV_RMSSD,
     METRIC_HRV_SDNN,
     METRIC_ACTIVE_CALORIES,
+    METRIC_FLIGHTS_CLIMBED,
+    METRIC_DAILY_DISTANCE,
+    METRIC_ACTIVE_HEART_RATE,
 ];
 /** Pregnancy-sensitive metrics needing modified reference ranges */
 export const PREGNANCY_SENSITIVE_CODES = [

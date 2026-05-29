@@ -25,6 +25,9 @@ export declare const METRIC_HRV_RMSSD: "hrv_rmssd";
  */
 export declare const METRIC_HRV_SDNN: "hrv_sdnn";
 export declare const METRIC_ACTIVE_CALORIES: "active_calories";
+export declare const METRIC_FLIGHTS_CLIMBED: "flights_climbed";
+export declare const METRIC_DAILY_DISTANCE: "daily_distance";
+export declare const METRIC_ACTIVE_HEART_RATE: "active_heart_rate";
 export declare const METRIC_BP_SYSTOLIC: "blood_pressure_systolic";
 export declare const METRIC_BP_DIASTOLIC: "blood_pressure_diastolic";
 export declare const METRIC_GRIP_STRENGTH: "grip_strength";
@@ -48,10 +51,10 @@ export declare const METRIC_CALCITONIN: "calcitonin";
 export declare const METRIC_FIBRINOGEN: "fibrinogen";
 export declare const METRIC_IRON_IBC_PERCENT_SAT: "iron_ibc_percent_sat";
 /** All wearable/daily metric codes for sync and aggregation */
-export declare const KNOWN_WEARABLE_CODES: readonly ["body_weight", "body_fat_percentage", "lean_body_mass", "daily_steps", "sleep_duration", "resting_heart_rate", "hrv_rmssd", "hrv_sdnn", "active_calories"];
+export declare const KNOWN_WEARABLE_CODES: readonly ["body_weight", "body_fat_percentage", "lean_body_mass", "daily_steps", "sleep_duration", "resting_heart_rate", "hrv_rmssd", "hrv_sdnn", "active_calories", "flights_climbed", "daily_distance", "active_heart_rate"];
 /** Pregnancy-sensitive metrics needing modified reference ranges */
 export declare const PREGNANCY_SENSITIVE_CODES: readonly ["prolactin", "estradiol", "estriol", "progesterone", "tsh", "uric_acid", "fsh", "ggt", "homocysteine", "calcitonin", "fibrinogen", "iron_ibc_percent_sat"];
 /** All known metric codes for DB validation */
-export declare const KNOWN_METRIC_CODES: readonly ["body_weight", "body_fat_percentage", "lean_body_mass", "daily_steps", "sleep_duration", "resting_heart_rate", "hrv_rmssd", "hrv_sdnn", "active_calories", "blood_pressure_systolic", "blood_pressure_diastolic", "grip_strength", "vo2_max", "hba1c", "fasting_glucose", "total_cholesterol", "ldl_cholesterol", "hdl_cholesterol", "testosterone_total", "prolactin", "estradiol", "estriol", "progesterone", "tsh", "uric_acid", "fsh", "ggt", "homocysteine", "calcitonin", "fibrinogen", "iron_ibc_percent_sat"];
+export declare const KNOWN_METRIC_CODES: readonly ["body_weight", "body_fat_percentage", "lean_body_mass", "daily_steps", "sleep_duration", "resting_heart_rate", "hrv_rmssd", "hrv_sdnn", "active_calories", "flights_climbed", "daily_distance", "active_heart_rate", "blood_pressure_systolic", "blood_pressure_diastolic", "grip_strength", "vo2_max", "hba1c", "fasting_glucose", "total_cholesterol", "ldl_cholesterol", "hdl_cholesterol", "testosterone_total", "prolactin", "estradiol", "estriol", "progesterone", "tsh", "uric_acid", "fsh", "ggt", "homocysteine", "calcitonin", "fibrinogen", "iron_ibc_percent_sat"];
 export type KnownMetricCode = (typeof KNOWN_METRIC_CODES)[number];
 //# sourceMappingURL=metric-codes.d.ts.map

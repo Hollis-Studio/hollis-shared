@@ -466,7 +466,7 @@ describe("User Domain Contracts", () => {
       });
 
       it("should have correct prices", () => {
-        expect(USER_TIER_PRICES_DOLLARS.ESSENTIALS).toBe(649);
+        expect(USER_TIER_PRICES_DOLLARS.ESSENTIALS).toBe(749);
         expect(USER_TIER_PRICES_DOLLARS.CORE).toBe(1349);
         expect(USER_TIER_PRICES_DOLLARS.CONCIERGE).toBe(1949);
       });

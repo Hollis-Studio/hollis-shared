@@ -1,7 +1,7 @@
 {
   "meta": {
-    "version": "2.2.0",
-    "effectiveDate": "2026-05-26",
+    "version": "2.4.0",
+    "effectiveDate": "2026-05-28",
     "status": "draft"
   },
   "terms": [
@@ -33,22 +33,22 @@
   "tiers": {
     "ESSENTIALS": {
       "displayName": "Essentials",
-      "baseMonthlyPriceDollars": 649,
+      "baseMonthlyPriceDollars": 749,
       "tagline": "Accountability + wellness baseline",
-      "publicDescription": "A foundational wellness membership with weekly private coaching sessions, recovery access, care coordination support, and full access to your health progress dashboard."
+      "publicDescription": "A foundational wellness membership with two private coaching sessions per week, recovery access, annual DXA scan allowance, an annual registered dietitian strategy session for macro and micronutrient targets, care coordination support, and full access to your health progress dashboard."
     },
     "CORE": {
       "displayName": "Core",
       "baseMonthlyPriceDollars": 1349,
       "tagline": "Higher frequency, deeper insight",
-      "publicDescription": "Three private coaching sessions per week with expanded nutrition coaching, recovery access, priority care coordination, and biomarker-informed planning when outside labs are shared with consent.",
+      "publicDescription": "Four private coaching sessions per week with recovery access, twice-yearly DXA scan allowance, two registered dietitian strategy sessions per year for week-by-week macro and micronutrient progression, priority care coordination, and biomarker-informed planning when outside labs are shared with consent.",
       "isPopular": true
     },
     "CONCIERGE": {
       "displayName": "Concierge",
       "baseMonthlyPriceDollars": 1949,
       "tagline": "Full-spectrum coaching and coordination",
-      "publicDescription": "Our most comprehensive membership: five private coaching sessions per week, dedicated care coordination support, recovery access, nutrition coaching, and dashboard integration for outside medical data shared with consent."
+      "publicDescription": "Our most comprehensive membership: six private coaching sessions per week, quarterly DXA scan allowance, quarterly registered dietitian strategy sessions for week-by-week macro and micronutrient progression, dedicated care coordination support, recovery access, and dashboard integration for outside medical data shared with consent."
     }
   },
   "comparisonRows": [
@@ -57,9 +57,29 @@
       "category": "Fitness",
       "label": "Private coaching sessions",
       "values": {
-        "ESSENTIALS": "1 / week",
-        "CORE": "3 / week",
-        "CONCIERGE": "5 / week"
+        "ESSENTIALS": "2 / week",
+        "CORE": "4 / week",
+        "CONCIERGE": "6 / week"
+      }
+    },
+    {
+      "key": "dxaScanAllowance",
+      "category": "Clinical coordination",
+      "label": "DXA scan allowance",
+      "values": {
+        "ESSENTIALS": "1 / year",
+        "CORE": "2 / year",
+        "CONCIERGE": "4 / year"
+      }
+    },
+    {
+      "key": "registeredDietitianSessions",
+      "category": "Nutrition",
+      "label": "Registered dietitian strategy sessions",
+      "values": {
+        "ESSENTIALS": "1 / year",
+        "CORE": "2 / year",
+        "CONCIERGE": "4 / year"
       }
     },
     {
@@ -74,12 +94,12 @@
     },
     {
       "key": "nutritionCoaching",
-      "category": "Fitness",
-      "label": "Nutrition coaching",
+      "category": "Nutrition",
+      "label": "Week-by-week macro and micronutrient coaching",
       "values": {
-        "ESSENTIALS": "Coach-led",
-        "CORE": "Coach-led + macro targets",
-        "CONCIERGE": "Provider-aware when shared with consent"
+        "ESSENTIALS": "Coach-led execution of RD targets",
+        "CORE": "Coach-led progression with RD-guided targets",
+        "CONCIERGE": "High-touch progression with RD-guided targets"
       }
     },
     {
@@ -106,7 +126,7 @@
   "separatelyBilledThirdPartyItems": [
     "Medical consultations and clinical evaluations with independent providers",
     "Laboratory panels, lab draw fees, and laboratory interpretation by independent providers",
-    "DEXA scans, imaging, CGM sensors, IV therapy, and related services furnished by independent providers",
+    "Imaging beyond the included DXA scan allowance, CGM sensors, IV therapy, and related services furnished by independent providers",
     "Prescription items and pharmacy charges",
     "Specialist referrals or services outside the scope of the membership program",
     "Supplements and retail products unless expressly listed as included on the Enrollment Summary and Service Schedule",
