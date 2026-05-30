@@ -269,6 +269,8 @@ describe("Shared Contracts Compilation", () => {
       expect(contracts.AUTH_ROUTES.SIGNUP).toBe("/auth/signup");
       expect(contracts.AUTH_ROUTES.REFRESH).toBe("/auth/refresh");
       expect(contracts.AUTH_ROUTES.LOGOUT).toBe("/auth/logout");
+      expect(contracts.AUTH_ROUTES.VERIFY_EMAIL_SEND).toBe("/auth/verify-email/send");
+      expect(contracts.AUTH_ROUTES.VERIFY_EMAIL_CONFIRM).toBe("/auth/verify-email/confirm");
     });
 
     it("should export USER_ROUTES as functions", () => {

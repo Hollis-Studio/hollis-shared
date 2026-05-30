@@ -82,6 +82,10 @@ export const AUTH_ROUTES = {
   FORGOT_PASSWORD: "/auth/forgot-password",
   /** POST - Reset password using token */
   RESET_PASSWORD: "/auth/reset-password",
+  /** POST - Send or resend email verification link for authenticated user */
+  VERIFY_EMAIL_SEND: "/auth/verify-email/send",
+  /** GET - Confirm email verification token from email link */
+  VERIFY_EMAIL_CONFIRM: "/auth/verify-email/confirm",
   /** POST - Issue a refresh token to store for biometric login */
   BIOMETRIC_TOKEN: "/auth/biometric-token",
   /** POST - Validate a registration barcode */

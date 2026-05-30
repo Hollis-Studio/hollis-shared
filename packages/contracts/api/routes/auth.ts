@@ -37,6 +37,10 @@ export const AUTH_ROUTES = {
   FORGOT_PASSWORD: "/auth/forgot-password",
   /** POST - Reset password using token from email */
   RESET_PASSWORD: "/auth/reset-password",
+  /** POST - Send or resend email verification link for authenticated user */
+  VERIFY_EMAIL_SEND: "/auth/verify-email/send",
+  /** GET - Confirm email verification token from email link */
+  VERIFY_EMAIL_CONFIRM: "/auth/verify-email/confirm",
   /** POST - Change password for authenticated user (invalidates all sessions) */
   CHANGE_PASSWORD: "/auth/change-password",
   /** POST - Re-verify MFA for session (when MFA session expires, no re-login needed) */
