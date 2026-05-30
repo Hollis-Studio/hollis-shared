@@ -32,6 +32,10 @@ export declare const AUTH_ROUTES: {
     readonly FORGOT_PASSWORD: "/auth/forgot-password";
     /** POST - Reset password using token from email */
     readonly RESET_PASSWORD: "/auth/reset-password";
+    /** POST - Send or resend email verification link for authenticated user */
+    readonly VERIFY_EMAIL_SEND: "/auth/verify-email/send";
+    /** GET - Confirm email verification token from email link */
+    readonly VERIFY_EMAIL_CONFIRM: "/auth/verify-email/confirm";
     /** POST - Change password for authenticated user (invalidates all sessions) */
     readonly CHANGE_PASSWORD: "/auth/change-password";
     /** POST - Re-verify MFA for session (when MFA session expires, no re-login needed) */

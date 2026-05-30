@@ -54,6 +54,10 @@ export declare const AUTH_ROUTES: {
     readonly FORGOT_PASSWORD: "/auth/forgot-password";
     /** POST - Reset password using token */
     readonly RESET_PASSWORD: "/auth/reset-password";
+    /** POST - Send or resend email verification link for authenticated user */
+    readonly VERIFY_EMAIL_SEND: "/auth/verify-email/send";
+    /** GET - Confirm email verification token from email link */
+    readonly VERIFY_EMAIL_CONFIRM: "/auth/verify-email/confirm";
     /** POST - Issue a refresh token to store for biometric login */
     readonly BIOMETRIC_TOKEN: "/auth/biometric-token";
     /** POST - Validate a registration barcode */
@@ -762,6 +766,10 @@ export declare const API_ROUTES: {
         readonly FORGOT_PASSWORD: "/auth/forgot-password";
         /** POST - Reset password using token */
         readonly RESET_PASSWORD: "/auth/reset-password";
+        /** POST - Send or resend email verification link for authenticated user */
+        readonly VERIFY_EMAIL_SEND: "/auth/verify-email/send";
+        /** GET - Confirm email verification token from email link */
+        readonly VERIFY_EMAIL_CONFIRM: "/auth/verify-email/confirm";
         /** POST - Issue a refresh token to store for biometric login */
         readonly BIOMETRIC_TOKEN: "/auth/biometric-token";
         /** POST - Validate a registration barcode */

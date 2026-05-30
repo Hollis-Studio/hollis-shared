@@ -48,6 +48,8 @@ export declare const API_ROUTES: {
         readonly LOGOUT: "/auth/logout";
         readonly FORGOT_PASSWORD: "/auth/forgot-password";
         readonly RESET_PASSWORD: "/auth/reset-password";
+        readonly VERIFY_EMAIL_SEND: "/auth/verify-email/send";
+        readonly VERIFY_EMAIL_CONFIRM: "/auth/verify-email/confirm";
         readonly CHANGE_PASSWORD: "/auth/change-password";
         readonly MFA_SESSION_REVERIFY: "/auth/mfa/session-reverify";
     };
