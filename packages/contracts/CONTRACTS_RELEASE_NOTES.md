@@ -1,5 +1,28 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.23 (2026-06-01)
+
+Progression Engine V2 — prescription feedback loop + modality-neutral fields.
+
+### `progression/engine.ts`
+
+- **Prescription feedback loop (additive).** New schemas
+  **`PrescriptionStatusSchema`** (`active`/`completed`/`abandoned`/`superseded`),
+  **`PrescriptionTargetSourceSchema`** (`engine`/`program-template`/`manual`),
+  **`PrescriptionOutcomeSchema`** (actual top set, reliability-weighted RIR,
+  missed, completionRatio), and **`PrescriptionRecordSchema`** (session-linked
+  prescription + lifecycle + outcome). `ProgressionEngineState` gains an optional
+  **`prescriptionLog`** — a bounded ring buffer of recent records — so the engine
+  can score `last prescription → actual work → next prescription`. Persisted
+  inside the existing `engineState` Json blob, so **no DB migration** is required.
+- **Modality-neutral magnitude fields (rename, backward-compatible).**
+  `rawBaselineKg` → **`rawBaselineScore`**, `capacityEstimateKg` →
+  **`capacityScore`**, `trainingMaxKg` → **`trainingTargetScore`**. For lifting
+  these are still kilograms; for cardio they hold workload scores (removing the
+  prior `*Kg`-named-but-not-kg smell). A `z.preprocess` transparently maps the
+  legacy `*Kg` keys from any already-persisted blob onto the new names, so
+  existing data keeps parsing without a destructive migration.
+
 ## 0.2.0-alpha.22 (2026-06-01)
 
 All changes are **additive / backward-compatible**. No existing exports were

@@ -12,6 +12,45 @@ export const ProgramPhaseSchema = z.enum(PROGRAM_PHASES);
 export const RepClassSchema = z.enum(["S", "H", "E"]);
 export const CanonicalizationStatusSchema = z.enum(["matched", "unmatched", "ignored"]);
 export const ExerciseTrackingModeSchema = z.enum(["reps", "timed", "cardio", "stretch"]);
+/**
+ * The mutually-exclusive classification a logged working set produces, judged
+ * against the target the user actually saw. Shared by in-session adaptation,
+ * persisted set flags, and post-workout judgment so "intentionally easier",
+ * "fatigue miss", "true overperformance", and "probably bad data" stay distinct.
+ */
+export const SetSignalSchema = z.enum([
+    "on_target",
+    "overperformance",
+    "fatigue_miss",
+    "intentionally_easier",
+    "suspected_misinput",
+]);
+/**
+ * A snapshot of the prescription a set was judged against. Persisted on the set
+ * (the target the user actually faced after live adaptation) and on the exercise
+ * (the original, pre-adaptation plan — see SessionExercise.originalTargets).
+ */
+export const SetTargetSnapshotSchema = z.object({
+    setNumber: z.number().int().min(1),
+    weightKg: z.number().min(0).nullable(),
+    reps: z.number().int().min(0),
+    rir: z.number().int().min(0).max(10),
+    durationSeconds: z.number().min(0).nullable().optional(),
+    isWarmup: z.boolean(),
+});
+/**
+ * One in-session target adaptation, recorded for the audit trail and undo. The
+ * remaining targets are recomputed from originalTargets + confirmed sets rather
+ * than from these events, so an event is a durable record of what changed and why.
+ */
+export const AdaptationEventSchema = z.object({
+    /** Index of the confirmed set whose result drove the adaptation. */
+    setIndex: z.number().int().min(0),
+    signal: SetSignalSchema,
+    /** Human-readable explanation shown to the user; null when none was surfaced. */
+    reason: z.string().nullable(),
+    occurredAt: z.coerce.date(),
+});
 export const SessionSetSchema = z.object({
     setNumber: z.number().int().min(1),
     weightKg: z.number().min(0),
@@ -30,6 +69,17 @@ export const SessionSetSchema = z.object({
     originExerciseId: z.string().nullable().optional(),
     repClass: RepClassSchema.optional(),
     isMiss: z.boolean().optional(),
+    /** The target this set was judged against (after any live adaptation). */
+    target: SetTargetSnapshotSchema.optional(),
+    /** The signal this set produced relative to its target. */
+    signal: SetSignalSchema.optional(),
+    /**
+     * True when the logged weight looks implausible (~2x target/history). A
+     * flag-only, reviewable data-quality marker — distinct from isOutlier, which
+     * means "excluded from the baseline ratchet". A suspected mis-input is kept in
+     * the data until the user confirms or corrects it.
+     */
+    isSuspectedMisinput: z.boolean().optional(),
     leftReps: z.number().int().min(0).nullable().optional(),
     rightReps: z.number().int().min(0).nullable().optional(),
     leftWeightKg: z.number().min(0).nullable().optional(),
@@ -59,6 +109,14 @@ export const SessionExerciseSchema = z
     cardioData: CardioSessionDataSchema.nullable().default(null),
     stretchData: StretchSessionDataSchema.nullable().default(null),
     trackingMode: ExerciseTrackingModeSchema.optional(),
+    /**
+     * The original, pre-adaptation target plan captured at session start. The
+     * basis for undo/recompute: remaining targets are rebuilt from these plus
+     * the confirmed sets when a set is edited.
+     */
+    originalTargets: z.array(SetTargetSnapshotSchema).optional(),
+    /** Audit trail of in-session target adaptations, in order of occurrence. */
+    adaptationEvents: z.array(AdaptationEventSchema).optional(),
 })
     .refine((data) => {
     if (data.canonicalizationStatus === "matched") {

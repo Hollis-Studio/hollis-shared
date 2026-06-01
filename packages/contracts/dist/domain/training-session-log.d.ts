@@ -27,6 +27,52 @@ export declare const ExerciseTrackingModeSchema: z.ZodEnum<{
     stretch: "stretch";
 }>;
 export type ExerciseTrackingMode = z.infer<typeof ExerciseTrackingModeSchema>;
+/**
+ * The mutually-exclusive classification a logged working set produces, judged
+ * against the target the user actually saw. Shared by in-session adaptation,
+ * persisted set flags, and post-workout judgment so "intentionally easier",
+ * "fatigue miss", "true overperformance", and "probably bad data" stay distinct.
+ */
+export declare const SetSignalSchema: z.ZodEnum<{
+    on_target: "on_target";
+    overperformance: "overperformance";
+    fatigue_miss: "fatigue_miss";
+    intentionally_easier: "intentionally_easier";
+    suspected_misinput: "suspected_misinput";
+}>;
+export type SetSignal = z.infer<typeof SetSignalSchema>;
+/**
+ * A snapshot of the prescription a set was judged against. Persisted on the set
+ * (the target the user actually faced after live adaptation) and on the exercise
+ * (the original, pre-adaptation plan — see SessionExercise.originalTargets).
+ */
+export declare const SetTargetSnapshotSchema: z.ZodObject<{
+    setNumber: z.ZodNumber;
+    weightKg: z.ZodNullable<z.ZodNumber>;
+    reps: z.ZodNumber;
+    rir: z.ZodNumber;
+    durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    isWarmup: z.ZodBoolean;
+}, z.core.$strip>;
+export type SetTargetSnapshot = z.infer<typeof SetTargetSnapshotSchema>;
+/**
+ * One in-session target adaptation, recorded for the audit trail and undo. The
+ * remaining targets are recomputed from originalTargets + confirmed sets rather
+ * than from these events, so an event is a durable record of what changed and why.
+ */
+export declare const AdaptationEventSchema: z.ZodObject<{
+    setIndex: z.ZodNumber;
+    signal: z.ZodEnum<{
+        on_target: "on_target";
+        overperformance: "overperformance";
+        fatigue_miss: "fatigue_miss";
+        intentionally_easier: "intentionally_easier";
+        suspected_misinput: "suspected_misinput";
+    }>;
+    reason: z.ZodNullable<z.ZodString>;
+    occurredAt: z.ZodCoercedDate<unknown>;
+}, z.core.$strip>;
+export type AdaptationEvent = z.infer<typeof AdaptationEventSchema>;
 export declare const SessionSetSchema: z.ZodObject<{
     setNumber: z.ZodNumber;
     weightKg: z.ZodNumber;
@@ -58,6 +104,22 @@ export declare const SessionSetSchema: z.ZodObject<{
         E: "E";
     }>>;
     isMiss: z.ZodOptional<z.ZodBoolean>;
+    target: z.ZodOptional<z.ZodObject<{
+        setNumber: z.ZodNumber;
+        weightKg: z.ZodNullable<z.ZodNumber>;
+        reps: z.ZodNumber;
+        rir: z.ZodNumber;
+        durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        isWarmup: z.ZodBoolean;
+    }, z.core.$strip>>;
+    signal: z.ZodOptional<z.ZodEnum<{
+        on_target: "on_target";
+        overperformance: "overperformance";
+        fatigue_miss: "fatigue_miss";
+        intentionally_easier: "intentionally_easier";
+        suspected_misinput: "suspected_misinput";
+    }>>;
+    isSuspectedMisinput: z.ZodOptional<z.ZodBoolean>;
     leftReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     rightReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     leftWeightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
@@ -149,6 +211,22 @@ export declare const SessionExerciseSchema: z.ZodObject<{
             E: "E";
         }>>;
         isMiss: z.ZodOptional<z.ZodBoolean>;
+        target: z.ZodOptional<z.ZodObject<{
+            setNumber: z.ZodNumber;
+            weightKg: z.ZodNullable<z.ZodNumber>;
+            reps: z.ZodNumber;
+            rir: z.ZodNumber;
+            durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            isWarmup: z.ZodBoolean;
+        }, z.core.$strip>>;
+        signal: z.ZodOptional<z.ZodEnum<{
+            on_target: "on_target";
+            overperformance: "overperformance";
+            fatigue_miss: "fatigue_miss";
+            intentionally_easier: "intentionally_easier";
+            suspected_misinput: "suspected_misinput";
+        }>>;
+        isSuspectedMisinput: z.ZodOptional<z.ZodBoolean>;
         leftReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         rightReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         leftWeightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
@@ -208,6 +286,26 @@ export declare const SessionExerciseSchema: z.ZodObject<{
         timed: "timed";
         stretch: "stretch";
     }>>;
+    originalTargets: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        setNumber: z.ZodNumber;
+        weightKg: z.ZodNullable<z.ZodNumber>;
+        reps: z.ZodNumber;
+        rir: z.ZodNumber;
+        durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        isWarmup: z.ZodBoolean;
+    }, z.core.$strip>>>;
+    adaptationEvents: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        setIndex: z.ZodNumber;
+        signal: z.ZodEnum<{
+            on_target: "on_target";
+            overperformance: "overperformance";
+            fatigue_miss: "fatigue_miss";
+            intentionally_easier: "intentionally_easier";
+            suspected_misinput: "suspected_misinput";
+        }>;
+        reason: z.ZodNullable<z.ZodString>;
+        occurredAt: z.ZodCoercedDate<unknown>;
+    }, z.core.$strip>>>;
 }, z.core.$strip>;
 export declare const QuestionnaireResponseSchema: z.ZodObject<{
     sleepHours: z.ZodNumber;
@@ -333,6 +431,22 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
                 E: "E";
             }>>;
             isMiss: z.ZodOptional<z.ZodBoolean>;
+            target: z.ZodOptional<z.ZodObject<{
+                setNumber: z.ZodNumber;
+                weightKg: z.ZodNullable<z.ZodNumber>;
+                reps: z.ZodNumber;
+                rir: z.ZodNumber;
+                durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+                isWarmup: z.ZodBoolean;
+            }, z.core.$strip>>;
+            signal: z.ZodOptional<z.ZodEnum<{
+                on_target: "on_target";
+                overperformance: "overperformance";
+                fatigue_miss: "fatigue_miss";
+                intentionally_easier: "intentionally_easier";
+                suspected_misinput: "suspected_misinput";
+            }>>;
+            isSuspectedMisinput: z.ZodOptional<z.ZodBoolean>;
             leftReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             rightReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             leftWeightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
@@ -392,6 +506,26 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
             timed: "timed";
             stretch: "stretch";
         }>>;
+        originalTargets: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            setNumber: z.ZodNumber;
+            weightKg: z.ZodNullable<z.ZodNumber>;
+            reps: z.ZodNumber;
+            rir: z.ZodNumber;
+            durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            isWarmup: z.ZodBoolean;
+        }, z.core.$strip>>>;
+        adaptationEvents: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            setIndex: z.ZodNumber;
+            signal: z.ZodEnum<{
+                on_target: "on_target";
+                overperformance: "overperformance";
+                fatigue_miss: "fatigue_miss";
+                intentionally_easier: "intentionally_easier";
+                suspected_misinput: "suspected_misinput";
+            }>;
+            reason: z.ZodNullable<z.ZodString>;
+            occurredAt: z.ZodCoercedDate<unknown>;
+        }, z.core.$strip>>>;
     }, z.core.$strip>>;
 }, z.core.$strip>;
 export declare const TrainingSessionLogSchema: z.ZodObject<{
@@ -501,6 +635,22 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
                 E: "E";
             }>>;
             isMiss: z.ZodOptional<z.ZodBoolean>;
+            target: z.ZodOptional<z.ZodObject<{
+                setNumber: z.ZodNumber;
+                weightKg: z.ZodNullable<z.ZodNumber>;
+                reps: z.ZodNumber;
+                rir: z.ZodNumber;
+                durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+                isWarmup: z.ZodBoolean;
+            }, z.core.$strip>>;
+            signal: z.ZodOptional<z.ZodEnum<{
+                on_target: "on_target";
+                overperformance: "overperformance";
+                fatigue_miss: "fatigue_miss";
+                intentionally_easier: "intentionally_easier";
+                suspected_misinput: "suspected_misinput";
+            }>>;
+            isSuspectedMisinput: z.ZodOptional<z.ZodBoolean>;
             leftReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             rightReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             leftWeightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
@@ -560,6 +710,26 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
             timed: "timed";
             stretch: "stretch";
         }>>;
+        originalTargets: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            setNumber: z.ZodNumber;
+            weightKg: z.ZodNullable<z.ZodNumber>;
+            reps: z.ZodNumber;
+            rir: z.ZodNumber;
+            durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            isWarmup: z.ZodBoolean;
+        }, z.core.$strip>>>;
+        adaptationEvents: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            setIndex: z.ZodNumber;
+            signal: z.ZodEnum<{
+                on_target: "on_target";
+                overperformance: "overperformance";
+                fatigue_miss: "fatigue_miss";
+                intentionally_easier: "intentionally_easier";
+                suspected_misinput: "suspected_misinput";
+            }>;
+            reason: z.ZodNullable<z.ZodString>;
+            occurredAt: z.ZodCoercedDate<unknown>;
+        }, z.core.$strip>>>;
     }, z.core.$strip>>;
 }, z.core.$strip>;
 export type StretchSet = z.infer<typeof StretchSetSchema>;
