@@ -1,5 +1,52 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.22 (2026-06-01)
+
+All changes are **additive / backward-compatible**. No existing exports were
+modified or removed.
+
+### Workouts AI wire contract — single source of truth for the AI HTTP surface
+
+New module **`ai/workout-ai-wire.ts`** (also exported from the `ai` barrel and as
+the leaner subpath **`@hollis-studio/contracts/ai/workout-ai-wire`**). It holds
+the request/response Zod schemas that the hollis-workouts **server** and **mobile
+client** must agree on; they previously lived as two hand-maintained copies that
+drifted. Pure Zod, no `@google/genai` (Gemini structured-output tool schemas stay
+server-side).
+
+- **`VoiceLogOperationSchema`** / **`VoiceOpSetSchema`** — voice-log operations.
+  Shared numeric bounds (`durationSeconds` ≤ 86400, `distanceKm` ≤ 1000) and the
+  `stretch` tracking mode, plus the per-op required-field `superRefine`.
+- **`SmartBuilderResponseSchema`** + **`SlottedProgramSchema`** /
+  **`SlottedExerciseSchema`** — the Smart Builder program/edits/questions union.
+  Cardio slots require at least one target; stretch exercises slot as `timed`.
+- **`MatchExercisesResponseSchema`** / **`ExerciseMatchSchema`**,
+  **`RecognizeEquipmentResponseSchema`**, **`TagExerciseMusclesResponseSchema`**
+  (validated against the canonical `MuscleGroup` enum), **`GymSetupResponseSchema`**.
+- **`GYM_EQUIPMENT_TYPES`** / **`RECOGNIZE_EQUIPMENT_TYPES`** — the canonical
+  equipment vocabularies (recognition = gym vocab + `none`).
+
+## 0.2.0-alpha.21 (2026-06-01)
+
+All changes are **additive / backward-compatible**. No existing exports were
+modified or removed.
+
+### Training session log — bidirectional adaptation & durable signal record
+
+- **`SetSignalSchema`** / **`SetSignal`** added to
+  `domain/training-session-log.ts`: the mutually-exclusive classification a set
+  produces against its target (`on_target`, `overperformance`, `fatigue_miss`,
+  `intentionally_easier`, `suspected_misinput`).
+- **`SetTargetSnapshotSchema`** / **`SetTargetSnapshot`** added: a snapshot of
+  the prescription a set was judged against.
+- **`AdaptationEventSchema`** / **`AdaptationEvent`** added: one in-session
+  target adaptation (setIndex, signal, reason, occurredAt).
+- **`SessionSetSchema`** gains optional **`target`**, **`signal`**, and
+  **`isSuspectedMisinput`** (a flag-only data-quality marker distinct from
+  `isOutlier`).
+- **`SessionExerciseSchema`** gains optional **`originalTargets`** and
+  **`adaptationEvents`** — the basis for undo/recompute of in-session targets.
+
 ## 0.2.0-alpha.12 (2026-05-20)
 
 All changes are **additive / backward-compatible**. No existing exports were
