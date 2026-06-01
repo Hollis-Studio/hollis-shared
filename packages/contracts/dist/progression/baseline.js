@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ProgressionEngineStateSchema } from "./engine.js";
 export const BaselineEntrySchema = z.object({
     sessionId: z.string().min(1),
     date: z.coerce.date(),
@@ -9,7 +10,9 @@ export const BaselineEntrySchema = z.object({
     e1rmFormula: z.enum(["epley", "wathan"]),
     isOutlier: z.boolean(),
     goEasier: z.boolean(),
-    sessionMix: z.object({ s: z.number(), h: z.number(), e: z.number() }).optional(),
+    sessionMix: z
+        .object({ s: z.number(), h: z.number(), e: z.number() })
+        .optional(),
     isMiss: z.boolean().optional(),
 });
 export const ProgressionBaselineSchema = z.object({
@@ -21,15 +24,20 @@ export const ProgressionBaselineSchema = z.object({
     topSetRIR: z.number().int().min(0).max(10),
     lastUpdated: z.coerce.date(),
     history: z.array(BaselineEntrySchema),
+    engineState: ProgressionEngineStateSchema.optional(),
     phaseExitE1RM_Kg: z.number().min(0).nullable().optional(),
     phaseExitDate: z.number().int().min(0).nullable().optional(),
-    classMix: z.object({ s: z.number(), h: z.number(), e: z.number() }).optional(),
+    classMix: z
+        .object({ s: z.number(), h: z.number(), e: z.number() })
+        .optional(),
     trendE1RM_Kg: z.number().min(0).optional(),
     trendTopSetWeightKg: z.number().min(0).optional(),
     trendTopSetReps: z.number().int().min(0).optional(),
     trendTopSetRIR: z.number().int().min(0).max(10).optional(),
     missStreak: z.number().int().min(0).optional(),
-    autoDeloadPercent: z.union([z.literal(0), z.literal(0.05), z.literal(0.1)]).optional(),
+    autoDeloadPercent: z
+        .union([z.literal(0), z.literal(0.05), z.literal(0.1)])
+        .optional(),
     plateauDeloadUntil: z.coerce.date().nullable().optional(),
     plateauDeloadReductionPercent: z.number().min(0).max(0.99).optional(),
     lastPlateauAlertedAt: z.coerce.date().nullable().optional(),
@@ -66,5 +74,6 @@ export const CardioBaselineSchema = z.object({
     lastAvgHeartRate: z.number().int().min(30).max(250).nullable(),
     lastUpdated: z.coerce.date(),
     history: z.array(CardioBaselineEntrySchema),
+    engineState: ProgressionEngineStateSchema.optional(),
 });
 //# sourceMappingURL=baseline.js.map

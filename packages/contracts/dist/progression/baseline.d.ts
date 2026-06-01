@@ -47,6 +47,65 @@ export declare const ProgressionBaselineSchema: z.ZodObject<{
         }, z.core.$strip>>;
         isMiss: z.ZodOptional<z.ZodBoolean>;
     }, z.core.$strip>>;
+    engineState: z.ZodOptional<z.ZodObject<{
+        calibrationState: z.ZodEnum<{
+            stable: "stable";
+            no_data: "no_data";
+            calibrating: "calibrating";
+            provisional: "provisional";
+        }>;
+        rawBaselineKg: z.ZodNullable<z.ZodNumber>;
+        capacityEstimateKg: z.ZodNullable<z.ZodNumber>;
+        trainingMaxKg: z.ZodNullable<z.ZodNumber>;
+        uncertaintyPct: z.ZodNullable<z.ZodNumber>;
+        distinctSessionCount: z.ZodNumber;
+        lastDecision: z.ZodOptional<z.ZodObject<{
+            action: z.ZodEnum<{
+                reduce: "reduce";
+                maintain: "maintain";
+                repeat: "repeat";
+                progress: "progress";
+                deload: "deload";
+                calibrate: "calibrate";
+            }>;
+            confidence: z.ZodEnum<{
+                low: "low";
+                high: "high";
+                medium: "medium";
+            }>;
+            targetSummary: z.ZodString;
+            drivers: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                label: z.ZodString;
+                category: z.ZodEnum<{
+                    context: "context";
+                    performance: "performance";
+                    cardio: "cardio";
+                    equipment: "equipment";
+                    effort: "effort";
+                    fatigue: "fatigue";
+                    consistency: "consistency";
+                }>;
+                direction: z.ZodEnum<{
+                    neutral: "neutral";
+                    up: "up";
+                    down: "down";
+                }>;
+                weight: z.ZodNumber;
+                contributionPct: z.ZodNumber;
+                confidence: z.ZodEnum<{
+                    low: "low";
+                    high: "high";
+                    medium: "medium";
+                }>;
+                reason: z.ZodString;
+                tooltip: z.ZodString;
+            }, z.core.$strip>>;
+            generatedAt: z.ZodCoercedDate<unknown>;
+            schemaVersion: z.ZodNumber;
+        }, z.core.$strip>>;
+        schemaVersion: z.ZodNumber;
+    }, z.core.$strip>>;
     phaseExitE1RM_Kg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     phaseExitDate: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     classMix: z.ZodOptional<z.ZodObject<{
@@ -108,6 +167,65 @@ export declare const CardioBaselineSchema: z.ZodObject<{
         mets: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
         isOutlier: z.ZodBoolean;
         goEasier: z.ZodBoolean;
+    }, z.core.$strip>>;
+    engineState: z.ZodOptional<z.ZodObject<{
+        calibrationState: z.ZodEnum<{
+            stable: "stable";
+            no_data: "no_data";
+            calibrating: "calibrating";
+            provisional: "provisional";
+        }>;
+        rawBaselineKg: z.ZodNullable<z.ZodNumber>;
+        capacityEstimateKg: z.ZodNullable<z.ZodNumber>;
+        trainingMaxKg: z.ZodNullable<z.ZodNumber>;
+        uncertaintyPct: z.ZodNullable<z.ZodNumber>;
+        distinctSessionCount: z.ZodNumber;
+        lastDecision: z.ZodOptional<z.ZodObject<{
+            action: z.ZodEnum<{
+                reduce: "reduce";
+                maintain: "maintain";
+                repeat: "repeat";
+                progress: "progress";
+                deload: "deload";
+                calibrate: "calibrate";
+            }>;
+            confidence: z.ZodEnum<{
+                low: "low";
+                high: "high";
+                medium: "medium";
+            }>;
+            targetSummary: z.ZodString;
+            drivers: z.ZodArray<z.ZodObject<{
+                id: z.ZodString;
+                label: z.ZodString;
+                category: z.ZodEnum<{
+                    context: "context";
+                    performance: "performance";
+                    cardio: "cardio";
+                    equipment: "equipment";
+                    effort: "effort";
+                    fatigue: "fatigue";
+                    consistency: "consistency";
+                }>;
+                direction: z.ZodEnum<{
+                    neutral: "neutral";
+                    up: "up";
+                    down: "down";
+                }>;
+                weight: z.ZodNumber;
+                contributionPct: z.ZodNumber;
+                confidence: z.ZodEnum<{
+                    low: "low";
+                    high: "high";
+                    medium: "medium";
+                }>;
+                reason: z.ZodString;
+                tooltip: z.ZodString;
+            }, z.core.$strip>>;
+            generatedAt: z.ZodCoercedDate<unknown>;
+            schemaVersion: z.ZodNumber;
+        }, z.core.$strip>>;
+        schemaVersion: z.ZodNumber;
     }, z.core.$strip>>;
 }, z.core.$strip>;
 export type BaselineEntry = z.infer<typeof BaselineEntrySchema>;
