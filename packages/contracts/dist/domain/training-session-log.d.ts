@@ -52,6 +52,8 @@ export declare const SetTargetSnapshotSchema: z.ZodObject<{
     reps: z.ZodNumber;
     rir: z.ZodNumber;
     durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     isWarmup: z.ZodBoolean;
 }, z.core.$strip>;
 export type SetTargetSnapshot = z.infer<typeof SetTargetSnapshotSchema>;
@@ -110,6 +112,8 @@ export declare const SessionSetSchema: z.ZodObject<{
         reps: z.ZodNumber;
         rir: z.ZodNumber;
         durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isWarmup: z.ZodBoolean;
     }, z.core.$strip>>;
     signal: z.ZodOptional<z.ZodEnum<{
@@ -217,6 +221,8 @@ export declare const SessionExerciseSchema: z.ZodObject<{
             reps: z.ZodNumber;
             rir: z.ZodNumber;
             durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
         }, z.core.$strip>>;
         signal: z.ZodOptional<z.ZodEnum<{
@@ -292,6 +298,8 @@ export declare const SessionExerciseSchema: z.ZodObject<{
         reps: z.ZodNumber;
         rir: z.ZodNumber;
         durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isWarmup: z.ZodBoolean;
     }, z.core.$strip>>>;
     adaptationEvents: z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -437,6 +445,8 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
                 reps: z.ZodNumber;
                 rir: z.ZodNumber;
                 durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+                distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+                paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 isWarmup: z.ZodBoolean;
             }, z.core.$strip>>;
             signal: z.ZodOptional<z.ZodEnum<{
@@ -512,6 +522,8 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
             reps: z.ZodNumber;
             rir: z.ZodNumber;
             durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
         }, z.core.$strip>>>;
         adaptationEvents: z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -641,6 +653,8 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
                 reps: z.ZodNumber;
                 rir: z.ZodNumber;
                 durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+                distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+                paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 isWarmup: z.ZodBoolean;
             }, z.core.$strip>>;
             signal: z.ZodOptional<z.ZodEnum<{
@@ -716,6 +730,8 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
             reps: z.ZodNumber;
             rir: z.ZodNumber;
             durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
         }, z.core.$strip>>>;
         adaptationEvents: z.ZodOptional<z.ZodArray<z.ZodObject<{

@@ -185,10 +185,21 @@ export declare const ProgressionBaselineSchema: z.ZodObject<{
                 pace: z.ZodNullable<z.ZodNumber>;
                 mets: z.ZodNullable<z.ZodNumber>;
                 completionRatio: z.ZodNullable<z.ZodNumber>;
+                completionByMetric: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+                    duration: z.ZodNullable<z.ZodNumber>;
+                    distance: z.ZodNullable<z.ZodNumber>;
+                    pace: z.ZodNullable<z.ZodNumber>;
+                }, z.core.$strip>>>;
                 resolvedAt: z.ZodCoercedDate<unknown>;
             }, z.core.$strip>], "kind">>>;
             prescribedDurationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             prescribedDistanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            prescribedFocus: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+                distance: "distance";
+                duration: "duration";
+                pace: "pace";
+            }>>>;
+            prescribedPaceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             cardioOutcome: z.ZodOptional<z.ZodNullable<z.ZodObject<{
                 kind: z.ZodLiteral<"cardio">;
                 durationS: z.ZodNullable<z.ZodNumber>;
@@ -196,6 +207,11 @@ export declare const ProgressionBaselineSchema: z.ZodObject<{
                 pace: z.ZodNullable<z.ZodNumber>;
                 mets: z.ZodNullable<z.ZodNumber>;
                 completionRatio: z.ZodNullable<z.ZodNumber>;
+                completionByMetric: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+                    duration: z.ZodNullable<z.ZodNumber>;
+                    distance: z.ZodNullable<z.ZodNumber>;
+                    pace: z.ZodNullable<z.ZodNumber>;
+                }, z.core.$strip>>>;
                 resolvedAt: z.ZodCoercedDate<unknown>;
             }, z.core.$strip>>>;
         }, z.core.$strip>>>;
@@ -401,10 +417,21 @@ export declare const CardioBaselineSchema: z.ZodObject<{
                 pace: z.ZodNullable<z.ZodNumber>;
                 mets: z.ZodNullable<z.ZodNumber>;
                 completionRatio: z.ZodNullable<z.ZodNumber>;
+                completionByMetric: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+                    duration: z.ZodNullable<z.ZodNumber>;
+                    distance: z.ZodNullable<z.ZodNumber>;
+                    pace: z.ZodNullable<z.ZodNumber>;
+                }, z.core.$strip>>>;
                 resolvedAt: z.ZodCoercedDate<unknown>;
             }, z.core.$strip>], "kind">>>;
             prescribedDurationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             prescribedDistanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            prescribedFocus: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+                distance: "distance";
+                duration: "duration";
+                pace: "pace";
+            }>>>;
+            prescribedPaceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             cardioOutcome: z.ZodOptional<z.ZodNullable<z.ZodObject<{
                 kind: z.ZodLiteral<"cardio">;
                 durationS: z.ZodNullable<z.ZodNumber>;
@@ -412,6 +439,11 @@ export declare const CardioBaselineSchema: z.ZodObject<{
                 pace: z.ZodNullable<z.ZodNumber>;
                 mets: z.ZodNullable<z.ZodNumber>;
                 completionRatio: z.ZodNullable<z.ZodNumber>;
+                completionByMetric: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+                    duration: z.ZodNullable<z.ZodNumber>;
+                    distance: z.ZodNullable<z.ZodNumber>;
+                    pace: z.ZodNullable<z.ZodNumber>;
+                }, z.core.$strip>>>;
                 resolvedAt: z.ZodCoercedDate<unknown>;
             }, z.core.$strip>>>;
         }, z.core.$strip>>>;

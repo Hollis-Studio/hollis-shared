@@ -1,6 +1,14 @@
 import { z } from "zod";
 import { SetSignalSchema } from "../domain/training-session-log.js";
 
+/**
+ * The progression dimension a cardio prescription was optimizing for.
+ * Snapshotted at prescription time so resolution is focus-aware even if
+ * the user later changes their setting.
+ */
+export const CardioProgressionFocusSchema = z.enum(["duration", "distance", "pace"]);
+export type CardioProgressionFocus = z.infer<typeof CardioProgressionFocusSchema>;
+
 export const ProgressionCalibrationStateSchema = z.enum([
   "no_data",
   "calibrating",
@@ -96,7 +104,24 @@ export const CardioPrescriptionOutcomeSchema = z.object({
   distanceKm: z.number().min(0).nullable(),
   pace: z.number().min(0).nullable(),
   mets: z.number().min(0).nullable(),
+  /**
+   * Focus-weighted headline completion scalar (the focus metric's entry from
+   * completionByMetric). ~1.0 means the prescribed target was matched. Null when not
+   * computable. For pace-focus, faster→>1 (inverted ratio).
+   */
   completionRatio: z.number().min(0).nullable(),
+  /**
+   * Per-metric completion ratios (actual/prescribed; pace inverted so faster→>1).
+   * Null when the metric was not prescribed. Powers the transparency breakdown card.
+   */
+  completionByMetric: z
+    .object({
+      duration: z.number().min(0).nullable(),
+      distance: z.number().min(0).nullable(),
+      pace: z.number().min(0).nullable(),
+    })
+    .nullable()
+    .optional(),
   resolvedAt: z.coerce.date(),
 });
 
@@ -145,6 +170,17 @@ export const PrescriptionRecordSchema = z.object({
   prescribedDurationSeconds: z.number().min(0).nullable().optional(),
   /** Prescribed cardio distance in km; null for lifting or when not prescribed. */
   prescribedDistanceKm: z.number().min(0).nullable().optional(),
+  /**
+   * Focus the cardio target was generated for, snapshotted at prescription time so
+   * resolution is focus-aware even if the user later changes their setting.
+   * null/absent for lifting.
+   */
+  prescribedFocus: CardioProgressionFocusSchema.nullable().optional(),
+  /**
+   * Prescribed pace target in seconds/km for pace-focus completion. Inverted so that
+   * faster pace → completionRatio > 1. null/absent for non-pace-focus or lifting.
+   */
+  prescribedPaceSecondsPerKm: z.number().min(0).nullable().optional(),
   /** Cardio-specific outcome record (separate from the lifting-centric `outcome` field). */
   cardioOutcome: CardioPrescriptionOutcomeSchema.nullable().optional(),
 });

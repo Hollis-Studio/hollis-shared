@@ -36,6 +36,19 @@ export const SetTargetSnapshotSchema = z.object({
     reps: z.number().int().min(0),
     rir: z.number().int().min(0).max(10),
     durationSeconds: z.number().min(0).nullable().optional(),
+    /**
+     * Prescribed cardio distance in km, when the target carried one. Snapshotted
+     * so cold-start cardio (the first session before a baseline exists) can rebuild
+     * a distance-focused prescription record from originalTargets rather than being
+     * forced to duration-only. Omitted/null for lifting and duration-only cardio.
+     */
+    distanceKm: z.number().min(0).nullable().optional(),
+    /**
+     * Prescribed cardio pace in seconds per km, when the target carried one. Same
+     * cold-start rationale as distanceKm — lets a pace-focused first session enter
+     * the feedback loop with its real focus metric. Omitted/null otherwise.
+     */
+    paceSecondsPerKm: z.number().min(0).nullable().optional(),
     isWarmup: z.boolean(),
 });
 /**

@@ -1,5 +1,47 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.27 (2026-06-02)
+
+All changes are **additive / backward-compatible**. Foundation for the Workouts
+conversational program-agent refactor.
+
+### `ai/workout-ai-wire.ts`
+
+- **`UserTrainingContext` family.** A fully-typed context payload that replaces
+  the Smart Builder server's previous `userContext: z.record(string, unknown)`
+  (which silently dropped every rich field): `UserProfileContext`,
+  `ExerciseStrengthState`, `ActiveProgramSummary`, `CardioBaselineSummary`,
+  `GymContext` / `GymExerciseConfig`, `InjuryContext`, `WorkoutSummary`,
+  `ReadinessContext`, `ExerciseLibraryEntry`, and the top-level
+  `UserTrainingContextSchema`. The server now renders every tier into the prompt.
+- **8-op `EditOperation` discriminated union** (replaces the old 5-op edit union,
+  retained as deprecated **`LegacyProgramEditSchema`** for one cycle):
+  `replace_exercise`, `update_set_params`, `remove_exercise`, `add_exercise`,
+  `move_or_swap_days`, `reorder_within_day`, `rename_or_reschedule_day`,
+  `apply_to_all_days`. Adds semantic addressing — **`DayRef`** (exactly one of
+  name | index | dayOfWeek) and **`SlotRef`** (`slotId` | `{day, exercise}`) —
+  schema-level numeric bounds (**`EditParams`**), and server-generated slot IDs
+  for `add_exercise`. Cross-field rules enforced via a union-level `superRefine`
+  (discriminated-union members cannot carry their own refinements).
+- **`SmartBuilderRequest` / `ProgramRef` / `ConversationMessage`** wire envelope.
+  `SmartBuilderResponseSchema`'s `"edits"` branch now yields `EditOperation[]`.
+
+## 0.2.0-alpha.26 (2026-06-02)
+
+All changes are **additive / backward-compatible**. No existing exports were
+modified or removed.
+
+### `domain/training-session-log.ts`
+
+- **`SetTargetSnapshot` new optional cardio fields.** Two new optional+nullable
+  fields added: **`distanceKm`** and **`paceSecondsPerKm`**. These let a
+  cold-start cardio session (the first session of a brand-new cardio exercise,
+  before any baseline/engine state exists) snapshot the full prescribed target —
+  distance and pace, not just duration — into `originalTargets`. The post-workout
+  cold-start resolver can then rebuild a distance- or pace-focused prescription
+  record instead of being forced to `duration`. Older snapshots without these
+  fields continue to parse unchanged.
+
 ## 0.2.0-alpha.24 (2026-06-01)
 
 All changes are **additive / backward-compatible**. No existing exports were

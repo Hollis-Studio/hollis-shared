@@ -283,7 +283,153 @@ export const SlottedProgramSchema = z.object({
 });
 export type SlottedProgram = z.infer<typeof SlottedProgramSchema>;
 
-const ProgramEditSchema = z.discriminatedUnion("op", [
+// ============================================================================
+// Program editing — robust, semantically-addressed edit operations (alpha.27)
+// ============================================================================
+//
+// Replaces the legacy 5-op union (kept below as `LegacyProgramEditSchema` for
+// one deprecation cycle). The new union adds semantic addressing (target a day
+// by name | index | dayOfWeek; a slot by slotId | {day, exercise}), schema-level
+// numeric bounds, server-generated slot IDs for `add_exercise`, and three new
+// ops (reorder_within_day, rename_or_reschedule_day, apply_to_all_days).
+// Cross-field "at least one" rules are enforced by a union-level superRefine
+// because z.discriminatedUnion members cannot carry their own refinements.
+
+/** Patchable per-slot training parameters. All optional; bounds match the slot schemas. */
+export const EditParamsSchema = z.object({
+  sets: z.number().int().min(1).max(10).optional(),
+  reps: z.number().int().min(1).max(REPS_MAX).optional(),
+  rir: z.number().int().min(0).max(5).optional(),
+  durationSeconds: z.number().int().min(1).max(DURATION_SECONDS_MAX).optional(),
+  targetDistanceKm: z.number().min(0).max(DISTANCE_KM_MAX).optional(),
+  targetSpeedKmh: z.number().min(0).optional(),
+  progressionMode: z.enum(["weight_first", "reps_first", "duration_first"]).optional(),
+});
+export type EditParams = z.infer<typeof EditParamsSchema>;
+
+const EDIT_PARAM_KEYS = [
+  "sets",
+  "reps",
+  "rir",
+  "durationSeconds",
+  "targetDistanceKm",
+  "targetSpeedKmh",
+  "progressionMode",
+] as const;
+const hasAnyEditParam = (p: EditParams | undefined): boolean =>
+  p !== undefined && EDIT_PARAM_KEYS.some((k) => p[k] !== undefined);
+
+/** Address a program day by exactly one of: name (preferred), positional index, or dayOfWeek. */
+export const DayRefSchema = z
+  .object({
+    name: z.string().min(1).optional(),
+    index: z.number().int().min(0).optional(),
+    dayOfWeek: z.number().int().min(0).max(6).optional(),
+  })
+  .refine(
+    (r) => [r.name, r.index, r.dayOfWeek].filter((v) => v !== undefined).length === 1,
+    { message: "DayRef must specify exactly one of name, index, dayOfWeek" },
+  );
+export type DayRef = z.infer<typeof DayRefSchema>;
+
+/** Identify an exercise within a day by canonical id (preferred) or display name. */
+export const ExerciseRefSchema = z
+  .object({
+    canonicalExerciseId: z.string().min(1).optional(),
+    name: z.string().min(1).optional(),
+  })
+  .refine((r) => r.canonicalExerciseId !== undefined || r.name !== undefined, {
+    message: "ExerciseRef must specify canonicalExerciseId or name",
+  });
+export type ExerciseRef = z.infer<typeof ExerciseRefSchema>;
+
+/** Address a slot by its stable slotId, or by (day + exercise) when the id is unknown. */
+export const SlotRefSchema = z.union([
+  z.object({ slotId: z.string().min(1) }),
+  z.object({ day: DayRefSchema, exercise: ExerciseRefSchema }),
+]);
+export type SlotRef = z.infer<typeof SlotRefSchema>;
+
+const EditOperationRawSchema = z.discriminatedUnion("op", [
+  z.object({
+    op: z.literal("replace_exercise"),
+    slot: SlotRefSchema,
+    newExerciseId: z.string().min(1),
+    params: EditParamsSchema.optional(),
+  }),
+  z.object({
+    op: z.literal("update_set_params"),
+    slot: SlotRefSchema,
+    params: EditParamsSchema,
+  }),
+  z.object({
+    op: z.literal("remove_exercise"),
+    slot: SlotRefSchema,
+  }),
+  z.object({
+    op: z.literal("add_exercise"),
+    day: DayRefSchema,
+    canonicalExerciseId: z.string().min(1),
+    exerciseType: z.enum(["lifting", "timed", "cardio"]),
+    // The server generates the slotId; the model must NOT supply one.
+    insertAfterSlotId: z.string().min(1).nullable().optional(),
+    params: EditParamsSchema.optional(),
+  }),
+  z.object({
+    op: z.literal("move_or_swap_days"),
+    fromDay: DayRefSchema,
+    toDay: DayRefSchema,
+    mode: z.enum(["swap", "move"]),
+  }),
+  z.object({
+    op: z.literal("reorder_within_day"),
+    day: DayRefSchema,
+    orderedSlots: z.array(SlotRefSchema).min(1),
+  }),
+  z.object({
+    op: z.literal("rename_or_reschedule_day"),
+    day: DayRefSchema,
+    newName: z.string().min(1).optional(),
+    newDayOfWeek: z.number().int().min(0).max(6).optional(),
+  }),
+  z.object({
+    op: z.literal("apply_to_all_days"),
+    fromExerciseId: z.string().min(1),
+    toExerciseId: z.string().min(1),
+    params: EditParamsSchema.optional(),
+  }),
+]);
+
+/** A single robust, semantically-addressed program edit operation. */
+export const EditOperationSchema = EditOperationRawSchema.superRefine((val, ctx) => {
+  if (val.op === "update_set_params" && !hasAnyEditParam(val.params)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "update_set_params requires at least one field in params",
+      path: ["params"],
+    });
+  }
+  if (
+    val.op === "rename_or_reschedule_day" &&
+    val.newName === undefined &&
+    val.newDayOfWeek === undefined
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "rename_or_reschedule_day requires newName or newDayOfWeek",
+      path: ["newName"],
+    });
+  }
+});
+export type EditOperation = z.infer<typeof EditOperationSchema>;
+
+/**
+ * @deprecated Legacy 5-op program-edit union (slotId-only addressing, no bounds
+ * on the update fields). Replaced by {@link EditOperationSchema}. Kept exported
+ * for one deprecation cycle so the server can accept old-format edits while the
+ * client rolls over to the new union.
+ */
+export const LegacyProgramEditSchema = z.discriminatedUnion("op", [
   z.object({
     op: z.literal("replace_exercise"),
     slotId: z.string(),
@@ -319,6 +465,7 @@ const ProgramEditSchema = z.discriminatedUnion("op", [
     toDayOfWeek: z.number().int().min(0).max(6),
   }),
 ]);
+export type LegacyProgramEdit = z.infer<typeof LegacyProgramEditSchema>;
 
 /** Discriminated union of every Smart Builder turn the server can return. */
 export const SmartBuilderResponseSchema = z.discriminatedUnion("type", [
@@ -335,11 +482,203 @@ export const SmartBuilderResponseSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("edits"),
-    edits: z.array(ProgramEditSchema),
+    edits: z.array(EditOperationSchema),
     message: z.string(),
   }),
 ]);
 export type SmartBuilderResponse = z.infer<typeof SmartBuilderResponseSchema>;
+
+// ============================================================================
+// User training context — the typed payload the Smart Builder agent reasons over
+// ============================================================================
+//
+// Replaces the server's previous `userContext: z.record(string, unknown)` (which
+// dropped every rich field on the floor). Both sides now agree on this shape:
+// the client assembles it from local state; the server validates it and renders
+// EVERY tier into the prompt. All weights are kg (display unit is a hint only).
+
+/** Lightweight profile facts that shape program design. */
+export const UserProfileContextSchema = z.object({
+  experienceLevel: z.string().nullable().optional(),
+  trainingPhase: z.string().nullable().optional(),
+  trainingPhaseStartedAtMs: z.number().nullable().optional(),
+  gender: z.string().nullable().optional(),
+  // Derived age in years — never the raw date of birth.
+  ageYears: z.number().int().min(0).max(120).nullable().optional(),
+  bodyweightKg: z.number().min(0).max(WEIGHT_KG_MAX).nullable().optional(),
+  displayUnit: z.enum(["kg", "lbs"]).optional(),
+});
+export type UserProfileContext = z.infer<typeof UserProfileContextSchema>;
+
+/** Per-exercise strength + progression state, keyed by canonical exercise id. */
+export const ExerciseStrengthStateSchema = z.object({
+  canonicalExerciseId: z.string().min(1),
+  exerciseName: z.string(),
+  currentE1RMKg: z.number().min(0).max(WEIGHT_KG_MAX).nullable(),
+  workingWeightKg: z.number().min(0).max(WEIGHT_KG_MAX).nullable().optional(),
+  workingReps: z.number().int().min(0).max(REPS_MAX).nullable().optional(),
+  adaptiveRateKgPerSession: z.number().nullable().optional(),
+  lastLoggedAt: z.string().nullable().optional(),
+  calibrationState: z.string().nullable().optional(),
+  missStreak: z.number().int().min(0).nullable().optional(),
+  isInPlateauDeload: z.boolean().optional(),
+  plateauDeloadPercent: z.number().min(0).max(1).nullable().optional(),
+});
+export type ExerciseStrengthState = z.infer<typeof ExerciseStrengthStateSchema>;
+
+/** Summary of the user's currently-active program and their progress through it. */
+export const ActiveProgramSummarySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  type: z.string(),
+  durationWeeks: z.number().int().min(1).max(52),
+  startDate: z.string().nullable().optional(),
+  currentWeek: z.number().int().min(1).nullable().optional(),
+  isDeloadWeek: z.boolean().optional(),
+  completedSessionCount: z.number().int().min(0).nullable().optional(),
+  days: z.array(
+    z.object({
+      dayOfWeek: z.number().int().min(0).max(6),
+      name: z.string(),
+      exerciseNames: z.array(z.string()),
+    }),
+  ),
+});
+export type ActiveProgramSummary = z.infer<typeof ActiveProgramSummarySchema>;
+
+/** Per-exercise cardio personal bests / recency, keyed by canonical exercise id. */
+export const CardioBaselineSummarySchema = z.object({
+  canonicalExerciseId: z.string().min(1),
+  exerciseName: z.string(),
+  bestDurationSeconds: z.number().int().min(0).nullable().optional(),
+  bestDistanceKm: z.number().min(0).max(DISTANCE_KM_MAX).nullable().optional(),
+  bestPaceSecondsPerKm: z.number().min(0).nullable().optional(),
+  lastDurationSeconds: z.number().int().min(0).nullable().optional(),
+  lastUpdatedAt: z.string().nullable().optional(),
+});
+export type CardioBaselineSummary = z.infer<typeof CardioBaselineSummarySchema>;
+
+/** Per-machine configuration the user has set at a gym. */
+export const GymExerciseConfigSchema = z.object({
+  canonicalExerciseId: z.string().min(1),
+  name: z.string().optional(),
+  baseWeightKg: z.number().min(0).max(WEIGHT_KG_MAX).nullable().optional(),
+  weightUnit: z.string().optional(),
+  weightMode: z.string().optional(),
+  notes: z.string().nullable().optional(),
+});
+export type GymExerciseConfig = z.infer<typeof GymExerciseConfigSchema>;
+
+/** The user's gym: how exercises are selected, available equipment, and gym-available exercise ids. */
+export const GymContextSchema = z.object({
+  exerciseSelectionMode: z.enum(["equipment_based", "exercise"]),
+  // Equipment is sent as free strings (the app's EquipmentType enum is broader
+  // than GYM_EQUIPMENT_TYPES); the server renders them, it does not gate on them.
+  equipment: z.array(z.string()),
+  equipmentIds: z.array(z.string()).optional(),
+  gymExerciseConfigs: z.array(GymExerciseConfigSchema).optional(),
+  gymAvailableExerciseIds: z.array(z.string()).optional(),
+});
+export type GymContext = z.infer<typeof GymContextSchema>;
+
+/** An active injury/restriction the program must respect. */
+export const InjuryContextSchema = z.object({
+  muscleGroup: z.string(),
+  description: z.string().max(500),
+});
+export type InjuryContext = z.infer<typeof InjuryContextSchema>;
+
+/** A condensed completed-session summary used to convey recent training. */
+export const WorkoutSummarySchema = z.object({
+  date: z.string(),
+  programDayName: z.string().nullable(),
+  isFreestyle: z.boolean(),
+  totalVolumeKg: z.number().min(0),
+  durationMinutes: z.number().min(0).nullable().optional(),
+  exercises: z.array(
+    z.object({
+      exerciseId: z.string(),
+      exerciseName: z.string(),
+      sets: z.number().int().min(0),
+      topWeightKg: z.number().min(0).max(WEIGHT_KG_MAX).nullable().optional(),
+      reps: z.number().int().min(0).max(REPS_MAX).nullable().optional(),
+    }),
+  ),
+  muscleGroupsHit: z.array(z.string()).optional(),
+});
+export type WorkoutSummary = z.infer<typeof WorkoutSummarySchema>;
+
+/** Recent readiness signal derived from questionnaire correlations. */
+export const ReadinessContextSchema = z.object({
+  score: z.number().int().min(0).max(100),
+  confidence: z.number().min(0).max(1),
+});
+export type ReadinessContext = z.infer<typeof ReadinessContextSchema>;
+
+/** One entry of the equipment-filtered exercise library the agent may choose from. */
+export const ExerciseLibraryEntrySchema = z.object({
+  id: z.string().min(1),
+  name: z.string(),
+  category: z.string().nullable().optional(),
+  subcategory: z.string().nullable().optional(),
+  primaryMuscleGroups: z.array(z.string()).optional(),
+  secondaryMuscleGroups: z.array(z.string()).optional(),
+  equipmentType: z.string().nullable().optional(),
+  isBodyweight: z.boolean().optional(),
+  isUnilateral: z.boolean().optional(),
+  trackingMode: z.string().optional(),
+  requiredEquipment: z.array(z.string()).optional(),
+});
+export type ExerciseLibraryEntry = z.infer<typeof ExerciseLibraryEntrySchema>;
+
+/** The complete, typed context the Smart Builder agent reasons over. */
+export const UserTrainingContextSchema = z.object({
+  profile: UserProfileContextSchema,
+  exerciseStrengthStates: z.array(ExerciseStrengthStateSchema).max(50),
+  recentWorkouts: z.array(WorkoutSummarySchema).max(20),
+  activeProgram: ActiveProgramSummarySchema.nullable().optional(),
+  readiness: ReadinessContextSchema.nullable().optional(),
+  injuries: z.array(InjuryContextSchema),
+  gym: GymContextSchema,
+  cardioBaselines: z.array(CardioBaselineSummarySchema),
+  exerciseLibrary: z.array(ExerciseLibraryEntrySchema),
+});
+export type UserTrainingContext = z.infer<typeof UserTrainingContextSchema>;
+
+// ============================================================================
+// Smart Builder request envelope (converse | generate | refine)
+// ============================================================================
+
+/** Which program a refine targets: a saved program by id, the in-flight draft, or a brand-new program. */
+export const ProgramRefSchema = z.union([
+  z.object({ id: z.string().min(1) }),
+  z.object({ draft: z.literal(true) }),
+  z.object({}),
+]);
+export type ProgramRef = z.infer<typeof ProgramRefSchema>;
+
+/** One conversational turn between the user and the Smart Builder agent. */
+export const ConversationMessageSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string().min(1).max(4000),
+});
+export type ConversationMessage = z.infer<typeof ConversationMessageSchema>;
+
+/**
+ * Unified Smart Builder request. `userContext` is now the fully-typed
+ * {@link UserTrainingContextSchema} (was `z.record(string, unknown)`).
+ * `currentProgram` carries the slotted program being refined (a draft, or a
+ * saved program projected into slotted form) when `action === "refine"` and the
+ * server cannot resolve it from `programRef.id`.
+ */
+export const SmartBuilderRequestSchema = z.object({
+  action: z.enum(["converse", "generate", "refine"]),
+  conversationHistory: z.array(ConversationMessageSchema).max(50),
+  userContext: UserTrainingContextSchema,
+  programRef: ProgramRefSchema.optional(),
+  currentProgram: SlottedProgramSchema.optional(),
+});
+export type SmartBuilderRequest = z.infer<typeof SmartBuilderRequestSchema>;
 
 // ============================================================================
 // Exercise matching
