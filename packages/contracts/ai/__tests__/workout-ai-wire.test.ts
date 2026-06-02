@@ -18,6 +18,12 @@ import {
   GymSetupResponseSchema,
   GYM_EQUIPMENT_TYPES,
   RECOGNIZE_EQUIPMENT_TYPES,
+  PrescriptionNarrationRequestSchema,
+  PrescriptionNarrationResponseSchema,
+  SetSignalTiebreakerRequestSchema,
+  SetSignalTiebreakerResponseSchema,
+  CrossModalContextRequestSchema,
+  CrossModalContextResponseSchema,
 } from "../workout-ai-wire.js";
 
 describe("VoiceLogOperationSchema", () => {
@@ -141,5 +147,152 @@ describe("vocabulary", () => {
     for (const t of GYM_EQUIPMENT_TYPES) {
       expect(RECOGNIZE_EQUIPMENT_TYPES).toContain(t);
     }
+  });
+});
+
+describe("PrescriptionNarrationRequestSchema / PrescriptionNarrationResponseSchema", () => {
+  it("accepts a valid narration request", () => {
+    expect(
+      PrescriptionNarrationRequestSchema.safeParse({
+        exerciseName: "Bench Press",
+        dropSteps: [
+          { kind: "anchor", label: "Training Max", pctChange: -0.05, reason: "Fatigue detected" },
+        ],
+        action: "reduce",
+        targetSummary: "95 kg x 5",
+        displayUnit: "kg",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects a narration request with an invalid action", () => {
+    expect(
+      PrescriptionNarrationRequestSchema.safeParse({
+        exerciseName: "Bench Press",
+        dropSteps: [],
+        action: "explode",
+        targetSummary: "95 kg x 5",
+        displayUnit: "kg",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("accepts a valid narration response", () => {
+    expect(
+      PrescriptionNarrationResponseSchema.safeParse({
+        shortReason: "Fatigue detected",
+        fullNarration: "Based on recent session data, your training max is reduced slightly.",
+        confidence: "high",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects a narration response with an invalid confidence value", () => {
+    expect(
+      PrescriptionNarrationResponseSchema.safeParse({
+        shortReason: "ok",
+        fullNarration: "ok",
+        confidence: "very_high",
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("SetSignalTiebreakerRequestSchema / SetSignalTiebreakerResponseSchema", () => {
+  it("accepts a valid tiebreaker request", () => {
+    expect(
+      SetSignalTiebreakerRequestSchema.safeParse({
+        exerciseName: "Squat",
+        targetWeightKg: 120,
+        targetReps: 5,
+        targetRIR: 2,
+        actualWeightKg: 120,
+        actualReps: 7,
+        actualRir: 0,
+        historicalMaxWeightKg: 130,
+        ambiguityReason: "More reps than prescribed but same weight",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects a tiebreaker request missing required actualReps", () => {
+    expect(
+      SetSignalTiebreakerRequestSchema.safeParse({
+        exerciseName: "Squat",
+        targetWeightKg: 120,
+        targetReps: 5,
+        targetRIR: 2,
+        actualWeightKg: 120,
+        actualRir: 0,
+        historicalMaxWeightKg: null,
+        ambiguityReason: null,
+      }).success,
+    ).toBe(false);
+  });
+
+  it("accepts a valid tiebreaker response (AiSetSignalOverride shape)", () => {
+    expect(
+      SetSignalTiebreakerResponseSchema.safeParse({
+        signal: "overperformance",
+        confidence: "high",
+        reason: "Achieved more reps than target at same weight",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects a tiebreaker response with an unknown signal", () => {
+    expect(
+      SetSignalTiebreakerResponseSchema.safeParse({
+        signal: "unknown_signal",
+        confidence: "high",
+        reason: "x",
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("CrossModalContextRequestSchema / CrossModalContextResponseSchema", () => {
+  it("accepts a valid cross-modal context request", () => {
+    expect(
+      CrossModalContextRequestSchema.safeParse({
+        exerciseName: "Deadlift",
+        acuteCardioLoadRatio: 1.3,
+        suggestedGoEasierPercent: 0.05,
+        trainingPhase: "accumulation",
+        recentSessionSummary: "Hard 10km run yesterday",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("accepts a cross-modal context request with all nullable fields null", () => {
+    expect(
+      CrossModalContextRequestSchema.safeParse({
+        exerciseName: "Deadlift",
+        acuteCardioLoadRatio: null,
+        suggestedGoEasierPercent: null,
+        trainingPhase: null,
+        recentSessionSummary: null,
+      }).success,
+    ).toBe(true);
+  });
+
+  it("accepts a valid cross-modal context response (AiContextDriverInput shape)", () => {
+    expect(
+      CrossModalContextResponseSchema.safeParse({
+        contributionPct: -0.03,
+        reason: "High acute cardio load detected",
+        confidence: "medium",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects a cross-modal context response with contributionPct out of range", () => {
+    expect(
+      CrossModalContextResponseSchema.safeParse({
+        contributionPct: 0.5,
+        reason: "x",
+        confidence: "low",
+      }).success,
+    ).toBe(false);
   });
 });

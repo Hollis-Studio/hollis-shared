@@ -170,14 +170,34 @@ export declare const ProgressionBaselineSchema: z.ZodObject<{
             }>;
             createdAt: z.ZodCoercedDate<unknown>;
             resolvedAt: z.ZodNullable<z.ZodCoercedDate<unknown>>;
-            outcome: z.ZodNullable<z.ZodObject<{
+            outcome: z.ZodNullable<z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodDiscriminatedUnion<[z.ZodObject<{
+                kind: z.ZodLiteral<"lifting">;
                 actualTopSetKg: z.ZodNullable<z.ZodNumber>;
                 actualReps: z.ZodNumber;
                 reliabilityWeightedRir: z.ZodNullable<z.ZodNumber>;
                 missed: z.ZodBoolean;
                 completionRatio: z.ZodNullable<z.ZodNumber>;
                 resolvedAt: z.ZodCoercedDate<unknown>;
-            }, z.core.$strip>>;
+            }, z.core.$strip>, z.ZodObject<{
+                kind: z.ZodLiteral<"cardio">;
+                durationS: z.ZodNullable<z.ZodNumber>;
+                distanceKm: z.ZodNullable<z.ZodNumber>;
+                pace: z.ZodNullable<z.ZodNumber>;
+                mets: z.ZodNullable<z.ZodNumber>;
+                completionRatio: z.ZodNullable<z.ZodNumber>;
+                resolvedAt: z.ZodCoercedDate<unknown>;
+            }, z.core.$strip>], "kind">>>;
+            prescribedDurationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            prescribedDistanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            cardioOutcome: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+                kind: z.ZodLiteral<"cardio">;
+                durationS: z.ZodNullable<z.ZodNumber>;
+                distanceKm: z.ZodNullable<z.ZodNumber>;
+                pace: z.ZodNullable<z.ZodNumber>;
+                mets: z.ZodNullable<z.ZodNumber>;
+                completionRatio: z.ZodNullable<z.ZodNumber>;
+                resolvedAt: z.ZodCoercedDate<unknown>;
+            }, z.core.$strip>>>;
         }, z.core.$strip>>>;
         schemaVersion: z.ZodNumber;
     }, z.core.$strip>>>;
@@ -366,14 +386,34 @@ export declare const CardioBaselineSchema: z.ZodObject<{
             }>;
             createdAt: z.ZodCoercedDate<unknown>;
             resolvedAt: z.ZodNullable<z.ZodCoercedDate<unknown>>;
-            outcome: z.ZodNullable<z.ZodObject<{
+            outcome: z.ZodNullable<z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodDiscriminatedUnion<[z.ZodObject<{
+                kind: z.ZodLiteral<"lifting">;
                 actualTopSetKg: z.ZodNullable<z.ZodNumber>;
                 actualReps: z.ZodNumber;
                 reliabilityWeightedRir: z.ZodNullable<z.ZodNumber>;
                 missed: z.ZodBoolean;
                 completionRatio: z.ZodNullable<z.ZodNumber>;
                 resolvedAt: z.ZodCoercedDate<unknown>;
-            }, z.core.$strip>>;
+            }, z.core.$strip>, z.ZodObject<{
+                kind: z.ZodLiteral<"cardio">;
+                durationS: z.ZodNullable<z.ZodNumber>;
+                distanceKm: z.ZodNullable<z.ZodNumber>;
+                pace: z.ZodNullable<z.ZodNumber>;
+                mets: z.ZodNullable<z.ZodNumber>;
+                completionRatio: z.ZodNullable<z.ZodNumber>;
+                resolvedAt: z.ZodCoercedDate<unknown>;
+            }, z.core.$strip>], "kind">>>;
+            prescribedDurationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            prescribedDistanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            cardioOutcome: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+                kind: z.ZodLiteral<"cardio">;
+                durationS: z.ZodNullable<z.ZodNumber>;
+                distanceKm: z.ZodNullable<z.ZodNumber>;
+                pace: z.ZodNullable<z.ZodNumber>;
+                mets: z.ZodNullable<z.ZodNumber>;
+                completionRatio: z.ZodNullable<z.ZodNumber>;
+                resolvedAt: z.ZodCoercedDate<unknown>;
+            }, z.core.$strip>>>;
         }, z.core.$strip>>>;
         schemaVersion: z.ZodNumber;
     }, z.core.$strip>>>;

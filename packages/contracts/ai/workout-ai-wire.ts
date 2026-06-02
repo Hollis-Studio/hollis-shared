@@ -26,6 +26,12 @@
 
 import { z } from "zod";
 import { MuscleGroupSchema } from "../domain/muscles.js";
+import {
+  PrescriptionActionSchema,
+  PrescriptionDropStepSchema,
+  AiContextDriverInputSchema,
+  AiSetSignalOverrideSchema,
+} from "../progression/engine.js";
 
 // ============================================================================
 // Shared vocabulary
@@ -433,3 +439,59 @@ export const GymSetupResponseSchema = z.discriminatedUnion("type", [
   }),
 ]);
 export type GymSetupResponse = z.infer<typeof GymSetupResponseSchema>;
+
+// ============================================================================
+// Prescription narration
+// ============================================================================
+
+export const PrescriptionNarrationRequestSchema = z.object({
+  exerciseName: z.string(),
+  dropSteps: z.array(PrescriptionDropStepSchema),
+  action: PrescriptionActionSchema,
+  targetSummary: z.string(),
+  displayUnit: z.enum(["kg", "lbs"]),
+});
+export type PrescriptionNarrationRequest = z.infer<typeof PrescriptionNarrationRequestSchema>;
+
+export const PrescriptionNarrationResponseSchema = z.object({
+  shortReason: z.string().min(1),
+  fullNarration: z.string().min(1),
+  confidence: z.enum(["low", "medium", "high"]),
+});
+export type PrescriptionNarrationResponse = z.infer<typeof PrescriptionNarrationResponseSchema>;
+
+// ============================================================================
+// Set-signal tiebreaker
+// ============================================================================
+
+export const SetSignalTiebreakerRequestSchema = z.object({
+  exerciseName: z.string(),
+  targetWeightKg: z.number().nullable(),
+  targetReps: z.number().int().nullable(),
+  targetRIR: z.number().nullable(),
+  actualWeightKg: z.number().nullable(),
+  actualReps: z.number().int(),
+  actualRir: z.number().nullable(),
+  historicalMaxWeightKg: z.number().nullable(),
+  ambiguityReason: z.string().nullable(),
+});
+export type SetSignalTiebreakerRequest = z.infer<typeof SetSignalTiebreakerRequestSchema>;
+
+export const SetSignalTiebreakerResponseSchema = AiSetSignalOverrideSchema;
+export type SetSignalTiebreakerResponse = z.infer<typeof SetSignalTiebreakerResponseSchema>;
+
+// ============================================================================
+// Cross-modal context driver
+// ============================================================================
+
+export const CrossModalContextRequestSchema = z.object({
+  exerciseName: z.string(),
+  acuteCardioLoadRatio: z.number().nullable(),
+  suggestedGoEasierPercent: z.number().nullable(),
+  trainingPhase: z.string().nullable(),
+  recentSessionSummary: z.string().nullable(),
+});
+export type CrossModalContextRequest = z.infer<typeof CrossModalContextRequestSchema>;
+
+export const CrossModalContextResponseSchema = AiContextDriverInputSchema;
+export type CrossModalContextResponse = z.infer<typeof CrossModalContextResponseSchema>;

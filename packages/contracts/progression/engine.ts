@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SetSignalSchema } from "../domain/training-session-log.js";
 
 export const ProgressionCalibrationStateSchema = z.enum([
   "no_data",
@@ -69,12 +70,11 @@ export const PrescriptionTargetSourceSchema = z.enum([
 ]);
 
 /**
- * The realized result of a prescription, written when its session completes.
- * Compares what the engine asked for against what the user actually did so the
- * next prescription can reason from outcome rather than from a raw PR gap.
+ * The realized result of a lifting prescription.
  */
-export const PrescriptionOutcomeSchema = z.object({
-  /** Best working-set load actually achieved (kg for lifting; null for cardio). */
+export const LiftingPrescriptionOutcomeSchema = z.object({
+  kind: z.literal("lifting"),
+  /** Best working-set load actually achieved (kg). */
   actualTopSetKg: z.number().min(0).nullable(),
   /** Reps achieved on the best working set. */
   actualReps: z.number().int().min(0),
@@ -86,6 +86,35 @@ export const PrescriptionOutcomeSchema = z.object({
   completionRatio: z.number().min(0).nullable(),
   resolvedAt: z.coerce.date(),
 });
+
+/**
+ * The realized result of a cardio prescription.
+ */
+export const CardioPrescriptionOutcomeSchema = z.object({
+  kind: z.literal("cardio"),
+  durationS: z.number().min(0).nullable(),
+  distanceKm: z.number().min(0).nullable(),
+  pace: z.number().min(0).nullable(),
+  mets: z.number().min(0).nullable(),
+  completionRatio: z.number().min(0).nullable(),
+  resolvedAt: z.coerce.date(),
+});
+
+/**
+ * The realized result of a prescription, written when its session completes.
+ * Compares what the engine asked for against what the user actually did so the
+ * next prescription can reason from outcome rather than from a raw PR gap.
+ *
+ * Backward-compatible: legacy (kind-less) persisted lifting outcomes are
+ * silently promoted to `kind: "lifting"` via z.preprocess.
+ */
+export const PrescriptionOutcomeSchema = z.preprocess(
+  (val) =>
+    val && typeof val === "object" && !("kind" in (val as Record<string, unknown>))
+      ? { ...(val as Record<string, unknown>), kind: "lifting" }
+      : val,
+  z.discriminatedUnion("kind", [LiftingPrescriptionOutcomeSchema, CardioPrescriptionOutcomeSchema]),
+);
 
 /**
  * A durable, session-linked record of one prescription and (once resolved) its
@@ -112,6 +141,12 @@ export const PrescriptionRecordSchema = z.object({
   /** When the record left `active` (completed/abandoned/superseded); null while active. */
   resolvedAt: z.coerce.date().nullable(),
   outcome: PrescriptionOutcomeSchema.nullable(),
+  /** Prescribed cardio duration in seconds; null for lifting or when not prescribed. */
+  prescribedDurationSeconds: z.number().min(0).nullable().optional(),
+  /** Prescribed cardio distance in km; null for lifting or when not prescribed. */
+  prescribedDistanceKm: z.number().min(0).nullable().optional(),
+  /** Cardio-specific outcome record (separate from the lifting-centric `outcome` field). */
+  cardioOutcome: CardioPrescriptionOutcomeSchema.nullable().optional(),
 });
 
 /**
@@ -161,6 +196,49 @@ export const ProgressionEngineStateSchema = z.preprocess((value) => {
   return mapped ?? source;
 }, ProgressionEngineStateObjectSchema);
 
+// ============================================================================
+// Prescription drop step (narration / explanation trace)
+// ============================================================================
+
+export const PrescriptionDropStepSchema = z.object({
+  kind: z.enum(["anchor", "driver"]),
+  label: z.string().min(1),
+  pctChange: z.number(),
+  reason: z.string().min(1),
+});
+
+// ============================================================================
+// Cardio per-metric capacity
+// ============================================================================
+
+export const CardioCapacityMetricSchema = z.enum(["mets_min", "distance_km", "duration_min"]);
+
+export const CardioMetricCapacitySchema = z.object({
+  metric: CardioCapacityMetricSchema,
+  score: z.number(),
+  sessionCount: z.number().int().min(0),
+});
+
+// ============================================================================
+// AI engine-seam types
+// ============================================================================
+
+export const AiContextDriverInputSchema = z.object({
+  contributionPct: z.number().min(-0.08).max(0.08),
+  reason: z.string().min(1),
+  confidence: z.enum(["low", "medium", "high"]),
+});
+
+export const AiSetSignalOverrideSchema = z.object({
+  signal: SetSignalSchema,
+  confidence: z.enum(["low", "medium", "high"]),
+  reason: z.string().min(1),
+});
+
+// ============================================================================
+// Inferred types
+// ============================================================================
+
 export type ProgressionCalibrationState = z.infer<
   typeof ProgressionCalibrationStateSchema
 >;
@@ -171,8 +249,15 @@ export type PrescriptionStatus = z.infer<typeof PrescriptionStatusSchema>;
 export type PrescriptionTargetSource = z.infer<
   typeof PrescriptionTargetSourceSchema
 >;
+export type LiftingPrescriptionOutcome = z.infer<typeof LiftingPrescriptionOutcomeSchema>;
+export type CardioPrescriptionOutcome = z.infer<typeof CardioPrescriptionOutcomeSchema>;
 export type PrescriptionOutcome = z.infer<typeof PrescriptionOutcomeSchema>;
 export type PrescriptionRecord = z.infer<typeof PrescriptionRecordSchema>;
 export type ProgressionEngineState = z.infer<
   typeof ProgressionEngineStateSchema
 >;
+export type PrescriptionDropStep = z.infer<typeof PrescriptionDropStepSchema>;
+export type CardioCapacityMetric = z.infer<typeof CardioCapacityMetricSchema>;
+export type CardioMetricCapacity = z.infer<typeof CardioMetricCapacitySchema>;
+export type AiContextDriverInput = z.infer<typeof AiContextDriverInputSchema>;
+export type AiSetSignalOverride = z.infer<typeof AiSetSignalOverrideSchema>;

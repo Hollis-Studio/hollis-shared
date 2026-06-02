@@ -3,6 +3,10 @@ import { describe, expect, it } from "@jest/globals";
 import {
   PrescriptionRecordSchema,
   ProgressionEngineStateSchema,
+  PrescriptionOutcomeSchema,
+  CardioPrescriptionOutcomeSchema,
+  PrescriptionDropStepSchema,
+  CardioMetricCapacitySchema,
 } from "../progression/engine.js";
 
 const baseDecision = {
@@ -135,5 +139,141 @@ describe("PrescriptionRecordSchema lifecycle", () => {
       ],
     });
     expect(parsed.prescriptionLog).toHaveLength(1);
+  });
+});
+
+describe("PrescriptionOutcomeSchema discriminated union", () => {
+  it("(i) legacy kind-less lifting outcome defaults kind to 'lifting' via preprocess", () => {
+    const result = PrescriptionOutcomeSchema.safeParse({
+      actualTopSetKg: 100,
+      actualReps: 5,
+      reliabilityWeightedRir: 1.5,
+      missed: false,
+      completionRatio: 1.0,
+      resolvedAt: new Date("2026-06-01T11:00:00Z"),
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.kind).toBe("lifting");
+    }
+  });
+
+  it("(ii) cardio outcome with kind:'cardio' parses correctly", () => {
+    const result = PrescriptionOutcomeSchema.safeParse({
+      kind: "cardio",
+      durationS: 1800,
+      distanceKm: 5.0,
+      pace: 360,
+      mets: 8.5,
+      completionRatio: 0.95,
+      resolvedAt: new Date("2026-06-01T11:00:00Z"),
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.kind).toBe("cardio");
+    }
+  });
+
+  it("(ii) CardioPrescriptionOutcomeSchema parses a cardio outcome directly", () => {
+    const result = CardioPrescriptionOutcomeSchema.safeParse({
+      kind: "cardio",
+      durationS: null,
+      distanceKm: 10.0,
+      pace: null,
+      mets: null,
+      completionRatio: 1.0,
+      resolvedAt: new Date("2026-06-01T11:00:00Z"),
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe("PrescriptionDropStep / CardioMetricCapacity", () => {
+  it("(iii) PrescriptionDropStepSchema parses a valid drop step", () => {
+    const result = PrescriptionDropStepSchema.safeParse({
+      kind: "anchor",
+      label: "Training Max",
+      pctChange: -0.05,
+      reason: "Fatigue indicator above threshold",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("(iii) PrescriptionDropStepSchema rejects an invalid kind", () => {
+    const result = PrescriptionDropStepSchema.safeParse({
+      kind: "unknown",
+      label: "x",
+      pctChange: 0,
+      reason: "y",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("(iii) CardioMetricCapacitySchema parses a valid capacity record", () => {
+    const result = CardioMetricCapacitySchema.safeParse({
+      metric: "mets_min",
+      score: 450,
+      sessionCount: 12,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("(iii) CardioMetricCapacitySchema rejects an unknown metric", () => {
+    const result = CardioMetricCapacitySchema.safeParse({
+      metric: "calories",
+      score: 300,
+      sessionCount: 5,
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("PrescriptionRecord with new optional cardio fields", () => {
+  const baseRecord = {
+    id: "session-2::run::0",
+    sessionId: "session-2",
+    programExerciseId: null,
+    canonicalExerciseId: "treadmill_run",
+    order: 0,
+    decision: baseDecision,
+    targetSource: "engine" as const,
+    prescribedTopSetKg: null,
+    prescribedReps: 0,
+    status: "completed" as const,
+    createdAt: new Date("2026-06-01T10:00:00Z"),
+    resolvedAt: new Date("2026-06-01T11:00:00Z"),
+    outcome: null,
+  };
+
+  it("(iv) PrescriptionRecord with new optional cardio fields parses", () => {
+    const result = PrescriptionRecordSchema.safeParse({
+      ...baseRecord,
+      prescribedDurationSeconds: 1800,
+      prescribedDistanceKm: 5.0,
+      cardioOutcome: {
+        kind: "cardio",
+        durationS: 1750,
+        distanceKm: 4.9,
+        pace: 357,
+        mets: 8.2,
+        completionRatio: 0.98,
+        resolvedAt: new Date("2026-06-01T11:00:00Z"),
+      },
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.prescribedDurationSeconds).toBe(1800);
+      expect(result.data.cardioOutcome?.kind).toBe("cardio");
+    }
+  });
+
+  it("(iv) PrescriptionRecord without optional cardio fields still parses", () => {
+    const result = PrescriptionRecordSchema.safeParse(baseRecord);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.prescribedDurationSeconds).toBeUndefined();
+      expect(result.data.prescribedDistanceKm).toBeUndefined();
+      expect(result.data.cardioOutcome).toBeUndefined();
+    }
   });
 });

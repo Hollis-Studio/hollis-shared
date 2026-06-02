@@ -1,5 +1,52 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.24 (2026-06-01)
+
+All changes are **additive / backward-compatible**. No existing exports were
+modified or removed.
+
+### `progression/engine.ts`
+
+- **Discriminated-union `PrescriptionOutcome` (backward-compatible).** The flat
+  `PrescriptionOutcomeSchema` is replaced by a discriminated union of
+  **`LiftingPrescriptionOutcomeSchema`** (`kind: "lifting"`) and
+  **`CardioPrescriptionOutcomeSchema`** (`kind: "cardio"`). A `z.preprocess`
+  silently promotes legacy kind-less persisted lifting outcomes to
+  `kind: "lifting"`, so existing data keeps parsing without any DB migration.
+  Inferred types **`LiftingPrescriptionOutcome`** and
+  **`CardioPrescriptionOutcome`** are also exported.
+- **`PrescriptionRecord` new optional cardio fields.** Three new optional+nullable
+  fields added: **`prescribedDurationSeconds`**, **`prescribedDistanceKm`**, and
+  **`cardioOutcome`** (`CardioPrescriptionOutcomeSchema`). Older records without
+  these fields continue to parse.
+- **`PrescriptionDropStepSchema`** / **`PrescriptionDropStep`** — a single step
+  in the prescription drop trace (anchor or driver, label, pctChange, reason).
+- **`CardioCapacityMetricSchema`** / **`CardioCapacityMetric`** — enum
+  `"mets_min" | "distance_km" | "duration_min"` for cardio capacity accounting.
+- **`CardioMetricCapacitySchema`** / **`CardioMetricCapacity`** — per-metric
+  capacity record (metric, score, sessionCount).
+- **`AiContextDriverInputSchema`** / **`AiContextDriverInput`** — AI seam type
+  for cross-modal context contribution (contributionPct, reason, confidence).
+- **`AiSetSignalOverrideSchema`** / **`AiSetSignalOverride`** — AI seam type for
+  set-signal tiebreaking (signal reuses `SetSignalSchema` from
+  `domain/training-session-log`, confidence, reason).
+
+### `ai/workout-ai-wire.ts`
+
+Three new request/response schema pairs (additive):
+
+- **`PrescriptionNarrationRequestSchema`** / **`PrescriptionNarrationRequest`**
+  and **`PrescriptionNarrationResponseSchema`** / **`PrescriptionNarrationResponse`**
+  — AI endpoint that narrates a prescription decision in human-readable form.
+- **`SetSignalTiebreakerRequestSchema`** / **`SetSignalTiebreakerRequest`** and
+  **`SetSignalTiebreakerResponseSchema`** / **`SetSignalTiebreakerResponse`**
+  (aliased to `AiSetSignalOverrideSchema`) — AI endpoint that resolves ambiguous
+  set-signal classification.
+- **`CrossModalContextRequestSchema`** / **`CrossModalContextRequest`** and
+  **`CrossModalContextResponseSchema`** / **`CrossModalContextResponse`**
+  (aliased to `AiContextDriverInputSchema`) — AI endpoint that derives a
+  cross-modal (cardio→lifting) context driver.
+
 ## 0.2.0-alpha.23 (2026-06-01)
 
 Progression Engine V2 — prescription feedback loop + modality-neutral fields.
