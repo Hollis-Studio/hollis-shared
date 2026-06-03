@@ -62,4 +62,10 @@ export * from "./admin-tasks.js";
 export * from "./auth-tokens.js";
 export { METRIC_CATEGORY, METRIC_CATEGORY_LABELS, METRIC_VALUE_TYPE, METRIC_VALUE_TYPE_LABELS, METRIC_VALUE_TYPES, MetricValueTypeSchema, TREND_DIRECTION, TREND_DIRECTION_LABELS, TREND_DIRECTIONS, TrendDirectionSchema, isMetricCategory, isMetricValueType, isTrendDirection, type MetricValueType, type TrendDirection, } from "./health-metric-types.js";
 export * from "./marketing.js";
+export * from './gym.js';
+export * from './exercise-workouts.js';
+export * from './workouts-user-profile.js';
+export * from './workouts-injuries.js';
+export * from './workouts-weeks.js';
+export * from './workouts-conversation-summary.js';
 //# sourceMappingURL=index.d.ts.map

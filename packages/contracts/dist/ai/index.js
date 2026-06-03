@@ -27,7 +27,9 @@ export * from './prompt-templates.js';
 // hollis-workouts server and mobile client. Also available as the leaner
 // subpath '@hollis-studio/contracts/ai/workout-ai-wire'.
 export * from './workout-ai-wire.js';
-// Note: Domain constants (AI_NOTE_CATEGORIES, WORKOUT_SECTION_TYPES, etc.) 
+// Note: Domain constants (AI_NOTE_CATEGORIES, WORKOUT_SECTION_TYPES, etc.)
 // are already exported via shared/contracts/domain
 // No need to re-export them here to avoid duplicate exports
+// Workouts AI persistence entities - AiAuditLogEntrySchema, SmartBuilderDraftPayloadSchema, etc.
+export * from './persistence.js';
 //# sourceMappingURL=index.js.map

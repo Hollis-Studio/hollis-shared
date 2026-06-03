@@ -211,4 +211,9 @@ export const AdvancedUnitPreferencesSchema = z.object({
     temperature: TemperatureUnitSchema,
     water: WaterUnitSchema,
 });
+// ============================================================================
+// WEIGHT MODES (Workouts-specific: absolute vs. relative loading)
+// ============================================================================
+export const WEIGHT_MODES = ['absolute', 'relative'];
+export const WeightModeSchema = z.enum(WEIGHT_MODES);
 //# sourceMappingURL=units.js.map

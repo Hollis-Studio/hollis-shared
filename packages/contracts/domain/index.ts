@@ -353,3 +353,21 @@ export {
 
 // Marketing domain - AI-generated marketing asset image types and schemas
 export * from "./marketing.js";
+
+// Workouts gym domain - GymProfileSchema, GymEquipmentItemSchema, GymExerciseInstanceSchema, etc.
+export * from './gym.js';
+
+// Workouts exercise wire shapes - UserExerciseSyncSchema, CanonicalExerciseRecordSchema, etc.
+export * from './exercise-workouts.js';
+
+// Workouts user profile - WorkoutsUserProfileSchema, UserSettingsSchema, UserEntitlementsSchema
+export * from './workouts-user-profile.js';
+
+// Workouts injury records - InjuryRecordSchema, InjuryRecordBodySchema
+export * from './workouts-injuries.js';
+
+// Workouts week documents - WeekDocumentSchema, WeekDocumentBodySchema
+export * from './workouts-weeks.js';
+
+// Workouts conversation rolling summary - ConversationRollingSummarySchema, etc.
+export * from './workouts-conversation-summary.js';

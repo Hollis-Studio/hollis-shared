@@ -44,7 +44,7 @@ export const ProgressionBaselineSchema = z.object({
   plateauDeloadUntil: z.coerce.date().nullable().optional(),
   plateauDeloadReductionPercent: z.number().min(0).max(0.99).optional(),
   lastPlateauAlertedAt: z.coerce.date().nullable().optional(),
-  schemaVersion: z.number().optional(),
+  schemaVersion: z.number().nullish(),
 });
 
 export const CardioBaselineEntrySchema = z.object({

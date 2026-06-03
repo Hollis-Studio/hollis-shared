@@ -21,4 +21,5 @@ export * from './ai-types.js';
 export * from './ai-validation.js';
 export * from './prompt-templates.js';
 export * from './workout-ai-wire.js';
+export * from './persistence.js';
 //# sourceMappingURL=index.d.ts.map

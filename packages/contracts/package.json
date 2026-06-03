@@ -1,7 +1,7 @@
 {
   "_comment_BUILD_001": "RESOLVED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Add explicit package.json exports only for currently consumed public subpaths. Do not add wildcard exports or local compatibility barrels. Reviewed: 2026-05-12 (Phase E/F shared extraction cleanup)",
   "name": "@hollis-studio/contracts",
-  "version": "0.2.0-alpha.27",
+  "version": "0.2.0-alpha.29",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -258,6 +258,34 @@
       "types": "./dist/ai/workout-ai-wire.d.ts",
       "import": "./dist/ai/workout-ai-wire.js",
       "default": "./dist/ai/workout-ai-wire.js"
+    },
+    "./ai/persistence": {
+      "import": "./dist/ai/persistence.js",
+      "types": "./dist/ai/persistence.d.ts"
+    },
+    "./domain/gym": {
+      "import": "./dist/domain/gym.js",
+      "types": "./dist/domain/gym.d.ts"
+    },
+    "./domain/exercise-workouts": {
+      "import": "./dist/domain/exercise-workouts.js",
+      "types": "./dist/domain/exercise-workouts.d.ts"
+    },
+    "./domain/workouts-user-profile": {
+      "import": "./dist/domain/workouts-user-profile.js",
+      "types": "./dist/domain/workouts-user-profile.d.ts"
+    },
+    "./domain/workouts-injuries": {
+      "import": "./dist/domain/workouts-injuries.js",
+      "types": "./dist/domain/workouts-injuries.d.ts"
+    },
+    "./domain/workouts-weeks": {
+      "import": "./dist/domain/workouts-weeks.js",
+      "types": "./dist/domain/workouts-weeks.d.ts"
+    },
+    "./domain/workouts-conversation-summary": {
+      "import": "./dist/domain/workouts-conversation-summary.js",
+      "types": "./dist/domain/workouts-conversation-summary.d.ts"
     },
     "./public": {
       "types": "./dist/public/index.d.ts",

@@ -233,7 +233,7 @@ export declare const ProgressionBaselineSchema: z.ZodObject<{
     plateauDeloadUntil: z.ZodOptional<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
     plateauDeloadReductionPercent: z.ZodOptional<z.ZodNumber>;
     lastPlateauAlertedAt: z.ZodOptional<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
-    schemaVersion: z.ZodOptional<z.ZodNumber>;
+    schemaVersion: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
 }, z.core.$strip>;
 export declare const CardioBaselineEntrySchema: z.ZodObject<{
     sessionId: z.ZodString;

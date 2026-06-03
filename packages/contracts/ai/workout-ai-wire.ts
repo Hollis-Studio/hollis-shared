@@ -834,3 +834,148 @@ export type CrossModalContextRequest = z.infer<typeof CrossModalContextRequestSc
 
 export const CrossModalContextResponseSchema = AiContextDriverInputSchema;
 export type CrossModalContextResponse = z.infer<typeof CrossModalContextResponseSchema>;
+
+// ============================================================================
+// NEW ADDITIONS for alpha.29
+// ============================================================================
+import { EquipmentTypeSchema } from '../domain/equipment.js';
+
+// --- RecognizeEquipmentBodySchema ---
+export const RecognizeEquipmentBodySchema = z.object({
+  imageBase64: z.string().min(1),
+  userDescription: z.string().max(200).optional(),
+});
+export type RecognizeEquipmentBody = z.infer<typeof RecognizeEquipmentBodySchema>;
+
+// --- MatchExercisesBodySchema ---
+export const ExerciseSummarySchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  category: z.string().min(1),
+  primaryMuscleGroups: z.array(z.string()),
+  equipmentType: z.string(),
+});
+export type ExerciseSummary = z.infer<typeof ExerciseSummarySchema>;
+
+export const MatchExercisesBodySchema = z.object({
+  freestyleNames: z.array(z.string().min(1).max(200)).min(1).max(20),
+  availableExercises: z.array(ExerciseSummarySchema).max(2500),
+});
+export type MatchExercisesBody = z.infer<typeof MatchExercisesBodySchema>;
+
+// --- GymSetupChatBodySchema ---
+// Note: no .min(1) on content (differs from SmartBuilder ConversationMessageSchema)
+const GymSetupConversationMessageSchema = z.object({
+  role: z.enum(['user', 'assistant']),
+  content: z.string().max(4000),
+});
+export type GymSetupConversationMessage = z.infer<typeof GymSetupConversationMessageSchema>;
+
+export const GymSetupChatBodySchema = z.object({
+  conversationHistory: z.array(GymSetupConversationMessageSchema).max(50),
+  currentEquipment: z.array(z.record(z.string(), z.unknown())).max(500),
+  gymName: z.string().optional(),
+});
+export type GymSetupChatBody = z.infer<typeof GymSetupChatBodySchema>;
+
+// --- TagExerciseMusclesBodySchema ---
+export const TagExerciseMusclesBodySchema = z.object({
+  exerciseNames: z.array(z.string().min(1)).min(1).max(100),
+});
+export type TagExerciseMusclesBody = z.infer<typeof TagExerciseMusclesBodySchema>;
+
+// --- ExerciseSearchSemanticScoresBodySchema + ResponseSchema ---
+export const SemanticScoreExerciseSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  searchText: z.string().min(1).max(2000).optional(),
+});
+export type SemanticScoreExercise = z.infer<typeof SemanticScoreExerciseSchema>;
+
+export const ExerciseSearchSemanticScoresBodySchema = z.object({
+  query: z.string().trim().min(1).max(200),
+  exercises: z.array(SemanticScoreExerciseSchema).min(1).max(150),
+});
+export type ExerciseSearchSemanticScoresBody = z.infer<typeof ExerciseSearchSemanticScoresBodySchema>;
+
+export const ExerciseSearchSemanticScoresResponseSchema = z.object({
+  scoresByExerciseId: z.record(z.string(), z.number().min(0).max(1)),
+});
+export type ExerciseSearchSemanticScoresResponse = z.infer<typeof ExerciseSearchSemanticScoresResponseSchema>;
+
+// --- LogWorkoutAudioBodySchema + ResponseV2Schema ---
+export const LoggedSetContextSchema = z.object({
+  setIndex: z.number().int().min(0),
+  weightKg: z.number().nullable(),
+  reps: z.number().int().nullable(),
+  rir: z.number().int().nullable(),
+  durationSeconds: z.number().int().nullable(),
+  isConfirmed: z.boolean(),
+  isWarmup: z.boolean(),
+});
+export type LoggedSetContext = z.infer<typeof LoggedSetContextSchema>;
+
+export const AudioExerciseContextSchema = z.object({
+  exerciseIndex: z.number().int().min(0),
+  exerciseName: z.string().trim().min(1),
+  canonicalExerciseId: z.string().nullable(),
+  trackingMode: z.enum(['reps', 'timed', 'cardio', 'stretch']),
+  targetSetCount: z.number().int().min(0),
+  isActive: z.boolean().optional(),
+  loggedSets: z.array(LoggedSetContextSchema).optional(),
+});
+export type AudioExerciseContext = z.infer<typeof AudioExerciseContextSchema>;
+
+export const LogWorkoutAudioBodySchema = z.object({
+  audioBase64: z.string().min(1),
+  mimeType: z.enum(['audio/m4a', 'audio/mp4', 'audio/wav', 'audio/webm']),
+  defaultWeightUnit: z.enum(['kg', 'lbs']),
+  hideRirControls: z.boolean().optional(),
+  protocolVersion: z.literal(2).optional(),
+  exercises: z.array(AudioExerciseContextSchema).max(30),
+});
+export type LogWorkoutAudioBody = z.infer<typeof LogWorkoutAudioBodySchema>;
+
+// V2 protocol only (canonical forward shape). V1 legacy envelope stays local to server.
+// VoiceLogOperationSchema is already exported from this file.
+export const LogWorkoutAudioResponseV2Schema = z.object({
+  summary: z.string().min(1),
+  transcript: z.string().default(''),
+  operations: z.array(VoiceLogOperationSchema).max(50),
+  unmatched: z.array(z.string()).max(20),
+});
+export type LogWorkoutAudioResponseV2 = z.infer<typeof LogWorkoutAudioResponseV2Schema>;
+
+// --- BuildExerciseProfileBodySchema + ResponseSchema ---
+// category = top-level routing mode (weightlifting|cardio|stretching)
+// trackingMode = fine-grained set-logging mode (reps|timed|cardio|stretch)
+// Named ExerciseTopLevelCategory/ExerciseFineGrainedMode to avoid collision
+// with contracts ExerciseCategorySchema (Health-app vocabulary).
+export const ExerciseTopLevelCategorySchema = z.enum(['weightlifting', 'cardio', 'stretching']);
+export type ExerciseTopLevelCategory = z.infer<typeof ExerciseTopLevelCategorySchema>;
+
+export const ExerciseFineGrainedModeSchema = z.enum(['reps', 'timed', 'cardio', 'stretch']);
+export type ExerciseFineGrainedMode = z.infer<typeof ExerciseFineGrainedModeSchema>;
+
+export const BuildExerciseProfileBodySchema = z.object({
+  exerciseName: z.string().trim().min(1).max(200),
+  hint: z.string().max(200).optional(),
+});
+export type BuildExerciseProfileBody = z.infer<typeof BuildExerciseProfileBodySchema>;
+
+export const BuildExerciseProfileResponseSchema = z.object({
+  category: ExerciseTopLevelCategorySchema,
+  trackingMode: ExerciseFineGrainedModeSchema,
+  primaryMuscleGroups: z.array(MuscleGroupSchema).min(1),
+  secondaryMuscleGroups: z.array(MuscleGroupSchema),
+  equipmentType: EquipmentTypeSchema,
+});
+export type BuildExerciseProfileResponse = z.infer<typeof BuildExerciseProfileResponseSchema>;
+
+// --- SmartReaderUsageResponseSchema ---
+export const SmartReaderUsageResponseSchema = z.object({
+  used: z.number().int().min(0),
+  limit: z.number().int().min(0),
+  remaining: z.number().int().min(0),
+});
+export type SmartReaderUsageResponse = z.infer<typeof SmartReaderUsageResponseSchema>;

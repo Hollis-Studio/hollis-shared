@@ -262,4 +262,10 @@ export declare const AdvancedUnitPreferencesSchema: z.ZodObject<{
     }>;
 }, z.core.$strip>;
 export type AdvancedUnitPreferencesContract = z.infer<typeof AdvancedUnitPreferencesSchema>;
+export declare const WEIGHT_MODES: readonly ["absolute", "relative"];
+export declare const WeightModeSchema: z.ZodEnum<{
+    absolute: "absolute";
+    relative: "relative";
+}>;
+export type WeightMode = z.infer<typeof WeightModeSchema>;
 //# sourceMappingURL=units.d.ts.map

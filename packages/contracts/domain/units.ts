@@ -269,3 +269,11 @@ export const AdvancedUnitPreferencesSchema = z.object({
 });
 
 export type AdvancedUnitPreferencesContract = z.infer<typeof AdvancedUnitPreferencesSchema>;
+
+// ============================================================================
+// WEIGHT MODES (Workouts-specific: absolute vs. relative loading)
+// ============================================================================
+
+export const WEIGHT_MODES = ['absolute', 'relative'] as const;
+export const WeightModeSchema = z.enum(WEIGHT_MODES);
+export type WeightMode = z.infer<typeof WeightModeSchema>;
