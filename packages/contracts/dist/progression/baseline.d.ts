@@ -162,6 +162,7 @@ export declare const ProgressionBaselineSchema: z.ZodObject<{
             }>;
             prescribedTopSetKg: z.ZodNullable<z.ZodNumber>;
             prescribedReps: z.ZodNumber;
+            liveAdaptedTopSetKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             status: z.ZodEnum<{
                 active: "active";
                 completed: "completed";
@@ -215,6 +216,15 @@ export declare const ProgressionBaselineSchema: z.ZodObject<{
                 resolvedAt: z.ZodCoercedDate<unknown>;
             }, z.core.$strip>>>;
         }, z.core.$strip>>>;
+        personalization: z.ZodOptional<z.ZodObject<{
+            e1rmEstimateKg: z.ZodNullable<z.ZodNumber>;
+            e1rmVarianceKg2: z.ZodNullable<z.ZodNumber>;
+            progressionSuccessRate: z.ZodNullable<z.ZodNumber>;
+            trendSlopePctPerWeek: z.ZodNullable<z.ZodNumber>;
+            fatiguePct: z.ZodNullable<z.ZodNumber>;
+            sampleSize: z.ZodNumber;
+            updatedAt: z.ZodNullable<z.ZodCoercedDate<unknown>>;
+        }, z.core.$strip>>;
         schemaVersion: z.ZodNumber;
     }, z.core.$strip>>>;
     phaseExitE1RM_Kg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
@@ -394,6 +404,7 @@ export declare const CardioBaselineSchema: z.ZodObject<{
             }>;
             prescribedTopSetKg: z.ZodNullable<z.ZodNumber>;
             prescribedReps: z.ZodNumber;
+            liveAdaptedTopSetKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             status: z.ZodEnum<{
                 active: "active";
                 completed: "completed";
@@ -447,6 +458,15 @@ export declare const CardioBaselineSchema: z.ZodObject<{
                 resolvedAt: z.ZodCoercedDate<unknown>;
             }, z.core.$strip>>>;
         }, z.core.$strip>>>;
+        personalization: z.ZodOptional<z.ZodObject<{
+            e1rmEstimateKg: z.ZodNullable<z.ZodNumber>;
+            e1rmVarianceKg2: z.ZodNullable<z.ZodNumber>;
+            progressionSuccessRate: z.ZodNullable<z.ZodNumber>;
+            trendSlopePctPerWeek: z.ZodNullable<z.ZodNumber>;
+            fatiguePct: z.ZodNullable<z.ZodNumber>;
+            sampleSize: z.ZodNumber;
+            updatedAt: z.ZodNullable<z.ZodCoercedDate<unknown>>;
+        }, z.core.$strip>>;
         schemaVersion: z.ZodNumber;
     }, z.core.$strip>>>;
 }, z.core.$strip>;

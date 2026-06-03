@@ -42,6 +42,18 @@ export declare const SetSignalSchema: z.ZodEnum<{
 }>;
 export type SetSignal = z.infer<typeof SetSignalSchema>;
 /**
+ * Optional one-tap user-reported effort for a working set ("how'd that feel?").
+ * Mass-market alternative to a numeric RIR/RPE scale: inferred effort is the
+ * default, this is an explicit override the user can tap. Maps onto adaptation
+ * headroom (easy → surplus, hard → low headroom) without exposing a numeric scale.
+ */
+export declare const PerceivedEffortSchema: z.ZodEnum<{
+    easy: "easy";
+    right: "right";
+    hard: "hard";
+}>;
+export type PerceivedEffort = z.infer<typeof PerceivedEffortSchema>;
+/**
  * A snapshot of the prescription a set was judged against. Persisted on the set
  * (the target the user actually faced after live adaptation) and on the exercise
  * (the original, pre-adaptation plan — see SessionExercise.originalTargets).
@@ -96,8 +108,8 @@ export declare const SessionSetSchema: z.ZodObject<{
     }>>;
     setGroupId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     side: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
-        left: "left";
         right: "right";
+        left: "left";
     }>>>;
     originExerciseId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     repClass: z.ZodOptional<z.ZodEnum<{
@@ -123,6 +135,11 @@ export declare const SessionSetSchema: z.ZodObject<{
         intentionally_easier: "intentionally_easier";
         suspected_misinput: "suspected_misinput";
     }>>;
+    perceivedEffort: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+        easy: "easy";
+        right: "right";
+        hard: "hard";
+    }>>>;
     isSuspectedMisinput: z.ZodOptional<z.ZodBoolean>;
     leftReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     rightReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
@@ -133,8 +150,8 @@ export declare const StretchSetSchema: z.ZodObject<{
     setNumber: z.ZodNumber;
     holdDurationSeconds: z.ZodNumber;
     side: z.ZodEnum<{
-        left: "left";
         right: "right";
+        left: "left";
         both: "both";
     }>;
     completedAt: z.ZodCoercedDate<unknown>;
@@ -145,8 +162,8 @@ export declare const StretchSessionDataSchema: z.ZodObject<{
         setNumber: z.ZodNumber;
         holdDurationSeconds: z.ZodNumber;
         side: z.ZodEnum<{
-            left: "left";
             right: "right";
+            left: "left";
             both: "both";
         }>;
         completedAt: z.ZodCoercedDate<unknown>;
@@ -205,8 +222,8 @@ export declare const SessionExerciseSchema: z.ZodObject<{
         }>>;
         setGroupId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         side: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
-            left: "left";
             right: "right";
+            left: "left";
         }>>>;
         originExerciseId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         repClass: z.ZodOptional<z.ZodEnum<{
@@ -232,6 +249,11 @@ export declare const SessionExerciseSchema: z.ZodObject<{
             intentionally_easier: "intentionally_easier";
             suspected_misinput: "suspected_misinput";
         }>>;
+        perceivedEffort: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+            easy: "easy";
+            right: "right";
+            hard: "hard";
+        }>>>;
         isSuspectedMisinput: z.ZodOptional<z.ZodBoolean>;
         leftReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         rightReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
@@ -277,8 +299,8 @@ export declare const SessionExerciseSchema: z.ZodObject<{
             setNumber: z.ZodNumber;
             holdDurationSeconds: z.ZodNumber;
             side: z.ZodEnum<{
-                left: "left";
                 right: "right";
+                left: "left";
                 both: "both";
             }>;
             completedAt: z.ZodCoercedDate<unknown>;
@@ -429,8 +451,8 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
             }>>;
             setGroupId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
             side: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
-                left: "left";
                 right: "right";
+                left: "left";
             }>>>;
             originExerciseId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
             repClass: z.ZodOptional<z.ZodEnum<{
@@ -456,6 +478,11 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
                 intentionally_easier: "intentionally_easier";
                 suspected_misinput: "suspected_misinput";
             }>>;
+            perceivedEffort: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+                easy: "easy";
+                right: "right";
+                hard: "hard";
+            }>>>;
             isSuspectedMisinput: z.ZodOptional<z.ZodBoolean>;
             leftReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             rightReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
@@ -501,8 +528,8 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
                 setNumber: z.ZodNumber;
                 holdDurationSeconds: z.ZodNumber;
                 side: z.ZodEnum<{
-                    left: "left";
                     right: "right";
+                    left: "left";
                     both: "both";
                 }>;
                 completedAt: z.ZodCoercedDate<unknown>;
@@ -637,8 +664,8 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
             }>>;
             setGroupId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
             side: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
-                left: "left";
                 right: "right";
+                left: "left";
             }>>>;
             originExerciseId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
             repClass: z.ZodOptional<z.ZodEnum<{
@@ -664,6 +691,11 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
                 intentionally_easier: "intentionally_easier";
                 suspected_misinput: "suspected_misinput";
             }>>;
+            perceivedEffort: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+                easy: "easy";
+                right: "right";
+                hard: "hard";
+            }>>>;
             isSuspectedMisinput: z.ZodOptional<z.ZodBoolean>;
             leftReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             rightReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
@@ -709,8 +741,8 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
                 setNumber: z.ZodNumber;
                 holdDurationSeconds: z.ZodNumber;
                 side: z.ZodEnum<{
-                    left: "left";
                     right: "right";
+                    left: "left";
                     both: "both";
                 }>;
                 completedAt: z.ZodCoercedDate<unknown>;

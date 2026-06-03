@@ -39,6 +39,15 @@ export const SetSignalSchema = z.enum([
 export type SetSignal = z.infer<typeof SetSignalSchema>;
 
 /**
+ * Optional one-tap user-reported effort for a working set ("how'd that feel?").
+ * Mass-market alternative to a numeric RIR/RPE scale: inferred effort is the
+ * default, this is an explicit override the user can tap. Maps onto adaptation
+ * headroom (easy → surplus, hard → low headroom) without exposing a numeric scale.
+ */
+export const PerceivedEffortSchema = z.enum(["easy", "right", "hard"]);
+export type PerceivedEffort = z.infer<typeof PerceivedEffortSchema>;
+
+/**
  * A snapshot of the prescription a set was judged against. Persisted on the set
  * (the target the user actually faced after live adaptation) and on the exercise
  * (the original, pre-adaptation plan — see SessionExercise.originalTargets).
@@ -103,6 +112,12 @@ export const SessionSetSchema = z.object({
   target: SetTargetSnapshotSchema.optional(),
   /** The signal this set produced relative to its target. */
   signal: SetSignalSchema.optional(),
+  /**
+   * Optional one-tap user-reported effort ("easy / right / hard"). When present
+   * it refines/overrides the inferred set signal; when absent the engine infers
+   * effort from reps-vs-target. Never required.
+   */
+  perceivedEffort: PerceivedEffortSchema.nullable().optional(),
   /**
    * True when the logged weight looks implausible (~2x target/history). A
    * flag-only, reviewable data-quality marker — distinct from isOutlier, which

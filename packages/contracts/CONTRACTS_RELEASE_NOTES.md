@@ -1,5 +1,31 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.31 (2026-06-03)
+
+All changes are **additive / backward-compatible**. Foundation for the Workouts
+Adaptive Coach work (mid-workout live adaptation + per-user personalization +
+coach UX). See `hollis-workouts/docs/plans/2026-06-03-adaptive-coach-spec.md`.
+
+### `domain/training-session-log.ts`
+
+- **`PerceivedEffortSchema`** (`"easy" | "right" | "hard"`) + new optional
+  `SessionSet.perceivedEffort`. A one-tap, mass-market alternative to numeric
+  RIR: inferred effort stays the default; this is an explicit override that
+  refines the set signal. Never required.
+
+### `progression/engine.ts`
+
+- **`PrescriptionRecord.liveAdaptedTopSetKg`** (optional, nullable). The best-set
+  load the live-adapted in-session plan actually asked for by session end, so the
+  next prescription reasons from what the user was coached toward rather than the
+  untouched pre-session plan. Null for cardio / when no live adaptation occurred.
+- **`ProgressionPersonalizationSchema`** + optional
+  `ProgressionEngineState.personalization`. Per-exercise learned scalars (Kalman
+  e1RM estimate + variance, progression success rate, trend slope %/wk, fatigue
+  percent, sampleSize, updatedAt). Every field is one inspectable number so a
+  load decision stays explainable in one sentence; all nullable with population
+  fallback until enough user history exists. Respects the first-lift imperative.
+
 ## 0.2.0-alpha.27 (2026-06-02)
 
 All changes are **additive / backward-compatible**. Foundation for the Workouts

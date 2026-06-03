@@ -161,6 +161,14 @@ export const PrescriptionRecordSchema = z.object({
   prescribedTopSetKg: z.number().min(0).nullable(),
   /** Prescribed best-set reps. */
   prescribedReps: z.number().int().min(0),
+  /**
+   * The best-set load the live-adapted in-session plan actually asked for by the
+   * end of the session (kg), after up/down mid-workout adaptation. Lets the next
+   * prescription reason from what the user was actually coached toward rather than
+   * the untouched pre-session plan in `prescribedTopSetKg`. Null for cardio or when
+   * no live adaptation occurred (falls back to `prescribedTopSetKg`).
+   */
+  liveAdaptedTopSetKg: z.number().min(0).nullable().optional(),
   status: PrescriptionStatusSchema,
   createdAt: z.coerce.date(),
   /** When the record left `active` (completed/abandoned/superseded); null while active. */
@@ -186,6 +194,35 @@ export const PrescriptionRecordSchema = z.object({
 });
 
 /**
+ * Per-exercise learned personalization scalars. Every field is a single
+ * human-interpretable number so a load decision stays explainable in one
+ * sentence and can never become a black box. These are *inputs* that nudge the
+ * deterministic engine's named constants — they never set a weight directly.
+ *
+ * All nullable: until enough of the user's own history exists (`sampleSize`
+ * below the engine's cold-start floor) the engine falls back to population
+ * constants. Respects the first-lift imperative — nothing is seeded before the
+ * user's first logged set.
+ */
+export const ProgressionPersonalizationSchema = z.object({
+  /** Kalman-filtered estimate of the user's true e1RM for this lift (kg); null until seeded. */
+  e1rmEstimateKg: z.number().min(0).nullable(),
+  /** Estimate variance (kg²) — "how confident we are"; widens after a training gap. */
+  e1rmVarianceKg2: z.number().min(0).nullable(),
+  /** Rolling progression success rate over the recent window (0..1); null until enough data. */
+  progressionSuccessRate: z.number().min(0).max(1).nullable(),
+  /** Personal strength trend slope in percent-of-e1RM per week; null until enough data. */
+  trendSlopePctPerWeek: z.number().nullable(),
+  /** Personal within-session fatigue percent (0..0.2) for backoff sizing; null until calibrated. */
+  fatiguePct: z.number().min(0).max(0.2).nullable(),
+  /** Number of distinct sessions backing these estimates (cold-start gate). */
+  sampleSize: z.number().int().min(0),
+  /** When these scalars were last recomputed; null when never. */
+  updatedAt: z.coerce.date().nullable(),
+});
+export type ProgressionPersonalization = z.infer<typeof ProgressionPersonalizationSchema>;
+
+/**
  * Persisted Progression Engine V2 state.
  *
  * The magnitude fields are modality-neutral: for lifting they are kilograms,
@@ -208,6 +245,12 @@ const ProgressionEngineStateObjectSchema = z.object({
   lastDecision: PrescriptionDecisionSchema.optional(),
   /** Bounded ring buffer of recent prescription records (newest last). */
   prescriptionLog: z.array(PrescriptionRecordSchema).optional(),
+  /**
+   * Per-user learned personalization scalars (Kalman e1RM, success rate, trend
+   * slope, fatigue percent). Optional/absent until the user has enough of their
+   * own history; the engine falls back to population constants when missing.
+   */
+  personalization: ProgressionPersonalizationSchema.optional(),
   schemaVersion: z.number().int().min(1),
 });
 
