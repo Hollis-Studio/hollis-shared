@@ -9,12 +9,20 @@
  */
 import { z } from 'zod';
 export declare const WORKOUTS_TRACKING_MODES: readonly ["weightlifting", "cardio", "stretching"];
+/** @deprecated Use WorkoutsModalitySchema */
 export declare const WorkoutsTrackingModeSchema: z.ZodEnum<{
     cardio: "cardio";
     weightlifting: "weightlifting";
     stretching: "stretching";
 }>;
+/** @deprecated Use WorkoutsModality */
 export type WorkoutsTrackingMode = z.infer<typeof WorkoutsTrackingModeSchema>;
+export declare const WorkoutsModalitySchema: z.ZodEnum<{
+    cardio: "cardio";
+    weightlifting: "weightlifting";
+    stretching: "stretching";
+}>;
+export type WorkoutsModality = WorkoutsTrackingMode;
 export declare const EXERCISE_SUBCATEGORIES: readonly ["compound", "isolation", "machine", "freeweight", "bodyweight", "cable", "treadmill", "bike", "rowing", "elliptical", "stairmaster", "outdoor_running", "outdoor_walking", "outdoor_cycling", "jump_rope", "isometric", "flexibility"];
 export declare const ExerciseSubcategorySchema: z.ZodEnum<{
     flexibility: "flexibility";
@@ -62,7 +70,7 @@ export type ExerciseAliasSource = z.infer<typeof ExerciseAliasSourceSchema>;
 export declare const UserExerciseSyncSchema: z.ZodObject<{
     name: z.ZodString;
     description: z.ZodString;
-    category: z.ZodEnum<{
+    modality: z.ZodEnum<{
         cardio: "cardio";
         weightlifting: "weightlifting";
         stretching: "stretching";
@@ -86,7 +94,7 @@ export declare const UserExerciseSyncSchema: z.ZodObject<{
         outdoor_cycling: "outdoor_cycling";
         isometric: "isometric";
     }>>;
-    primaryMuscleGroups: z.ZodArray<z.ZodEnum<{
+    primaryMuscleGroups: z.ZodDefault<z.ZodArray<z.ZodEnum<{
         chest: "chest";
         back: "back";
         shoulders: "shoulders";
@@ -110,7 +118,7 @@ export declare const UserExerciseSyncSchema: z.ZodObject<{
         obliques: "obliques";
         lower_back: "lower_back";
         upper_back: "upper_back";
-    }>>;
+    }>>>;
     secondaryMuscleGroups: z.ZodArray<z.ZodEnum<{
         chest: "chest";
         back: "back";
@@ -186,7 +194,7 @@ export type UserExerciseSync = z.infer<typeof UserExerciseSyncSchema>;
 export declare const UserExerciseRecordSchema: z.ZodObject<{
     name: z.ZodString;
     description: z.ZodString;
-    category: z.ZodEnum<{
+    modality: z.ZodEnum<{
         cardio: "cardio";
         weightlifting: "weightlifting";
         stretching: "stretching";
@@ -210,7 +218,7 @@ export declare const UserExerciseRecordSchema: z.ZodObject<{
         outdoor_cycling: "outdoor_cycling";
         isometric: "isometric";
     }>>;
-    primaryMuscleGroups: z.ZodArray<z.ZodEnum<{
+    primaryMuscleGroups: z.ZodDefault<z.ZodArray<z.ZodEnum<{
         chest: "chest";
         back: "back";
         shoulders: "shoulders";
@@ -234,7 +242,7 @@ export declare const UserExerciseRecordSchema: z.ZodObject<{
         obliques: "obliques";
         lower_back: "lower_back";
         upper_back: "upper_back";
-    }>>;
+    }>>>;
     secondaryMuscleGroups: z.ZodArray<z.ZodEnum<{
         chest: "chest";
         back: "back";
@@ -389,7 +397,7 @@ export declare const CanonicalExerciseRecordSchema: z.ZodObject<{
     id: z.ZodString;
     name: z.ZodString;
     description: z.ZodString;
-    category: z.ZodEnum<{
+    modality: z.ZodEnum<{
         cardio: "cardio";
         weightlifting: "weightlifting";
         stretching: "stretching";
@@ -413,7 +421,7 @@ export declare const CanonicalExerciseRecordSchema: z.ZodObject<{
         outdoor_cycling: "outdoor_cycling";
         isometric: "isometric";
     }>>;
-    primaryMuscleGroups: z.ZodArray<z.ZodEnum<{
+    primaryMuscleGroups: z.ZodDefault<z.ZodArray<z.ZodEnum<{
         chest: "chest";
         back: "back";
         shoulders: "shoulders";
@@ -437,7 +445,7 @@ export declare const CanonicalExerciseRecordSchema: z.ZodObject<{
         obliques: "obliques";
         lower_back: "lower_back";
         upper_back: "upper_back";
-    }>>;
+    }>>>;
     secondaryMuscleGroups: z.ZodArray<z.ZodEnum<{
         chest: "chest";
         back: "back";

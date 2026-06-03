@@ -13,14 +13,18 @@ import { MuscleGroupSchema } from './muscles.js';
 import { WeightModeSchema } from './units.js';
 
 // ---------------------------------------------------------------------------
-// WorkoutsTrackingModeSchema
-// The top-level routing/category field stored in UserExercise.category and
-// CanonicalExercise.category. Named Workouts* to avoid collision with the
+// WorkoutsModalitySchema
+// The top-level routing/modality field stored in UserExercise.modality and
+// CanonicalExercise.modality. Named Workouts* to avoid collision with the
 // Health-app ExerciseCategorySchema (COMPOUND|ISOLATION|…).
 // ---------------------------------------------------------------------------
 export const WORKOUTS_TRACKING_MODES = ['weightlifting', 'cardio', 'stretching'] as const;
+/** @deprecated Use WorkoutsModalitySchema */
 export const WorkoutsTrackingModeSchema = z.enum(WORKOUTS_TRACKING_MODES);
+/** @deprecated Use WorkoutsModality */
 export type WorkoutsTrackingMode = z.infer<typeof WorkoutsTrackingModeSchema>;
+export const WorkoutsModalitySchema = WorkoutsTrackingModeSchema;
+export type WorkoutsModality = WorkoutsTrackingMode;
 
 // ---------------------------------------------------------------------------
 // ExerciseSubcategorySchema
@@ -67,9 +71,9 @@ export type ExerciseAliasSource = z.infer<typeof ExerciseAliasSourceSchema>;
 export const UserExerciseSyncSchema = z.object({
   name: z.string().min(1),
   description: z.string(),
-  category: WorkoutsTrackingModeSchema,
+  modality: WorkoutsModalitySchema,
   subcategory: ExerciseSubcategorySchema.optional(),
-  primaryMuscleGroups: z.array(MuscleGroupSchema).min(1),
+  primaryMuscleGroups: z.array(MuscleGroupSchema).default([]),
   secondaryMuscleGroups: z.array(MuscleGroupSchema),
   equipmentType: EquipmentTypeSchema,
   requiredEquipment: z.array(z.string()).default([]),
@@ -129,9 +133,9 @@ export const CanonicalExerciseRecordSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   description: z.string(),
-  category: WorkoutsTrackingModeSchema,
+  modality: WorkoutsModalitySchema,
   subcategory: ExerciseSubcategorySchema.optional(),
-  primaryMuscleGroups: z.array(MuscleGroupSchema).min(1),
+  primaryMuscleGroups: z.array(MuscleGroupSchema).default([]),
   secondaryMuscleGroups: z.array(MuscleGroupSchema),
   equipmentType: EquipmentTypeSchema,
   requiredEquipment: z.array(z.string()),

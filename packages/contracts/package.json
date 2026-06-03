@@ -1,7 +1,7 @@
 {
-  "_comment_BUILD_001": "RESOLVED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Add explicit package.json exports only for currently consumed public subpaths. Do not add wildcard exports or local compatibility barrels. Reviewed: 2026-05-12 (Phase E/F shared extraction cleanup)",
+  "_comment_BUILD_001": "RESOLVED: BUILD-001 Deep sub-path imports bypass package.json exports field \u2014 Decision: Add explicit package.json exports only for currently consumed public subpaths. Do not add wildcard exports or local compatibility barrels. Reviewed: 2026-05-12 (Phase E/F shared extraction cleanup)",
   "name": "@hollis-studio/contracts",
-  "version": "0.2.0-alpha.29",
+  "version": "0.2.0-alpha.30",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -88,6 +88,11 @@
       "types": "./dist/domain/equipment.d.ts",
       "import": "./dist/domain/equipment.js",
       "default": "./dist/domain/equipment.js"
+    },
+    "./domain/units": {
+      "types": "./dist/domain/units.d.ts",
+      "import": "./dist/domain/units.js",
+      "default": "./dist/domain/units.js"
     },
     "./domain/training-session-log": {
       "types": "./dist/domain/training-session-log.d.ts",
@@ -261,31 +266,38 @@
     },
     "./ai/persistence": {
       "import": "./dist/ai/persistence.js",
-      "types": "./dist/ai/persistence.d.ts"
+      "types": "./dist/ai/persistence.d.ts",
+      "default": "./dist/ai/persistence.js"
     },
     "./domain/gym": {
       "import": "./dist/domain/gym.js",
-      "types": "./dist/domain/gym.d.ts"
+      "types": "./dist/domain/gym.d.ts",
+      "default": "./dist/domain/gym.js"
     },
     "./domain/exercise-workouts": {
       "import": "./dist/domain/exercise-workouts.js",
-      "types": "./dist/domain/exercise-workouts.d.ts"
+      "types": "./dist/domain/exercise-workouts.d.ts",
+      "default": "./dist/domain/exercise-workouts.js"
     },
     "./domain/workouts-user-profile": {
       "import": "./dist/domain/workouts-user-profile.js",
-      "types": "./dist/domain/workouts-user-profile.d.ts"
+      "types": "./dist/domain/workouts-user-profile.d.ts",
+      "default": "./dist/domain/workouts-user-profile.js"
     },
     "./domain/workouts-injuries": {
       "import": "./dist/domain/workouts-injuries.js",
-      "types": "./dist/domain/workouts-injuries.d.ts"
+      "types": "./dist/domain/workouts-injuries.d.ts",
+      "default": "./dist/domain/workouts-injuries.js"
     },
     "./domain/workouts-weeks": {
       "import": "./dist/domain/workouts-weeks.js",
-      "types": "./dist/domain/workouts-weeks.d.ts"
+      "types": "./dist/domain/workouts-weeks.d.ts",
+      "default": "./dist/domain/workouts-weeks.js"
     },
     "./domain/workouts-conversation-summary": {
       "import": "./dist/domain/workouts-conversation-summary.js",
-      "types": "./dist/domain/workouts-conversation-summary.d.ts"
+      "types": "./dist/domain/workouts-conversation-summary.d.ts",
+      "default": "./dist/domain/workouts-conversation-summary.js"
     },
     "./public": {
       "types": "./dist/public/index.d.ts",
