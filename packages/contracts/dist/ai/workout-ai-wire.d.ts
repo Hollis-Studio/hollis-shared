@@ -759,6 +759,10 @@ export declare const UserProfileContextSchema: z.ZodObject<{
         kg: "kg";
         lbs: "lbs";
     }>>;
+    progressionIncrementKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    repIncrement: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    adaptiveProgression: z.ZodOptional<z.ZodBoolean>;
+    defaultRir: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
 }, z.core.$strip>;
 export type UserProfileContext = z.infer<typeof UserProfileContextSchema>;
 /** Per-exercise strength + progression state, keyed by canonical exercise id. */
@@ -774,6 +778,8 @@ export declare const ExerciseStrengthStateSchema: z.ZodObject<{
     missStreak: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     isInPlateauDeload: z.ZodOptional<z.ZodBoolean>;
     plateauDeloadPercent: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    lastDecision: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    lastDecisionSummary: z.ZodOptional<z.ZodNullable<z.ZodString>>;
 }, z.core.$strip>;
 export type ExerciseStrengthState = z.infer<typeof ExerciseStrengthStateSchema>;
 /** Summary of the user's currently-active program and their progress through it. */
@@ -852,6 +858,11 @@ export declare const WorkoutSummarySchema: z.ZodObject<{
         sets: z.ZodNumber;
         topWeightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         reps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        setDetails: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            weightKg: z.ZodNumber;
+            reps: z.ZodNumber;
+            rir: z.ZodNumber;
+        }, z.core.$strip>>>;
     }, z.core.$strip>>;
     muscleGroupsHit: z.ZodOptional<z.ZodArray<z.ZodString>>;
 }, z.core.$strip>;
@@ -877,6 +888,25 @@ export declare const ExerciseLibraryEntrySchema: z.ZodObject<{
     requiredEquipment: z.ZodOptional<z.ZodArray<z.ZodString>>;
 }, z.core.$strip>;
 export type ExerciseLibraryEntry = z.infer<typeof ExerciseLibraryEntrySchema>;
+/**
+ * The user's explicitly-configured training goals/targets. Distinct from the
+ * implicit `trainingPhase` enum — these are concrete numbers the user set, so
+ * the builder can size weekly volume and cardio to what the user is aiming for.
+ */
+export declare const TrainingGoalsContextSchema: z.ZodObject<{
+    volumeTargets: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        muscleGroup: z.ZodString;
+        weeklySets: z.ZodNumber;
+    }, z.core.$strip>>>;
+    cardioGoalPreset: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    cardioWeeklyZoneMinutes: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+        z1: z.ZodNumber;
+        z2: z.ZodNumber;
+        z3: z.ZodNumber;
+        z4: z.ZodNumber;
+    }, z.core.$strip>>>;
+}, z.core.$strip>;
+export type TrainingGoalsContext = z.infer<typeof TrainingGoalsContextSchema>;
 /** The complete, typed context the Smart Builder agent reasons over. */
 export declare const UserTrainingContextSchema: z.ZodObject<{
     profile: z.ZodObject<{
@@ -890,6 +920,10 @@ export declare const UserTrainingContextSchema: z.ZodObject<{
             kg: "kg";
             lbs: "lbs";
         }>>;
+        progressionIncrementKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        repIncrement: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        adaptiveProgression: z.ZodOptional<z.ZodBoolean>;
+        defaultRir: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     }, z.core.$strip>;
     exerciseStrengthStates: z.ZodArray<z.ZodObject<{
         canonicalExerciseId: z.ZodString;
@@ -903,6 +937,8 @@ export declare const UserTrainingContextSchema: z.ZodObject<{
         missStreak: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isInPlateauDeload: z.ZodOptional<z.ZodBoolean>;
         plateauDeloadPercent: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        lastDecision: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        lastDecisionSummary: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     }, z.core.$strip>>;
     recentWorkouts: z.ZodArray<z.ZodObject<{
         date: z.ZodString;
@@ -916,6 +952,11 @@ export declare const UserTrainingContextSchema: z.ZodObject<{
             sets: z.ZodNumber;
             topWeightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             reps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            setDetails: z.ZodOptional<z.ZodArray<z.ZodObject<{
+                weightKg: z.ZodNumber;
+                reps: z.ZodNumber;
+                rir: z.ZodNumber;
+            }, z.core.$strip>>>;
         }, z.core.$strip>>;
         muscleGroupsHit: z.ZodOptional<z.ZodArray<z.ZodString>>;
     }, z.core.$strip>>;
@@ -981,6 +1022,19 @@ export declare const UserTrainingContextSchema: z.ZodObject<{
         trackingMode: z.ZodOptional<z.ZodString>;
         requiredEquipment: z.ZodOptional<z.ZodArray<z.ZodString>>;
     }, z.core.$strip>>;
+    goals: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+        volumeTargets: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            muscleGroup: z.ZodString;
+            weeklySets: z.ZodNumber;
+        }, z.core.$strip>>>;
+        cardioGoalPreset: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        cardioWeeklyZoneMinutes: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+            z1: z.ZodNumber;
+            z2: z.ZodNumber;
+            z3: z.ZodNumber;
+            z4: z.ZodNumber;
+        }, z.core.$strip>>>;
+    }, z.core.$strip>>>;
 }, z.core.$strip>;
 export type UserTrainingContext = z.infer<typeof UserTrainingContextSchema>;
 /** Which program a refine targets: a saved program by id, the in-flight draft, or a brand-new program. */
@@ -1031,6 +1085,10 @@ export declare const SmartBuilderRequestSchema: z.ZodObject<{
                 kg: "kg";
                 lbs: "lbs";
             }>>;
+            progressionIncrementKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            repIncrement: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            adaptiveProgression: z.ZodOptional<z.ZodBoolean>;
+            defaultRir: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         }, z.core.$strip>;
         exerciseStrengthStates: z.ZodArray<z.ZodObject<{
             canonicalExerciseId: z.ZodString;
@@ -1044,6 +1102,8 @@ export declare const SmartBuilderRequestSchema: z.ZodObject<{
             missStreak: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isInPlateauDeload: z.ZodOptional<z.ZodBoolean>;
             plateauDeloadPercent: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            lastDecision: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+            lastDecisionSummary: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         }, z.core.$strip>>;
         recentWorkouts: z.ZodArray<z.ZodObject<{
             date: z.ZodString;
@@ -1057,6 +1117,11 @@ export declare const SmartBuilderRequestSchema: z.ZodObject<{
                 sets: z.ZodNumber;
                 topWeightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 reps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+                setDetails: z.ZodOptional<z.ZodArray<z.ZodObject<{
+                    weightKg: z.ZodNumber;
+                    reps: z.ZodNumber;
+                    rir: z.ZodNumber;
+                }, z.core.$strip>>>;
             }, z.core.$strip>>;
             muscleGroupsHit: z.ZodOptional<z.ZodArray<z.ZodString>>;
         }, z.core.$strip>>;
@@ -1122,6 +1187,19 @@ export declare const SmartBuilderRequestSchema: z.ZodObject<{
             trackingMode: z.ZodOptional<z.ZodString>;
             requiredEquipment: z.ZodOptional<z.ZodArray<z.ZodString>>;
         }, z.core.$strip>>;
+        goals: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+            volumeTargets: z.ZodOptional<z.ZodArray<z.ZodObject<{
+                muscleGroup: z.ZodString;
+                weeklySets: z.ZodNumber;
+            }, z.core.$strip>>>;
+            cardioGoalPreset: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+            cardioWeeklyZoneMinutes: z.ZodOptional<z.ZodNullable<z.ZodObject<{
+                z1: z.ZodNumber;
+                z2: z.ZodNumber;
+                z3: z.ZodNumber;
+                z4: z.ZodNumber;
+            }, z.core.$strip>>>;
+        }, z.core.$strip>>>;
     }, z.core.$strip>;
     programRef: z.ZodOptional<z.ZodUnion<readonly [z.ZodObject<{
         id: z.ZodString;

@@ -507,6 +507,13 @@ export const UserProfileContextSchema = z.object({
   ageYears: z.number().int().min(0).max(120).nullable().optional(),
   bodyweightKg: z.number().min(0).max(WEIGHT_KG_MAX).nullable().optional(),
   displayUnit: z.enum(["kg", "lbs"]).optional(),
+  // Progression preferences — how the user wants load/reps to advance. The
+  // builder should respect these when setting starting prescriptions so the
+  // program matches the increment cadence the runtime engine will apply.
+  progressionIncrementKg: z.number().min(0).max(WEIGHT_KG_MAX).nullable().optional(),
+  repIncrement: z.number().int().min(0).max(REPS_MAX).nullable().optional(),
+  adaptiveProgression: z.boolean().optional(),
+  defaultRir: z.number().int().min(0).max(RIR_MAX).nullable().optional(),
 });
 export type UserProfileContext = z.infer<typeof UserProfileContextSchema>;
 
@@ -523,6 +530,12 @@ export const ExerciseStrengthStateSchema = z.object({
   missStreak: z.number().int().min(0).nullable().optional(),
   isInPlateauDeload: z.boolean().optional(),
   plateauDeloadPercent: z.number().min(0).max(1).nullable().optional(),
+  // The progression engine's most recent decision for this lift — its current
+  // intent (progress | maintain | repeat | reduce | deload | calibrate). Lets the
+  // program builder align with the runtime engine instead of re-deriving blind.
+  lastDecision: z.string().nullable().optional(),
+  // Terse human summary of that decision's target (e.g. "hold 100kg×5, +1 rep").
+  lastDecisionSummary: z.string().max(200).nullable().optional(),
 });
 export type ExerciseStrengthState = z.infer<typeof ExerciseStrengthStateSchema>;
 
@@ -602,6 +615,18 @@ export const WorkoutSummarySchema = z.object({
       sets: z.number().int().min(0),
       topWeightKg: z.number().min(0).max(WEIGHT_KG_MAX).nullable().optional(),
       reps: z.number().int().min(0).max(REPS_MAX).nullable().optional(),
+      // Per-working-set breakdown (weight × reps @ RIR). Conveys grind / effort
+      // the top-set alone hides. Populated only for the most recent sessions to
+      // keep the payload bounded; omitted for older sessions.
+      setDetails: z
+        .array(
+          z.object({
+            weightKg: z.number().min(0).max(WEIGHT_KG_MAX),
+            reps: z.number().int().min(0).max(REPS_MAX),
+            rir: z.number().int().min(0).max(RIR_MAX),
+          }),
+        )
+        .optional(),
     }),
   ),
   muscleGroupsHit: z.array(z.string()).optional(),
@@ -631,6 +656,36 @@ export const ExerciseLibraryEntrySchema = z.object({
 });
 export type ExerciseLibraryEntry = z.infer<typeof ExerciseLibraryEntrySchema>;
 
+/**
+ * The user's explicitly-configured training goals/targets. Distinct from the
+ * implicit `trainingPhase` enum — these are concrete numbers the user set, so
+ * the builder can size weekly volume and cardio to what the user is aiming for.
+ */
+export const TrainingGoalsContextSchema = z.object({
+  // Per-muscle-group weekly hard-set targets, e.g. [{ muscleGroup: "chest", weeklySets: 12 }].
+  volumeTargets: z
+    .array(
+      z.object({
+        muscleGroup: z.string(),
+        weeklySets: z.number().min(0).max(100),
+      }),
+    )
+    .optional(),
+  // Named cardio goal preset (e.g. "general_fitness", "endurance", "none").
+  cardioGoalPreset: z.string().nullable().optional(),
+  // Weekly zone-minute cardio targets (heart-rate zones 1–4).
+  cardioWeeklyZoneMinutes: z
+    .object({
+      z1: z.number().min(0),
+      z2: z.number().min(0),
+      z3: z.number().min(0),
+      z4: z.number().min(0),
+    })
+    .nullable()
+    .optional(),
+});
+export type TrainingGoalsContext = z.infer<typeof TrainingGoalsContextSchema>;
+
 /** The complete, typed context the Smart Builder agent reasons over. */
 export const UserTrainingContextSchema = z.object({
   profile: UserProfileContextSchema,
@@ -642,6 +697,9 @@ export const UserTrainingContextSchema = z.object({
   gym: GymContextSchema,
   cardioBaselines: z.array(CardioBaselineSummarySchema),
   exerciseLibrary: z.array(ExerciseLibraryEntrySchema),
+  // Explicit user-configured goals/targets (volume + cardio). Optional so the
+  // payload stays backward-compatible when the user has set no targets.
+  goals: TrainingGoalsContextSchema.nullable().optional(),
 });
 export type UserTrainingContext = z.infer<typeof UserTrainingContextSchema>;
 
