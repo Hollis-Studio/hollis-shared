@@ -165,7 +165,8 @@ export const AiTokenUsageMonthSchema = z.string().regex(
 );
 export type AiTokenUsageMonth = z.infer<typeof AiTokenUsageMonthSchema>;
 
-// PUT /:month request body (merge semantics — additive, not replace)
+// PUT /:month request body (merge semantics — additive, not replace).
+// Legacy clients send a flat `feature → number` map; still accepted.
 export const AiTokenUsageUpsertSchema = z.object({
   tokens: z.record(z.string().min(1).max(64), z.number().int().nonnegative()),
   createdAt: z.coerce.date().optional(),
@@ -173,12 +174,103 @@ export const AiTokenUsageUpsertSchema = z.object({
 });
 export type AiTokenUsageUpsert = z.infer<typeof AiTokenUsageUpsertSchema>;
 
+// Enriched per-feature usage shape (v2). Server records input/output split,
+// call counts, and per-model breakdown. Legacy rows store a bare `number`
+// (cumulative total) per feature; readers must normalize both shapes.
+export const AiFeatureModelUsageSchema = z.object({
+  input: z.number().int().nonnegative(),
+  output: z.number().int().nonnegative(),
+  total: z.number().int().nonnegative(),
+  calls: z.number().int().nonnegative(),
+});
+export type AiFeatureModelUsage = z.infer<typeof AiFeatureModelUsageSchema>;
+
+export const AiFeatureUsageSchema = z.object({
+  input: z.number().int().nonnegative(),
+  output: z.number().int().nonnegative(),
+  total: z.number().int().nonnegative(),
+  calls: z.number().int().nonnegative(),
+  byModel: z.record(z.string(), AiFeatureModelUsageSchema).default({}),
+});
+export type AiFeatureUsage = z.infer<typeof AiFeatureUsageSchema>;
+
+// A stored token value is either a legacy bare total (number) or the enriched
+// object. The union keeps reads back-compatible with rows written before v2.
+export const AiTokenValueSchema = z.union([
+  z.number().nonnegative(),
+  AiFeatureUsageSchema,
+]);
+export type AiTokenValue = z.infer<typeof AiTokenValueSchema>;
+
 // GET/PUT response record (userId not echoed to client)
 export const AiTokenUsageSchema = z.object({
   id: z.string().min(1),
   month: AiTokenUsageMonthSchema,
-  tokens: z.record(z.string(), z.number()),
+  tokens: z.record(z.string(), AiTokenValueSchema),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });
 export type AiTokenUsage = z.infer<typeof AiTokenUsageSchema>;
+
+// ===========================================================================
+// AiTokenUsage — admin cross-user summary (GET /v1/ai-token-usage/admin/summary)
+// ===========================================================================
+
+// Query: optional month filter ("yyyy-mm"); omit for all-time.
+export const AiTokenUsageAdminQuerySchema = z.object({
+  month: AiTokenUsageMonthSchema.optional(),
+});
+export type AiTokenUsageAdminQuery = z.infer<typeof AiTokenUsageAdminQuerySchema>;
+
+const AiUsageTotalsSchema = z.object({
+  input: z.number().int().nonnegative(),
+  output: z.number().int().nonnegative(),
+  total: z.number().int().nonnegative(),
+  calls: z.number().int().nonnegative(),
+  users: z.number().int().nonnegative(),
+});
+
+export const AiTokenUsageFeatureRollupSchema = z.object({
+  feature: z.string(),
+  input: z.number().int().nonnegative(),
+  output: z.number().int().nonnegative(),
+  total: z.number().int().nonnegative(),
+  calls: z.number().int().nonnegative(),
+  users: z.number().int().nonnegative(),
+});
+export type AiTokenUsageFeatureRollup = z.infer<typeof AiTokenUsageFeatureRollupSchema>;
+
+export const AiTokenUsageModelRollupSchema = z.object({
+  model: z.string(),
+  input: z.number().int().nonnegative(),
+  output: z.number().int().nonnegative(),
+  total: z.number().int().nonnegative(),
+  calls: z.number().int().nonnegative(),
+  users: z.number().int().nonnegative(),
+});
+export type AiTokenUsageModelRollup = z.infer<typeof AiTokenUsageModelRollupSchema>;
+
+export const AiTokenUsageAccountRollupSchema = z.object({
+  userId: z.string(),
+  input: z.number().int().nonnegative(),
+  output: z.number().int().nonnegative(),
+  total: z.number().int().nonnegative(),
+  calls: z.number().int().nonnegative(),
+  lastActiveMonth: AiTokenUsageMonthSchema.nullable(),
+});
+export type AiTokenUsageAccountRollup = z.infer<typeof AiTokenUsageAccountRollupSchema>;
+
+export const AiTokenUsageAdminSummarySchema = z.object({
+  // Null month = all-time; otherwise the filtered "yyyy-mm".
+  month: AiTokenUsageMonthSchema.nullable(),
+  totals: AiUsageTotalsSchema,
+  byFeature: z.array(AiTokenUsageFeatureRollupSchema),
+  byModel: z.array(AiTokenUsageModelRollupSchema),
+  topAccounts: z.array(AiTokenUsageAccountRollupSchema),
+  // How many (userId, month) rows were aggregated, and whether the scan was
+  // capped (so the UI can warn instead of implying full coverage).
+  rowsScanned: z.number().int().nonnegative(),
+  truncated: z.boolean(),
+  generatedAt: z.coerce.date(),
+});
+export type AiTokenUsageAdminSummary = z.infer<typeof AiTokenUsageAdminSummarySchema>;

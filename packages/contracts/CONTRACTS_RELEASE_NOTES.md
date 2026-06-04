@@ -1,5 +1,29 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.33 (2026-06-04)
+
+All changes are **additive / backward-compatible**. Foundation for the Workouts
+token-usage dashboard rehab (per-model + input/output split + call counts +
+cross-user admin summary). See
+`hollis-workouts/docs/plans/2026-06-04-token-usage-dashboard-rehab.md`.
+
+### `ai/persistence.ts`
+
+- **`AiFeatureModelUsageSchema`** `{ input, output, total, calls }` and
+  **`AiFeatureUsageSchema`** `{ input, output, total, calls, byModel }` — the
+  enriched (v2) per-feature token value. Servers now record the input/output
+  split, call counts, and a per-model breakdown instead of a single total.
+- **`AiTokenValueSchema`** = `union(number, AiFeatureUsageSchema)`. A stored
+  token value is either a legacy bare total (rows written before v2) or the
+  enriched object; readers normalize both. `AiTokenUsageSchema.tokens` now uses
+  this union (was `record(string, number)`), so old rows still parse.
+- **Admin cross-user summary** for `GET /v1/ai-token-usage/admin/summary`:
+  `AiTokenUsageAdminQuerySchema` (optional `month`),
+  `AiTokenUsageFeatureRollupSchema`, `AiTokenUsageModelRollupSchema`,
+  `AiTokenUsageAccountRollupSchema`, and `AiTokenUsageAdminSummarySchema`
+  (totals incl. distinct `users`, byFeature, byModel, topAccounts, plus
+  `rowsScanned`/`truncated` so the UI never implies full coverage when capped).
+
 ## 0.2.0-alpha.31 (2026-06-03)
 
 All changes are **additive / backward-compatible**. Foundation for the Workouts
