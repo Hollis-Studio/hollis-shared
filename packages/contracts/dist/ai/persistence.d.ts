@@ -266,12 +266,125 @@ export declare const AiTokenUsageUpsertSchema: z.ZodObject<{
     updatedAt: z.ZodOptional<z.ZodCoercedDate<unknown>>;
 }, z.core.$strip>;
 export type AiTokenUsageUpsert = z.infer<typeof AiTokenUsageUpsertSchema>;
+export declare const AiFeatureModelUsageSchema: z.ZodObject<{
+    input: z.ZodNumber;
+    output: z.ZodNumber;
+    total: z.ZodNumber;
+    calls: z.ZodNumber;
+}, z.core.$strip>;
+export type AiFeatureModelUsage = z.infer<typeof AiFeatureModelUsageSchema>;
+export declare const AiFeatureUsageSchema: z.ZodObject<{
+    input: z.ZodNumber;
+    output: z.ZodNumber;
+    total: z.ZodNumber;
+    calls: z.ZodNumber;
+    byModel: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodObject<{
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        total: z.ZodNumber;
+        calls: z.ZodNumber;
+    }, z.core.$strip>>>;
+}, z.core.$strip>;
+export type AiFeatureUsage = z.infer<typeof AiFeatureUsageSchema>;
+export declare const AiTokenValueSchema: z.ZodUnion<readonly [z.ZodNumber, z.ZodObject<{
+    input: z.ZodNumber;
+    output: z.ZodNumber;
+    total: z.ZodNumber;
+    calls: z.ZodNumber;
+    byModel: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodObject<{
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        total: z.ZodNumber;
+        calls: z.ZodNumber;
+    }, z.core.$strip>>>;
+}, z.core.$strip>]>;
+export type AiTokenValue = z.infer<typeof AiTokenValueSchema>;
 export declare const AiTokenUsageSchema: z.ZodObject<{
     id: z.ZodString;
     month: z.ZodString;
-    tokens: z.ZodRecord<z.ZodString, z.ZodNumber>;
+    tokens: z.ZodRecord<z.ZodString, z.ZodUnion<readonly [z.ZodNumber, z.ZodObject<{
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        total: z.ZodNumber;
+        calls: z.ZodNumber;
+        byModel: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodObject<{
+            input: z.ZodNumber;
+            output: z.ZodNumber;
+            total: z.ZodNumber;
+            calls: z.ZodNumber;
+        }, z.core.$strip>>>;
+    }, z.core.$strip>]>>;
     createdAt: z.ZodCoercedDate<unknown>;
     updatedAt: z.ZodCoercedDate<unknown>;
 }, z.core.$strip>;
 export type AiTokenUsage = z.infer<typeof AiTokenUsageSchema>;
+export declare const AiTokenUsageAdminQuerySchema: z.ZodObject<{
+    month: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
+export type AiTokenUsageAdminQuery = z.infer<typeof AiTokenUsageAdminQuerySchema>;
+export declare const AiTokenUsageFeatureRollupSchema: z.ZodObject<{
+    feature: z.ZodString;
+    input: z.ZodNumber;
+    output: z.ZodNumber;
+    total: z.ZodNumber;
+    calls: z.ZodNumber;
+    users: z.ZodNumber;
+}, z.core.$strip>;
+export type AiTokenUsageFeatureRollup = z.infer<typeof AiTokenUsageFeatureRollupSchema>;
+export declare const AiTokenUsageModelRollupSchema: z.ZodObject<{
+    model: z.ZodString;
+    input: z.ZodNumber;
+    output: z.ZodNumber;
+    total: z.ZodNumber;
+    calls: z.ZodNumber;
+    users: z.ZodNumber;
+}, z.core.$strip>;
+export type AiTokenUsageModelRollup = z.infer<typeof AiTokenUsageModelRollupSchema>;
+export declare const AiTokenUsageAccountRollupSchema: z.ZodObject<{
+    userId: z.ZodString;
+    input: z.ZodNumber;
+    output: z.ZodNumber;
+    total: z.ZodNumber;
+    calls: z.ZodNumber;
+    lastActiveMonth: z.ZodNullable<z.ZodString>;
+}, z.core.$strip>;
+export type AiTokenUsageAccountRollup = z.infer<typeof AiTokenUsageAccountRollupSchema>;
+export declare const AiTokenUsageAdminSummarySchema: z.ZodObject<{
+    month: z.ZodNullable<z.ZodString>;
+    totals: z.ZodObject<{
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        total: z.ZodNumber;
+        calls: z.ZodNumber;
+        users: z.ZodNumber;
+    }, z.core.$strip>;
+    byFeature: z.ZodArray<z.ZodObject<{
+        feature: z.ZodString;
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        total: z.ZodNumber;
+        calls: z.ZodNumber;
+        users: z.ZodNumber;
+    }, z.core.$strip>>;
+    byModel: z.ZodArray<z.ZodObject<{
+        model: z.ZodString;
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        total: z.ZodNumber;
+        calls: z.ZodNumber;
+        users: z.ZodNumber;
+    }, z.core.$strip>>;
+    topAccounts: z.ZodArray<z.ZodObject<{
+        userId: z.ZodString;
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        total: z.ZodNumber;
+        calls: z.ZodNumber;
+        lastActiveMonth: z.ZodNullable<z.ZodString>;
+    }, z.core.$strip>>;
+    rowsScanned: z.ZodNumber;
+    truncated: z.ZodBoolean;
+    generatedAt: z.ZodCoercedDate<unknown>;
+}, z.core.$strip>;
+export type AiTokenUsageAdminSummary = z.infer<typeof AiTokenUsageAdminSummarySchema>;
 //# sourceMappingURL=persistence.d.ts.map
