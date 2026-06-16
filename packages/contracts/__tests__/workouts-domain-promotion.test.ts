@@ -57,6 +57,7 @@ describe("Workouts domain promotion", () => {
 
   it("enforces SessionExercise canonicalization status refinement", () => {
     const valid = {
+      slotId: "slot-1",
       canonicalExerciseId: "ex-1",
       freestyleName: null,
       freestyleMuscleGroups: null,
@@ -69,7 +70,7 @@ describe("Workouts domain promotion", () => {
       stretchData: null,
     };
 
-    expect(SessionExerciseSchema.safeParse(valid).success).toBe(true);
+    expect(SessionExerciseSchema.parse(valid).slotId).toBe("slot-1");
     expect(
       SessionExerciseSchema.safeParse({
         ...valid,

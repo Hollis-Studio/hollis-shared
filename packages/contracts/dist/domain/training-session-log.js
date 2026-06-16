@@ -124,6 +124,8 @@ export const StretchSessionDataSchema = z.object({
 });
 export const SessionExerciseSchema = z
     .object({
+    /** Stable identity for this exercise slot within a session. Order may change; slotId must not. */
+    slotId: z.string().min(1).optional(),
     canonicalExerciseId: z.string().min(1).nullable(),
     freestyleName: z.string().nullable(),
     freestyleMuscleGroups: z.array(MuscleGroupSchema).nullable(),

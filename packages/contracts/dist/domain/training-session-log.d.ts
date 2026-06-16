@@ -172,6 +172,7 @@ export declare const StretchSessionDataSchema: z.ZodObject<{
     totalDurationSeconds: z.ZodNumber;
 }, z.core.$strip>;
 export declare const SessionExerciseSchema: z.ZodObject<{
+    slotId: z.ZodOptional<z.ZodString>;
     canonicalExerciseId: z.ZodNullable<z.ZodString>;
     freestyleName: z.ZodNullable<z.ZodString>;
     freestyleMuscleGroups: z.ZodNullable<z.ZodArray<z.ZodEnum<{
@@ -401,6 +402,7 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
     }>>;
     skippedExerciseIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
     exercises: z.ZodArray<z.ZodObject<{
+        slotId: z.ZodOptional<z.ZodString>;
         canonicalExerciseId: z.ZodNullable<z.ZodString>;
         freestyleName: z.ZodNullable<z.ZodString>;
         freestyleMuscleGroups: z.ZodNullable<z.ZodArray<z.ZodEnum<{
@@ -614,6 +616,7 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
     }>>;
     skippedExerciseIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
     exercises: z.ZodArray<z.ZodObject<{
+        slotId: z.ZodOptional<z.ZodString>;
         canonicalExerciseId: z.ZodNullable<z.ZodString>;
         freestyleName: z.ZodNullable<z.ZodString>;
         freestyleMuscleGroups: z.ZodNullable<z.ZodArray<z.ZodEnum<{
