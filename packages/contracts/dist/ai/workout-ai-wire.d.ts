@@ -231,6 +231,16 @@ export declare const EditParamsSchema: z.ZodObject<{
         reps_first: "reps_first";
         duration_first: "duration_first";
     }>>;
+    goalMode: z.ZodOptional<z.ZodEnum<{
+        maintain: "maintain";
+        progress: "progress";
+        track_only: "track_only";
+    }>>;
+    priorityLevel: z.ZodOptional<z.ZodEnum<{
+        primary: "primary";
+        secondary: "secondary";
+        supporting: "supporting";
+    }>>;
 }, z.core.$strip>;
 export type EditParams = z.infer<typeof EditParamsSchema>;
 /** Address a program day by exactly one of: name (preferred), positional index, or dayOfWeek. */
@@ -290,6 +300,16 @@ export declare const EditOperationSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
             reps_first: "reps_first";
             duration_first: "duration_first";
         }>>;
+        goalMode: z.ZodOptional<z.ZodEnum<{
+            maintain: "maintain";
+            progress: "progress";
+            track_only: "track_only";
+        }>>;
+        priorityLevel: z.ZodOptional<z.ZodEnum<{
+            primary: "primary";
+            secondary: "secondary";
+            supporting: "supporting";
+        }>>;
     }, z.core.$strip>>;
 }, z.core.$strip>, z.ZodObject<{
     op: z.ZodLiteral<"update_set_params">;
@@ -317,6 +337,16 @@ export declare const EditOperationSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
             weight_first: "weight_first";
             reps_first: "reps_first";
             duration_first: "duration_first";
+        }>>;
+        goalMode: z.ZodOptional<z.ZodEnum<{
+            maintain: "maintain";
+            progress: "progress";
+            track_only: "track_only";
+        }>>;
+        priorityLevel: z.ZodOptional<z.ZodEnum<{
+            primary: "primary";
+            secondary: "secondary";
+            supporting: "supporting";
         }>>;
     }, z.core.$strip>;
 }, z.core.$strip>, z.ZodObject<{
@@ -359,6 +389,16 @@ export declare const EditOperationSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
             weight_first: "weight_first";
             reps_first: "reps_first";
             duration_first: "duration_first";
+        }>>;
+        goalMode: z.ZodOptional<z.ZodEnum<{
+            maintain: "maintain";
+            progress: "progress";
+            track_only: "track_only";
+        }>>;
+        priorityLevel: z.ZodOptional<z.ZodEnum<{
+            primary: "primary";
+            secondary: "secondary";
+            supporting: "supporting";
         }>>;
     }, z.core.$strip>>;
 }, z.core.$strip>, z.ZodObject<{
@@ -422,6 +462,16 @@ export declare const EditOperationSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
             reps_first: "reps_first";
             duration_first: "duration_first";
         }>>;
+        goalMode: z.ZodOptional<z.ZodEnum<{
+            maintain: "maintain";
+            progress: "progress";
+            track_only: "track_only";
+        }>>;
+        priorityLevel: z.ZodOptional<z.ZodEnum<{
+            primary: "primary";
+            secondary: "secondary";
+            supporting: "supporting";
+        }>>;
     }, z.core.$strip>>;
 }, z.core.$strip>, z.ZodObject<{
     op: z.ZodLiteral<"add_day">;
@@ -446,8 +496,64 @@ export declare const EditOperationSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
                 reps_first: "reps_first";
                 duration_first: "duration_first";
             }>>;
+            goalMode: z.ZodOptional<z.ZodEnum<{
+                maintain: "maintain";
+                progress: "progress";
+                track_only: "track_only";
+            }>>;
+            priorityLevel: z.ZodOptional<z.ZodEnum<{
+                primary: "primary";
+                secondary: "secondary";
+                supporting: "supporting";
+            }>>;
         }, z.core.$strip>>;
     }, z.core.$strip>>;
+}, z.core.$strip>, z.ZodObject<{
+    op: z.ZodLiteral<"remove_day">;
+    day: z.ZodObject<{
+        name: z.ZodOptional<z.ZodString>;
+        index: z.ZodOptional<z.ZodNumber>;
+        dayOfWeek: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>;
+}, z.core.$strip>, z.ZodObject<{
+    op: z.ZodLiteral<"rename_program">;
+    name: z.ZodOptional<z.ZodString>;
+    description: z.ZodOptional<z.ZodString>;
+    durationWeeks: z.ZodOptional<z.ZodNumber>;
+}, z.core.$strip>, z.ZodObject<{
+    op: z.ZodLiteral<"set_deload">;
+    weekNumbers: z.ZodArray<z.ZodNumber>;
+    percent: z.ZodOptional<z.ZodNumber>;
+}, z.core.$strip>, z.ZodObject<{
+    op: z.ZodLiteral<"apply_params">;
+    day: z.ZodOptional<z.ZodObject<{
+        name: z.ZodOptional<z.ZodString>;
+        index: z.ZodOptional<z.ZodNumber>;
+        dayOfWeek: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>>;
+    params: z.ZodObject<{
+        sets: z.ZodOptional<z.ZodNumber>;
+        reps: z.ZodOptional<z.ZodNumber>;
+        rir: z.ZodOptional<z.ZodNumber>;
+        durationSeconds: z.ZodOptional<z.ZodNumber>;
+        targetDistanceKm: z.ZodOptional<z.ZodNumber>;
+        targetSpeedKmh: z.ZodOptional<z.ZodNumber>;
+        progressionMode: z.ZodOptional<z.ZodEnum<{
+            weight_first: "weight_first";
+            reps_first: "reps_first";
+            duration_first: "duration_first";
+        }>>;
+        goalMode: z.ZodOptional<z.ZodEnum<{
+            maintain: "maintain";
+            progress: "progress";
+            track_only: "track_only";
+        }>>;
+        priorityLevel: z.ZodOptional<z.ZodEnum<{
+            primary: "primary";
+            secondary: "secondary";
+            supporting: "supporting";
+        }>>;
+    }, z.core.$strip>;
 }, z.core.$strip>], "op">;
 export type EditOperation = z.infer<typeof EditOperationSchema>;
 /**
@@ -635,6 +741,16 @@ export declare const SmartBuilderResponseSchema: z.ZodDiscriminatedUnion<[z.ZodO
                 reps_first: "reps_first";
                 duration_first: "duration_first";
             }>>;
+            goalMode: z.ZodOptional<z.ZodEnum<{
+                maintain: "maintain";
+                progress: "progress";
+                track_only: "track_only";
+            }>>;
+            priorityLevel: z.ZodOptional<z.ZodEnum<{
+                primary: "primary";
+                secondary: "secondary";
+                supporting: "supporting";
+            }>>;
         }, z.core.$strip>>;
     }, z.core.$strip>, z.ZodObject<{
         op: z.ZodLiteral<"update_set_params">;
@@ -662,6 +778,16 @@ export declare const SmartBuilderResponseSchema: z.ZodDiscriminatedUnion<[z.ZodO
                 weight_first: "weight_first";
                 reps_first: "reps_first";
                 duration_first: "duration_first";
+            }>>;
+            goalMode: z.ZodOptional<z.ZodEnum<{
+                maintain: "maintain";
+                progress: "progress";
+                track_only: "track_only";
+            }>>;
+            priorityLevel: z.ZodOptional<z.ZodEnum<{
+                primary: "primary";
+                secondary: "secondary";
+                supporting: "supporting";
             }>>;
         }, z.core.$strip>;
     }, z.core.$strip>, z.ZodObject<{
@@ -704,6 +830,16 @@ export declare const SmartBuilderResponseSchema: z.ZodDiscriminatedUnion<[z.ZodO
                 weight_first: "weight_first";
                 reps_first: "reps_first";
                 duration_first: "duration_first";
+            }>>;
+            goalMode: z.ZodOptional<z.ZodEnum<{
+                maintain: "maintain";
+                progress: "progress";
+                track_only: "track_only";
+            }>>;
+            priorityLevel: z.ZodOptional<z.ZodEnum<{
+                primary: "primary";
+                secondary: "secondary";
+                supporting: "supporting";
             }>>;
         }, z.core.$strip>>;
     }, z.core.$strip>, z.ZodObject<{
@@ -767,6 +903,16 @@ export declare const SmartBuilderResponseSchema: z.ZodDiscriminatedUnion<[z.ZodO
                 reps_first: "reps_first";
                 duration_first: "duration_first";
             }>>;
+            goalMode: z.ZodOptional<z.ZodEnum<{
+                maintain: "maintain";
+                progress: "progress";
+                track_only: "track_only";
+            }>>;
+            priorityLevel: z.ZodOptional<z.ZodEnum<{
+                primary: "primary";
+                secondary: "secondary";
+                supporting: "supporting";
+            }>>;
         }, z.core.$strip>>;
     }, z.core.$strip>, z.ZodObject<{
         op: z.ZodLiteral<"add_day">;
@@ -791,8 +937,64 @@ export declare const SmartBuilderResponseSchema: z.ZodDiscriminatedUnion<[z.ZodO
                     reps_first: "reps_first";
                     duration_first: "duration_first";
                 }>>;
+                goalMode: z.ZodOptional<z.ZodEnum<{
+                    maintain: "maintain";
+                    progress: "progress";
+                    track_only: "track_only";
+                }>>;
+                priorityLevel: z.ZodOptional<z.ZodEnum<{
+                    primary: "primary";
+                    secondary: "secondary";
+                    supporting: "supporting";
+                }>>;
             }, z.core.$strip>>;
         }, z.core.$strip>>;
+    }, z.core.$strip>, z.ZodObject<{
+        op: z.ZodLiteral<"remove_day">;
+        day: z.ZodObject<{
+            name: z.ZodOptional<z.ZodString>;
+            index: z.ZodOptional<z.ZodNumber>;
+            dayOfWeek: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>;
+    }, z.core.$strip>, z.ZodObject<{
+        op: z.ZodLiteral<"rename_program">;
+        name: z.ZodOptional<z.ZodString>;
+        description: z.ZodOptional<z.ZodString>;
+        durationWeeks: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>, z.ZodObject<{
+        op: z.ZodLiteral<"set_deload">;
+        weekNumbers: z.ZodArray<z.ZodNumber>;
+        percent: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>, z.ZodObject<{
+        op: z.ZodLiteral<"apply_params">;
+        day: z.ZodOptional<z.ZodObject<{
+            name: z.ZodOptional<z.ZodString>;
+            index: z.ZodOptional<z.ZodNumber>;
+            dayOfWeek: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>>;
+        params: z.ZodObject<{
+            sets: z.ZodOptional<z.ZodNumber>;
+            reps: z.ZodOptional<z.ZodNumber>;
+            rir: z.ZodOptional<z.ZodNumber>;
+            durationSeconds: z.ZodOptional<z.ZodNumber>;
+            targetDistanceKm: z.ZodOptional<z.ZodNumber>;
+            targetSpeedKmh: z.ZodOptional<z.ZodNumber>;
+            progressionMode: z.ZodOptional<z.ZodEnum<{
+                weight_first: "weight_first";
+                reps_first: "reps_first";
+                duration_first: "duration_first";
+            }>>;
+            goalMode: z.ZodOptional<z.ZodEnum<{
+                maintain: "maintain";
+                progress: "progress";
+                track_only: "track_only";
+            }>>;
+            priorityLevel: z.ZodOptional<z.ZodEnum<{
+                primary: "primary";
+                secondary: "secondary";
+                supporting: "supporting";
+            }>>;
+        }, z.core.$strip>;
     }, z.core.$strip>], "op">>;
     message: z.ZodString;
 }, z.core.$strip>], "type">;

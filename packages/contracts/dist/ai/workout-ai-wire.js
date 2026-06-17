@@ -265,6 +265,12 @@ export const EditParamsSchema = z.object({
     targetDistanceKm: z.number().min(0).max(DISTANCE_KM_MAX).optional(),
     targetSpeedKmh: z.number().min(0).optional(),
     progressionMode: z.enum(["weight_first", "reps_first", "duration_first"]).optional(),
+    // Engine-consumed per-slot intent. goalMode drives the progression engine's
+    // progress/maintain decision; priorityLevel drives progression scaling. These
+    // mirror the slot schemas above so update_set_params / apply_params can set
+    // them — the model must NOT fake "put X on maintenance" via set/rep tweaks.
+    goalMode: z.enum(["progress", "maintain", "track_only"]).optional(),
+    priorityLevel: z.enum(["primary", "secondary", "supporting"]).optional(),
 });
 const EDIT_PARAM_KEYS = [
     "sets",
@@ -274,6 +280,8 @@ const EDIT_PARAM_KEYS = [
     "targetDistanceKm",
     "targetSpeedKmh",
     "progressionMode",
+    "goalMode",
+    "priorityLevel",
 ];
 const hasAnyEditParam = (p) => p !== undefined && EDIT_PARAM_KEYS.some((k) => p[k] !== undefined);
 /** Address a program day by exactly one of: name (preferred), positional index, or dayOfWeek. */
@@ -361,6 +369,37 @@ const EditOperationRawSchema = z.discriminatedUnion("op", [
         }))
             .min(1),
     }),
+    // remove_day deletes a whole training day from the schedule. The subtractive
+    // mirror of add_day — use this for "delete the arm day" / "cut to N days",
+    // NEVER emit per-slot remove_exercise to eliminate an entire day.
+    z.object({
+        op: z.literal("remove_day"),
+        day: DayRefSchema,
+    }),
+    // rename_program edits PROGRAM-level metadata (the displayed title, summary,
+    // or block length). Distinct from rename_or_reschedule_day, which renames a DAY.
+    z.object({
+        op: z.literal("rename_program"),
+        name: z.string().min(1).optional(),
+        description: z.string().min(1).optional(),
+        durationWeeks: z.number().int().min(1).max(52).optional(),
+    }),
+    // set_deload configures the engine's deload weeks (which program weeks run at
+    // reduced volume/intensity) — the ONLY correct way to express "make week 4 a
+    // deload". NEVER permanently slash sets via update_set_params to fake a deload.
+    z.object({
+        op: z.literal("set_deload"),
+        weekNumbers: z.array(z.number().int().min(1)).min(1),
+        percent: z.number().min(0).max(1).optional(),
+    }),
+    // apply_params broadcasts the same set/rep/RIR/goalMode/priority change across
+    // many slots in ONE op — the whole program, or one day when `day` is given.
+    // Use for "make every exercise 4 sets" instead of N update_set_params.
+    z.object({
+        op: z.literal("apply_params"),
+        day: DayRefSchema.optional(),
+        params: EditParamsSchema,
+    }),
 ]);
 /** A single robust, semantically-addressed program edit operation. */
 export const EditOperationSchema = EditOperationRawSchema.superRefine((val, ctx) => {
@@ -378,6 +417,23 @@ export const EditOperationSchema = EditOperationRawSchema.superRefine((val, ctx)
             code: z.ZodIssueCode.custom,
             message: "rename_or_reschedule_day requires newName or newDayOfWeek",
             path: ["newName"],
+        });
+    }
+    if (val.op === "rename_program" &&
+        val.name === undefined &&
+        val.description === undefined &&
+        val.durationWeeks === undefined) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "rename_program requires name, description, or durationWeeks",
+            path: ["name"],
+        });
+    }
+    if (val.op === "apply_params" && !hasAnyEditParam(val.params)) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "apply_params requires at least one field in params",
+            path: ["params"],
         });
     }
 });
