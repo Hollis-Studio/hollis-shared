@@ -346,6 +346,21 @@ const EditOperationRawSchema = z.discriminatedUnion("op", [
         toExerciseId: z.string().min(1),
         params: EditParamsSchema.optional(),
     }),
+    // add_day is the ONLY op that creates a day not already in the schedule. Every
+    // other op references an existing day; add_day names a brand-new one. The
+    // server/client generate slotIds for the seeded exercises.
+    z.object({
+        op: z.literal("add_day"),
+        name: z.string().min(1),
+        dayOfWeek: z.number().int().min(0).max(6),
+        exercises: z
+            .array(z.object({
+            canonicalExerciseId: z.string().min(1),
+            exerciseType: z.enum(["lifting", "timed", "cardio"]),
+            params: EditParamsSchema.optional(),
+        }))
+            .min(1),
+    }),
 ]);
 /** A single robust, semantically-addressed program edit operation. */
 export const EditOperationSchema = EditOperationRawSchema.superRefine((val, ctx) => {

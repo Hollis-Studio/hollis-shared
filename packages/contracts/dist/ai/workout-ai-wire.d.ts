@@ -423,6 +423,31 @@ export declare const EditOperationSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
             duration_first: "duration_first";
         }>>;
     }, z.core.$strip>>;
+}, z.core.$strip>, z.ZodObject<{
+    op: z.ZodLiteral<"add_day">;
+    name: z.ZodString;
+    dayOfWeek: z.ZodNumber;
+    exercises: z.ZodArray<z.ZodObject<{
+        canonicalExerciseId: z.ZodString;
+        exerciseType: z.ZodEnum<{
+            cardio: "cardio";
+            timed: "timed";
+            lifting: "lifting";
+        }>;
+        params: z.ZodOptional<z.ZodObject<{
+            sets: z.ZodOptional<z.ZodNumber>;
+            reps: z.ZodOptional<z.ZodNumber>;
+            rir: z.ZodOptional<z.ZodNumber>;
+            durationSeconds: z.ZodOptional<z.ZodNumber>;
+            targetDistanceKm: z.ZodOptional<z.ZodNumber>;
+            targetSpeedKmh: z.ZodOptional<z.ZodNumber>;
+            progressionMode: z.ZodOptional<z.ZodEnum<{
+                weight_first: "weight_first";
+                reps_first: "reps_first";
+                duration_first: "duration_first";
+            }>>;
+        }, z.core.$strip>>;
+    }, z.core.$strip>>;
 }, z.core.$strip>], "op">;
 export type EditOperation = z.infer<typeof EditOperationSchema>;
 /**
@@ -742,6 +767,31 @@ export declare const SmartBuilderResponseSchema: z.ZodDiscriminatedUnion<[z.ZodO
                 reps_first: "reps_first";
                 duration_first: "duration_first";
             }>>;
+        }, z.core.$strip>>;
+    }, z.core.$strip>, z.ZodObject<{
+        op: z.ZodLiteral<"add_day">;
+        name: z.ZodString;
+        dayOfWeek: z.ZodNumber;
+        exercises: z.ZodArray<z.ZodObject<{
+            canonicalExerciseId: z.ZodString;
+            exerciseType: z.ZodEnum<{
+                cardio: "cardio";
+                timed: "timed";
+                lifting: "lifting";
+            }>;
+            params: z.ZodOptional<z.ZodObject<{
+                sets: z.ZodOptional<z.ZodNumber>;
+                reps: z.ZodOptional<z.ZodNumber>;
+                rir: z.ZodOptional<z.ZodNumber>;
+                durationSeconds: z.ZodOptional<z.ZodNumber>;
+                targetDistanceKm: z.ZodOptional<z.ZodNumber>;
+                targetSpeedKmh: z.ZodOptional<z.ZodNumber>;
+                progressionMode: z.ZodOptional<z.ZodEnum<{
+                    weight_first: "weight_first";
+                    reps_first: "reps_first";
+                    duration_first: "duration_first";
+                }>>;
+            }, z.core.$strip>>;
         }, z.core.$strip>>;
     }, z.core.$strip>], "op">>;
     message: z.ZodString;
