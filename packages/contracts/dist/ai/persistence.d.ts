@@ -68,9 +68,16 @@ export declare const AiAuditLogCreateSchema: z.ZodObject<{
     snapshotInline: z.ZodOptional<z.ZodUnknown>;
     aiOutput: z.ZodUnknown & z.ZodType<{}, unknown, z.core.$ZodTypeInternals<{}, unknown>>;
     diff: z.ZodOptional<z.ZodUnknown>;
+    clientIdempotencyKey: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type AiAuditLogCreate = z.infer<typeof AiAuditLogCreateSchema>;
 export declare const AiAuditLogEntrySchema: z.ZodObject<{
+    action: z.ZodEnum<{
+        auto_applied: "auto_applied";
+        user_applied: "user_applied";
+        user_dismissed: "user_dismissed";
+        user_overrode: "user_overrode";
+    }>;
     surface: z.ZodEnum<{
         sunday_review_phase_outlook: "sunday_review_phase_outlook";
         plateau_coaching: "plateau_coaching";
@@ -90,12 +97,6 @@ export declare const AiAuditLogEntrySchema: z.ZodObject<{
         image: "image";
     }>;
     snapshotRef: z.ZodOptional<z.ZodString>;
-    action: z.ZodEnum<{
-        auto_applied: "auto_applied";
-        user_applied: "user_applied";
-        user_dismissed: "user_dismissed";
-        user_overrode: "user_overrode";
-    }>;
     persisted: z.ZodBoolean;
     sourceRef: z.ZodUnknown & z.ZodType<{}, unknown, z.core.$ZodTypeInternals<{}, unknown>>;
     snapshotInline: z.ZodOptional<z.ZodUnknown>;

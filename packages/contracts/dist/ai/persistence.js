@@ -34,9 +34,21 @@ export const AiAuditLogCreateSchema = z.object({
     snapshotInline: z.unknown().optional(),
     aiOutput: z.unknown().refine((v) => v !== null && v !== undefined, 'aiOutput required'),
     diff: z.unknown().optional(),
+    /**
+     * Stable client-generated idempotency key (UUID). The client sends the SAME
+     * key on every outbox retry of one logical append, so the server can dedup
+     * (upsert on (userId, clientIdempotencyKey)) and an immutable audit entry is
+     * never duplicated by at-least-once outbox delivery. Optional: legacy clients
+     * and one-shot appends may omit it, in which case the server falls back to a
+     * plain create. Never echoed in the GET/POST response record.
+     */
+    clientIdempotencyKey: z.string().uuid().optional(),
 });
-// GET/POST response record (userId not echoed to client)
-export const AiAuditLogEntrySchema = AiAuditLogCreateSchema.extend({
+// GET/POST response record (userId and clientIdempotencyKey not echoed to client —
+// the idempotency key is a write-time dedup hint, not part of the durable record).
+export const AiAuditLogEntrySchema = AiAuditLogCreateSchema.omit({
+    clientIdempotencyKey: true,
+}).extend({
     id: z.string().min(1),
     timestamp: z.coerce.date(),
 });

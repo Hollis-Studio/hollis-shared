@@ -91,6 +91,16 @@ export const AdaptationEventSchema = z.object({
 export type AdaptationEvent = z.infer<typeof AdaptationEventSchema>;
 
 export const SessionSetSchema = z.object({
+  /**
+   * Stable, collision-free identity for a logged set (UUID). Unlike setNumber —
+   * a mutable ordinal that two devices can independently reuse after a delete /
+   * re-number — setId never changes once assigned, so the loss-free session merge
+   * (sessionMerge.unionSets) can key on it and never silently collapse two
+   * distinct sets onto one ordinal. Optional: legacy sets persisted before this
+   * field existed carry no setId, so consumers must fall back to setNumber when
+   * it is absent. New sets should always assign one.
+   */
+  setId: z.string().min(1).optional(),
   setNumber: z.number().int().min(1),
   weightKg: z.number().min(0),
   reps: z.number().int().min(0),
@@ -222,6 +232,15 @@ const TrainingSessionLogBaseSchema = z.object({
   schemaVersion: z.number().optional(),
   programPhase: ProgramPhaseSchema.optional(),
   skippedExerciseIds: z.array(z.string()).optional(),
+  /**
+   * When this session's completion was successfully written to the platform
+   * Health store (Apple Health / Health Connect). Persisted on the synced session
+   * record so the Health-write dedup guard survives reinstall: the device-local
+   * MMKV guard resets on reinstall, but a synced healthSyncedAt lets any device
+   * (or the same device after reinstall) recognise the workout was already
+   * written and skip a duplicate. Absent/null until the first successful write.
+   */
+  healthSyncedAt: z.coerce.date().nullable().optional(),
 });
 
 export const ActiveTrainingSessionLogSchema = TrainingSessionLogBaseSchema.extend({

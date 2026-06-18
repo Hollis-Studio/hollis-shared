@@ -88,6 +88,7 @@ export declare const AdaptationEventSchema: z.ZodObject<{
 }, z.core.$strip>;
 export type AdaptationEvent = z.infer<typeof AdaptationEventSchema>;
 export declare const SessionSetSchema: z.ZodObject<{
+    setId: z.ZodOptional<z.ZodString>;
     setNumber: z.ZodNumber;
     weightKg: z.ZodNumber;
     reps: z.ZodNumber;
@@ -203,6 +204,7 @@ export declare const SessionExerciseSchema: z.ZodObject<{
     gymExerciseInstanceId: z.ZodNullable<z.ZodString>;
     order: z.ZodNumber;
     sets: z.ZodArray<z.ZodObject<{
+        setId: z.ZodOptional<z.ZodString>;
         setNumber: z.ZodNumber;
         weightKg: z.ZodNumber;
         reps: z.ZodNumber;
@@ -401,6 +403,7 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
         maintenance: "maintenance";
     }>>;
     skippedExerciseIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    healthSyncedAt: z.ZodOptional<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
     exercises: z.ZodArray<z.ZodObject<{
         slotId: z.ZodOptional<z.ZodString>;
         canonicalExerciseId: z.ZodNullable<z.ZodString>;
@@ -433,6 +436,7 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
         gymExerciseInstanceId: z.ZodNullable<z.ZodString>;
         order: z.ZodNumber;
         sets: z.ZodArray<z.ZodObject<{
+            setId: z.ZodOptional<z.ZodString>;
             setNumber: z.ZodNumber;
             weightKg: z.ZodNumber;
             reps: z.ZodNumber;
@@ -615,6 +619,7 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
         maintenance: "maintenance";
     }>>;
     skippedExerciseIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    healthSyncedAt: z.ZodOptional<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
     exercises: z.ZodArray<z.ZodObject<{
         slotId: z.ZodOptional<z.ZodString>;
         canonicalExerciseId: z.ZodNullable<z.ZodString>;
@@ -647,6 +652,7 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
         gymExerciseInstanceId: z.ZodNullable<z.ZodString>;
         order: z.ZodNumber;
         sets: z.ZodArray<z.ZodObject<{
+            setId: z.ZodOptional<z.ZodString>;
             setNumber: z.ZodNumber;
             weightKg: z.ZodNumber;
             reps: z.ZodNumber;

@@ -1,5 +1,33 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.37 (2026-06-18)
+
+All changes are **additive / backward-compatible** (every new field is
+`optional`). They close three data-permanence follow-ups from the 2026-06-18
+Workouts audit — see
+`hollis-workouts/.../memory/project_data_permanence_audit_2026_06_18.md`.
+
+### `ai/persistence.ts`
+
+- **`AiAuditLogCreateSchema.clientIdempotencyKey`** (`uuid().optional()`) — the
+  stable client-generated key the Workouts outbox already sends on every retry
+  of one logical append. Lets the server upsert on `(userId,
+  clientIdempotencyKey)` so at-least-once outbox delivery can never duplicate an
+  immutable audit entry. `AiAuditLogEntrySchema` now `.omit`s the key, so it is a
+  write-time dedup hint only and is never echoed in the GET/POST response record.
+
+### `domain/training-session-log.ts`
+
+- **`SessionSetSchema.setId`** (`string().min(1).optional()`, UUID) — a stable,
+  collision-free set identity. `sessionMerge.unionSets` can key on it instead of
+  the mutable `setNumber` ordinal (two devices can reuse an ordinal after a
+  delete/re-number and silently collapse distinct sets). Legacy sets carry no
+  `setId`; consumers fall back to `setNumber` when absent.
+- **`TrainingSessionLog.healthSyncedAt`** (`coerce.date().nullable().optional()`)
+  — when the session was written to the platform Health store. Persisted on the
+  synced record so the Health-write dedup guard survives reinstall (the
+  device-local MMKV guard resets on reinstall; a synced timestamp does not).
+
 ## 0.2.0-alpha.33 (2026-06-04)
 
 All changes are **additive / backward-compatible**. Foundation for the Workouts
