@@ -1064,7 +1064,6 @@ export const LogWorkoutAudioBodySchema = z.object({
   mimeType: z.enum(['audio/m4a', 'audio/mp4', 'audio/wav', 'audio/webm']),
   defaultWeightUnit: z.enum(['kg', 'lbs']),
   hideRirControls: z.boolean().optional(),
-  protocolVersion: z.literal(2).optional(),
   exercises: z.array(AudioExerciseContextSchema).max(30),
 });
 export type LogWorkoutAudioBody = z.infer<typeof LogWorkoutAudioBodySchema>;

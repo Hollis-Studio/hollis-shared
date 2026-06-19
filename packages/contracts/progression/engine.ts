@@ -2,6 +2,13 @@ import { z } from "zod";
 import { SetSignalSchema } from "../domain/training-session-log.js";
 
 /**
+ * Schema version stamped onto persisted ProgressionEngineState (and derived
+ * engine-state snapshots). Single source of truth for the app and server, which
+ * previously each defined their own `= 1` constant and risked silent version skew.
+ */
+export const PROGRESSION_ENGINE_STATE_SCHEMA_VERSION = 1;
+
+/**
  * The progression dimension a cardio prescription was optimizing for.
  * Snapshotted at prescription time so resolution is focus-aware even if
  * the user later changes their setting.

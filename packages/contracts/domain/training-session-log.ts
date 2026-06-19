@@ -104,7 +104,10 @@ export const SessionSetSchema = z.object({
   setNumber: z.number().int().min(1),
   weightKg: z.number().min(0),
   reps: z.number().int().min(0),
-  rir: z.number().int().min(0).max(10),
+  // Nullable: a logged set may carry no RIR when the user didn't rate effort
+  // (placeholder/blank sets, or RIR controls hidden). The engine's
+  // calculateRirReliability already treats rir as `number | null`.
+  rir: z.number().int().min(0).max(10).nullable(),
   durationSeconds: z.number().min(0).nullable().optional(),
   isWarmup: z.boolean(),
   isOutlier: z.boolean(),

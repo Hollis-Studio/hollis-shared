@@ -903,7 +903,6 @@ export const LogWorkoutAudioBodySchema = z.object({
     mimeType: z.enum(['audio/m4a', 'audio/mp4', 'audio/wav', 'audio/webm']),
     defaultWeightUnit: z.enum(['kg', 'lbs']),
     hideRirControls: z.boolean().optional(),
-    protocolVersion: z.literal(2).optional(),
     exercises: z.array(AudioExerciseContextSchema).max(30),
 });
 // V2 protocol only (canonical forward shape). V1 legacy envelope stays local to server.

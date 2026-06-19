@@ -92,7 +92,7 @@ export declare const SessionSetSchema: z.ZodObject<{
     setNumber: z.ZodNumber;
     weightKg: z.ZodNumber;
     reps: z.ZodNumber;
-    rir: z.ZodNumber;
+    rir: z.ZodNullable<z.ZodNumber>;
     durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     isWarmup: z.ZodBoolean;
     isOutlier: z.ZodBoolean;
@@ -208,7 +208,7 @@ export declare const SessionExerciseSchema: z.ZodObject<{
         setNumber: z.ZodNumber;
         weightKg: z.ZodNumber;
         reps: z.ZodNumber;
-        rir: z.ZodNumber;
+        rir: z.ZodNullable<z.ZodNumber>;
         durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isWarmup: z.ZodBoolean;
         isOutlier: z.ZodBoolean;
@@ -440,7 +440,7 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
             setNumber: z.ZodNumber;
             weightKg: z.ZodNumber;
             reps: z.ZodNumber;
-            rir: z.ZodNumber;
+            rir: z.ZodNullable<z.ZodNumber>;
             durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
             isOutlier: z.ZodBoolean;
@@ -656,7 +656,7 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
             setNumber: z.ZodNumber;
             weightKg: z.ZodNumber;
             reps: z.ZodNumber;
-            rir: z.ZodNumber;
+            rir: z.ZodNullable<z.ZodNumber>;
             durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
             isOutlier: z.ZodBoolean;

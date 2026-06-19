@@ -1913,7 +1913,6 @@ export declare const LogWorkoutAudioBodySchema: z.ZodObject<{
         lbs: "lbs";
     }>;
     hideRirControls: z.ZodOptional<z.ZodBoolean>;
-    protocolVersion: z.ZodOptional<z.ZodLiteral<2>>;
     exercises: z.ZodArray<z.ZodObject<{
         exerciseIndex: z.ZodNumber;
         exerciseName: z.ZodString;
