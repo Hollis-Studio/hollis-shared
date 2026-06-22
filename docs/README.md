@@ -40,7 +40,7 @@ becomes the production verification path for Health or Workouts.
 ## Reading order
 
 1. **[Vision](./vision/2026-05-18-suite-vision.md)** — what Hollis is, what each of the six apps is, the shared Compass layer, and the build order.
-2. **[Architecture](./architecture/)** — start with [`suite-strategy.md`](./architecture/suite-strategy.md) (end-state), then [`suite-infrastructure-migration.md`](./architecture/suite-infrastructure-migration.md) (sequencing). `shared-auth-migration-checklist.md` and `vendor-hollis-interim.md` cover specific workstreams.
+2. **[Architecture](./architecture/)** — start with [`suite-strategy.md`](./architecture/suite-strategy.md) (end-state), then [`suite-infrastructure-migration.md`](./architecture/suite-infrastructure-migration.md) (sequencing). [`aws-infrastructure.md`](./architecture/aws-infrastructure.md) is the live deployed-AWS inventory (services, routing, separation, cost). `shared-auth-migration-checklist.md` and `vendor-hollis-interim.md` cover specific workstreams.
 3. **[Research](./research/)** — audits and reconciliation work that fed the architecture decisions.
 4. **[Reports](./reports/)** — dated phase snapshots; treat as historical state, not current truth.
 
@@ -56,6 +56,7 @@ docs/
 ├── architecture/                                Living suite architecture
 │   ├── suite-strategy.md                       End-state architecture: apps, stacks, services
 │   ├── suite-infrastructure-migration.md       Shared packages, identity, Workouts backend cutover
+│   ├── aws-infrastructure.md                   Live AWS inventory: services, routing, RDS, separation, cost
 │   ├── shared-auth-migration-checklist.md      Identity contracts, auth-client, Health extraction
 │   └── vendor-hollis-interim.md                Historical Workouts vendoring incident
 ├── research/
@@ -86,7 +87,8 @@ docs/
     ├── breach-notification-runbook.md           HIPAA 60-day rule, HHS steps, patient letter template, counsel triggers
     ├── baa-tracker.md                           Vendor BAA status table; next-step owner for each unsigned BAA
     ├── hipaa-npp-content.md                     Full NPP text for ConsentDocumentType.HIPAA_NPP (attorney review required)
-    └── roi-form-template.md                     HIPAA-compliant Release of Information form template
+    ├── roi-form-template.md                     HIPAA-compliant Release of Information form template
+    └── aws-cost-scaledown-runbook.md           Pre-launch parked AWS state + exact relaunch/reverse commands
 ```
 
 ---
