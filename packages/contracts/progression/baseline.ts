@@ -58,6 +58,11 @@ export const CardioBaselineEntrySchema = z.object({
   incline: z.number().min(0).nullable(),
   resistance: z.number().min(0).nullable(),
   mets: z.number().min(0).nullable().default(null),
+  // Machine-specific metrics for modality-profiled progression (default null so
+  // pre-alpha.39 history entries parse forward).
+  floors: z.number().min(0).nullable().default(null),
+  jumps: z.number().min(0).nullable().default(null),
+  steps: z.number().min(0).nullable().default(null),
   isOutlier: z.boolean(),
   goEasier: z.boolean(),
 });
@@ -69,6 +74,11 @@ export const CardioBaselineSchema = z.object({
   bestDistanceKm: z.number().min(0).nullable(),
   bestPaceSecondsPerKm: z.number().min(0).nullable(),
   bestMETs: z.number().min(0).nullable().default(null),
+  // Machine-specific PR ratchets (higher is better). Default null so existing
+  // baselines parse forward without these fields.
+  bestFloors: z.number().min(0).nullable().default(null),
+  bestJumps: z.number().min(0).nullable().default(null),
+  bestSteps: z.number().min(0).nullable().default(null),
   lowestHRAtPace: z.number().int().min(30).max(250).nullable(),
   lastDurationSeconds: z.number().min(0),
   lastDistanceKm: z.number().min(0).nullable(),
@@ -77,6 +87,9 @@ export const CardioBaselineSchema = z.object({
   lastIncline: z.number().min(0).nullable(),
   lastResistance: z.number().min(0).nullable(),
   lastAvgHeartRate: z.number().int().min(30).max(250).nullable(),
+  lastFloors: z.number().min(0).nullable().default(null),
+  lastJumps: z.number().min(0).nullable().default(null),
+  lastSteps: z.number().min(0).nullable().default(null),
   lastUpdated: z.coerce.date(),
   history: z.array(CardioBaselineEntrySchema),
   engineState: ProgressionEngineStateSchema.optional(),

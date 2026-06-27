@@ -29,6 +29,21 @@ export const CardioSessionDataSchema = z.object({
   z2Minutes: z.number().min(0).optional(),
   z3Minutes: z.number().min(0).optional(),
   z4Minutes: z.number().min(0).optional(),
+  // ── Machine-specific metrics (modality-profiled; null when not applicable) ──
+  /** Total steps taken (stairmaster, elliptical). */
+  steps: z.number().int().min(0).nullable().optional(),
+  /** Floors / flights climbed (stairmaster). */
+  floors: z.number().min(0).nullable().optional(),
+  /** Total jumps (jump rope). */
+  jumps: z.number().int().min(0).nullable().optional(),
+  /** Average power output in watts (bike, rower). */
+  avgWatts: z.number().min(0).nullable().optional(),
+  /** Average stroke rate in strokes per minute (rower). */
+  strokeRateSpm: z.number().min(0).nullable().optional(),
+  /** Machine resistance level / gear setting (stairmaster, elliptical, bike). */
+  level: z.number().min(0).nullable().optional(),
+  /** Rowing split: seconds per 500m (logged or derived from distance + duration). */
+  splitSecondsPer500m: z.number().min(0).nullable().optional(),
 });
 
 export type CardioInterval = z.infer<typeof CardioIntervalSchema>;

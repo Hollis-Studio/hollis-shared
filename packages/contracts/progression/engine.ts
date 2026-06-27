@@ -13,7 +13,14 @@ export const PROGRESSION_ENGINE_STATE_SCHEMA_VERSION = 1;
  * Snapshotted at prescription time so resolution is focus-aware even if
  * the user later changes their setting.
  */
-export const CardioProgressionFocusSchema = z.enum(["duration", "distance", "pace"]);
+export const CardioProgressionFocusSchema = z.enum([
+  "duration",
+  "distance",
+  "pace",
+  "floors",
+  "jumps",
+  "steps",
+]);
 export type CardioProgressionFocus = z.infer<typeof CardioProgressionFocusSchema>;
 
 export const ProgressionCalibrationStateSchema = z.enum([

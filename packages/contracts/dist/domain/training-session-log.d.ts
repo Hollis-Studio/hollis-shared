@@ -66,6 +66,9 @@ export declare const SetTargetSnapshotSchema: z.ZodObject<{
     durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    floors: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     isWarmup: z.ZodBoolean;
 }, z.core.$strip>;
 export type SetTargetSnapshot = z.infer<typeof SetTargetSnapshotSchema>;
@@ -127,6 +130,9 @@ export declare const SessionSetSchema: z.ZodObject<{
         durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        floors: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isWarmup: z.ZodBoolean;
     }, z.core.$strip>>;
     signal: z.ZodOptional<z.ZodEnum<{
@@ -243,6 +249,9 @@ export declare const SessionExerciseSchema: z.ZodObject<{
             durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            floors: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
         }, z.core.$strip>>;
         signal: z.ZodOptional<z.ZodEnum<{
@@ -296,6 +305,13 @@ export declare const SessionExerciseSchema: z.ZodObject<{
         z2Minutes: z.ZodOptional<z.ZodNumber>;
         z3Minutes: z.ZodOptional<z.ZodNumber>;
         z4Minutes: z.ZodOptional<z.ZodNumber>;
+        steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        floors: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        avgWatts: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        strokeRateSpm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        level: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        splitSecondsPer500m: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     }, z.core.$strip>>>;
     stretchData: z.ZodDefault<z.ZodNullable<z.ZodObject<{
         sets: z.ZodArray<z.ZodObject<{
@@ -325,6 +341,9 @@ export declare const SessionExerciseSchema: z.ZodObject<{
         durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        floors: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isWarmup: z.ZodBoolean;
     }, z.core.$strip>>>;
     adaptationEvents: z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -475,6 +494,9 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
                 durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+                floors: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+                steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+                jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 isWarmup: z.ZodBoolean;
             }, z.core.$strip>>;
             signal: z.ZodOptional<z.ZodEnum<{
@@ -528,6 +550,13 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
             z2Minutes: z.ZodOptional<z.ZodNumber>;
             z3Minutes: z.ZodOptional<z.ZodNumber>;
             z4Minutes: z.ZodOptional<z.ZodNumber>;
+            steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            floors: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            avgWatts: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            strokeRateSpm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            level: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            splitSecondsPer500m: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         }, z.core.$strip>>>;
         stretchData: z.ZodDefault<z.ZodNullable<z.ZodObject<{
             sets: z.ZodArray<z.ZodObject<{
@@ -557,6 +586,9 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
             durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            floors: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
         }, z.core.$strip>>>;
         adaptationEvents: z.ZodOptional<z.ZodArray<z.ZodObject<{
@@ -691,6 +723,9 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
                 durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+                floors: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+                steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+                jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 isWarmup: z.ZodBoolean;
             }, z.core.$strip>>;
             signal: z.ZodOptional<z.ZodEnum<{
@@ -744,6 +779,13 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
             z2Minutes: z.ZodOptional<z.ZodNumber>;
             z3Minutes: z.ZodOptional<z.ZodNumber>;
             z4Minutes: z.ZodOptional<z.ZodNumber>;
+            steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            floors: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            avgWatts: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            strokeRateSpm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            level: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            splitSecondsPer500m: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         }, z.core.$strip>>>;
         stretchData: z.ZodDefault<z.ZodNullable<z.ZodObject<{
             sets: z.ZodArray<z.ZodObject<{
@@ -773,6 +815,9 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
             durationSeconds: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             distanceKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             paceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            floors: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
         }, z.core.$strip>>>;
         adaptationEvents: z.ZodOptional<z.ZodArray<z.ZodObject<{

@@ -199,6 +199,9 @@ export declare const ProgressionBaselineSchema: z.ZodObject<{
                 distance: "distance";
                 duration: "duration";
                 pace: "pace";
+                steps: "steps";
+                floors: "floors";
+                jumps: "jumps";
             }>>>;
             prescribedPaceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             cardioOutcome: z.ZodOptional<z.ZodNullable<z.ZodObject<{
@@ -256,6 +259,9 @@ export declare const CardioBaselineEntrySchema: z.ZodObject<{
     incline: z.ZodNullable<z.ZodNumber>;
     resistance: z.ZodNullable<z.ZodNumber>;
     mets: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+    floors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+    jumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+    steps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
     isOutlier: z.ZodBoolean;
     goEasier: z.ZodBoolean;
 }, z.core.$strip>;
@@ -266,6 +272,9 @@ export declare const CardioBaselineSchema: z.ZodObject<{
     bestDistanceKm: z.ZodNullable<z.ZodNumber>;
     bestPaceSecondsPerKm: z.ZodNullable<z.ZodNumber>;
     bestMETs: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+    bestFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+    bestJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+    bestSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
     lowestHRAtPace: z.ZodNullable<z.ZodNumber>;
     lastDurationSeconds: z.ZodNumber;
     lastDistanceKm: z.ZodNullable<z.ZodNumber>;
@@ -274,6 +283,9 @@ export declare const CardioBaselineSchema: z.ZodObject<{
     lastIncline: z.ZodNullable<z.ZodNumber>;
     lastResistance: z.ZodNullable<z.ZodNumber>;
     lastAvgHeartRate: z.ZodNullable<z.ZodNumber>;
+    lastFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+    lastJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+    lastSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
     lastUpdated: z.ZodCoercedDate<unknown>;
     history: z.ZodArray<z.ZodObject<{
         sessionId: z.ZodString;
@@ -286,6 +298,9 @@ export declare const CardioBaselineSchema: z.ZodObject<{
         incline: z.ZodNullable<z.ZodNumber>;
         resistance: z.ZodNullable<z.ZodNumber>;
         mets: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+        floors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+        jumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+        steps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
         isOutlier: z.ZodBoolean;
         goEasier: z.ZodBoolean;
     }, z.core.$strip>>;
@@ -441,6 +456,9 @@ export declare const CardioBaselineSchema: z.ZodObject<{
                 distance: "distance";
                 duration: "duration";
                 pace: "pace";
+                steps: "steps";
+                floors: "floors";
+                jumps: "jumps";
             }>>>;
             prescribedPaceSecondsPerKm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             cardioOutcome: z.ZodOptional<z.ZodNullable<z.ZodObject<{

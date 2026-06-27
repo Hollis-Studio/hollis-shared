@@ -56,6 +56,15 @@ export const SetTargetSnapshotSchema = z.object({
      * the feedback loop with its real focus metric. Omitted/null otherwise.
      */
     paceSecondsPerKm: z.number().min(0).nullable().optional(),
+    /**
+     * Prescribed machine-specific targets, when the modality progresses on one of
+     * them (stairmaster → floors, jump rope → jumps, stairmaster alt → steps).
+     * Snapshotted alongside distance/pace so cold-start sessions for these
+     * modalities enter the feedback loop on their real focus metric.
+     */
+    floors: z.number().min(0).nullable().optional(),
+    steps: z.number().min(0).nullable().optional(),
+    jumps: z.number().min(0).nullable().optional(),
     isWarmup: z.boolean(),
 });
 /**

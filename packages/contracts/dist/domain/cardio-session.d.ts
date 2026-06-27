@@ -39,6 +39,13 @@ export declare const CardioSessionDataSchema: z.ZodObject<{
     z2Minutes: z.ZodOptional<z.ZodNumber>;
     z3Minutes: z.ZodOptional<z.ZodNumber>;
     z4Minutes: z.ZodOptional<z.ZodNumber>;
+    steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    floors: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    avgWatts: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    strokeRateSpm: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    level: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    splitSecondsPer500m: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
 }, z.core.$strip>;
 export type CardioInterval = z.infer<typeof CardioIntervalSchema>;
 export type CardioSessionData = z.infer<typeof CardioSessionDataSchema>;
