@@ -20,6 +20,11 @@ export const CardioTargetsSchema = z.object({
     targetSpeedKmh: z.number().min(0).nullable(),
     targetIncline: z.number().min(0).max(40).nullable(),
     targetResistance: z.number().min(0).nullable(),
+    // Machine-specific progression targets (stairmaster floors, jump-rope jumps).
+    // Default null so programs authored before alpha.40 parse forward unchanged.
+    targetFloors: z.number().min(0).nullable().default(null),
+    targetSteps: z.number().min(0).nullable().default(null),
+    targetJumps: z.number().min(0).nullable().default(null),
 });
 export const MaintenanceTargetSchema = z.object({
     weightKg: z.number().min(0),

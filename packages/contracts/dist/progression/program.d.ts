@@ -48,6 +48,9 @@ export declare const CardioTargetsSchema: z.ZodObject<{
     targetSpeedKmh: z.ZodNullable<z.ZodNumber>;
     targetIncline: z.ZodNullable<z.ZodNumber>;
     targetResistance: z.ZodNullable<z.ZodNumber>;
+    targetFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+    targetSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+    targetJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
 }, z.core.$strip>;
 export declare const MaintenanceTargetSchema: z.ZodObject<{
     weightKg: z.ZodNumber;
@@ -91,6 +94,9 @@ export declare const ProgramExerciseSchema: z.ZodPipe<z.ZodObject<{
         targetSpeedKmh: z.ZodNullable<z.ZodNumber>;
         targetIncline: z.ZodNullable<z.ZodNumber>;
         targetResistance: z.ZodNullable<z.ZodNumber>;
+        targetFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+        targetSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+        targetJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
     }, z.core.$strip>>>;
     maintenanceTarget: z.ZodDefault<z.ZodNullable<z.ZodObject<{
         weightKg: z.ZodNumber;
@@ -102,6 +108,9 @@ export declare const ProgramExerciseSchema: z.ZodPipe<z.ZodObject<{
         targetSpeedKmh: z.ZodNullable<z.ZodNumber>;
         targetIncline: z.ZodNullable<z.ZodNumber>;
         targetResistance: z.ZodNullable<z.ZodNumber>;
+        targetFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+        targetSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+        targetJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
     }, z.core.$strip>>>;
     priorityLevel: z.ZodOptional<z.ZodEnum<{
         primary: "primary";
@@ -131,6 +140,9 @@ export declare const ProgramExerciseSchema: z.ZodPipe<z.ZodObject<{
         targetSpeedKmh: number | null;
         targetIncline: number | null;
         targetResistance: number | null;
+        targetFloors: number | null;
+        targetSteps: number | null;
+        targetJumps: number | null;
     } | null;
     readonly maintenanceTarget: {
         weightKg: number;
@@ -142,6 +154,9 @@ export declare const ProgramExerciseSchema: z.ZodPipe<z.ZodObject<{
         targetSpeedKmh: number | null;
         targetIncline: number | null;
         targetResistance: number | null;
+        targetFloors: number | null;
+        targetSteps: number | null;
+        targetJumps: number | null;
     } | null;
     readonly priorityLevel?: "primary" | "secondary" | "supporting" | undefined;
 }, {
@@ -166,6 +181,9 @@ export declare const ProgramExerciseSchema: z.ZodPipe<z.ZodObject<{
         targetSpeedKmh: number | null;
         targetIncline: number | null;
         targetResistance: number | null;
+        targetFloors: number | null;
+        targetSteps: number | null;
+        targetJumps: number | null;
     } | null;
     maintenanceTarget: {
         weightKg: number;
@@ -177,6 +195,9 @@ export declare const ProgramExerciseSchema: z.ZodPipe<z.ZodObject<{
         targetSpeedKmh: number | null;
         targetIncline: number | null;
         targetResistance: number | null;
+        targetFloors: number | null;
+        targetSteps: number | null;
+        targetJumps: number | null;
     } | null;
     goalMode?: "maintain" | "progress" | "track_only" | undefined;
     useSmartProgress?: boolean | undefined;
@@ -223,6 +244,9 @@ export declare const ProgramDaySchema: z.ZodObject<{
             targetSpeedKmh: z.ZodNullable<z.ZodNumber>;
             targetIncline: z.ZodNullable<z.ZodNumber>;
             targetResistance: z.ZodNullable<z.ZodNumber>;
+            targetFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+            targetSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+            targetJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
         }, z.core.$strip>>>;
         maintenanceTarget: z.ZodDefault<z.ZodNullable<z.ZodObject<{
             weightKg: z.ZodNumber;
@@ -234,6 +258,9 @@ export declare const ProgramDaySchema: z.ZodObject<{
             targetSpeedKmh: z.ZodNullable<z.ZodNumber>;
             targetIncline: z.ZodNullable<z.ZodNumber>;
             targetResistance: z.ZodNullable<z.ZodNumber>;
+            targetFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+            targetSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+            targetJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
         }, z.core.$strip>>>;
         priorityLevel: z.ZodOptional<z.ZodEnum<{
             primary: "primary";
@@ -263,6 +290,9 @@ export declare const ProgramDaySchema: z.ZodObject<{
             targetSpeedKmh: number | null;
             targetIncline: number | null;
             targetResistance: number | null;
+            targetFloors: number | null;
+            targetSteps: number | null;
+            targetJumps: number | null;
         } | null;
         readonly maintenanceTarget: {
             weightKg: number;
@@ -274,6 +304,9 @@ export declare const ProgramDaySchema: z.ZodObject<{
             targetSpeedKmh: number | null;
             targetIncline: number | null;
             targetResistance: number | null;
+            targetFloors: number | null;
+            targetSteps: number | null;
+            targetJumps: number | null;
         } | null;
         readonly priorityLevel?: "primary" | "secondary" | "supporting" | undefined;
     }, {
@@ -298,6 +331,9 @@ export declare const ProgramDaySchema: z.ZodObject<{
             targetSpeedKmh: number | null;
             targetIncline: number | null;
             targetResistance: number | null;
+            targetFloors: number | null;
+            targetSteps: number | null;
+            targetJumps: number | null;
         } | null;
         maintenanceTarget: {
             weightKg: number;
@@ -309,6 +345,9 @@ export declare const ProgramDaySchema: z.ZodObject<{
             targetSpeedKmh: number | null;
             targetIncline: number | null;
             targetResistance: number | null;
+            targetFloors: number | null;
+            targetSteps: number | null;
+            targetJumps: number | null;
         } | null;
         goalMode?: "maintain" | "progress" | "track_only" | undefined;
         useSmartProgress?: boolean | undefined;
@@ -372,6 +411,9 @@ export declare const ProgramSchema: z.ZodObject<{
                 targetSpeedKmh: z.ZodNullable<z.ZodNumber>;
                 targetIncline: z.ZodNullable<z.ZodNumber>;
                 targetResistance: z.ZodNullable<z.ZodNumber>;
+                targetFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+                targetSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+                targetJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
             }, z.core.$strip>>>;
             maintenanceTarget: z.ZodDefault<z.ZodNullable<z.ZodObject<{
                 weightKg: z.ZodNumber;
@@ -383,6 +425,9 @@ export declare const ProgramSchema: z.ZodObject<{
                 targetSpeedKmh: z.ZodNullable<z.ZodNumber>;
                 targetIncline: z.ZodNullable<z.ZodNumber>;
                 targetResistance: z.ZodNullable<z.ZodNumber>;
+                targetFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+                targetSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+                targetJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
             }, z.core.$strip>>>;
             priorityLevel: z.ZodOptional<z.ZodEnum<{
                 primary: "primary";
@@ -412,6 +457,9 @@ export declare const ProgramSchema: z.ZodObject<{
                 targetSpeedKmh: number | null;
                 targetIncline: number | null;
                 targetResistance: number | null;
+                targetFloors: number | null;
+                targetSteps: number | null;
+                targetJumps: number | null;
             } | null;
             readonly maintenanceTarget: {
                 weightKg: number;
@@ -423,6 +471,9 @@ export declare const ProgramSchema: z.ZodObject<{
                 targetSpeedKmh: number | null;
                 targetIncline: number | null;
                 targetResistance: number | null;
+                targetFloors: number | null;
+                targetSteps: number | null;
+                targetJumps: number | null;
             } | null;
             readonly priorityLevel?: "primary" | "secondary" | "supporting" | undefined;
         }, {
@@ -447,6 +498,9 @@ export declare const ProgramSchema: z.ZodObject<{
                 targetSpeedKmh: number | null;
                 targetIncline: number | null;
                 targetResistance: number | null;
+                targetFloors: number | null;
+                targetSteps: number | null;
+                targetJumps: number | null;
             } | null;
             maintenanceTarget: {
                 weightKg: number;
@@ -458,6 +512,9 @@ export declare const ProgramSchema: z.ZodObject<{
                 targetSpeedKmh: number | null;
                 targetIncline: number | null;
                 targetResistance: number | null;
+                targetFloors: number | null;
+                targetSteps: number | null;
+                targetJumps: number | null;
             } | null;
             goalMode?: "maintain" | "progress" | "track_only" | undefined;
             useSmartProgress?: boolean | undefined;
