@@ -102,9 +102,23 @@ export const GymProfileSchema = z.object({
 export type GymProfile = z.infer<typeof GymProfileSchema>;
 
 // ---------------------------------------------------------------------------
+// AutoregulationStyleSchema — per-exercise within-session set-style intent
+// consumed by the Workouts progression engine v3 (spec DEC6/DEC12):
+//   pyramid_down — hold target reps, drop load across working sets (default)
+//   hold_weight  — hold load, let predicted reps fall across working sets
+// ---------------------------------------------------------------------------
+export const AUTOREGULATION_STYLES = ['pyramid_down', 'hold_weight'] as const;
+export const AutoregulationStyleSchema = z.enum(AUTOREGULATION_STYLES);
+export type AutoregulationStyle = z.infer<typeof AutoregulationStyleSchema>;
+
+// ---------------------------------------------------------------------------
 // GymExerciseInstanceSchema — full record shape
 // deletedAt included because CRUD uses deleteStyle:"hard" which stamps it;
 // tombstoned rows appear in list responses.
+// repRangeMin/repRangeMax/autoregulationStyle are the per-exercise engine
+// overrides (v3 spec DEC12) — first-class columns replacing the interim
+// UserSettings.exerciseEngineOverrides passthrough map. Both rep bounds are
+// set together or not at all; the app enforces min ≤ max as UX logic.
 // ---------------------------------------------------------------------------
 export const GymExerciseInstanceSchema = z.object({
   id: z.string().min(1),
@@ -115,8 +129,11 @@ export const GymExerciseInstanceSchema = z.object({
   weightUnit: WeightUnitSchema,
   weightMode: WeightModeSchema,
   weightIncrementKg: z.number().min(0).optional(),
+  repRangeMin: z.number().int().min(1).max(100).nullable().optional(),
+  repRangeMax: z.number().int().min(1).max(100).nullable().optional(),
+  autoregulationStyle: AutoregulationStyleSchema.nullable().optional(),
   isActive: z.boolean(),
-  notes: z.string().optional(),
+  notes: z.string().max(500).optional(),
   lastUsedWeightKg: z.number().min(0).optional(),
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),

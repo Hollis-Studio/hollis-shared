@@ -1,5 +1,50 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.42 (2026-07-05)
+
+All changes are **additive / backward-compatible** for well-formed payloads
+(new fields are `optional`; the new `.max()` bounds only reject degenerate
+oversized payloads no legitimate client sends). Closes three queued Workouts
+TODOs: per-exercise engine overrides → first-class `GymExerciseInstance`
+columns (engine v3 plan Wave 3 follow-through), the smart-builder draft
+delete-ack, and the `.max()` bounds sweep (Workouts TODO §F.6).
+
+### `domain/gym.ts`
+
+- **`AUTOREGULATION_STYLES` / `AutoregulationStyleSchema` / `AutoregulationStyle`**
+  (`'pyramid_down' | 'hold_weight'`) — per-exercise within-session set-style
+  intent for progression engine v3 (spec DEC6/DEC12).
+- **`GymExerciseInstanceSchema.repRangeMin` / `.repRangeMax`**
+  (`int().min(1).max(100).nullable().optional()`) and
+  **`.autoregulationStyle`** (`AutoregulationStyleSchema.nullable().optional()`)
+  — the per-exercise engine overrides, replacing the interim
+  `UserSettings.exerciseEngineOverrides` passthrough map. Both rep bounds are
+  written together or not at all; the app enforces `min ≤ max` as UX logic.
+- **`GymExerciseInstanceSchema.notes`** now `.max(500)` — matches
+  `GymEquipmentItemSchema.notes` two schemas up (was unbounded).
+
+### `ai/persistence.ts`
+
+- **`SmartBuilderDraftDeleteAckSchema`** (`{ deleted: literal(true) }`) — the
+  DELETE ack for the Workouts smart-builder draft route, which previously
+  responded with inline server Zod (WC straggler).
+
+### `ai/workout-ai-wire.ts` — `.max()` bounds sweep
+
+Bounds added to previously unbounded fields (defense-in-depth; generous):
+`SlottedProgramSchema.schedule ≤ 31`, `UserTrainingContextSchema.injuries
+≤ 100` / `.cardioBaselines ≤ 200` / `.exerciseLibrary ≤ 5000`,
+`PrescriptionNarrationRequestSchema.exerciseName ≤ 200` / `.dropSteps ≤ 25` /
+`.targetSummary ≤ 300`, `SetSignalTiebreakerRequestSchema.exerciseName ≤ 200`
+/ `.ambiguityReason ≤ 1000`, `CrossModalContextRequestSchema.exerciseName
+≤ 200` / `.trainingPhase ≤ 50` / `.recentSessionSummary ≤ 4000`,
+`RecognizeEquipmentBodySchema.imageBase64 ≤ 15_000_000`,
+`LogWorkoutAudioBodySchema.audioBase64 ≤ 30_000_000`,
+`GymSetupChatBodySchema.gymName ≤ 200`, `AudioExerciseContextSchema.loggedSets
+≤ 300`. The `z.unknown()` blobs in `ai/persistence.ts` (AI audit log,
+smart-builder draft payload) are left opaque intentionally — they are
+passthrough persistence, not parsed surfaces.
+
 ## 0.2.0-alpha.41 (2026-07-05)
 
 All changes are **additive / backward-compatible**. Wire contract for the

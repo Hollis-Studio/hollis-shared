@@ -285,6 +285,12 @@ export declare const GymProfileSchema: z.ZodObject<{
     updatedAt: z.ZodOptional<z.ZodCoercedDate<unknown>>;
 }, z.core.$strip>;
 export type GymProfile = z.infer<typeof GymProfileSchema>;
+export declare const AUTOREGULATION_STYLES: readonly ["pyramid_down", "hold_weight"];
+export declare const AutoregulationStyleSchema: z.ZodEnum<{
+    pyramid_down: "pyramid_down";
+    hold_weight: "hold_weight";
+}>;
+export type AutoregulationStyle = z.infer<typeof AutoregulationStyleSchema>;
 export declare const GymExerciseInstanceSchema: z.ZodObject<{
     id: z.ZodString;
     userId: z.ZodString;
@@ -300,6 +306,12 @@ export declare const GymExerciseInstanceSchema: z.ZodObject<{
         relative: "relative";
     }>;
     weightIncrementKg: z.ZodOptional<z.ZodNumber>;
+    repRangeMin: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    repRangeMax: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    autoregulationStyle: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+        pyramid_down: "pyramid_down";
+        hold_weight: "hold_weight";
+    }>>>;
     isActive: z.ZodBoolean;
     notes: z.ZodOptional<z.ZodString>;
     lastUsedWeightKg: z.ZodOptional<z.ZodNumber>;

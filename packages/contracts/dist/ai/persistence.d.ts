@@ -189,6 +189,10 @@ export declare const SmartBuilderDraftRecordSchema: z.ZodObject<{
     updatedAt: z.ZodCoercedDate<unknown>;
 }, z.core.$strip>;
 export type SmartBuilderDraftRecord = z.infer<typeof SmartBuilderDraftRecordSchema>;
+export declare const SmartBuilderDraftDeleteAckSchema: z.ZodObject<{
+    deleted: z.ZodLiteral<true>;
+}, z.core.$strip>;
+export type SmartBuilderDraftDeleteAck = z.infer<typeof SmartBuilderDraftDeleteAckSchema>;
 export declare const PlateauCoachingTokenCountSchema: z.ZodNullable<z.ZodObject<{
     input: z.ZodOptional<z.ZodNumber>;
     output: z.ZodOptional<z.ZodNumber>;

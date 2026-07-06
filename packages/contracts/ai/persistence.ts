@@ -102,6 +102,13 @@ export const SmartBuilderDraftRecordSchema = z.object({
 });
 export type SmartBuilderDraftRecord = z.infer<typeof SmartBuilderDraftRecordSchema>;
 
+// DELETE response ack (idempotent — `deleted: true` whether or not a draft
+// existed). Closes the last inline-Zod ack on the Workouts draft routes.
+export const SmartBuilderDraftDeleteAckSchema = z.object({
+  deleted: z.literal(true),
+});
+export type SmartBuilderDraftDeleteAck = z.infer<typeof SmartBuilderDraftDeleteAckSchema>;
+
 // ===========================================================================
 // PlateauCoachingArtifact
 // ===========================================================================

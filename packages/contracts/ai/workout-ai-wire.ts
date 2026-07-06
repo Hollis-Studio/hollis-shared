@@ -279,7 +279,7 @@ export const SlottedProgramSchema = z.object({
   durationWeeks: z.number().int().min(1).max(52),
   deloadWeekNumbers: z.array(z.number().int()).optional(),
   deloadPercent: z.number().min(0).max(1).optional(),
-  schedule: z.array(SlottedDaySchema),
+  schedule: z.array(SlottedDaySchema).max(31),
 });
 export type SlottedProgram = z.infer<typeof SlottedProgramSchema>;
 
@@ -595,7 +595,7 @@ export type UserProfileContext = z.infer<typeof UserProfileContextSchema>;
 /** Per-exercise strength + progression state, keyed by canonical exercise id. */
 export const ExerciseStrengthStateSchema = z.object({
   canonicalExerciseId: z.string().min(1),
-  exerciseName: z.string(),
+  exerciseName: z.string().max(200),
   currentE1RMKg: z.number().min(0).max(WEIGHT_KG_MAX).nullable(),
   workingWeightKg: z.number().min(0).max(WEIGHT_KG_MAX).nullable().optional(),
   workingReps: z.number().int().min(0).max(REPS_MAX).nullable().optional(),
@@ -637,7 +637,7 @@ export type ActiveProgramSummary = z.infer<typeof ActiveProgramSummarySchema>;
 /** Per-exercise cardio personal bests / recency, keyed by canonical exercise id. */
 export const CardioBaselineSummarySchema = z.object({
   canonicalExerciseId: z.string().min(1),
-  exerciseName: z.string(),
+  exerciseName: z.string().max(200),
   bestDurationSeconds: z.number().int().min(0).nullable().optional(),
   bestDistanceKm: z.number().min(0).max(DISTANCE_KM_MAX).nullable().optional(),
   bestPaceSecondsPerKm: z.number().min(0).nullable().optional(),
@@ -768,10 +768,10 @@ export const UserTrainingContextSchema = z.object({
   recentWorkouts: z.array(WorkoutSummarySchema).max(20),
   activeProgram: ActiveProgramSummarySchema.nullable().optional(),
   readiness: ReadinessContextSchema.nullable().optional(),
-  injuries: z.array(InjuryContextSchema),
+  injuries: z.array(InjuryContextSchema).max(100),
   gym: GymContextSchema,
-  cardioBaselines: z.array(CardioBaselineSummarySchema),
-  exerciseLibrary: z.array(ExerciseLibraryEntrySchema),
+  cardioBaselines: z.array(CardioBaselineSummarySchema).max(200),
+  exerciseLibrary: z.array(ExerciseLibraryEntrySchema).max(5000),
   // Explicit user-configured goals/targets (volume + cardio). Optional so the
   // payload stays backward-compatible when the user has set no targets.
   goals: TrainingGoalsContextSchema.nullable().optional(),
@@ -917,10 +917,10 @@ export type GymSetupResponse = z.infer<typeof GymSetupResponseSchema>;
 // ============================================================================
 
 export const PrescriptionNarrationRequestSchema = z.object({
-  exerciseName: z.string(),
-  dropSteps: z.array(PrescriptionDropStepSchema),
+  exerciseName: z.string().max(200),
+  dropSteps: z.array(PrescriptionDropStepSchema).max(25),
   action: PrescriptionActionSchema,
-  targetSummary: z.string(),
+  targetSummary: z.string().max(300),
   displayUnit: z.enum(["kg", "lbs"]),
 });
 export type PrescriptionNarrationRequest = z.infer<typeof PrescriptionNarrationRequestSchema>;
@@ -937,7 +937,7 @@ export type PrescriptionNarrationResponse = z.infer<typeof PrescriptionNarration
 // ============================================================================
 
 export const SetSignalTiebreakerRequestSchema = z.object({
-  exerciseName: z.string(),
+  exerciseName: z.string().max(200),
   targetWeightKg: z.number().nullable(),
   targetReps: z.number().int().nullable(),
   targetRIR: z.number().nullable(),
@@ -945,7 +945,7 @@ export const SetSignalTiebreakerRequestSchema = z.object({
   actualReps: z.number().int(),
   actualRir: z.number().nullable(),
   historicalMaxWeightKg: z.number().nullable(),
-  ambiguityReason: z.string().nullable(),
+  ambiguityReason: z.string().max(1000).nullable(),
 });
 export type SetSignalTiebreakerRequest = z.infer<typeof SetSignalTiebreakerRequestSchema>;
 
@@ -957,11 +957,11 @@ export type SetSignalTiebreakerResponse = z.infer<typeof SetSignalTiebreakerResp
 // ============================================================================
 
 export const CrossModalContextRequestSchema = z.object({
-  exerciseName: z.string(),
+  exerciseName: z.string().max(200),
   acuteCardioLoadRatio: z.number().nullable(),
   suggestedGoEasierPercent: z.number().nullable(),
-  trainingPhase: z.string().nullable(),
-  recentSessionSummary: z.string().nullable(),
+  trainingPhase: z.string().max(50).nullable(),
+  recentSessionSummary: z.string().max(4000).nullable(),
 });
 export type CrossModalContextRequest = z.infer<typeof CrossModalContextRequestSchema>;
 
@@ -975,7 +975,7 @@ import { EquipmentTypeSchema } from '../domain/equipment.js';
 
 // --- RecognizeEquipmentBodySchema ---
 export const RecognizeEquipmentBodySchema = z.object({
-  imageBase64: z.string().min(1),
+  imageBase64: z.string().min(1).max(15_000_000),
   userDescription: z.string().max(200).optional(),
 });
 export type RecognizeEquipmentBody = z.infer<typeof RecognizeEquipmentBodySchema>;
@@ -1007,7 +1007,7 @@ export type GymSetupConversationMessage = z.infer<typeof GymSetupConversationMes
 export const GymSetupChatBodySchema = z.object({
   conversationHistory: z.array(GymSetupConversationMessageSchema).max(50),
   currentEquipment: z.array(z.record(z.string(), z.unknown())).max(500),
-  gymName: z.string().optional(),
+  gymName: z.string().max(200).optional(),
 });
 export type GymSetupChatBody = z.infer<typeof GymSetupChatBodySchema>;
 
@@ -1055,12 +1055,12 @@ export const AudioExerciseContextSchema = z.object({
   trackingMode: z.enum(['reps', 'timed', 'cardio', 'stretch']),
   targetSetCount: z.number().int().min(0),
   isActive: z.boolean().optional(),
-  loggedSets: z.array(LoggedSetContextSchema).optional(),
+  loggedSets: z.array(LoggedSetContextSchema).max(300).optional(),
 });
 export type AudioExerciseContext = z.infer<typeof AudioExerciseContextSchema>;
 
 export const LogWorkoutAudioBodySchema = z.object({
-  audioBase64: z.string().min(1),
+  audioBase64: z.string().min(1).max(30_000_000),
   mimeType: z.enum(['audio/m4a', 'audio/mp4', 'audio/wav', 'audio/webm']),
   defaultWeightUnit: z.enum(['kg', 'lbs']),
   hideRirControls: z.boolean().optional(),
@@ -1177,7 +1177,7 @@ const SmartNotificationAnalyticsSummarySchema = z.object({
 });
 
 const SmartNotificationProgressionSummarySchema = z.object({
-  trainingPhase: z.string().nullable(),
+  trainingPhase: z.string().max(50).nullable(),
   trainingGoal: z.string().nullable(),
   activeModes: z.array(z.string()).max(4),
   watchlist: z
