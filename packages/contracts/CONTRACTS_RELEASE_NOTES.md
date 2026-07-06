@@ -1,5 +1,28 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.41 (2026-07-05)
+
+All changes are **additive / backward-compatible**. Wire contract for the
+Workouts smart-notifications feature (preview/send). Backfilled entry — this
+version was published 2026-07-05; alpha.38–40 (SessionSet.rir nullable +
+engine schema-version const; modality-profiled cardio metrics; CardioTargets
+floors/steps/jumps) shipped without notes entries and are recorded only in
+their commit messages.
+
+### `ai/workout-ai-wire.ts`
+
+- **Smart notifications preview/send section**: `SmartNotificationChannelSchema`
+  (`pre_lift` | `rest_day_pulse` | `post_workout_recap` | `missed_slot` |
+  `weekly_review`), snapshot sub-schemas (recent session, program today, active
+  program, analytics summary, progression summary) composed into
+  `SmartNotificationSnapshotSchema` (schemaVersion literal 1),
+  `SmartNotificationCopySchema` (title ≤ 40, body ≤ 140) +
+  `SmartNotificationCopySourceSchema` (`ai` | `fallback`), and the
+  request/response quartet `SmartNotificationPreviewRequestSchema` /
+  `SmartNotificationSendRequestSchema` (preview + `dryRun`) /
+  `SmartNotificationPreviewResponseSchema` / `SmartNotificationSendResponseSchema`
+  (adds `delivery: {status, reason?, providerMessageId?}`).
+
 ## 0.2.0-alpha.37 (2026-06-18)
 
 All changes are **additive / backward-compatible** (every new field is

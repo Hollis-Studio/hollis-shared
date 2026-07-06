@@ -2089,5 +2089,354 @@ export declare const SmartReaderUsageResponseSchema: z.ZodObject<{
     remaining: z.ZodNumber;
 }, z.core.$strip>;
 export type SmartReaderUsageResponse = z.infer<typeof SmartReaderUsageResponseSchema>;
+export declare const SmartNotificationChannelSchema: z.ZodEnum<{
+    pre_lift: "pre_lift";
+    rest_day_pulse: "rest_day_pulse";
+    post_workout_recap: "post_workout_recap";
+    missed_slot: "missed_slot";
+    weekly_review: "weekly_review";
+}>;
+export type SmartNotificationChannel = z.infer<typeof SmartNotificationChannelSchema>;
+export declare const SmartNotificationSnapshotSchema: z.ZodObject<{
+    schemaVersion: z.ZodLiteral<1>;
+    channel: z.ZodEnum<{
+        pre_lift: "pre_lift";
+        rest_day_pulse: "rest_day_pulse";
+        post_workout_recap: "post_workout_recap";
+        missed_slot: "missed_slot";
+        weekly_review: "weekly_review";
+    }>;
+    generatedAt: z.ZodString;
+    localDate: z.ZodString;
+    localHour: z.ZodNumber;
+    timeZone: z.ZodString;
+    freshness: z.ZodObject<{
+        latestSessionAt: z.ZodNullable<z.ZodString>;
+        latestProfileUpdateAt: z.ZodNullable<z.ZodString>;
+        latestServerDataAt: z.ZodNullable<z.ZodString>;
+        isFreshEnoughForSpecificClaims: z.ZodBoolean;
+        reason: z.ZodString;
+    }, z.core.$strip>;
+    user: z.ZodObject<{
+        displayName: z.ZodNullable<z.ZodString>;
+        weightUnit: z.ZodString;
+        distanceUnit: z.ZodString;
+    }, z.core.$strip>;
+    activeProgram: z.ZodNullable<z.ZodObject<{
+        id: z.ZodString;
+        name: z.ZodString;
+        weekIndex: z.ZodNumber;
+        daysPerWeek: z.ZodNumber;
+        today: z.ZodObject<{
+            dayOfWeek: z.ZodNumber;
+            isTrainingDay: z.ZodBoolean;
+            dayName: z.ZodNullable<z.ZodString>;
+            exerciseCount: z.ZodNumber;
+            setCount: z.ZodNumber;
+            topExercises: z.ZodArray<z.ZodString>;
+            progressionModes: z.ZodArray<z.ZodString>;
+        }, z.core.$strip>;
+        nextTrainingDay: z.ZodNullable<z.ZodObject<{
+            dayOfWeek: z.ZodNumber;
+            dayName: z.ZodString;
+        }, z.core.$strip>>;
+    }, z.core.$strip>>;
+    recentSessions: z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        date: z.ZodString;
+        programDayName: z.ZodNullable<z.ZodString>;
+        durationMinutes: z.ZodNumber;
+        totalVolumeKg: z.ZodNumber;
+        exerciseCount: z.ZodNumber;
+        isFreestyle: z.ZodBoolean;
+        isSubstitution: z.ZodBoolean;
+        topExercises: z.ZodArray<z.ZodString>;
+    }, z.core.$strip>>;
+    analytics: z.ZodObject<{
+        week: z.ZodObject<{
+            sessions: z.ZodNumber;
+            volumeKg: z.ZodNumber;
+            durationMinutes: z.ZodNumber;
+            substitutions: z.ZodNumber;
+            freestyle: z.ZodNumber;
+        }, z.core.$strip>;
+        month: z.ZodObject<{
+            sessions: z.ZodNumber;
+            volumeKg: z.ZodNumber;
+            trend: z.ZodEnum<{
+                flat: "flat";
+                unknown: "unknown";
+                up: "up";
+                down: "down";
+            }>;
+        }, z.core.$strip>;
+    }, z.core.$strip>;
+    progression: z.ZodObject<{
+        trainingPhase: z.ZodNullable<z.ZodString>;
+        trainingGoal: z.ZodNullable<z.ZodString>;
+        activeModes: z.ZodArray<z.ZodString>;
+        watchlist: z.ZodArray<z.ZodObject<{
+            exerciseId: z.ZodString;
+            currentE1RMKg: z.ZodNullable<z.ZodNumber>;
+            missStreak: z.ZodNullable<z.ZodNumber>;
+            plateauDeloadUntil: z.ZodNullable<z.ZodString>;
+        }, z.core.$strip>>;
+        recentMetricSignals: z.ZodArray<z.ZodObject<{
+            exerciseId: z.ZodString;
+            capturedAt: z.ZodString;
+            hasGatedE1RM: z.ZodBoolean;
+            hasBestQualifyingSet: z.ZodBoolean;
+        }, z.core.$strip>>;
+    }, z.core.$strip>;
+}, z.core.$strip>;
+export type SmartNotificationSnapshot = z.infer<typeof SmartNotificationSnapshotSchema>;
+export declare const SmartNotificationCopySchema: z.ZodObject<{
+    title: z.ZodString;
+    body: z.ZodString;
+}, z.core.$strip>;
+export type SmartNotificationCopy = z.infer<typeof SmartNotificationCopySchema>;
+export declare const SmartNotificationCopySourceSchema: z.ZodEnum<{
+    ai: "ai";
+    fallback: "fallback";
+}>;
+export type SmartNotificationCopySource = z.infer<typeof SmartNotificationCopySourceSchema>;
+export declare const SmartNotificationPreviewRequestSchema: z.ZodObject<{
+    channel: z.ZodEnum<{
+        pre_lift: "pre_lift";
+        rest_day_pulse: "rest_day_pulse";
+        post_workout_recap: "post_workout_recap";
+        missed_slot: "missed_slot";
+        weekly_review: "weekly_review";
+    }>;
+    referenceDateIso: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
+export type SmartNotificationPreviewRequest = z.infer<typeof SmartNotificationPreviewRequestSchema>;
+export declare const SmartNotificationSendRequestSchema: z.ZodObject<{
+    channel: z.ZodEnum<{
+        pre_lift: "pre_lift";
+        rest_day_pulse: "rest_day_pulse";
+        post_workout_recap: "post_workout_recap";
+        missed_slot: "missed_slot";
+        weekly_review: "weekly_review";
+    }>;
+    referenceDateIso: z.ZodOptional<z.ZodString>;
+    dryRun: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
+}, z.core.$strip>;
+export type SmartNotificationSendRequest = z.infer<typeof SmartNotificationSendRequestSchema>;
+export declare const SmartNotificationPreviewResponseSchema: z.ZodObject<{
+    snapshot: z.ZodObject<{
+        schemaVersion: z.ZodLiteral<1>;
+        channel: z.ZodEnum<{
+            pre_lift: "pre_lift";
+            rest_day_pulse: "rest_day_pulse";
+            post_workout_recap: "post_workout_recap";
+            missed_slot: "missed_slot";
+            weekly_review: "weekly_review";
+        }>;
+        generatedAt: z.ZodString;
+        localDate: z.ZodString;
+        localHour: z.ZodNumber;
+        timeZone: z.ZodString;
+        freshness: z.ZodObject<{
+            latestSessionAt: z.ZodNullable<z.ZodString>;
+            latestProfileUpdateAt: z.ZodNullable<z.ZodString>;
+            latestServerDataAt: z.ZodNullable<z.ZodString>;
+            isFreshEnoughForSpecificClaims: z.ZodBoolean;
+            reason: z.ZodString;
+        }, z.core.$strip>;
+        user: z.ZodObject<{
+            displayName: z.ZodNullable<z.ZodString>;
+            weightUnit: z.ZodString;
+            distanceUnit: z.ZodString;
+        }, z.core.$strip>;
+        activeProgram: z.ZodNullable<z.ZodObject<{
+            id: z.ZodString;
+            name: z.ZodString;
+            weekIndex: z.ZodNumber;
+            daysPerWeek: z.ZodNumber;
+            today: z.ZodObject<{
+                dayOfWeek: z.ZodNumber;
+                isTrainingDay: z.ZodBoolean;
+                dayName: z.ZodNullable<z.ZodString>;
+                exerciseCount: z.ZodNumber;
+                setCount: z.ZodNumber;
+                topExercises: z.ZodArray<z.ZodString>;
+                progressionModes: z.ZodArray<z.ZodString>;
+            }, z.core.$strip>;
+            nextTrainingDay: z.ZodNullable<z.ZodObject<{
+                dayOfWeek: z.ZodNumber;
+                dayName: z.ZodString;
+            }, z.core.$strip>>;
+        }, z.core.$strip>>;
+        recentSessions: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            date: z.ZodString;
+            programDayName: z.ZodNullable<z.ZodString>;
+            durationMinutes: z.ZodNumber;
+            totalVolumeKg: z.ZodNumber;
+            exerciseCount: z.ZodNumber;
+            isFreestyle: z.ZodBoolean;
+            isSubstitution: z.ZodBoolean;
+            topExercises: z.ZodArray<z.ZodString>;
+        }, z.core.$strip>>;
+        analytics: z.ZodObject<{
+            week: z.ZodObject<{
+                sessions: z.ZodNumber;
+                volumeKg: z.ZodNumber;
+                durationMinutes: z.ZodNumber;
+                substitutions: z.ZodNumber;
+                freestyle: z.ZodNumber;
+            }, z.core.$strip>;
+            month: z.ZodObject<{
+                sessions: z.ZodNumber;
+                volumeKg: z.ZodNumber;
+                trend: z.ZodEnum<{
+                    flat: "flat";
+                    unknown: "unknown";
+                    up: "up";
+                    down: "down";
+                }>;
+            }, z.core.$strip>;
+        }, z.core.$strip>;
+        progression: z.ZodObject<{
+            trainingPhase: z.ZodNullable<z.ZodString>;
+            trainingGoal: z.ZodNullable<z.ZodString>;
+            activeModes: z.ZodArray<z.ZodString>;
+            watchlist: z.ZodArray<z.ZodObject<{
+                exerciseId: z.ZodString;
+                currentE1RMKg: z.ZodNullable<z.ZodNumber>;
+                missStreak: z.ZodNullable<z.ZodNumber>;
+                plateauDeloadUntil: z.ZodNullable<z.ZodString>;
+            }, z.core.$strip>>;
+            recentMetricSignals: z.ZodArray<z.ZodObject<{
+                exerciseId: z.ZodString;
+                capturedAt: z.ZodString;
+                hasGatedE1RM: z.ZodBoolean;
+                hasBestQualifyingSet: z.ZodBoolean;
+            }, z.core.$strip>>;
+        }, z.core.$strip>;
+    }, z.core.$strip>;
+    notification: z.ZodObject<{
+        title: z.ZodString;
+        body: z.ZodString;
+    }, z.core.$strip>;
+    source: z.ZodEnum<{
+        ai: "ai";
+        fallback: "fallback";
+    }>;
+}, z.core.$strip>;
+export type SmartNotificationPreviewResponse = z.infer<typeof SmartNotificationPreviewResponseSchema>;
+export declare const SmartNotificationSendResponseSchema: z.ZodObject<{
+    snapshot: z.ZodObject<{
+        schemaVersion: z.ZodLiteral<1>;
+        channel: z.ZodEnum<{
+            pre_lift: "pre_lift";
+            rest_day_pulse: "rest_day_pulse";
+            post_workout_recap: "post_workout_recap";
+            missed_slot: "missed_slot";
+            weekly_review: "weekly_review";
+        }>;
+        generatedAt: z.ZodString;
+        localDate: z.ZodString;
+        localHour: z.ZodNumber;
+        timeZone: z.ZodString;
+        freshness: z.ZodObject<{
+            latestSessionAt: z.ZodNullable<z.ZodString>;
+            latestProfileUpdateAt: z.ZodNullable<z.ZodString>;
+            latestServerDataAt: z.ZodNullable<z.ZodString>;
+            isFreshEnoughForSpecificClaims: z.ZodBoolean;
+            reason: z.ZodString;
+        }, z.core.$strip>;
+        user: z.ZodObject<{
+            displayName: z.ZodNullable<z.ZodString>;
+            weightUnit: z.ZodString;
+            distanceUnit: z.ZodString;
+        }, z.core.$strip>;
+        activeProgram: z.ZodNullable<z.ZodObject<{
+            id: z.ZodString;
+            name: z.ZodString;
+            weekIndex: z.ZodNumber;
+            daysPerWeek: z.ZodNumber;
+            today: z.ZodObject<{
+                dayOfWeek: z.ZodNumber;
+                isTrainingDay: z.ZodBoolean;
+                dayName: z.ZodNullable<z.ZodString>;
+                exerciseCount: z.ZodNumber;
+                setCount: z.ZodNumber;
+                topExercises: z.ZodArray<z.ZodString>;
+                progressionModes: z.ZodArray<z.ZodString>;
+            }, z.core.$strip>;
+            nextTrainingDay: z.ZodNullable<z.ZodObject<{
+                dayOfWeek: z.ZodNumber;
+                dayName: z.ZodString;
+            }, z.core.$strip>>;
+        }, z.core.$strip>>;
+        recentSessions: z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            date: z.ZodString;
+            programDayName: z.ZodNullable<z.ZodString>;
+            durationMinutes: z.ZodNumber;
+            totalVolumeKg: z.ZodNumber;
+            exerciseCount: z.ZodNumber;
+            isFreestyle: z.ZodBoolean;
+            isSubstitution: z.ZodBoolean;
+            topExercises: z.ZodArray<z.ZodString>;
+        }, z.core.$strip>>;
+        analytics: z.ZodObject<{
+            week: z.ZodObject<{
+                sessions: z.ZodNumber;
+                volumeKg: z.ZodNumber;
+                durationMinutes: z.ZodNumber;
+                substitutions: z.ZodNumber;
+                freestyle: z.ZodNumber;
+            }, z.core.$strip>;
+            month: z.ZodObject<{
+                sessions: z.ZodNumber;
+                volumeKg: z.ZodNumber;
+                trend: z.ZodEnum<{
+                    flat: "flat";
+                    unknown: "unknown";
+                    up: "up";
+                    down: "down";
+                }>;
+            }, z.core.$strip>;
+        }, z.core.$strip>;
+        progression: z.ZodObject<{
+            trainingPhase: z.ZodNullable<z.ZodString>;
+            trainingGoal: z.ZodNullable<z.ZodString>;
+            activeModes: z.ZodArray<z.ZodString>;
+            watchlist: z.ZodArray<z.ZodObject<{
+                exerciseId: z.ZodString;
+                currentE1RMKg: z.ZodNullable<z.ZodNumber>;
+                missStreak: z.ZodNullable<z.ZodNumber>;
+                plateauDeloadUntil: z.ZodNullable<z.ZodString>;
+            }, z.core.$strip>>;
+            recentMetricSignals: z.ZodArray<z.ZodObject<{
+                exerciseId: z.ZodString;
+                capturedAt: z.ZodString;
+                hasGatedE1RM: z.ZodBoolean;
+                hasBestQualifyingSet: z.ZodBoolean;
+            }, z.core.$strip>>;
+        }, z.core.$strip>;
+    }, z.core.$strip>;
+    notification: z.ZodObject<{
+        title: z.ZodString;
+        body: z.ZodString;
+    }, z.core.$strip>;
+    source: z.ZodEnum<{
+        ai: "ai";
+        fallback: "fallback";
+    }>;
+    delivery: z.ZodObject<{
+        status: z.ZodEnum<{
+            skipped: "skipped";
+            sent: "sent";
+            failed: "failed";
+        }>;
+        reason: z.ZodOptional<z.ZodString>;
+        providerMessageId: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>;
+}, z.core.$strip>;
+export type SmartNotificationSendResponse = z.infer<typeof SmartNotificationSendResponseSchema>;
 export {};
 //# sourceMappingURL=workout-ai-wire.d.ts.map

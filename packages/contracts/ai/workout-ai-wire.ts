@@ -1111,3 +1111,162 @@ export const SmartReaderUsageResponseSchema = z.object({
   remaining: z.number().int().min(0),
 });
 export type SmartReaderUsageResponse = z.infer<typeof SmartReaderUsageResponseSchema>;
+
+// ============================================================================
+// Smart notifications — preview/send wire contract
+// ============================================================================
+
+export const SmartNotificationChannelSchema = z.enum([
+  "pre_lift",
+  "rest_day_pulse",
+  "post_workout_recap",
+  "missed_slot",
+  "weekly_review",
+]);
+export type SmartNotificationChannel = z.infer<typeof SmartNotificationChannelSchema>;
+
+const SmartNotificationRecentSessionSchema = z.object({
+  id: z.string(),
+  date: z.string(),
+  programDayName: z.string().nullable(),
+  durationMinutes: z.number(),
+  totalVolumeKg: z.number(),
+  exerciseCount: z.number(),
+  isFreestyle: z.boolean(),
+  isSubstitution: z.boolean(),
+  topExercises: z.array(z.string()).max(5),
+});
+
+const SmartNotificationProgramTodaySchema = z.object({
+  dayOfWeek: z.number().int().min(0).max(6),
+  isTrainingDay: z.boolean(),
+  dayName: z.string().nullable(),
+  exerciseCount: z.number().int().min(0),
+  setCount: z.number().int().min(0),
+  topExercises: z.array(z.string()).max(6),
+  progressionModes: z.array(z.string()).max(4),
+});
+
+const SmartNotificationActiveProgramSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  weekIndex: z.number().int().min(1),
+  daysPerWeek: z.number().int().min(0),
+  today: SmartNotificationProgramTodaySchema,
+  nextTrainingDay: z
+    .object({
+      dayOfWeek: z.number().int().min(0).max(6),
+      dayName: z.string(),
+    })
+    .nullable(),
+});
+
+const SmartNotificationAnalyticsSummarySchema = z.object({
+  week: z.object({
+    sessions: z.number().int().min(0),
+    volumeKg: z.number().min(0),
+    durationMinutes: z.number().min(0),
+    substitutions: z.number().int().min(0),
+    freestyle: z.number().int().min(0),
+  }),
+  month: z.object({
+    sessions: z.number().int().min(0),
+    volumeKg: z.number().min(0),
+    trend: z.enum(["up", "down", "flat", "unknown"]),
+  }),
+});
+
+const SmartNotificationProgressionSummarySchema = z.object({
+  trainingPhase: z.string().nullable(),
+  trainingGoal: z.string().nullable(),
+  activeModes: z.array(z.string()).max(4),
+  watchlist: z
+    .array(
+      z.object({
+        exerciseId: z.string(),
+        currentE1RMKg: z.number().nullable(),
+        missStreak: z.number().int().nullable(),
+        plateauDeloadUntil: z.string().nullable(),
+      }),
+    )
+    .max(6),
+  recentMetricSignals: z
+    .array(
+      z.object({
+        exerciseId: z.string(),
+        capturedAt: z.string(),
+        hasGatedE1RM: z.boolean(),
+        hasBestQualifyingSet: z.boolean(),
+      }),
+    )
+    .max(8),
+});
+
+export const SmartNotificationSnapshotSchema = z.object({
+  schemaVersion: z.literal(1),
+  channel: SmartNotificationChannelSchema,
+  generatedAt: z.string(),
+  localDate: z.string(),
+  localHour: z.number().int().min(0).max(23),
+  timeZone: z.string(),
+  freshness: z.object({
+    latestSessionAt: z.string().nullable(),
+    latestProfileUpdateAt: z.string().nullable(),
+    latestServerDataAt: z.string().nullable(),
+    isFreshEnoughForSpecificClaims: z.boolean(),
+    reason: z.string(),
+  }),
+  user: z.object({
+    displayName: z.string().nullable(),
+    weightUnit: z.string(),
+    distanceUnit: z.string(),
+  }),
+  activeProgram: SmartNotificationActiveProgramSchema.nullable(),
+  recentSessions: z.array(SmartNotificationRecentSessionSchema).max(8),
+  analytics: SmartNotificationAnalyticsSummarySchema,
+  progression: SmartNotificationProgressionSummarySchema,
+});
+export type SmartNotificationSnapshot = z.infer<typeof SmartNotificationSnapshotSchema>;
+
+export const SmartNotificationCopySchema = z.object({
+  title: z.string().trim().min(1).max(40),
+  body: z.string().trim().min(1).max(140),
+});
+export type SmartNotificationCopy = z.infer<typeof SmartNotificationCopySchema>;
+
+export const SmartNotificationCopySourceSchema = z.enum(["ai", "fallback"]);
+export type SmartNotificationCopySource = z.infer<typeof SmartNotificationCopySourceSchema>;
+
+export const SmartNotificationPreviewRequestSchema = z.object({
+  channel: SmartNotificationChannelSchema,
+  referenceDateIso: z.string().datetime().optional(),
+});
+export type SmartNotificationPreviewRequest = z.infer<
+  typeof SmartNotificationPreviewRequestSchema
+>;
+
+export const SmartNotificationSendRequestSchema = SmartNotificationPreviewRequestSchema.extend({
+  dryRun: z.boolean().optional().default(false),
+});
+export type SmartNotificationSendRequest = z.infer<typeof SmartNotificationSendRequestSchema>;
+
+export const SmartNotificationPreviewResponseSchema = z.object({
+  snapshot: SmartNotificationSnapshotSchema,
+  notification: SmartNotificationCopySchema,
+  source: SmartNotificationCopySourceSchema,
+});
+export type SmartNotificationPreviewResponse = z.infer<
+  typeof SmartNotificationPreviewResponseSchema
+>;
+
+export const SmartNotificationSendResponseSchema =
+  SmartNotificationPreviewResponseSchema.extend({
+    delivery: z.object({
+      status: z.enum(["sent", "skipped", "failed"]),
+      reason: z.string().optional(),
+      providerMessageId: z.string().optional(),
+    }),
+  });
+export type SmartNotificationSendResponse = z.infer<
+  typeof SmartNotificationSendResponseSchema
+>;
