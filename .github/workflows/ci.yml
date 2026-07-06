@@ -1,0 +1,46 @@
+# CI for hollis-shared — the four @hollis-studio/* packages every app consumes.
+#
+# Runs the same gate as `npm run check` locally: workspace build in dependency
+# order, typecheck, smoke-import of every published entry point, plus the
+# contracts test suite. Shared has no deploy; publishing stays manual
+# (npm publish from a tagged, green main).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  packages: read
+
+env:
+  NODE_VERSION: 22
+
+jobs:
+  check:
+    name: Build, Typecheck, Smoke-Import, Test
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Setup Node
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          # packages/utils resolves @hollis-studio/contracts from GitHub Packages
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build, typecheck, smoke-import
+        run: npm run check
+
+      - name: Contracts tests
+        run: npm --workspace @hollis-studio/contracts run test
