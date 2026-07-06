@@ -1,5 +1,24 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.43 (2026-07-05)
+
+**Bug fix (additive / backward-compatible).** Declares the previously missing
+`notificationSettings.smart` object on the Workouts `UserSettingsSchema`
+(`domain/workouts-user-profile.ts`).
+
+### `domain/workouts-user-profile.ts`
+
+- **`UserSettingsSchema.notificationSettings.smart`** (optional) — smart (AI)
+  notification channel preferences: `enabled`, plus per-channel
+  `preLift` / `restDayPulse` / `missedSlot` / `weeklyReview`
+  (`{ enabled, hourLocal 0-23 }`) and `postWorkoutRecap` (`{ enabled }`).
+  Before this release the key was **undeclared**, so `z.object()`'s default
+  strip silently discarded every smart-channel toggle on both the Workouts
+  server's `PUT /profile` parse and the app's client-side settings parse —
+  the smart-notification preference feature was non-persistent end to end
+  (found in the 2026-07-05 Workouts notification audit). Pinned by
+  `__tests__/domain-workouts-user-profile-smart.test.ts`.
+
 ## 0.2.0-alpha.42 (2026-07-05)
 
 All changes are **additive / backward-compatible** for well-formed payloads

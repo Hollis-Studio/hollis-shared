@@ -93,6 +93,32 @@ export const UserSettingsSchema = z.object({
       minutesBefore: z.number().int().min(0).optional(),
     }),
     restDayPulse: z.object({ enabled: z.boolean() }),
+    // Smart (AI) notification channel preferences. MUST be declared here:
+    // z.object() strips undeclared keys, and this object's absence silently
+    // discarded every smart-channel toggle on both the client-side settings
+    // parse and the server's PUT /profile — the whole feature was
+    // non-persistent (found 2026-07-05 during the Workouts notification
+    // audit). Channel hours are user-local (0-23).
+    smart: z.object({
+      enabled: z.boolean(),
+      preLift: z.object({
+        enabled: z.boolean(),
+        hourLocal: z.number().int().min(0).max(23),
+      }),
+      restDayPulse: z.object({
+        enabled: z.boolean(),
+        hourLocal: z.number().int().min(0).max(23),
+      }),
+      postWorkoutRecap: z.object({ enabled: z.boolean() }),
+      missedSlot: z.object({
+        enabled: z.boolean(),
+        hourLocal: z.number().int().min(0).max(23),
+      }),
+      weeklyReview: z.object({
+        enabled: z.boolean(),
+        hourLocal: z.number().int().min(0).max(23),
+      }),
+    }).optional(),
   }).optional(),
   simpleModeEnabled: z.boolean().optional(),
 }).passthrough();

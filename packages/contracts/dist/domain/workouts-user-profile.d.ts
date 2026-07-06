@@ -140,6 +140,28 @@ export declare const UserSettingsSchema: z.ZodObject<{
         restDayPulse: z.ZodObject<{
             enabled: z.ZodBoolean;
         }, z.core.$strip>;
+        smart: z.ZodOptional<z.ZodObject<{
+            enabled: z.ZodBoolean;
+            preLift: z.ZodObject<{
+                enabled: z.ZodBoolean;
+                hourLocal: z.ZodNumber;
+            }, z.core.$strip>;
+            restDayPulse: z.ZodObject<{
+                enabled: z.ZodBoolean;
+                hourLocal: z.ZodNumber;
+            }, z.core.$strip>;
+            postWorkoutRecap: z.ZodObject<{
+                enabled: z.ZodBoolean;
+            }, z.core.$strip>;
+            missedSlot: z.ZodObject<{
+                enabled: z.ZodBoolean;
+                hourLocal: z.ZodNumber;
+            }, z.core.$strip>;
+            weeklyReview: z.ZodObject<{
+                enabled: z.ZodBoolean;
+                hourLocal: z.ZodNumber;
+            }, z.core.$strip>;
+        }, z.core.$strip>>;
     }, z.core.$strip>>;
     simpleModeEnabled: z.ZodOptional<z.ZodBoolean>;
 }, z.core.$loose>;
@@ -256,6 +278,28 @@ export declare const WorkoutsUserProfileSchema: z.ZodObject<{
             restDayPulse: z.ZodObject<{
                 enabled: z.ZodBoolean;
             }, z.core.$strip>;
+            smart: z.ZodOptional<z.ZodObject<{
+                enabled: z.ZodBoolean;
+                preLift: z.ZodObject<{
+                    enabled: z.ZodBoolean;
+                    hourLocal: z.ZodNumber;
+                }, z.core.$strip>;
+                restDayPulse: z.ZodObject<{
+                    enabled: z.ZodBoolean;
+                    hourLocal: z.ZodNumber;
+                }, z.core.$strip>;
+                postWorkoutRecap: z.ZodObject<{
+                    enabled: z.ZodBoolean;
+                }, z.core.$strip>;
+                missedSlot: z.ZodObject<{
+                    enabled: z.ZodBoolean;
+                    hourLocal: z.ZodNumber;
+                }, z.core.$strip>;
+                weeklyReview: z.ZodObject<{
+                    enabled: z.ZodBoolean;
+                    hourLocal: z.ZodNumber;
+                }, z.core.$strip>;
+            }, z.core.$strip>>;
         }, z.core.$strip>>;
         simpleModeEnabled: z.ZodOptional<z.ZodBoolean>;
     }, z.core.$loose>;
@@ -404,6 +448,28 @@ export declare const WorkoutsUserProfilePutBodySchema: z.ZodObject<{
             restDayPulse: z.ZodObject<{
                 enabled: z.ZodBoolean;
             }, z.core.$strip>;
+            smart: z.ZodOptional<z.ZodObject<{
+                enabled: z.ZodBoolean;
+                preLift: z.ZodObject<{
+                    enabled: z.ZodBoolean;
+                    hourLocal: z.ZodNumber;
+                }, z.core.$strip>;
+                restDayPulse: z.ZodObject<{
+                    enabled: z.ZodBoolean;
+                    hourLocal: z.ZodNumber;
+                }, z.core.$strip>;
+                postWorkoutRecap: z.ZodObject<{
+                    enabled: z.ZodBoolean;
+                }, z.core.$strip>;
+                missedSlot: z.ZodObject<{
+                    enabled: z.ZodBoolean;
+                    hourLocal: z.ZodNumber;
+                }, z.core.$strip>;
+                weeklyReview: z.ZodObject<{
+                    enabled: z.ZodBoolean;
+                    hourLocal: z.ZodNumber;
+                }, z.core.$strip>;
+            }, z.core.$strip>>;
         }, z.core.$strip>>;
         simpleModeEnabled: z.ZodOptional<z.ZodBoolean>;
     }, z.core.$loose>;
