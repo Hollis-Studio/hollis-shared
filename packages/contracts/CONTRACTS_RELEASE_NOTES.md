@@ -1,5 +1,40 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.44 (2026-07-17)
+
+**Content-only change to static data; no schema shape change.** Descopes the
+commercial master offer sheet (`domain/offer-sheet.json`, `meta.version`
+2.4.0 → 3.0.0) to drop services Hollis Health no longer offers for legal
+reasons: bloodwork/labs, registered dietitian (RD) sessions, PCP/medical-
+provider access, and DXA scan allowances. Care coordination remains
+referrals-only to independent providers; outside labs/medical data a member
+chooses to share remain view-only (no ordering or interpretation); nutrition
+guidance remains coach-led (coaches set macro/micronutrient targets, not
+RD-directed). Pricing is unchanged ($749/$1,349/$1,949). `status` stays
+`"draft"` pending legal sign-off.
+
+### `domain/offer-sheet.json`
+
+- **`tiers.ESSENTIALS/CORE/CONCIERGE.publicDescription`** — removed all DXA
+  scan allowance and registered-dietitian-session language; CORE keeps
+  "biomarker-informed planning when outside labs are shared with consent"
+  and CONCIERGE keeps "dashboard integration for outside medical data shared
+  with consent" (both describe view-only display, not ordering/interpretation,
+  so they match the surviving model).
+- **`comparisonRows`** — deleted the `dxaScanAllowance` and
+  `registeredDietitianSessions` rows outright; reworded the
+  `nutritionCoaching` row values to drop "RD"/"RD-guided" phrasing in favor
+  of coach-led macro/micronutrient language.
+- **`separatelyBilledThirdPartyItems`** — dropped the now-inaccurate "beyond
+  the included DXA scan allowance" qualifier from the imaging/CGM/IV-therapy
+  line (nothing DXA-related is included anymore).
+- `policies.thirdPartyDisclosure` / `policies.partnerFacilityDisclosure` are
+  unchanged — both already describe independent third-party care generically.
+- No Zod schema change in `domain/offer-sheet.ts`; `comparisonRows` entries
+  are generic `{ key, category, label, values }`, so row deletion needed no
+  schema edit. Verified via `MasterOfferSheetSchema.parse()` at module load
+  (`npm run smoke:import`) and `__tests__/domain-offer-sheet.test.ts`.
+
 ## 0.2.0-alpha.43 (2026-07-05)
 
 **Bug fix (additive / backward-compatible).** Declares the previously missing
