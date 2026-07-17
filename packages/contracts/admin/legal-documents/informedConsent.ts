@@ -8,8 +8,8 @@
 
 export const meta = {
   title: "Informed Consent for Health Services",
-  version: "1.1.0",
-  effectiveDate: "2026-03-04",
+  version: "2.0.0",
+  effectiveDate: "2026-07-17",
   contentHash: "917ccfac",
 };
 
@@ -25,12 +25,12 @@ Home Office: 691 S Seguin, New Braunfels, TX 78130
 
 ## Section 1. Purpose of This Consent
 
-This Informed Consent for Health Services ("Consent") describes certain health-related services that may be made available in connection with your Hollis Health membership and explains the associated benefits, limitations, risks, and information-sharing practices.
+This Informed Consent for Health Services ("Consent") describes certain health-related services and information-sharing arrangements that may be made available in connection with your Hollis Health membership and explains the associated benefits, limitations, risks, and information-sharing practices.
 
-This Consent is intended to address two distinct categories of services:
+This Consent is intended to address two distinct categories of information and services:
 
-- **Company-facilitated wellness services**, such as body composition assessments, training-related screenings, supplement-related program tracking, and coordination support; and
-- **Independent clinical services**, such as physician-ordered laboratory testing or clinical review performed by independent licensed physicians, laboratories, imaging providers, or other third-party providers.
+- **Company-facilitated wellness services**, such as body composition assessments (BIA), training-related screenings, supplement-related program tracking, and coordination support; and
+- **Records and referrals related to independent clinical care**, meaning health records or test results you obtain entirely on your own, through your own independent licensed physician, laboratory, imaging provider, or other third-party provider, which you may voluntarily choose to share with Company for display and organization in your member dashboard, or for which you may request Company's assistance in coordinating a referral. Company does not order, schedule, coordinate, or interpret any such testing or clinical care.
 
 By signing this Consent, you confirm that you have had a reasonable opportunity to review its contents, ask questions, and seek independent advice before signing. You are not required to sign this Consent in order to access basic non-clinical membership services; however, certain enhanced health-related services described below may not be available unless you sign it.
 
@@ -45,31 +45,23 @@ By signing this Consent, you confirm that you have had a reasonable opportunity 
 
 ---
 
-## Section 2. Laboratory Testing Coordination
+## Section 2. Member-Shared Laboratory Records
 
 ### 2.1 Description of Services
 
-For members who elect or receive access to diagnostic support under their enrollment terms, Company may coordinate access to laboratory testing services. Tests may include panels such as CMP, CBC, lipid markers, thyroid markers, hormone markers, HbA1c, inflammatory markers, micronutrient markers, and other analytes ordered by an independent licensed physician.
+Company does not order, schedule, or coordinate laboratory testing of any kind, and does not provide access to diagnostic testing. If you obtain laboratory testing on your own through your own independent licensed physician or other provider, you may voluntarily choose to share copies of your results or records with Company. With your written consent, Company will display and organize any laboratory results or related records you choose to share within your member dashboard, for your convenience and recordkeeping.
 
-### 2.2 Independent Clinical Decision-Making
+### 2.2 No Clinical Role
 
-Company does not independently order laboratory tests, interpret results, render diagnoses, prescribe treatment, or practice medicine. Test ordering, interpretation, and clinical decision-making are performed solely by independent licensed physicians or other qualified third-party providers.
+Company does not order, schedule, or coordinate laboratory testing, and does not interpret results, render diagnoses, prescribe treatment, or practice medicine. Any laboratory testing you undergo, and any ordering, collection, and interpretation associated with it, is arranged and performed solely by your independent licensed physician or other qualified third-party provider, entirely outside of Company's involvement.
 
-### 2.3 Venipuncture and Collection Risks
+### 2.3 No Monitoring of Shared Records
 
-Laboratory testing may require venipuncture by a licensed phlebotomist or other qualified healthcare professional at a Company-approved location or designated collection site. Risks may include discomfort, bruising, vasovagal response, infection, nerve irritation, or allergic reaction to antiseptic or bandage materials.
+Company does not review or monitor any laboratory results or other records you choose to share for urgent, abnormal, or otherwise clinically significant findings, and has no duty to identify, flag, or notify you of any such findings. You must rely on your own independent ordering provider for interpretation of your results, follow-up care, and notification of any urgent or abnormal findings.
 
-### 2.4 Pre-Test Instructions and Results
+### 2.4 Consent to Display and Organization
 
-Preparation instructions may be provided by Company, the ordering physician, or the collecting laboratory. Failure to follow such instructions may affect test accuracy. Results may be communicated through Company's secure platform, by the ordering physician, or by another authorized provider. Company does not independently interpret laboratory results.
-
-### 2.5 Urgent or Unexpected Findings
-
-If results suggest an urgent health concern, Company may attempt to notify you and may encourage immediate contact with the ordering physician or another licensed provider. You remain responsible for obtaining appropriate medical care.
-
-### 2.6 Consent to Coordination
-
-By signing this Consent, you authorize Company to coordinate scheduling, intake, logistics, and results delivery support for laboratory testing requested in connection with your program.
+By signing this Consent, you authorize Company to display and organize, within your member dashboard, any laboratory results or related health records that you voluntarily choose to share with Company. You may decline to share any such records without affecting your ability to access other membership services.
 
 ---
 
@@ -77,23 +69,19 @@ By signing this Consent, you authorize Company to coordinate scheduling, intake,
 
 ### 3.1 Description of Services
 
-Company may offer body composition assessment using bioelectrical impedance analysis ("BIA"), DXA scanning where available through Company or a third party, or other assessment methods disclosed at the time of service.
+Company may offer body composition assessment using bioelectrical impedance analysis ("BIA") or other non-diagnostic assessment methods disclosed at the time of service. Company does not provide DXA (dual-energy X-ray absorptiometry) scanning or other radiologic imaging.
 
 ### 3.2 BIA (InBody or Similar) Risks and Limitations
 
 BIA uses a low-level electrical current to estimate body composition. Results may vary based on hydration status, food intake, exercise, and other variables. BIA should not be used by individuals with implanted electronic devices unless cleared by an appropriate licensed clinician. Pregnancy and certain medical conditions may also make BIA inappropriate.
 
-### 3.3 DXA Risks and Limitations
-
-If DXA is offered, it uses low-dose ionizing radiation and may be inappropriate for pregnant individuals or others for whom radiation exposure is contraindicated. You should discuss any questions regarding DXA appropriateness with a licensed physician.
-
-### 3.4 Data Use
+### 3.3 Data Use
 
 Body composition data may be stored in your member record, displayed in your progress dashboard, and used by Company to support wellness-program tracking. If the data is shared with an independent clinician for program coordination or review, such sharing is governed by Section 5 below.
 
-### 3.5 Consent to Assessment
+### 3.4 Consent to Assessment
 
-By signing this Consent, you authorize Company to conduct or coordinate the body composition assessments described above, where available and appropriate.
+By signing this Consent, you authorize Company to conduct the body composition assessments described above, where available and appropriate.
 
 ---
 
@@ -119,25 +107,31 @@ By signing this Consent, you authorize Company to conduct the wellness screening
 
 ## Section 5. Authorization and Acknowledgment for Information Sharing
 
-### 5.1 Program Coordination Authorization
+### 5.1 Authorization for Information Sharing
 
-You authorize Company to use and disclose the following categories of information to independent licensed physicians, laboratories, imaging providers, or other third-party providers involved in your requested services, to the extent reasonably necessary for scheduling, coordination, safety review, clinical oversight requested by you, or related program administration:
+You authorize Company to:
 
-- Laboratory test results and logistics data;
+(a) receive, and display and organize in your member dashboard, any health records or test results that you voluntarily direct your independent providers to share with Company, or that you upload or otherwise provide to Company yourself; and
+
+(b) disclose limited information reasonably necessary to coordinate a referral you request — such as your contact information and the nature of the referral — to an independent provider you ask Company to help refer you to.
+
+Company does not initiate, request, or receive clinical oversight of your care on its own accord; all information sharing described in this Section 5 occurs only at your direction and for purposes you request. The categories of information that may be involved include:
+
+- Laboratory results or other health records you voluntarily choose to share with Company;
 - Body composition assessment results;
 - Wellness screening findings;
 - Health history and questionnaire responses you provide to Company;
 - Training participation, attendance, and progress notes;
 - Supplement usage records and related wellness-program information; and
-- Other information reasonably necessary to coordinate requested services.
+- Other information reasonably necessary to support a referral coordination you request.
 
 ### 5.2 Acknowledgment Regarding Third-Party Clinical Providers
 
-You understand that information received by or from an independent physician, laboratory, or other clinical provider may be subject to that provider's own legal and regulatory obligations, including that provider's notice of privacy practices where applicable. Company may, in some circumstances, receive, maintain, or transmit health information on behalf of such providers for coordination or administrative support.
+You understand that information received from an independent physician, laboratory, or other provider you engage on your own remains subject to that provider's own legal and regulatory obligations, including that provider's notice of privacy practices where applicable. Company receives, displays, and organizes such information solely as directed by you, and does not act as an intermediary transmitting information on behalf of such providers except to the limited extent necessary to support a referral coordination you have requested.
 
 ### 5.3 Voluntary Nature and Scope
 
-This authorization is voluntary, but Company may be unable to provide certain coordinated or clinician-involved services if you decline it. This authorization is intended to support information sharing related to your requested services; it is not a representation that Company is itself the provider of medical care.
+This authorization is voluntary, but Company may be unable to display shared records or coordinate a requested referral for you if you decline it. This authorization is intended to support information sharing related to your requested services; it is not a representation that Company is itself the provider of medical care.
 
 ### 5.4 Duration and Revocation
 
@@ -145,7 +139,7 @@ This authorization remains in effect during your membership and for up to three 
 
 ### 5.5 Effect of Revocation
 
-If you revoke this authorization, Company may stop coordinating certain clinician-involved services for you, but revocation will not affect actions already taken before receipt of revocation.
+If you revoke this authorization, Company may stop displaying or organizing newly shared records and stop coordinating referrals for you, but revocation will not affect actions already taken before receipt of revocation.
 
 ---
 
@@ -157,7 +151,7 @@ You may withdraw this Consent or revoke the authorization in Section 5 by provid
 
 ### 6.2 Effect on Services
 
-If you withdraw this Consent, Company may no longer be able to provide certain services that require additional screening, testing coordination, or clinician information sharing. Withdrawal does not automatically terminate your membership, but it may limit the services available under your program.
+If you withdraw this Consent, Company may no longer be able to provide certain services that require additional screening, display or organization of shared records, or referral coordination. Withdrawal does not automatically terminate your membership, but it may limit the services available under your program.
 
 ### 6.3 Continuing Legal Requirements
 
@@ -169,7 +163,7 @@ Withdrawal does not require Company or any third-party provider to undo disclosu
 
 COMPANY MAKES NO REPRESENTATION, WARRANTY, OR GUARANTEE THAT PARTICIPATION IN ANY SERVICE DESCRIBED IN THIS CONSENT WILL RESULT IN ANY PARTICULAR HEALTH, FITNESS, OR BODY COMPOSITION OUTCOME. INDIVIDUAL RESULTS WILL VARY.
 
-The services described in this Consent are intended to support wellness programming and coordinated services. They do not replace ongoing medical care from a licensed physician familiar with your complete history.
+The services described in this Consent are intended to support wellness programming and referral coordination. They do not replace ongoing medical care from a licensed physician familiar with your complete history.
 
 ---
 
@@ -201,11 +195,10 @@ Date of Birth: {{DATE_OF_BIRTH}}
 
 | Service | Participant's Initials |
 |---|---|
-| Section 2 — Laboratory Testing Coordination | {{INITIALS_LAB_TESTING}} |
+| Section 2 — Member-Shared Laboratory Records | {{INITIALS_LAB_TESTING}} |
 | Section 3.2 — BIA Body Composition Assessment | {{INITIALS_BIA}} |
-| Section 3.3 — DXA Body Composition Assessment | {{INITIALS_DXA}} |
 | Section 4 — Wellness Screening Services | {{INITIALS_WELLNESS_SCREENING}} |
-| Section 5 — Program Coordination Authorization | {{INITIALS_COORDINATION_AUTH}} |
+| Section 5 — Authorization for Information Sharing | {{INITIALS_COORDINATION_AUTH}} |
 
 ---
 
@@ -228,21 +221,15 @@ Title: ______________________________________
 export const initialsSections = [
   {
     key: "lab_testing",
-    title: "Laboratory Testing Coordination (Section 2)",
+    title: "Member-Shared Laboratory Records (Section 2)",
     excerpt:
-      "You authorize Company to coordinate scheduling, intake, logistics, and results delivery for laboratory testing ordered by independent licensed physicians in connection with your program.",
+      "You authorize Company to display and organize, in your member dashboard, laboratory results and related health records that you voluntarily choose to share with Company from your own independent providers. Company does not order, schedule, or coordinate laboratory testing, and does not interpret results or monitor shared records for urgent or abnormal findings.",
   },
   {
     key: "bia",
     title: "BIA Body Composition Assessment (Section 3.2)",
     excerpt:
       "You authorize Company to conduct bioelectrical impedance analysis (BIA) body composition assessments and acknowledge the limitations and contraindications described in Section 3.2.",
-  },
-  {
-    key: "dxa",
-    title: "DXA Body Composition Assessment (Section 3.3)",
-    excerpt:
-      "You authorize Company to coordinate DXA scanning where available and acknowledge that DXA uses low-dose ionizing radiation and may not be appropriate for all individuals.",
   },
   {
     key: "wellness_screening",
@@ -252,9 +239,9 @@ export const initialsSections = [
   },
   {
     key: "coordination_auth",
-    title: "Program Coordination Authorization (Section 5)",
+    title: "Authorization for Information Sharing (Section 5)",
     excerpt:
-      "You authorize Company to share your wellness-program information with independent licensed physicians, laboratories, and other providers to the extent necessary to coordinate your requested services.",
+      "You authorize Company to receive, display, and organize health records that you or your independent providers voluntarily share with Company, and to share limited information necessary to coordinate a referral you request. Company does not initiate clinical oversight of your care on its own.",
   },
 ] as const;
 

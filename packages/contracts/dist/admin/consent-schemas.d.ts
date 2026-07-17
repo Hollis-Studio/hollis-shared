@@ -74,7 +74,6 @@ export type LiabilityInitialsKey = (typeof LIABILITY_INITIALS)[keyof typeof LIAB
 export declare const INFORMED_CONSENT_INITIALS: {
     readonly LAB_TESTING: "lab_testing";
     readonly BIA: "bia";
-    readonly DXA: "dxa";
     readonly WELLNESS_SCREENING: "wellness_screening";
     readonly COORDINATION_AUTH: "coordination_auth";
 };

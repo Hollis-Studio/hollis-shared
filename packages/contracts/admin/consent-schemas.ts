@@ -102,7 +102,6 @@ export type LiabilityInitialsKey =
 export const INFORMED_CONSENT_INITIALS = {
   LAB_TESTING: "lab_testing",
   BIA: "bia",
-  DXA: "dxa",
   WELLNESS_SCREENING: "wellness_screening",
   COORDINATION_AUTH: "coordination_auth",
 } as const;

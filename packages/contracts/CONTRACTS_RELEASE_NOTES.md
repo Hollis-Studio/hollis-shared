@@ -1,5 +1,71 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.45 (2026-07-17)
+
+**Content-only change to static legal documents; no schema shape change.**
+Ports the attorney-drafted rewrites of the Informed Consent and HIPAA Notice
+of Privacy Practices into the canonical legal-document modules, completing
+the DXA/labs-ordering descope started in alpha.44's offer-sheet update.
+Hollis Health no longer orders, schedules, coordinates, or interprets
+laboratory testing or DXA scanning; both documents are rewritten to reflect
+a member-shared-records model (members may voluntarily share outside lab
+results for display/organization only, with no monitoring duty) and to drop
+DXA body-composition assessment entirely. Consumers' consent validation and
+document rendering auto-derive from these modules (`DOCUMENT_REGISTRY`,
+`renderSignedDocumentContent`, etc.) — **no consumer code changes are
+required beyond bumping the installed contracts version.**
+
+### `admin/legal-documents/informedConsent.ts`
+
+- **`meta.version`** `1.1.0` → `2.0.0`; **`meta.effectiveDate`**
+  `2026-03-04` → `2026-07-17`.
+- **Section 2** retitled "Member-Shared Laboratory Records" (was
+  "Laboratory Testing Coordination"): Company no longer orders, schedules,
+  or coordinates lab testing; it only displays/organizes results a member
+  voluntarily shares from their own independent provider, with an explicit
+  new "No Monitoring of Shared Records" clause (no duty to flag urgent/
+  abnormal findings).
+- **Section 3** — removed DXA scanning from the body-composition
+  assessment description and deleted the "DXA Risks and Limitations"
+  subsection outright (old 3.3); BIA is now the only offered modality.
+- **Section 5** — "Authorization for Information Sharing" reworded from a
+  broad program-coordination authorization to a narrower member-directed
+  authorization: display/organize what the member shares, plus limited
+  referral-coordination disclosure at the member's request only.
+- **Signature block / `initialsSections`** — deleted the `DXA` initials row
+  and the `dxa` entry from `initialsSections` (was 5 entries, now 4);
+  relabeled the `lab_testing` entry's title/excerpt to match the
+  member-shared-records framing.
+- `meta.contentHash` (`"917ccfac"`) is unchanged from the pre-rewrite value.
+  No script in this repo regenerates this field (searched for
+  `createHash`/`sha256`/`contentHash` generators — none found); it is a
+  static, manually-set display label, not runtime-validated (the API's
+  `SignedDocumentPayloadSchema.displayedContentHash` field is a separate,
+  independently-computed SHA-256 of rendered content, unrelated to this
+  `meta.contentHash`). Left as-is, matching the source rewrite; flagged here
+  as cosmetic tech debt.
+
+### `admin/legal-documents/hipaaNpp.ts`
+
+- **`meta.version`** `1.0.0` → `1.1.0`; **`meta.effectiveDate`** /
+  in-document "Effective Date" `2026-06-01` → `2026-07-17`.
+- **"For Treatment" paragraph** reworded to match the member-shared-records
+  model: examples now describe receiving/organizing information a member
+  authorizes their independent providers to share, and sharing information
+  with providers the member designates for a requested referral — no
+  language implying Company originates or directs clinical coordination.
+
+### `admin/consent-schemas.ts`
+
+- **`INFORMED_CONSENT_INITIALS`** — removed the `DXA: "dxa"` entry (kept
+  `LAB_TESTING`, `BIA`, `WELLNESS_SCREENING`, `COORDINATION_AUTH`). Verified
+  zero other references to this constant or its `dxa` value anywhere in the
+  package (its only consumers were its own type derivation and a doc
+  comment in `informedConsent.ts`); the DXA extraction/admin-routes module
+  (`admin/dxa.ts`, covered by `__tests__/dxa-contracts.test.ts`) is an
+  unrelated domain (DXA scan-result OCR ingestion admin tooling) and was
+  not touched.
+
 ## 0.2.0-alpha.44 (2026-07-17)
 
 **Content-only change to static data; no schema shape change.** Descopes the

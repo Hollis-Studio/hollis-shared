@@ -13,8 +13,8 @@
 
 export const meta = {
   title: "HIPAA Notice of Privacy Practices",
-  version: "1.0.0",
-  effectiveDate: "2026-06-01",
+  version: "1.1.0",
+  effectiveDate: "2026-07-17",
   contentHash: "hipaa-npp-v1",
 } as const;
 
@@ -24,7 +24,7 @@ export const content = `# NOTICE OF PRIVACY PRACTICES
 691 S Seguin, New Braunfels, TX 78130
 (210) 891-9005 | isaac@hollis.health
 
-**Effective Date:** 2026-06-01
+**Effective Date:** 2026-07-17
 
 ---
 
@@ -51,7 +51,7 @@ We are required by law to:
 The following describes how we may use and disclose your PHI. Not every use or disclosure will be listed. However, all the ways we are permitted to use and disclose PHI will fall within one of these categories.
 
 **For Treatment**
-We may use and disclose your PHI to provide, coordinate, or manage your health care and any related services. For example, we may share your health information with labs, imaging centers, or referring specialists to coordinate your care.
+We may use and disclose your PHI to provide, coordinate, or manage your health care and any related services. For example, we may receive and organize health information that you authorize your independent providers to share with us, and we may share information with providers you designate as part of referral coordination you request.
 
 **For Payment**
 We may use and disclose your PHI to bill and receive payment for services we have provided to you. For example, we may use your information to create a billing record or verify payment method.
