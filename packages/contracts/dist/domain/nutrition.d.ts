@@ -511,6 +511,566 @@ export declare const FoodItemSchema: z.ZodObject<{
 export type FoodItem = z.infer<typeof FoodItemSchema>;
 /** Backward-compat alias — prefer `FoodItem` for new code. */
 export type FoodItemContract = FoodItem;
+/**
+ * Reusable food data stored in a named meal template.
+ * Runtime identifiers and timestamps are regenerated whenever the template is used.
+ */
+export declare const MealTemplateFoodSchema: z.ZodObject<{
+    calories: z.ZodNumber;
+    protein: z.ZodNumber;
+    carbs: z.ZodNumber;
+    fat: z.ZodNumber;
+    fiber: z.ZodOptional<z.ZodNumber>;
+    brand: z.ZodOptional<z.ZodString>;
+    barcode: z.ZodOptional<z.ZodString>;
+    icon: z.ZodOptional<z.ZodString>;
+    source: z.ZodOptional<z.ZodEnum<{
+        custom: "custom";
+        barcode: "barcode";
+        search: "search";
+        manual: "manual";
+        ai: "ai";
+        ai_edited: "ai_edited";
+    }>>;
+    sugar: z.ZodOptional<z.ZodNumber>;
+    sodium: z.ZodOptional<z.ZodNumber>;
+    cholesterol: z.ZodOptional<z.ZodNumber>;
+    saturatedFat: z.ZodOptional<z.ZodNumber>;
+    nutritionQualityIndex: z.ZodOptional<z.ZodNumber>;
+    name: z.ZodString;
+    quantity: z.ZodNumber;
+    unit: z.ZodString;
+}, z.core.$strip>;
+export type MealTemplateFood = z.infer<typeof MealTemplateFoodSchema>;
+export declare const MealTemplateSchema: z.ZodObject<{
+    id: z.ZodString;
+    userId: z.ZodString;
+    name: z.ZodString;
+    foods: z.ZodArray<z.ZodObject<{
+        calories: z.ZodNumber;
+        protein: z.ZodNumber;
+        carbs: z.ZodNumber;
+        fat: z.ZodNumber;
+        fiber: z.ZodOptional<z.ZodNumber>;
+        brand: z.ZodOptional<z.ZodString>;
+        barcode: z.ZodOptional<z.ZodString>;
+        icon: z.ZodOptional<z.ZodString>;
+        source: z.ZodOptional<z.ZodEnum<{
+            custom: "custom";
+            barcode: "barcode";
+            search: "search";
+            manual: "manual";
+            ai: "ai";
+            ai_edited: "ai_edited";
+        }>>;
+        sugar: z.ZodOptional<z.ZodNumber>;
+        sodium: z.ZodOptional<z.ZodNumber>;
+        cholesterol: z.ZodOptional<z.ZodNumber>;
+        saturatedFat: z.ZodOptional<z.ZodNumber>;
+        nutritionQualityIndex: z.ZodOptional<z.ZodNumber>;
+        name: z.ZodString;
+        quantity: z.ZodNumber;
+        unit: z.ZodString;
+    }, z.core.$strip>>;
+    defaultHour: z.ZodNullable<z.ZodNumber>;
+    isFavorite: z.ZodBoolean;
+    createdAt: z.ZodString;
+    updatedAt: z.ZodString;
+}, z.core.$strip>;
+export type MealTemplate = z.infer<typeof MealTemplateSchema>;
+export declare const CreateMealTemplateBodySchema: z.ZodObject<{
+    name: z.ZodString;
+    foods: z.ZodArray<z.ZodObject<{
+        calories: z.ZodNumber;
+        protein: z.ZodNumber;
+        carbs: z.ZodNumber;
+        fat: z.ZodNumber;
+        fiber: z.ZodOptional<z.ZodNumber>;
+        brand: z.ZodOptional<z.ZodString>;
+        barcode: z.ZodOptional<z.ZodString>;
+        icon: z.ZodOptional<z.ZodString>;
+        source: z.ZodOptional<z.ZodEnum<{
+            custom: "custom";
+            barcode: "barcode";
+            search: "search";
+            manual: "manual";
+            ai: "ai";
+            ai_edited: "ai_edited";
+        }>>;
+        sugar: z.ZodOptional<z.ZodNumber>;
+        sodium: z.ZodOptional<z.ZodNumber>;
+        cholesterol: z.ZodOptional<z.ZodNumber>;
+        saturatedFat: z.ZodOptional<z.ZodNumber>;
+        nutritionQualityIndex: z.ZodOptional<z.ZodNumber>;
+        name: z.ZodString;
+        quantity: z.ZodNumber;
+        unit: z.ZodString;
+    }, z.core.$strip>>;
+    defaultHour: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    isFavorite: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
+}, z.core.$strip>;
+export type CreateMealTemplateBody = z.infer<typeof CreateMealTemplateBodySchema>;
+export declare const UpdateMealTemplateBodySchema: z.ZodObject<{
+    name: z.ZodOptional<z.ZodString>;
+    foods: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        calories: z.ZodNumber;
+        protein: z.ZodNumber;
+        carbs: z.ZodNumber;
+        fat: z.ZodNumber;
+        fiber: z.ZodOptional<z.ZodNumber>;
+        brand: z.ZodOptional<z.ZodString>;
+        barcode: z.ZodOptional<z.ZodString>;
+        icon: z.ZodOptional<z.ZodString>;
+        source: z.ZodOptional<z.ZodEnum<{
+            custom: "custom";
+            barcode: "barcode";
+            search: "search";
+            manual: "manual";
+            ai: "ai";
+            ai_edited: "ai_edited";
+        }>>;
+        sugar: z.ZodOptional<z.ZodNumber>;
+        sodium: z.ZodOptional<z.ZodNumber>;
+        cholesterol: z.ZodOptional<z.ZodNumber>;
+        saturatedFat: z.ZodOptional<z.ZodNumber>;
+        nutritionQualityIndex: z.ZodOptional<z.ZodNumber>;
+        name: z.ZodString;
+        quantity: z.ZodNumber;
+        unit: z.ZodString;
+    }, z.core.$strip>>>;
+    defaultHour: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    isFavorite: z.ZodOptional<z.ZodBoolean>;
+}, z.core.$strip>;
+export type UpdateMealTemplateBody = z.infer<typeof UpdateMealTemplateBodySchema>;
+export declare const MealTemplateListQuerySchema: z.ZodObject<{
+    page: z.ZodDefault<z.ZodCoercedNumber<unknown>>;
+    limit: z.ZodDefault<z.ZodCoercedNumber<unknown>>;
+    favoritesOnly: z.ZodPipe<z.ZodOptional<z.ZodEnum<{
+        true: "true";
+        false: "false";
+    }>>, z.ZodTransform<boolean | undefined, "true" | "false" | undefined>>;
+}, z.core.$strip>;
+export type MealTemplateListQuery = z.infer<typeof MealTemplateListQuerySchema>;
+export declare const MealTemplateListResponseSchema: z.ZodObject<{
+    data: z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        userId: z.ZodString;
+        name: z.ZodString;
+        foods: z.ZodArray<z.ZodObject<{
+            calories: z.ZodNumber;
+            protein: z.ZodNumber;
+            carbs: z.ZodNumber;
+            fat: z.ZodNumber;
+            fiber: z.ZodOptional<z.ZodNumber>;
+            brand: z.ZodOptional<z.ZodString>;
+            barcode: z.ZodOptional<z.ZodString>;
+            icon: z.ZodOptional<z.ZodString>;
+            source: z.ZodOptional<z.ZodEnum<{
+                custom: "custom";
+                barcode: "barcode";
+                search: "search";
+                manual: "manual";
+                ai: "ai";
+                ai_edited: "ai_edited";
+            }>>;
+            sugar: z.ZodOptional<z.ZodNumber>;
+            sodium: z.ZodOptional<z.ZodNumber>;
+            cholesterol: z.ZodOptional<z.ZodNumber>;
+            saturatedFat: z.ZodOptional<z.ZodNumber>;
+            nutritionQualityIndex: z.ZodOptional<z.ZodNumber>;
+            name: z.ZodString;
+            quantity: z.ZodNumber;
+            unit: z.ZodString;
+        }, z.core.$strip>>;
+        defaultHour: z.ZodNullable<z.ZodNumber>;
+        isFavorite: z.ZodBoolean;
+        createdAt: z.ZodString;
+        updatedAt: z.ZodString;
+    }, z.core.$strip>>;
+    pagination: z.ZodObject<{
+        page: z.ZodOptional<z.ZodNumber>;
+        offset: z.ZodOptional<z.ZodNumber>;
+        limit: z.ZodNumber;
+        total: z.ZodOptional<z.ZodNumber>;
+        totalPages: z.ZodOptional<z.ZodNumber>;
+        hasMore: z.ZodOptional<z.ZodBoolean>;
+        nextCursor: z.ZodOptional<z.ZodString>;
+        prevCursor: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>;
+}, z.core.$strip>;
+export type MealTemplateListResponse = z.infer<typeof MealTemplateListResponseSchema>;
+export declare const FOOD_CATALOG_PROVIDER: {
+    readonly OPEN_FOOD_FACTS: "open_food_facts";
+};
+export declare const FoodCatalogItemSchema: z.ZodObject<{
+    id: z.ZodString;
+    provider: z.ZodLiteral<"open_food_facts">;
+    name: z.ZodString;
+    brand: z.ZodOptional<z.ZodString>;
+    barcode: z.ZodOptional<z.ZodString>;
+    quantity: z.ZodNumber;
+    unit: z.ZodString;
+    calories: z.ZodNumber;
+    protein: z.ZodNumber;
+    carbs: z.ZodNumber;
+    fat: z.ZodNumber;
+    fiber: z.ZodOptional<z.ZodNumber>;
+    sugar: z.ZodOptional<z.ZodNumber>;
+    sodium: z.ZodOptional<z.ZodNumber>;
+    imageUrl: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
+export type FoodCatalogItem = z.infer<typeof FoodCatalogItemSchema>;
+export declare const FoodCatalogSearchQuerySchema: z.ZodObject<{
+    q: z.ZodString;
+    page: z.ZodDefault<z.ZodCoercedNumber<unknown>>;
+    limit: z.ZodDefault<z.ZodCoercedNumber<unknown>>;
+}, z.core.$strip>;
+export type FoodCatalogSearchQuery = z.infer<typeof FoodCatalogSearchQuerySchema>;
+export declare const FoodCatalogListResponseSchema: z.ZodObject<{
+    data: z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        provider: z.ZodLiteral<"open_food_facts">;
+        name: z.ZodString;
+        brand: z.ZodOptional<z.ZodString>;
+        barcode: z.ZodOptional<z.ZodString>;
+        quantity: z.ZodNumber;
+        unit: z.ZodString;
+        calories: z.ZodNumber;
+        protein: z.ZodNumber;
+        carbs: z.ZodNumber;
+        fat: z.ZodNumber;
+        fiber: z.ZodOptional<z.ZodNumber>;
+        sugar: z.ZodOptional<z.ZodNumber>;
+        sodium: z.ZodOptional<z.ZodNumber>;
+        imageUrl: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>;
+    pagination: z.ZodObject<{
+        page: z.ZodOptional<z.ZodNumber>;
+        offset: z.ZodOptional<z.ZodNumber>;
+        limit: z.ZodNumber;
+        total: z.ZodOptional<z.ZodNumber>;
+        totalPages: z.ZodOptional<z.ZodNumber>;
+        hasMore: z.ZodOptional<z.ZodBoolean>;
+        nextCursor: z.ZodOptional<z.ZodString>;
+        prevCursor: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>;
+}, z.core.$strip>;
+export type FoodCatalogListResponse = z.infer<typeof FoodCatalogListResponseSchema>;
+export declare const NutritionFoodEntryMoveBodySchema: z.ZodObject<{
+    targetDate: z.ZodString;
+    targetHour: z.ZodNumber;
+    entry: z.ZodObject<{
+        id: z.ZodString;
+        name: z.ZodString;
+        quantity: z.ZodNumber;
+        unit: z.ZodString;
+        calories: z.ZodNumber;
+        protein: z.ZodNumber;
+        carbs: z.ZodNumber;
+        fat: z.ZodNumber;
+        fiber: z.ZodOptional<z.ZodNumber>;
+        brand: z.ZodOptional<z.ZodString>;
+        barcode: z.ZodOptional<z.ZodString>;
+        icon: z.ZodOptional<z.ZodString>;
+        loggedAt: z.ZodString;
+        consumedAt: z.ZodOptional<z.ZodString>;
+        source: z.ZodOptional<z.ZodEnum<{
+            custom: "custom";
+            barcode: "barcode";
+            search: "search";
+            manual: "manual";
+            ai: "ai";
+            ai_edited: "ai_edited";
+        }>>;
+        sugar: z.ZodOptional<z.ZodNumber>;
+        sodium: z.ZodOptional<z.ZodNumber>;
+        cholesterol: z.ZodOptional<z.ZodNumber>;
+        saturatedFat: z.ZodOptional<z.ZodNumber>;
+        nutritionQualityIndex: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>;
+    timezone: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
+export type NutritionFoodEntryMoveBody = z.infer<typeof NutritionFoodEntryMoveBodySchema>;
+export declare const NutritionFoodEntryMoveResponseSchema: z.ZodObject<{
+    source: z.ZodNullable<z.ZodObject<{
+        id: z.ZodOptional<z.ZodString>;
+        userId: z.ZodString;
+        date: z.ZodString;
+        timezone: z.ZodString;
+        meals: z.ZodArray<z.ZodObject<{
+            id: z.ZodOptional<z.ZodString>;
+            mealType: z.ZodEnum<{
+                other: "other";
+                breakfast: "breakfast";
+                lunch: "lunch";
+                dinner: "dinner";
+                snack: "snack";
+                pre_workout: "pre_workout";
+                post_workout: "post_workout";
+            }>;
+            loggedAt: z.ZodString;
+            portions: z.ZodArray<z.ZodObject<{
+                id: z.ZodOptional<z.ZodString>;
+                foodName: z.ZodString;
+                brand: z.ZodOptional<z.ZodString>;
+                quantity: z.ZodNumber;
+                unit: z.ZodString;
+                macros: z.ZodObject<{
+                    calories: z.ZodNumber;
+                    protein: z.ZodNumber;
+                    carbs: z.ZodNumber;
+                    fat: z.ZodNumber;
+                    fiber: z.ZodOptional<z.ZodNumber>;
+                    sugar: z.ZodOptional<z.ZodNumber>;
+                    sodium: z.ZodOptional<z.ZodNumber>;
+                }, z.core.$strip>;
+                photoUrl: z.ZodOptional<z.ZodString>;
+            }, z.core.$strip>>;
+            notes: z.ZodOptional<z.ZodString>;
+            hungerLevel: z.ZodOptional<z.ZodNumber>;
+            fullnessLevel: z.ZodOptional<z.ZodNumber>;
+            mood: z.ZodOptional<z.ZodEnum<{
+                very_negative: "very_negative";
+                negative: "negative";
+                neutral: "neutral";
+                positive: "positive";
+                very_positive: "very_positive";
+            }>>;
+            mealContext: z.ZodOptional<z.ZodObject<{
+                location: z.ZodOptional<z.ZodEnum<{
+                    home: "home";
+                    restaurant: "restaurant";
+                    work: "work";
+                    travel: "travel";
+                    social_event: "social_event";
+                }>>;
+                preparationMethod: z.ZodOptional<z.ZodEnum<{
+                    raw: "raw";
+                    boiled: "boiled";
+                    fried: "fried";
+                    baked: "baked";
+                    grilled: "grilled";
+                    steamed: "steamed";
+                    roasted: "roasted";
+                }>>;
+                socialContext: z.ZodOptional<z.ZodString>;
+                mealDuration: z.ZodOptional<z.ZodNumber>;
+            }, z.core.$strip>>;
+            digestion: z.ZodOptional<z.ZodEnum<{
+                excellent: "excellent";
+                good: "good";
+                normal: "normal";
+                poor: "poor";
+                very_poor: "very_poor";
+            }>>;
+            energy: z.ZodOptional<z.ZodEnum<{
+                low: "low";
+                high: "high";
+                normal: "normal";
+                very_low: "very_low";
+                very_high: "very_high";
+            }>>;
+            photoUrls: z.ZodOptional<z.ZodArray<z.ZodString>>;
+        }, z.core.$strip>>;
+        totals: z.ZodObject<{
+            calories: z.ZodNumber;
+            protein: z.ZodNumber;
+            carbs: z.ZodNumber;
+            fat: z.ZodNumber;
+            fiber: z.ZodOptional<z.ZodNumber>;
+            sugar: z.ZodOptional<z.ZodNumber>;
+            sodium: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>;
+        hydrationMl: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        supplements: z.ZodOptional<z.ZodArray<z.ZodString>>;
+        foodEntries: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            name: z.ZodString;
+            quantity: z.ZodNumber;
+            unit: z.ZodString;
+            calories: z.ZodNumber;
+            protein: z.ZodNumber;
+            carbs: z.ZodNumber;
+            fat: z.ZodNumber;
+            fiber: z.ZodOptional<z.ZodNumber>;
+            brand: z.ZodOptional<z.ZodString>;
+            barcode: z.ZodOptional<z.ZodString>;
+            icon: z.ZodOptional<z.ZodString>;
+            loggedAt: z.ZodString;
+            consumedAt: z.ZodOptional<z.ZodString>;
+            source: z.ZodOptional<z.ZodEnum<{
+                custom: "custom";
+                barcode: "barcode";
+                search: "search";
+                manual: "manual";
+                ai: "ai";
+                ai_edited: "ai_edited";
+            }>>;
+            sugar: z.ZodOptional<z.ZodNumber>;
+            sodium: z.ZodOptional<z.ZodNumber>;
+            cholesterol: z.ZodOptional<z.ZodNumber>;
+            saturatedFat: z.ZodOptional<z.ZodNumber>;
+            nutritionQualityIndex: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>>>>;
+        isVerified: z.ZodBoolean;
+        createdAt: z.ZodString;
+        updatedAt: z.ZodString;
+    }, z.core.$strip>>;
+    target: z.ZodObject<{
+        id: z.ZodOptional<z.ZodString>;
+        userId: z.ZodString;
+        date: z.ZodString;
+        timezone: z.ZodString;
+        meals: z.ZodArray<z.ZodObject<{
+            id: z.ZodOptional<z.ZodString>;
+            mealType: z.ZodEnum<{
+                other: "other";
+                breakfast: "breakfast";
+                lunch: "lunch";
+                dinner: "dinner";
+                snack: "snack";
+                pre_workout: "pre_workout";
+                post_workout: "post_workout";
+            }>;
+            loggedAt: z.ZodString;
+            portions: z.ZodArray<z.ZodObject<{
+                id: z.ZodOptional<z.ZodString>;
+                foodName: z.ZodString;
+                brand: z.ZodOptional<z.ZodString>;
+                quantity: z.ZodNumber;
+                unit: z.ZodString;
+                macros: z.ZodObject<{
+                    calories: z.ZodNumber;
+                    protein: z.ZodNumber;
+                    carbs: z.ZodNumber;
+                    fat: z.ZodNumber;
+                    fiber: z.ZodOptional<z.ZodNumber>;
+                    sugar: z.ZodOptional<z.ZodNumber>;
+                    sodium: z.ZodOptional<z.ZodNumber>;
+                }, z.core.$strip>;
+                photoUrl: z.ZodOptional<z.ZodString>;
+            }, z.core.$strip>>;
+            notes: z.ZodOptional<z.ZodString>;
+            hungerLevel: z.ZodOptional<z.ZodNumber>;
+            fullnessLevel: z.ZodOptional<z.ZodNumber>;
+            mood: z.ZodOptional<z.ZodEnum<{
+                very_negative: "very_negative";
+                negative: "negative";
+                neutral: "neutral";
+                positive: "positive";
+                very_positive: "very_positive";
+            }>>;
+            mealContext: z.ZodOptional<z.ZodObject<{
+                location: z.ZodOptional<z.ZodEnum<{
+                    home: "home";
+                    restaurant: "restaurant";
+                    work: "work";
+                    travel: "travel";
+                    social_event: "social_event";
+                }>>;
+                preparationMethod: z.ZodOptional<z.ZodEnum<{
+                    raw: "raw";
+                    boiled: "boiled";
+                    fried: "fried";
+                    baked: "baked";
+                    grilled: "grilled";
+                    steamed: "steamed";
+                    roasted: "roasted";
+                }>>;
+                socialContext: z.ZodOptional<z.ZodString>;
+                mealDuration: z.ZodOptional<z.ZodNumber>;
+            }, z.core.$strip>>;
+            digestion: z.ZodOptional<z.ZodEnum<{
+                excellent: "excellent";
+                good: "good";
+                normal: "normal";
+                poor: "poor";
+                very_poor: "very_poor";
+            }>>;
+            energy: z.ZodOptional<z.ZodEnum<{
+                low: "low";
+                high: "high";
+                normal: "normal";
+                very_low: "very_low";
+                very_high: "very_high";
+            }>>;
+            photoUrls: z.ZodOptional<z.ZodArray<z.ZodString>>;
+        }, z.core.$strip>>;
+        totals: z.ZodObject<{
+            calories: z.ZodNumber;
+            protein: z.ZodNumber;
+            carbs: z.ZodNumber;
+            fat: z.ZodNumber;
+            fiber: z.ZodOptional<z.ZodNumber>;
+            sugar: z.ZodOptional<z.ZodNumber>;
+            sodium: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>;
+        hydrationMl: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        supplements: z.ZodOptional<z.ZodArray<z.ZodString>>;
+        foodEntries: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            name: z.ZodString;
+            quantity: z.ZodNumber;
+            unit: z.ZodString;
+            calories: z.ZodNumber;
+            protein: z.ZodNumber;
+            carbs: z.ZodNumber;
+            fat: z.ZodNumber;
+            fiber: z.ZodOptional<z.ZodNumber>;
+            brand: z.ZodOptional<z.ZodString>;
+            barcode: z.ZodOptional<z.ZodString>;
+            icon: z.ZodOptional<z.ZodString>;
+            loggedAt: z.ZodString;
+            consumedAt: z.ZodOptional<z.ZodString>;
+            source: z.ZodOptional<z.ZodEnum<{
+                custom: "custom";
+                barcode: "barcode";
+                search: "search";
+                manual: "manual";
+                ai: "ai";
+                ai_edited: "ai_edited";
+            }>>;
+            sugar: z.ZodOptional<z.ZodNumber>;
+            sodium: z.ZodOptional<z.ZodNumber>;
+            cholesterol: z.ZodOptional<z.ZodNumber>;
+            saturatedFat: z.ZodOptional<z.ZodNumber>;
+            nutritionQualityIndex: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>>>>;
+        isVerified: z.ZodBoolean;
+        createdAt: z.ZodString;
+        updatedAt: z.ZodString;
+    }, z.core.$strip>;
+    movedEntry: z.ZodObject<{
+        id: z.ZodString;
+        name: z.ZodString;
+        quantity: z.ZodNumber;
+        unit: z.ZodString;
+        calories: z.ZodNumber;
+        protein: z.ZodNumber;
+        carbs: z.ZodNumber;
+        fat: z.ZodNumber;
+        fiber: z.ZodOptional<z.ZodNumber>;
+        brand: z.ZodOptional<z.ZodString>;
+        barcode: z.ZodOptional<z.ZodString>;
+        icon: z.ZodOptional<z.ZodString>;
+        loggedAt: z.ZodString;
+        consumedAt: z.ZodOptional<z.ZodString>;
+        source: z.ZodOptional<z.ZodEnum<{
+            custom: "custom";
+            barcode: "barcode";
+            search: "search";
+            manual: "manual";
+            ai: "ai";
+            ai_edited: "ai_edited";
+        }>>;
+        sugar: z.ZodOptional<z.ZodNumber>;
+        sodium: z.ZodOptional<z.ZodNumber>;
+        cholesterol: z.ZodOptional<z.ZodNumber>;
+        saturatedFat: z.ZodOptional<z.ZodNumber>;
+        nutritionQualityIndex: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>;
+}, z.core.$strip>;
+export type NutritionFoodEntryMoveResponse = z.infer<typeof NutritionFoodEntryMoveResponseSchema>;
 export declare const micronutrientsSchema: z.ZodObject<{
     vitaminA: z.ZodOptional<z.ZodNumber>;
     vitaminC: z.ZodOptional<z.ZodNumber>;
@@ -543,6 +1103,56 @@ export declare const micronutrientsSchema: z.ZodObject<{
     lutein: z.ZodOptional<z.ZodNumber>;
 }, z.core.$strip>;
 export type Micronutrients = z.infer<typeof micronutrientsSchema>;
+export declare const aiAnalyzedFoodSchema: z.ZodObject<{
+    foodName: z.ZodString;
+    description: z.ZodDefault<z.ZodOptional<z.ZodString>>;
+    quantity: z.ZodDefault<z.ZodNumber>;
+    unit: z.ZodDefault<z.ZodString>;
+    macros: z.ZodObject<{
+        calories: z.ZodNumber;
+        protein: z.ZodNumber;
+        carbs: z.ZodNumber;
+        fat: z.ZodNumber;
+        fiber: z.ZodOptional<z.ZodNumber>;
+        sugar: z.ZodOptional<z.ZodNumber>;
+        sodium: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>;
+    micros: z.ZodOptional<z.ZodObject<{
+        vitaminA: z.ZodOptional<z.ZodNumber>;
+        vitaminC: z.ZodOptional<z.ZodNumber>;
+        vitaminD: z.ZodOptional<z.ZodNumber>;
+        vitaminE: z.ZodOptional<z.ZodNumber>;
+        vitaminK: z.ZodOptional<z.ZodNumber>;
+        thiamin: z.ZodOptional<z.ZodNumber>;
+        riboflavin: z.ZodOptional<z.ZodNumber>;
+        niacin: z.ZodOptional<z.ZodNumber>;
+        vitaminB6: z.ZodOptional<z.ZodNumber>;
+        folate: z.ZodOptional<z.ZodNumber>;
+        vitaminB12: z.ZodOptional<z.ZodNumber>;
+        biotin: z.ZodOptional<z.ZodNumber>;
+        pantothenicAcid: z.ZodOptional<z.ZodNumber>;
+        calcium: z.ZodOptional<z.ZodNumber>;
+        iron: z.ZodOptional<z.ZodNumber>;
+        magnesium: z.ZodOptional<z.ZodNumber>;
+        phosphorus: z.ZodOptional<z.ZodNumber>;
+        potassium: z.ZodOptional<z.ZodNumber>;
+        zinc: z.ZodOptional<z.ZodNumber>;
+        copper: z.ZodOptional<z.ZodNumber>;
+        manganese: z.ZodOptional<z.ZodNumber>;
+        selenium: z.ZodOptional<z.ZodNumber>;
+        iodine: z.ZodOptional<z.ZodNumber>;
+        chromium: z.ZodOptional<z.ZodNumber>;
+        molybdenum: z.ZodOptional<z.ZodNumber>;
+        chloride: z.ZodOptional<z.ZodNumber>;
+        choline: z.ZodOptional<z.ZodNumber>;
+        lycopene: z.ZodOptional<z.ZodNumber>;
+        lutein: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>>;
+    nutritionQualityIndex: z.ZodNumber;
+    confidence: z.ZodNumber;
+    reasoning: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
+export type AIAnalyzedFood = z.infer<typeof aiAnalyzedFoodSchema>;
 export declare const aiAnalysisResultSchema: z.ZodObject<{
     rejected: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
     rejectionReason: z.ZodOptional<z.ZodString>;
@@ -591,6 +1201,55 @@ export declare const aiAnalysisResultSchema: z.ZodObject<{
     nutritionQualityIndex: z.ZodNumber;
     confidence: z.ZodNumber;
     reasoning: z.ZodOptional<z.ZodString>;
+    foods: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        foodName: z.ZodString;
+        description: z.ZodDefault<z.ZodOptional<z.ZodString>>;
+        quantity: z.ZodDefault<z.ZodNumber>;
+        unit: z.ZodDefault<z.ZodString>;
+        macros: z.ZodObject<{
+            calories: z.ZodNumber;
+            protein: z.ZodNumber;
+            carbs: z.ZodNumber;
+            fat: z.ZodNumber;
+            fiber: z.ZodOptional<z.ZodNumber>;
+            sugar: z.ZodOptional<z.ZodNumber>;
+            sodium: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>;
+        micros: z.ZodOptional<z.ZodObject<{
+            vitaminA: z.ZodOptional<z.ZodNumber>;
+            vitaminC: z.ZodOptional<z.ZodNumber>;
+            vitaminD: z.ZodOptional<z.ZodNumber>;
+            vitaminE: z.ZodOptional<z.ZodNumber>;
+            vitaminK: z.ZodOptional<z.ZodNumber>;
+            thiamin: z.ZodOptional<z.ZodNumber>;
+            riboflavin: z.ZodOptional<z.ZodNumber>;
+            niacin: z.ZodOptional<z.ZodNumber>;
+            vitaminB6: z.ZodOptional<z.ZodNumber>;
+            folate: z.ZodOptional<z.ZodNumber>;
+            vitaminB12: z.ZodOptional<z.ZodNumber>;
+            biotin: z.ZodOptional<z.ZodNumber>;
+            pantothenicAcid: z.ZodOptional<z.ZodNumber>;
+            calcium: z.ZodOptional<z.ZodNumber>;
+            iron: z.ZodOptional<z.ZodNumber>;
+            magnesium: z.ZodOptional<z.ZodNumber>;
+            phosphorus: z.ZodOptional<z.ZodNumber>;
+            potassium: z.ZodOptional<z.ZodNumber>;
+            zinc: z.ZodOptional<z.ZodNumber>;
+            copper: z.ZodOptional<z.ZodNumber>;
+            manganese: z.ZodOptional<z.ZodNumber>;
+            selenium: z.ZodOptional<z.ZodNumber>;
+            iodine: z.ZodOptional<z.ZodNumber>;
+            chromium: z.ZodOptional<z.ZodNumber>;
+            molybdenum: z.ZodOptional<z.ZodNumber>;
+            chloride: z.ZodOptional<z.ZodNumber>;
+            choline: z.ZodOptional<z.ZodNumber>;
+            lycopene: z.ZodOptional<z.ZodNumber>;
+            lutein: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>>;
+        nutritionQualityIndex: z.ZodNumber;
+        confidence: z.ZodNumber;
+        reasoning: z.ZodOptional<z.ZodString>;
+    }, z.core.$strip>>>;
 }, z.core.$strip>;
 export type AIAnalysisResult = z.infer<typeof aiAnalysisResultSchema>;
 /** @deprecated Use NutritionMacroBreakdownSchema instead. Remove after 2026-05-01 */

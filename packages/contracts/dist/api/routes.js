@@ -213,6 +213,16 @@ export const NUTRITION_ROUTES = {
      * @param foodId - Food entry identifier
      */
     deleteFoodEntry: (userId, date, foodId) => `/users/${userId}/nutrition/${date}/entries/${encodeURIComponent(foodId)}`,
+    /** Atomically edit and move one food entry to another date/hour. */
+    moveFoodEntry: (userId, sourceDate, foodId) => `/users/${userId}/nutrition/${sourceDate}/entries/${encodeURIComponent(foodId)}/move`,
+    /** List and create reusable named meal templates. */
+    templates: (userId) => `/users/${userId}/nutrition/templates`,
+    /** Update or delete one reusable named meal template. */
+    template: (userId, templateId) => `/users/${userId}/nutrition/templates/${encodeURIComponent(templateId)}`,
+    /** Search the server-backed food catalog. */
+    catalogSearch: (userId) => `/users/${userId}/nutrition/catalog/search`,
+    /** Resolve one product barcode through the server-backed food catalog. */
+    catalogBarcode: (userId, barcode) => `/users/${userId}/nutrition/catalog/barcode/${encodeURIComponent(barcode)}`,
     /**
      * POST /users/:userId/nutrition/analyze - Analyze nutrition data
      * @param userId - User's unique identifier

@@ -16,6 +16,7 @@
 
 import { z } from "zod";
 import { foodLogEntrySchema } from "../schemas/json-blobs.js";
+import { isoDateSchema } from "./common.js";
 import { createPaginatedListSchema } from "./pagination.js";
 
 // Note: foodLogEntrySchema and FoodLogEntryContract are used internally but NOT re-exported
@@ -514,6 +515,161 @@ export type FoodItem = z.infer<typeof FoodItemSchema>;
 export type FoodItemContract = FoodItem;
 
 // ============================================================================
+// SAVED MEAL TEMPLATES
+// ============================================================================
+
+/**
+ * Reusable food data stored in a named meal template.
+ * Runtime identifiers and timestamps are regenerated whenever the template is used.
+ */
+export const MealTemplateFoodSchema = foodLogEntrySchema
+  .omit({
+    id: true,
+    loggedAt: true,
+    consumedAt: true,
+  })
+  .extend({
+    name: z.string().trim().min(1).max(200),
+    quantity: z.number().positive(),
+    unit: z.string().trim().min(1).max(50),
+  });
+
+export type MealTemplateFood = z.infer<typeof MealTemplateFoodSchema>;
+
+export const MealTemplateSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  name: z.string().trim().min(1).max(80),
+  foods: z.array(MealTemplateFoodSchema).min(1).max(100),
+  defaultHour: z.number().int().min(0).max(23).nullable(),
+  isFavorite: z.boolean(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type MealTemplate = z.infer<typeof MealTemplateSchema>;
+
+export const CreateMealTemplateBodySchema = z
+  .object({
+    name: z.string().trim().min(1).max(80),
+    foods: z.array(MealTemplateFoodSchema).min(1).max(100),
+    defaultHour: z.number().int().min(0).max(23).nullable().optional(),
+    isFavorite: z.boolean().optional().default(false),
+  })
+  .strip();
+
+export type CreateMealTemplateBody = z.infer<
+  typeof CreateMealTemplateBodySchema
+>;
+
+export const UpdateMealTemplateBodySchema = z
+  .object({
+    name: z.string().trim().min(1).max(80).optional(),
+    foods: z.array(MealTemplateFoodSchema).min(1).max(100).optional(),
+    defaultHour: z.number().int().min(0).max(23).nullable().optional(),
+    isFavorite: z.boolean().optional(),
+  })
+  .strip()
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one meal template field is required",
+  });
+
+export type UpdateMealTemplateBody = z.infer<
+  typeof UpdateMealTemplateBodySchema
+>;
+
+export const MealTemplateListQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  favoritesOnly: z
+    .enum(["true", "false"])
+    .optional()
+    .transform((value) => (value === undefined ? undefined : value === "true")),
+});
+
+export type MealTemplateListQuery = z.infer<typeof MealTemplateListQuerySchema>;
+
+export const MealTemplateListResponseSchema =
+  createPaginatedListSchema(MealTemplateSchema);
+
+export type MealTemplateListResponse = z.infer<
+  typeof MealTemplateListResponseSchema
+>;
+
+// ============================================================================
+// FOOD CATALOG
+// ============================================================================
+
+export const FOOD_CATALOG_PROVIDER = {
+  OPEN_FOOD_FACTS: "open_food_facts",
+} as const;
+
+export const FoodCatalogItemSchema = z.object({
+  id: z.string().min(1),
+  provider: z.literal(FOOD_CATALOG_PROVIDER.OPEN_FOOD_FACTS),
+  name: z.string().min(1),
+  brand: z.string().optional(),
+  barcode: z.string().optional(),
+  quantity: z.number().positive(),
+  unit: z.string().min(1),
+  calories: z.number().min(0),
+  protein: z.number().min(0),
+  carbs: z.number().min(0),
+  fat: z.number().min(0),
+  fiber: z.number().min(0).optional(),
+  sugar: z.number().min(0).optional(),
+  sodium: z.number().min(0).optional(),
+  imageUrl: z.string().url().optional(),
+});
+
+export type FoodCatalogItem = z.infer<typeof FoodCatalogItemSchema>;
+
+export const FoodCatalogSearchQuerySchema = z.object({
+  q: z.string().trim().min(2).max(100),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(20),
+});
+
+export type FoodCatalogSearchQuery = z.infer<
+  typeof FoodCatalogSearchQuerySchema
+>;
+
+export const FoodCatalogListResponseSchema = createPaginatedListSchema(
+  FoodCatalogItemSchema,
+);
+
+export type FoodCatalogListResponse = z.infer<
+  typeof FoodCatalogListResponseSchema
+>;
+
+// ============================================================================
+// ATOMIC FOOD ENTRY MOVE
+// ============================================================================
+
+export const NutritionFoodEntryMoveBodySchema = z
+  .object({
+    targetDate: isoDateSchema,
+    targetHour: z.number().int().min(0).max(23),
+    entry: foodLogEntrySchema,
+    timezone: z.string().trim().min(1).max(100).optional(),
+  })
+  .strip();
+
+export type NutritionFoodEntryMoveBody = z.infer<
+  typeof NutritionFoodEntryMoveBodySchema
+>;
+
+export const NutritionFoodEntryMoveResponseSchema = z.object({
+  source: DailyNutritionLogSchema.nullable(),
+  target: DailyNutritionLogSchema,
+  movedEntry: foodLogEntrySchema,
+});
+
+export type NutritionFoodEntryMoveResponse = z.infer<
+  typeof NutritionFoodEntryMoveResponseSchema
+>;
+
+// ============================================================================
 // MICRONUTRIENTS
 // ============================================================================
 
@@ -555,6 +711,20 @@ export type Micronutrients = z.infer<typeof micronutrientsSchema>;
 // AI ANALYSIS RESULT
 // ============================================================================
 
+export const aiAnalyzedFoodSchema = z.object({
+  foodName: z.string().min(1),
+  description: z.string().optional().default(""),
+  quantity: z.number().positive().default(1),
+  unit: z.string().min(1).default("serving"),
+  macros: NutritionMacroBreakdownSchema,
+  micros: micronutrientsSchema.optional(),
+  nutritionQualityIndex: z.number().min(0).max(100),
+  confidence: z.number().min(0).max(1),
+  reasoning: z.string().optional(),
+});
+
+export type AIAnalyzedFood = z.infer<typeof aiAnalyzedFoodSchema>;
+
 export const aiAnalysisResultSchema = z.object({
   rejected: z.boolean().optional().default(false),
   rejectionReason: z.string().optional(),
@@ -565,6 +735,8 @@ export const aiAnalysisResultSchema = z.object({
   nutritionQualityIndex: z.number().min(0).max(100),
   confidence: z.number().min(0).max(1),
   reasoning: z.string().optional(),
+  /** Individually identified foods. Present for decomposed multi-food analyses. */
+  foods: z.array(aiAnalyzedFoodSchema).max(20).optional(),
 });
 
 export type AIAnalysisResult = z.infer<typeof aiAnalysisResultSchema>;

@@ -95,6 +95,11 @@ export declare const API_ROUTES: {
         readonly upsert: (userId: string, date: string) => `/users/${string}/nutrition/${string}`;
         readonly addFoodEntries: (userId: string, date: string) => `/users/${string}/nutrition/${string}/entries`;
         readonly deleteFoodEntry: (userId: string, date: string, foodId: string) => `/users/${string}/nutrition/${string}/entries/${string}`;
+        readonly moveFoodEntry: (userId: string, sourceDate: string, foodId: string) => `/users/${string}/nutrition/${string}/entries/${string}/move`;
+        readonly templates: (userId: string) => `/users/${string}/nutrition/templates`;
+        readonly template: (userId: string, templateId: string) => `/users/${string}/nutrition/templates/${string}`;
+        readonly catalogSearch: (userId: string) => `/users/${string}/nutrition/catalog/search`;
+        readonly catalogBarcode: (userId: string, barcode: string) => `/users/${string}/nutrition/catalog/barcode/${string}`;
         readonly analyze: (userId: string) => `/users/${string}/nutrition/analyze`;
     };
     readonly PLANS: {

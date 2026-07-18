@@ -272,6 +272,7 @@ export declare const createExerciseSchema: z.ZodObject<{
         PLYOMETRIC: "PLYOMETRIC";
     }>;
     isActive: z.ZodOptional<z.ZodBoolean>;
+    imageUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     metricDefinitionId: z.ZodOptional<z.ZodString>;
     slug: z.ZodOptional<z.ZodString>;
     aliases: z.ZodOptional<z.ZodArray<z.ZodString>>;
@@ -372,7 +373,6 @@ export declare const createExerciseSchema: z.ZodObject<{
     instructions: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     cues: z.ZodOptional<z.ZodArray<z.ZodString>>;
     videoUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
-    imageUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     thumbnailUrl: z.ZodOptional<z.ZodString>;
     isCompound: z.ZodOptional<z.ZodBoolean>;
     isUnilateral: z.ZodOptional<z.ZodBoolean>;
@@ -394,6 +394,7 @@ export declare const updateExerciseSchema: z.ZodObject<{
         PLYOMETRIC: "PLYOMETRIC";
     }>>;
     isActive: z.ZodOptional<z.ZodOptional<z.ZodBoolean>>;
+    imageUrl: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
     metricDefinitionId: z.ZodOptional<z.ZodOptional<z.ZodString>>;
     slug: z.ZodOptional<z.ZodOptional<z.ZodString>>;
     aliases: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodString>>>;
@@ -494,7 +495,6 @@ export declare const updateExerciseSchema: z.ZodObject<{
     instructions: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
     cues: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodString>>>;
     videoUrl: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
-    imageUrl: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
     thumbnailUrl: z.ZodOptional<z.ZodOptional<z.ZodString>>;
     isCompound: z.ZodOptional<z.ZodOptional<z.ZodBoolean>>;
     isUnilateral: z.ZodOptional<z.ZodOptional<z.ZodBoolean>>;

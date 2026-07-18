@@ -859,6 +859,35 @@ export type NutritionFoodEntryParams = z.infer<
   typeof nutritionFoodEntryParamsSchema
 >;
 
+export const mealTemplateParamsSchema = z.object({
+  userId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+  templateId: z.string().uuid("Invalid meal template ID"),
+});
+export type MealTemplateParams = z.infer<typeof mealTemplateParamsSchema>;
+
+export const foodCatalogBarcodeParamsSchema = z.object({
+  userId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+  barcode: z.string().regex(/^\d{4,18}$/, "Barcode must contain 4-18 digits"),
+});
+export type FoodCatalogBarcodeParams = z.infer<
+  typeof foodCatalogBarcodeParamsSchema
+>;
+
+export const nutritionFoodEntryMoveParamsSchema = z.object({
+  userId: z
+    .string()
+    .regex(USER_ID_REGEX, "Invalid user ID format (expected HH-XXXXXX)"),
+  sourceDate: isoDateSchema,
+  foodId: z.string().min(1),
+});
+export type NutritionFoodEntryMoveParams = z.infer<
+  typeof nutritionFoodEntryMoveParamsSchema
+>;
+
 export const nutritionFoodEntriesBodySchema =
   NutritionFoodEntriesMutationSchema;
 export type NutritionFoodEntriesBody = z.infer<
