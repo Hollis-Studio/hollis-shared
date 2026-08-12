@@ -274,7 +274,12 @@ export const SlottedExerciseSchema = z.preprocess(
 );
 
 const SlottedDaySchema = z.object({
-  dayOfWeek: z.number().int().min(0).max(6),
+  // min(-1), not min(0): the persisted ProgramDaySchema uses -1 as the "Flex
+  // day" sentinel (no fixed weekday), and saved programs re-project through
+  // this schema on every refine — a 0 floor 400'd every AI-editor turn on any
+  // program with a flexible day. Edit ops that ASSIGN a weekday
+  // (rename_or_reschedule_day.newDayOfWeek, add_day.dayOfWeek) stay 0..6.
+  dayOfWeek: z.number().int().min(-1).max(6),
   // min(1) is safe: the persisted ProgramDaySchema already requires a non-empty
   // day name, so no legal saved program re-projects an empty one on refine.
   name: z.string().min(1).max(DAY_NAME_MAX),

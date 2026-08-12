@@ -10,6 +10,7 @@
  */
 
 import {
+  SlottedProgramSchema,
   VoiceLogOperationSchema,
   SmartBuilderRequestSchema,
   SmartBuilderResponseSchema,
@@ -526,5 +527,23 @@ describe("CrossModalContextRequestSchema / CrossModalContextResponseSchema", () 
         confidence: "low",
       }).success,
     ).toBe(false);
+  });
+});
+
+describe("SlottedDaySchema flex-day sentinel (alpha.50)", () => {
+  const day = (dayOfWeek: number) => ({
+    name: "Program",
+    description: "",
+    type: "custom",
+    durationWeeks: 4,
+    schedule: [{ dayOfWeek, name: "Flex", exercises: [] }],
+  });
+
+  it("accepts dayOfWeek -1 (persisted Flex-day sentinel re-projected on refine)", () => {
+    expect(SlottedProgramSchema.safeParse(day(-1)).success).toBe(true);
+  });
+
+  it("rejects dayOfWeek below the sentinel", () => {
+    expect(SlottedProgramSchema.safeParse(day(-2)).success).toBe(false);
   });
 });

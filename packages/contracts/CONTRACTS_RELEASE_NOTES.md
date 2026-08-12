@@ -1,5 +1,19 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.50 (2026-08-12)
+
+**One-line fix from the alpha.49 dual audit (issue hollis-workouts#10):
+`SlottedDaySchema.dayOfWeek` floor lowered to -1. No other changes.**
+
+### `ai/workout-ai-wire.ts`
+
+- **`SlottedDaySchema.dayOfWeek`** (`.min(0)` -> `.min(-1)`) — the
+  persisted `ProgramDaySchema` uses `-1` as the "Flex day" sentinel and
+  saved programs re-project through this schema on every refine turn;
+  the 0 floor 400'd the AI editor permanently for any program with a
+  flexible day. Weekday-assigning edit ops (`add_day.dayOfWeek`,
+  `rename_or_reschedule_day.newDayOfWeek`) keep their 0..6 bounds.
+
 ## 0.2.0-alpha.49 (2026-08-12)
 
 **Smart Builder wire hardening plus one additive session field for the
