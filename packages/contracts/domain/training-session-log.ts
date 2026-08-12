@@ -263,6 +263,14 @@ const TrainingSessionLogBaseSchema = z.object({
    * written and skip a duplicate. Absent/null until the first successful write.
    */
   healthSyncedAt: z.coerce.date().nullable().optional(),
+  /**
+   * Set when the user corrects a completed session after the fact (metadata
+   * edit, set edit, or set delete) — powers the "Edited" marker on history
+   * surfaces. Nullable so a NULL Prisma column round-trips the serializer
+   * without a strip-list entry; last-write-wins across devices (merge keeps
+   * the newest non-null stamp).
+   */
+  correctedAt: z.coerce.date().nullable().optional(),
 });
 
 export const ActiveTrainingSessionLogSchema = TrainingSessionLogBaseSchema.extend({

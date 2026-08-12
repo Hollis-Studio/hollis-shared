@@ -86,6 +86,26 @@ const RIR_MAX = 10;
 const DURATION_SECONDS_MAX = 86_400;
 const DISTANCE_KM_MAX = 1000;
 const REST_SECONDS_MAX = 3600;
+/**
+ * Prescription-side bounds for Smart Builder program slots and edit ops.
+ * Deliberately separate from the voice-logging REPS_MAX/DISTANCE_KM_MAX above:
+ * voice logging records what actually happened; these bound what the builder
+ * may prescribe (product truth: 30-rep ceiling — mirrored by the server
+ * guards' REPS_SANITY_MAX and the client EDIT_BOUNDS).
+ */
+const PRESCRIBED_REPS_MAX = 30;
+const PRESCRIBED_CARDIO_DURATION_SECONDS_MAX = 86_400;
+const PRESCRIBED_CARDIO_DISTANCE_KM_MAX = 500;
+const PRESCRIBED_CARDIO_SPEED_KMH_MAX = 60;
+/**
+ * Response `message` cap — must not exceed ConversationMessageSchema.content's
+ * cap, because the client feeds the response message back as the next
+ * request's assistant turn.
+ */
+const RESPONSE_MESSAGE_MAX = 4000;
+const PROGRAM_NAME_MAX = 120;
+const DAY_NAME_MAX = 120;
+const PROGRAM_DESCRIPTION_MAX = 2000;
 // ============================================================================
 // Voice workout logging — operation schema (V2)
 // ============================================================================
@@ -164,28 +184,12 @@ export const VoiceLogOperationSchema = VoiceLogOperationRawSchema.superRefine((v
 // ============================================================================
 // Smart program builder — slotted program + response union
 // ============================================================================
-const AIQuestionSchema = z.object({
-    id: z.string().min(1),
-    question: z.string().min(1),
-    type: z.enum(["chips", "slider", "toggle", "text"]),
-    options: z.array(z.string()).optional(),
-    min: z.number().optional(),
-    max: z.number().optional(),
-    step: z.number().optional(),
-    defaultValue: z.union([z.string(), z.number(), z.boolean()]).optional(),
-    placeholder: z.string().optional(),
-    multiline: z.boolean().optional(),
-});
-const AIQuestionGroupSchema = z.object({
-    topic: z.string(),
-    questions: z.array(AIQuestionSchema).min(1),
-});
 const LiftingSlottedExerciseSchema = z.object({
     slotId: z.string().min(1),
     canonicalExerciseId: z.string(),
     exerciseType: z.literal("lifting"),
     sets: z.number().int().min(1).max(10),
-    reps: z.number().int().min(1).max(100),
+    reps: z.number().int().min(1).max(PRESCRIBED_REPS_MAX),
     rir: z.number().int().min(0).max(5),
     progressionMode: z.enum(["weight_first", "reps_first"]),
     goalMode: z.enum(["progress", "maintain", "track_only"]).optional(),
@@ -206,9 +210,13 @@ const CardioSlottedExerciseSchema = z
     slotId: z.string().min(1),
     canonicalExerciseId: z.string(),
     exerciseType: z.literal("cardio"),
-    durationSeconds: z.number().int().min(60).nullable(),
-    targetDistanceKm: z.number().min(0).nullable(),
-    targetSpeedKmh: z.number().min(0).nullable(),
+    // Floor is 1 s, not 60: the persisted CardioTargetsSchema floor is 1 s, so
+    // saved sub-60 s cardio targets must re-project legally here (the old 60
+    // floor 400'd every refine for those programs). The 60 s floor for
+    // AI-*generated* cardio remains a server guard concern.
+    durationSeconds: z.number().int().min(1).max(PRESCRIBED_CARDIO_DURATION_SECONDS_MAX).nullable(),
+    targetDistanceKm: z.number().min(0).max(PRESCRIBED_CARDIO_DISTANCE_KM_MAX).nullable(),
+    targetSpeedKmh: z.number().min(0).max(PRESCRIBED_CARDIO_SPEED_KMH_MAX).nullable(),
     goalMode: z.enum(["progress", "maintain", "track_only"]).optional(),
     priorityLevel: z.enum(["primary", "secondary", "supporting"]).optional(),
 })
@@ -233,12 +241,16 @@ export const SlottedExerciseSchema = z.preprocess((val) => {
 ]));
 const SlottedDaySchema = z.object({
     dayOfWeek: z.number().int().min(0).max(6),
-    name: z.string(),
+    // min(1) is safe: the persisted ProgramDaySchema already requires a non-empty
+    // day name, so no legal saved program re-projects an empty one on refine.
+    name: z.string().min(1).max(DAY_NAME_MAX),
     exercises: z.array(SlottedExerciseSchema),
 });
 export const SlottedProgramSchema = z.object({
-    name: z.string(),
-    description: z.string(),
+    name: z.string().min(1).max(PROGRAM_NAME_MAX),
+    // Deliberately NO .min(1): programEditor emits `description: ''` for
+    // description-less programs, and a min(1) would 400 every refine on them.
+    description: z.string().max(PROGRAM_DESCRIPTION_MAX),
     type: z.enum(["linear", "undulating", "block", "custom"]),
     durationWeeks: z.number().int().min(1).max(52),
     deloadWeekNumbers: z.array(z.number().int()).optional(),
@@ -249,9 +261,10 @@ export const SlottedProgramSchema = z.object({
 // Program editing — robust, semantically-addressed edit operations (alpha.27)
 // ============================================================================
 //
-// Replaces the legacy 5-op union (kept below as `LegacyProgramEditSchema` for
-// one deprecation cycle). The new union adds semantic addressing (target a day
-// by name | index | dayOfWeek; a slot by slotId | {day, exercise}), schema-level
+// Replaced the legacy 5-op union (`LegacyProgramEditSchema`, deleted in
+// alpha.49 after its deprecation cycle). This union adds semantic addressing
+// (target a day by name | index | dayOfWeek; a slot by slotId | {day,
+// exercise}), schema-level
 // numeric bounds, server-generated slot IDs for `add_exercise`, and three new
 // ops (reorder_within_day, rename_or_reschedule_day, apply_to_all_days).
 // Cross-field "at least one" rules are enforced by a union-level superRefine
@@ -259,11 +272,14 @@ export const SlottedProgramSchema = z.object({
 /** Patchable per-slot training parameters. All optional; bounds match the slot schemas. */
 export const EditParamsSchema = z.object({
     sets: z.number().int().min(1).max(10).optional(),
-    reps: z.number().int().min(1).max(REPS_MAX).optional(),
+    reps: z.number().int().min(1).max(PRESCRIBED_REPS_MAX).optional(),
     rir: z.number().int().min(0).max(5).optional(),
+    // One shared duration field serves timed holds and cardio efforts, so the
+    // bounds stay wide here; per-exercise-type floors/ceilings (a 5–600 s hold vs
+    // a multi-hour cardio effort) are the server guard's job, not the wire's.
     durationSeconds: z.number().int().min(1).max(DURATION_SECONDS_MAX).optional(),
-    targetDistanceKm: z.number().min(0).max(DISTANCE_KM_MAX).optional(),
-    targetSpeedKmh: z.number().min(0).optional(),
+    targetDistanceKm: z.number().min(0).max(PRESCRIBED_CARDIO_DISTANCE_KM_MAX).optional(),
+    targetSpeedKmh: z.number().min(0).max(PRESCRIBED_CARDIO_SPEED_KMH_MAX).optional(),
     progressionMode: z.enum(["weight_first", "reps_first", "duration_first"]).optional(),
     // Engine-consumed per-slot intent. goalMode drives the progression engine's
     // progress/maintain decision; priorityLevel drives progression scaling. These
@@ -345,7 +361,7 @@ const EditOperationRawSchema = z.discriminatedUnion("op", [
     z.object({
         op: z.literal("rename_or_reschedule_day"),
         day: DayRefSchema,
-        newName: z.string().min(1).optional(),
+        newName: z.string().min(1).max(DAY_NAME_MAX).optional(),
         newDayOfWeek: z.number().int().min(0).max(6).optional(),
     }),
     z.object({
@@ -359,7 +375,7 @@ const EditOperationRawSchema = z.discriminatedUnion("op", [
     // server/client generate slotIds for the seeded exercises.
     z.object({
         op: z.literal("add_day"),
-        name: z.string().min(1),
+        name: z.string().min(1).max(DAY_NAME_MAX),
         dayOfWeek: z.number().int().min(0).max(6),
         exercises: z
             .array(z.object({
@@ -380,8 +396,10 @@ const EditOperationRawSchema = z.discriminatedUnion("op", [
     // or block length). Distinct from rename_or_reschedule_day, which renames a DAY.
     z.object({
         op: z.literal("rename_program"),
-        name: z.string().min(1).optional(),
-        description: z.string().min(1).optional(),
+        // Both keep .min(1) — a rename TO empty is meaningless (unlike the program
+        // schema's `description`, which legitimately round-trips '').
+        name: z.string().min(1).max(PROGRAM_NAME_MAX).optional(),
+        description: z.string().min(1).max(PROGRAM_DESCRIPTION_MAX).optional(),
         durationWeeks: z.number().int().min(1).max(52).optional(),
     }),
     // set_deload configures the engine's deload weeks (which program weeks run at
@@ -438,66 +456,45 @@ export const EditOperationSchema = EditOperationRawSchema.superRefine((val, ctx)
     }
 });
 /**
- * @deprecated Legacy 5-op program-edit union (slotId-only addressing, no bounds
- * on the update fields). Replaced by {@link EditOperationSchema}. Kept exported
- * for one deprecation cycle so the server can accept old-format edits while the
- * client rolls over to the new union.
+ * Discriminated union of every Smart Builder turn the server can return. The
+ * old `questions` branch is gone with the converse flow (alpha.49) — the
+ * builder now generates first and refines conversationally.
  */
-export const LegacyProgramEditSchema = z.discriminatedUnion("op", [
-    z.object({
-        op: z.literal("replace_exercise"),
-        slotId: z.string(),
-        newExerciseId: z.string(),
-    }),
-    z.object({
-        op: z.literal("update_sets"),
-        slotId: z.string(),
-        sets: z.number().int().min(1).max(10).optional(),
-        reps: z.number().int().min(1).max(100).optional(),
-        rir: z.number().int().min(0).max(5).optional(),
-        durationSeconds: z.number().int().min(5).max(600).optional(),
-        progressionMode: z.enum(["weight_first", "reps_first", "duration_first"]).optional(),
-    }),
-    z.object({ op: z.literal("remove_exercise"), slotId: z.string() }),
-    z.object({
-        op: z.literal("add_exercise"),
-        dayOfWeek: z.number().int().min(0).max(6),
-        newSlotId: z.string(),
-        canonicalExerciseId: z.string(),
-        exerciseType: z.enum(["lifting", "timed", "cardio"]).default("lifting"),
-        sets: z.number().int().min(1).max(10).optional(),
-        reps: z.number().int().min(1).max(100).optional(),
-        rir: z.number().int().min(0).max(5).optional(),
-        durationSeconds: z.number().int().min(5).optional(),
-        targetDistanceKm: z.number().min(0).optional(),
-        targetSpeedKmh: z.number().min(0).optional(),
-        progressionMode: z.enum(["weight_first", "reps_first", "duration_first"]).optional(),
-    }),
-    z.object({
-        op: z.literal("swap_days"),
-        fromDayOfWeek: z.number().int().min(0).max(6),
-        toDayOfWeek: z.number().int().min(0).max(6),
-    }),
-]);
-/** Discriminated union of every Smart Builder turn the server can return. */
 export const SmartBuilderResponseSchema = z.discriminatedUnion("type", [
-    z.object({
-        type: z.literal("questions"),
-        message: z.string().optional(),
-        groups: z.array(AIQuestionGroupSchema).min(1),
-    }),
-    z.object({ type: z.literal("ready"), message: z.string() }),
+    z.object({ type: z.literal("ready"), message: z.string().max(RESPONSE_MESSAGE_MAX) }),
     z.object({
         type: z.literal("program"),
-        message: z.string().optional(),
+        message: z.string().max(RESPONSE_MESSAGE_MAX).optional(),
         program: SlottedProgramSchema,
     }),
     z.object({
         type: z.literal("edits"),
         edits: z.array(EditOperationSchema),
-        message: z.string(),
+        message: z.string().max(RESPONSE_MESSAGE_MAX),
     }),
 ]);
+/**
+ * 422 error envelopes for the Smart Builder chat route, in the Workouts
+ * server's `{ok:false, err:{...}}` shape (NOT errors/errorResponseSchema.ts,
+ * which is the `{success:false}` Health shape). The route .parse()s these
+ * bodies before send; the client keys off err.code and the typed details.
+ */
+export const SmartBuilderHallucinationExhaustedEnvelopeSchema = z.object({
+    ok: z.literal(false),
+    err: z.object({
+        code: z.literal("HALLUCINATION_EXHAUSTED"),
+        message: z.string(),
+        details: z.object({ invalidIds: z.array(z.string()) }),
+    }),
+});
+export const SmartBuilderGuardExhaustedEnvelopeSchema = z.object({
+    ok: z.literal(false),
+    err: z.object({
+        code: z.literal("AI_GUARD_EXHAUSTED"),
+        message: z.string(),
+        details: z.object({ reason: z.string() }),
+    }),
+});
 // ============================================================================
 // User training context — the typed payload the Smart Builder agent reasons over
 // ============================================================================
@@ -681,7 +678,7 @@ export const UserTrainingContextSchema = z.object({
     goals: TrainingGoalsContextSchema.nullable().optional(),
 });
 // ============================================================================
-// Smart Builder request envelope (converse | generate | refine)
+// Smart Builder request envelope (generate | refine)
 // ============================================================================
 /** Which program a refine targets: a saved program by id, the in-flight draft, or a brand-new program. */
 export const ProgramRefSchema = z.union([
@@ -689,10 +686,16 @@ export const ProgramRefSchema = z.union([
     z.object({ draft: z.literal(true) }),
     z.object({}),
 ]);
-/** One conversational turn between the user and the Smart Builder agent. */
+/**
+ * One conversational turn between the user and the Smart Builder agent. The
+ * content cap is 24k, not 4k: the client prepends a `=== SLOT MAP ===`
+ * preamble turn (~60 chars/slot) on refine, and a large legal program exceeded
+ * the old 4000 cap and 400'd every refine. Response `message` stays capped at
+ * RESPONSE_MESSAGE_MAX (4000) so echoed assistant turns always fit here.
+ */
 export const ConversationMessageSchema = z.object({
     role: z.enum(["user", "assistant"]),
-    content: z.string().min(1).max(4000),
+    content: z.string().min(1).max(24_000),
 });
 /**
  * Unified Smart Builder request. `userContext` is now the fully-typed
@@ -702,7 +705,10 @@ export const ConversationMessageSchema = z.object({
  * server cannot resolve it from `programRef.id`.
  */
 export const SmartBuilderRequestSchema = z.object({
-    action: z.enum(["converse", "generate", "refine"]),
+    // The build-first redesign (alpha.49) removed the `converse` gate — the
+    // builder generates a program immediately and every follow-up is a refine.
+    // The server has rejected `converse` since that redesign shipped.
+    action: z.enum(["generate", "refine"]),
     conversationHistory: z.array(ConversationMessageSchema).max(50),
     userContext: UserTrainingContextSchema,
     programRef: ProgramRefSchema.optional(),

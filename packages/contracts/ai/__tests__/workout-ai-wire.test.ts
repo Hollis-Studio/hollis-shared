@@ -11,7 +11,10 @@
 
 import {
   VoiceLogOperationSchema,
+  SmartBuilderRequestSchema,
   SmartBuilderResponseSchema,
+  SmartBuilderHallucinationExhaustedEnvelopeSchema,
+  SmartBuilderGuardExhaustedEnvelopeSchema,
   MatchExercisesResponseSchema,
   RecognizeEquipmentResponseSchema,
   TagExerciseMusclesResponseSchema,
@@ -99,6 +102,235 @@ describe("SmartBuilderResponseSchema", () => {
       SmartBuilderResponseSchema.safeParse(
         programWith({ durationSeconds: null, targetDistanceKm: null, targetSpeedKmh: null }),
       ).success,
+    ).toBe(false);
+  });
+
+  it("no longer parses the retired type:'questions' branch", () => {
+    expect(
+      SmartBuilderResponseSchema.safeParse({
+        type: "questions",
+        message: "A few questions first",
+        groups: [{ topic: "goals", questions: [{ id: "q1", question: "Goal?", type: "chips" }] }],
+      }).success,
+    ).toBe(false);
+  });
+
+  it("caps every branch's message at 4000 chars", () => {
+    const tooLong = "x".repeat(4001);
+    expect(SmartBuilderResponseSchema.safeParse({ type: "ready", message: "ok" }).success).toBe(true);
+    expect(SmartBuilderResponseSchema.safeParse({ type: "ready", message: tooLong }).success).toBe(
+      false,
+    );
+    expect(
+      SmartBuilderResponseSchema.safeParse({
+        type: "edits",
+        edits: [{ op: "remove_exercise", slot: { slotId: "d0-e0" } }],
+        message: "removed it",
+      }).success,
+    ).toBe(true);
+    expect(
+      SmartBuilderResponseSchema.safeParse({
+        type: "edits",
+        edits: [{ op: "remove_exercise", slot: { slotId: "d0-e0" } }],
+        message: tooLong,
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("SlottedProgram name / description / prescription bounds", () => {
+  const program = (overrides: Record<string, unknown> = {}, exercise?: Record<string, unknown>) => ({
+    type: "program" as const,
+    program: {
+      name: "P",
+      description: "d",
+      type: "linear" as const,
+      durationWeeks: 8,
+      schedule: [
+        {
+          dayOfWeek: 1,
+          name: "Day A",
+          exercises: [
+            exercise ?? {
+              slotId: "d0-e0",
+              canonicalExerciseId: "ex_bench",
+              exerciseType: "lifting",
+              sets: 3,
+              reps: 8,
+              rir: 2,
+              progressionMode: "weight_first",
+            },
+          ],
+        },
+      ],
+      ...overrides,
+    },
+  });
+
+  const cardio = (targets: Record<string, unknown>) =>
+    program({}, {
+      slotId: "d0-e0",
+      canonicalExerciseId: "ex_run",
+      exerciseType: "cardio",
+      targetDistanceKm: null,
+      targetSpeedKmh: null,
+      ...targets,
+    });
+
+  it("rejects an empty or over-long program name", () => {
+    expect(SmartBuilderResponseSchema.safeParse(program({ name: "" })).success).toBe(false);
+    expect(SmartBuilderResponseSchema.safeParse(program({ name: "n".repeat(121) })).success).toBe(
+      false,
+    );
+    expect(SmartBuilderResponseSchema.safeParse(program({ name: "n".repeat(120) })).success).toBe(
+      true,
+    );
+  });
+
+  it("rejects an empty or over-long day name", () => {
+    const withDayName = (name: string) => {
+      const p = program();
+      p.program.schedule[0].name = name;
+      return p;
+    };
+    expect(SmartBuilderResponseSchema.safeParse(withDayName("")).success).toBe(false);
+    expect(SmartBuilderResponseSchema.safeParse(withDayName("d".repeat(121))).success).toBe(false);
+  });
+
+  it("ACCEPTS an empty program description", () => {
+    // Deliberate: the client's program editor emits `description: ''` for
+    // description-less programs, so a .min(1) here would 400 every refine on
+    // them. Pinned so nobody "tightens" it back.
+    expect(SmartBuilderResponseSchema.safeParse(program({ description: "" })).success).toBe(true);
+  });
+
+  it("rejects an over-long program description", () => {
+    expect(
+      SmartBuilderResponseSchema.safeParse(program({ description: "d".repeat(2001) })).success,
+    ).toBe(false);
+  });
+
+  it("caps lifting reps at 30", () => {
+    const withReps = (reps: number) =>
+      program({}, {
+        slotId: "d0-e0",
+        canonicalExerciseId: "ex_bench",
+        exerciseType: "lifting",
+        sets: 3,
+        reps,
+        rir: 2,
+        progressionMode: "weight_first",
+      });
+    expect(SmartBuilderResponseSchema.safeParse(withReps(30)).success).toBe(true);
+    expect(SmartBuilderResponseSchema.safeParse(withReps(31)).success).toBe(false);
+  });
+
+  it("bounds cardio duration between 1 s and 86_400 s", () => {
+    // 30 s is ACCEPTED: the persisted CardioTargetsSchema floor is 1 s, so
+    // saved sub-60 s cardio targets must re-project legally on refine. The
+    // 60 s floor for AI-*generated* cardio is a server-guard concern now.
+    expect(SmartBuilderResponseSchema.safeParse(cardio({ durationSeconds: 30 })).success).toBe(true);
+    expect(SmartBuilderResponseSchema.safeParse(cardio({ durationSeconds: 0 })).success).toBe(false);
+    expect(SmartBuilderResponseSchema.safeParse(cardio({ durationSeconds: 86_400 })).success).toBe(
+      true,
+    );
+    expect(SmartBuilderResponseSchema.safeParse(cardio({ durationSeconds: 86_401 })).success).toBe(
+      false,
+    );
+  });
+
+  it("caps cardio distance at 500 km and speed at 60 km/h", () => {
+    expect(
+      SmartBuilderResponseSchema.safeParse(cardio({ durationSeconds: null, targetDistanceKm: 500 }))
+        .success,
+    ).toBe(true);
+    expect(
+      SmartBuilderResponseSchema.safeParse(cardio({ durationSeconds: null, targetDistanceKm: 501 }))
+        .success,
+    ).toBe(false);
+    expect(
+      SmartBuilderResponseSchema.safeParse(cardio({ durationSeconds: null, targetSpeedKmh: 60 }))
+        .success,
+    ).toBe(true);
+    expect(
+      SmartBuilderResponseSchema.safeParse(cardio({ durationSeconds: null, targetSpeedKmh: 61 }))
+        .success,
+    ).toBe(false);
+  });
+});
+
+describe("SmartBuilderRequestSchema action enum", () => {
+  const userContext = {
+    profile: {},
+    exerciseStrengthStates: [],
+    recentWorkouts: [],
+    injuries: [],
+    gym: { exerciseSelectionMode: "equipment_based", equipment: [] },
+    cardioBaselines: [],
+    exerciseLibrary: [],
+  };
+  const request = (action: string) => ({
+    action,
+    conversationHistory: [{ role: "user", content: "build me a program" }],
+    userContext,
+  });
+
+  it("accepts generate and refine", () => {
+    expect(SmartBuilderRequestSchema.safeParse(request("generate")).success).toBe(true);
+    expect(SmartBuilderRequestSchema.safeParse(request("refine")).success).toBe(true);
+  });
+
+  it("rejects the retired converse action", () => {
+    expect(SmartBuilderRequestSchema.safeParse(request("converse")).success).toBe(false);
+  });
+
+  it("allows a 24k conversation turn (the SLOT MAP preamble) but not 24_001", () => {
+    const turn = (len: number) => ({
+      action: "refine",
+      conversationHistory: [{ role: "user", content: "x".repeat(len) }],
+      userContext,
+    });
+    expect(SmartBuilderRequestSchema.safeParse(turn(24_000)).success).toBe(true);
+    expect(SmartBuilderRequestSchema.safeParse(turn(24_001)).success).toBe(false);
+  });
+});
+
+describe("Smart Builder 422 error envelopes", () => {
+  it("round-trips the hallucination-exhausted envelope and rejects a wrong code", () => {
+    expect(
+      SmartBuilderHallucinationExhaustedEnvelopeSchema.safeParse({
+        ok: false,
+        err: {
+          code: "HALLUCINATION_EXHAUSTED",
+          message: "Could not resolve every exercise",
+          details: { invalidIds: ["ex_not_real"] },
+        },
+      }).success,
+    ).toBe(true);
+    expect(
+      SmartBuilderHallucinationExhaustedEnvelopeSchema.safeParse({
+        ok: false,
+        err: { code: "AI_GUARD_EXHAUSTED", message: "x", details: { invalidIds: [] } },
+      }).success,
+    ).toBe(false);
+  });
+
+  it("round-trips the guard-exhausted envelope and rejects a wrong code", () => {
+    expect(
+      SmartBuilderGuardExhaustedEnvelopeSchema.safeParse({
+        ok: false,
+        err: {
+          code: "AI_GUARD_EXHAUSTED",
+          message: "Guardrails rejected the program",
+          details: { reason: "too_much_volume" },
+        },
+      }).success,
+    ).toBe(true);
+    expect(
+      SmartBuilderGuardExhaustedEnvelopeSchema.safeParse({
+        ok: false,
+        err: { code: "HALLUCINATION_EXHAUSTED", message: "x", details: { reason: "y" } },
+      }).success,
     ).toBe(false);
   });
 });

@@ -557,82 +557,11 @@ export declare const EditOperationSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
 }, z.core.$strip>], "op">;
 export type EditOperation = z.infer<typeof EditOperationSchema>;
 /**
- * @deprecated Legacy 5-op program-edit union (slotId-only addressing, no bounds
- * on the update fields). Replaced by {@link EditOperationSchema}. Kept exported
- * for one deprecation cycle so the server can accept old-format edits while the
- * client rolls over to the new union.
+ * Discriminated union of every Smart Builder turn the server can return. The
+ * old `questions` branch is gone with the converse flow (alpha.49) — the
+ * builder now generates first and refines conversationally.
  */
-export declare const LegacyProgramEditSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
-    op: z.ZodLiteral<"replace_exercise">;
-    slotId: z.ZodString;
-    newExerciseId: z.ZodString;
-}, z.core.$strip>, z.ZodObject<{
-    op: z.ZodLiteral<"update_sets">;
-    slotId: z.ZodString;
-    sets: z.ZodOptional<z.ZodNumber>;
-    reps: z.ZodOptional<z.ZodNumber>;
-    rir: z.ZodOptional<z.ZodNumber>;
-    durationSeconds: z.ZodOptional<z.ZodNumber>;
-    progressionMode: z.ZodOptional<z.ZodEnum<{
-        weight_first: "weight_first";
-        reps_first: "reps_first";
-        duration_first: "duration_first";
-    }>>;
-}, z.core.$strip>, z.ZodObject<{
-    op: z.ZodLiteral<"remove_exercise">;
-    slotId: z.ZodString;
-}, z.core.$strip>, z.ZodObject<{
-    op: z.ZodLiteral<"add_exercise">;
-    dayOfWeek: z.ZodNumber;
-    newSlotId: z.ZodString;
-    canonicalExerciseId: z.ZodString;
-    exerciseType: z.ZodDefault<z.ZodEnum<{
-        cardio: "cardio";
-        timed: "timed";
-        lifting: "lifting";
-    }>>;
-    sets: z.ZodOptional<z.ZodNumber>;
-    reps: z.ZodOptional<z.ZodNumber>;
-    rir: z.ZodOptional<z.ZodNumber>;
-    durationSeconds: z.ZodOptional<z.ZodNumber>;
-    targetDistanceKm: z.ZodOptional<z.ZodNumber>;
-    targetSpeedKmh: z.ZodOptional<z.ZodNumber>;
-    progressionMode: z.ZodOptional<z.ZodEnum<{
-        weight_first: "weight_first";
-        reps_first: "reps_first";
-        duration_first: "duration_first";
-    }>>;
-}, z.core.$strip>, z.ZodObject<{
-    op: z.ZodLiteral<"swap_days">;
-    fromDayOfWeek: z.ZodNumber;
-    toDayOfWeek: z.ZodNumber;
-}, z.core.$strip>], "op">;
-export type LegacyProgramEdit = z.infer<typeof LegacyProgramEditSchema>;
-/** Discriminated union of every Smart Builder turn the server can return. */
 export declare const SmartBuilderResponseSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
-    type: z.ZodLiteral<"questions">;
-    message: z.ZodOptional<z.ZodString>;
-    groups: z.ZodArray<z.ZodObject<{
-        topic: z.ZodString;
-        questions: z.ZodArray<z.ZodObject<{
-            id: z.ZodString;
-            question: z.ZodString;
-            type: z.ZodEnum<{
-                text: "text";
-                chips: "chips";
-                slider: "slider";
-                toggle: "toggle";
-            }>;
-            options: z.ZodOptional<z.ZodArray<z.ZodString>>;
-            min: z.ZodOptional<z.ZodNumber>;
-            max: z.ZodOptional<z.ZodNumber>;
-            step: z.ZodOptional<z.ZodNumber>;
-            defaultValue: z.ZodOptional<z.ZodUnion<readonly [z.ZodString, z.ZodNumber, z.ZodBoolean]>>;
-            placeholder: z.ZodOptional<z.ZodString>;
-            multiline: z.ZodOptional<z.ZodBoolean>;
-        }, z.core.$strip>>;
-    }, z.core.$strip>>;
-}, z.core.$strip>, z.ZodObject<{
     type: z.ZodLiteral<"ready">;
     message: z.ZodString;
 }, z.core.$strip>, z.ZodObject<{
@@ -999,6 +928,34 @@ export declare const SmartBuilderResponseSchema: z.ZodDiscriminatedUnion<[z.ZodO
     message: z.ZodString;
 }, z.core.$strip>], "type">;
 export type SmartBuilderResponse = z.infer<typeof SmartBuilderResponseSchema>;
+/**
+ * 422 error envelopes for the Smart Builder chat route, in the Workouts
+ * server's `{ok:false, err:{...}}` shape (NOT errors/errorResponseSchema.ts,
+ * which is the `{success:false}` Health shape). The route .parse()s these
+ * bodies before send; the client keys off err.code and the typed details.
+ */
+export declare const SmartBuilderHallucinationExhaustedEnvelopeSchema: z.ZodObject<{
+    ok: z.ZodLiteral<false>;
+    err: z.ZodObject<{
+        code: z.ZodLiteral<"HALLUCINATION_EXHAUSTED">;
+        message: z.ZodString;
+        details: z.ZodObject<{
+            invalidIds: z.ZodArray<z.ZodString>;
+        }, z.core.$strip>;
+    }, z.core.$strip>;
+}, z.core.$strip>;
+export type SmartBuilderHallucinationExhaustedEnvelope = z.infer<typeof SmartBuilderHallucinationExhaustedEnvelopeSchema>;
+export declare const SmartBuilderGuardExhaustedEnvelopeSchema: z.ZodObject<{
+    ok: z.ZodLiteral<false>;
+    err: z.ZodObject<{
+        code: z.ZodLiteral<"AI_GUARD_EXHAUSTED">;
+        message: z.ZodString;
+        details: z.ZodObject<{
+            reason: z.ZodString;
+        }, z.core.$strip>;
+    }, z.core.$strip>;
+}, z.core.$strip>;
+export type SmartBuilderGuardExhaustedEnvelope = z.infer<typeof SmartBuilderGuardExhaustedEnvelopeSchema>;
 /** Lightweight profile facts that shape program design. */
 export declare const UserProfileContextSchema: z.ZodObject<{
     experienceLevel: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -1296,7 +1253,13 @@ export declare const ProgramRefSchema: z.ZodUnion<readonly [z.ZodObject<{
     draft: z.ZodLiteral<true>;
 }, z.core.$strip>, z.ZodObject<{}, z.core.$strip>]>;
 export type ProgramRef = z.infer<typeof ProgramRefSchema>;
-/** One conversational turn between the user and the Smart Builder agent. */
+/**
+ * One conversational turn between the user and the Smart Builder agent. The
+ * content cap is 24k, not 4k: the client prepends a `=== SLOT MAP ===`
+ * preamble turn (~60 chars/slot) on refine, and a large legal program exceeded
+ * the old 4000 cap and 400'd every refine. Response `message` stays capped at
+ * RESPONSE_MESSAGE_MAX (4000) so echoed assistant turns always fit here.
+ */
 export declare const ConversationMessageSchema: z.ZodObject<{
     role: z.ZodEnum<{
         user: "user";
@@ -1314,7 +1277,6 @@ export type ConversationMessage = z.infer<typeof ConversationMessageSchema>;
  */
 export declare const SmartBuilderRequestSchema: z.ZodObject<{
     action: z.ZodEnum<{
-        converse: "converse";
         generate: "generate";
         refine: "refine";
     }>;

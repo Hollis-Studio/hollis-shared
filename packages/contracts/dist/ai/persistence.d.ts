@@ -106,6 +106,18 @@ export declare const AiAuditLogEntrySchema: z.ZodObject<{
     timestamp: z.ZodCoercedDate<unknown>;
 }, z.core.$strip>;
 export type AiAuditLogEntry = z.infer<typeof AiAuditLogEntrySchema>;
+/**
+ * The persisted draft payload blob (stored in a Prisma Json column).
+ *
+ * The bounds below are WRITE-SIDE HYGIENE only — they cap what a client may
+ * newly persist. The server's GET route must safeParse-quarantine a stored row
+ * and never throw on it: rows written before these bounds existed may violate
+ * them, and a hard parse would make an old draft unreadable forever.
+ *
+ * `phase` (including the converse-era 'conversing'), `questionGroups`, and
+ * `currentProgram` stay permissive for exactly that reason — converse-era rows
+ * are still in the database even though the flow is retired from the wire.
+ */
 export declare const SmartBuilderDraftPayloadSchema: z.ZodObject<{
     conversationHistory: z.ZodArray<z.ZodObject<{
         role: z.ZodEnum<{

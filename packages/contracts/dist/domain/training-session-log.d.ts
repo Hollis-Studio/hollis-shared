@@ -424,6 +424,7 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
     skippedExerciseIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
     deletedExerciseSlotIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
     healthSyncedAt: z.ZodOptional<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
+    correctedAt: z.ZodOptional<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
     exercises: z.ZodArray<z.ZodObject<{
         slotId: z.ZodOptional<z.ZodString>;
         canonicalExerciseId: z.ZodNullable<z.ZodString>;
@@ -654,6 +655,7 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
     skippedExerciseIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
     deletedExerciseSlotIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
     healthSyncedAt: z.ZodOptional<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
+    correctedAt: z.ZodOptional<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
     exercises: z.ZodArray<z.ZodObject<{
         slotId: z.ZodOptional<z.ZodString>;
         canonicalExerciseId: z.ZodNullable<z.ZodString>;

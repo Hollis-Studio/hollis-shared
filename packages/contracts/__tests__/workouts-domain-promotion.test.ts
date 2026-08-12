@@ -175,6 +175,69 @@ describe("Workouts domain promotion", () => {
     ).toBe(false);
   });
 
+  it("round-trips optional correctedAt (ISO string, null, absent) and rejects non-dates", () => {
+    const base = {
+      id: "session-1",
+      userId: "user-1",
+      programId: null,
+      programDayName: null,
+      gymProfileId: null,
+      startedAt: now,
+      completedAt: now,
+      isFreestyle: true,
+      isSubstitution: false,
+      status: "completed",
+      questionnaire: {
+        sleepHours: 8,
+        sleepQuality: 4,
+        energyLevel: 4,
+        stressLevel: 1,
+        sorenessLevel: 2,
+        hitMacrosYesterday: true,
+        hydrationLevel: 4,
+        goEasier: false,
+        autoFilledSleep: false,
+      },
+      totalVolumeKg: 0,
+      durationMinutes: 45,
+      exercises: [],
+    };
+
+    const withoutField = ActiveTrainingSessionLogSchema.safeParse(base);
+    expect(withoutField.success).toBe(true);
+    if (withoutField.success) {
+      expect(withoutField.data.correctedAt).toBeUndefined();
+    }
+
+    const iso = "2026-08-12T09:30:00.000Z";
+    const withIso = ActiveTrainingSessionLogSchema.safeParse({ ...base, correctedAt: iso });
+    expect(withIso.success).toBe(true);
+    if (withIso.success) {
+      expect(withIso.data.correctedAt).toBeInstanceOf(Date);
+      expect((withIso.data.correctedAt as Date).toISOString()).toBe(iso);
+    }
+
+    const withNull = ActiveTrainingSessionLogSchema.safeParse({ ...base, correctedAt: null });
+    expect(withNull.success).toBe(true);
+    if (withNull.success) {
+      expect(withNull.data.correctedAt).toBeNull();
+    }
+
+    // z.coerce.date() runs `new Date(value)`, so a NUMBER is accepted as epoch
+    // ms (42 → 1970-01-01T00:00:00.042Z) rather than rejected. Pinned as the
+    // real behavior so nobody "fixes" a test that asserted the opposite.
+    const withNumber = ActiveTrainingSessionLogSchema.safeParse({ ...base, correctedAt: 42 });
+    expect(withNumber.success).toBe(true);
+    if (withNumber.success) {
+      expect((withNumber.data.correctedAt as Date).toISOString()).toBe("1970-01-01T00:00:00.042Z");
+    }
+
+    // An unparseable string IS rejected (Invalid Date).
+    expect(
+      ActiveTrainingSessionLogSchema.safeParse({ ...base, correctedAt: "not-a-date" }).success,
+    ).toBe(false);
+  });
+
   it("declares onboardingCompletedAt on UserSettings and rejects non-numeric values", () => {
     const baseSettings = {
       defaultWeightUnit: "kg",

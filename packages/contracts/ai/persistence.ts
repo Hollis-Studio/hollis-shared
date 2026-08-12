@@ -68,19 +68,37 @@ export type AiAuditLogEntry = z.infer<typeof AiAuditLogEntrySchema>;
 // ===========================================================================
 const SmartBuilderConversationTurnSchema = z.object({
   role: z.enum(['user', 'assistant']),
-  content: z.string(),
+  // Mirrors the wire ConversationMessageSchema.content cap. Deliberately 24k
+  // rather than the 4000 response-message cap: verbose assistant replies
+  // written before that cap existed may already sit in stored drafts.
+  content: z.string().max(24_000),
   timestamp: z.number().finite().nonnegative(),
 });
 
-// The persisted draft payload blob (stored in Prisma Json column)
+/**
+ * The persisted draft payload blob (stored in a Prisma Json column).
+ *
+ * The bounds below are WRITE-SIDE HYGIENE only — they cap what a client may
+ * newly persist. The server's GET route must safeParse-quarantine a stored row
+ * and never throw on it: rows written before these bounds existed may violate
+ * them, and a hard parse would make an old draft unreadable forever.
+ *
+ * `phase` (including the converse-era 'conversing'), `questionGroups`, and
+ * `currentProgram` stay permissive for exactly that reason — converse-era rows
+ * are still in the database even though the flow is retired from the wire.
+ */
 export const SmartBuilderDraftPayloadSchema = z.object({
-  conversationHistory: z.array(SmartBuilderConversationTurnSchema),
+  conversationHistory: z.array(SmartBuilderConversationTurnSchema).max(50),
   currentProgram: z.unknown(),
   phase: z.enum(['input', 'conversing', 'generating', 'preview', 'refining']),
   questionGroups: z.unknown().optional(),
-  readyMessage: z.string().nullable().optional(),
+  // Stores a response `message`, so it shares the wire's 4000-char cap.
+  readyMessage: z.string().max(4000).nullable().optional(),
   selectedGymId: z.string().nullable().optional(),
-  userAnswers: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])),
+  userAnswers: z.record(
+    z.string(),
+    z.union([z.string().max(1000), z.number(), z.boolean()]),
+  ),
   createdAt: z.number().finite().nonnegative(), // epoch-ms inside blob
   updatedAt: z.number().finite().nonnegative(), // epoch-ms inside blob
 });

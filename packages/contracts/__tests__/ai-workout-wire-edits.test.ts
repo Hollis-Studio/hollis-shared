@@ -72,9 +72,22 @@ describe('EditOperationSchema', () => {
   });
 
   it('enforces numeric bounds on params', () => {
-    expect(EditOperationSchema.safeParse({ op: 'update_set_params', slot: { slotId: 'x' }, params: { sets: 0 } }).success).toBe(false);
-    expect(EditOperationSchema.safeParse({ op: 'update_set_params', slot: { slotId: 'x' }, params: { reps: -5 } }).success).toBe(false);
-    expect(EditOperationSchema.safeParse({ op: 'update_set_params', slot: { slotId: 'x' }, params: { rir: 99 } }).success).toBe(false);
+    const params = (p: Record<string, unknown>) =>
+      EditOperationSchema.safeParse({ op: 'update_set_params', slot: { slotId: 'x' }, params: p }).success;
+
+    expect(params({ sets: 0 })).toBe(false);
+    expect(params({ reps: -5 })).toBe(false);
+    expect(params({ rir: 99 })).toBe(false);
+
+    // alpha.49 prescription ceilings: reps 30, distance 500 km, speed 60 km/h.
+    // Deliberately tighter than the voice-logging bounds — voice records what
+    // happened, these bound what the builder may prescribe.
+    expect(params({ reps: 30 })).toBe(true);
+    expect(params({ reps: 31 })).toBe(false);
+    expect(params({ targetDistanceKm: 500 })).toBe(true);
+    expect(params({ targetDistanceKm: 501 })).toBe(false);
+    expect(params({ targetSpeedKmh: 60 })).toBe(true);
+    expect(params({ targetSpeedKmh: 61 })).toBe(false);
   });
 
   it('rejects an unknown op', () => {

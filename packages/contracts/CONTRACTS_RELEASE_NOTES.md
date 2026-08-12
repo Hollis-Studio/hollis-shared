@@ -1,5 +1,153 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.49 (2026-08-12)
+
+**Smart Builder wire hardening plus one additive session field for the
+Workouts "Edited" marker (issue hollis-workouts#10). Breaking for the
+Smart Builder wire only: prescription rep/cardio ceilings are tightened,
+name/message fields gain length caps, and the retired converse flow is
+removed (`action:"converse"`, the `questions` response branch,
+`AIQuestionSchema`/`AIQuestionGroupSchema`, and the deprecated
+`LegacyProgramEditSchema`). Everything outside `ai/workout-ai-wire.ts`
+and `ai/persistence.ts` is additive.**
+
+### `domain/training-session-log.ts`
+
+- **`TrainingSessionLogBaseSchema.correctedAt`** (new,
+  `z.coerce.date().nullable().optional()`) — set when the user corrects a
+  completed session after the fact (metadata edit, set edit, or set
+  delete); powers the "Edited" marker on history surfaces. Nullable so a
+  NULL Prisma column round-trips the serializer without a strip-list
+  entry; last-write-wins across devices (merge keeps the newest non-null
+  stamp). Inherited by both `ActiveTrainingSessionLogSchema` and
+  `TrainingSessionLogSchema`.
+
+### `ai/workout-ai-wire.ts` — new bound constants
+
+New prescription-side constants, deliberately separate from the
+voice-logging `REPS_MAX`/`DURATION_SECONDS_MAX`/`DISTANCE_KM_MAX` (which
+are unchanged): voice logging records what actually happened, these bound
+what the builder may *prescribe*. `PRESCRIBED_REPS_MAX` (30),
+`PRESCRIBED_CARDIO_DURATION_SECONDS_MAX` (86_400),
+`PRESCRIBED_CARDIO_DISTANCE_KM_MAX` (500),
+`PRESCRIBED_CARDIO_SPEED_KMH_MAX` (60), `RESPONSE_MESSAGE_MAX` (4000),
+`PROGRAM_NAME_MAX` (120), `DAY_NAME_MAX` (120),
+`PROGRAM_DESCRIPTION_MAX` (2000).
+
+### `ai/workout-ai-wire.ts` — names, descriptions, messages
+
+- **`SlottedDaySchema.name`** — now `.min(1).max(DAY_NAME_MAX)`. The
+  `min(1)` is safe because the persisted `ProgramDaySchema` already
+  requires a non-empty day name, so no legal saved program re-projects an
+  empty one on refine.
+- **`SlottedProgramSchema.name`** — now
+  `.min(1).max(PROGRAM_NAME_MAX)`.
+- **`SlottedProgramSchema.description`** — now
+  `.max(PROGRAM_DESCRIPTION_MAX)` with **no** `.min(1)`: the client's
+  program editor emits `description: ''` for description-less programs,
+  and a `min(1)` would 400 every refine on them.
+- **`SmartBuilderResponseSchema`** — all `message` fields (on the `ready`,
+  `program`, and `edits` branches) capped at `RESPONSE_MESSAGE_MAX`
+  (4000). This cap must stay at or below the request-side
+  `ConversationMessageSchema.content` cap, because the client feeds the
+  response message back as the next request's assistant turn.
+- **`rename_program`** — `name` and `description` gain
+  `.max(PROGRAM_NAME_MAX)` / `.max(PROGRAM_DESCRIPTION_MAX)`. Both keep
+  their existing `.min(1)`: a rename *to* empty is meaningless (unlike the
+  program schema's `description`, which legitimately round-trips `''`).
+- **`add_day.name`** and **`rename_or_reschedule_day.newName`** — gain
+  `.max(DAY_NAME_MAX)` on top of their existing `.min(1)`.
+
+### `ai/workout-ai-wire.ts` — rep ceiling unified at 30
+
+- **`LiftingSlottedExerciseSchema.reps`** — `.max(100)` →
+  `.max(PRESCRIBED_REPS_MAX)` (30).
+- **`EditParamsSchema.reps`** — `.max(REPS_MAX)` (200) →
+  `.max(PRESCRIBED_REPS_MAX)` (30). The wire now matches the product truth
+  already enforced by the server guards' `REPS_SANITY_MAX` and the client
+  `EDIT_BOUNDS`. `sets` (1..10) and the `rir` bounds are untouched.
+
+### `ai/workout-ai-wire.ts` — cardio maxima + floor reconciliation
+
+- **`CardioSlottedExerciseSchema.durationSeconds`** — `.min(60)` →
+  `.min(1).max(PRESCRIBED_CARDIO_DURATION_SECONDS_MAX)`. The persisted
+  `CardioTargetsSchema` floor is 1 s, so saved sub-60 s cardio targets
+  must re-project legally here; the old 60 s floor 400'd every refine for
+  those programs. The 60 s floor for AI-*generated* cardio remains a
+  server guard concern.
+- **`CardioSlottedExerciseSchema.targetDistanceKm`** — gains
+  `.max(PRESCRIBED_CARDIO_DISTANCE_KM_MAX)` (500).
+- **`CardioSlottedExerciseSchema.targetSpeedKmh`** — gains
+  `.max(PRESCRIBED_CARDIO_SPEED_KMH_MAX)` (60).
+- **`EditParamsSchema.targetDistanceKm`** — `.max(DISTANCE_KM_MAX)`
+  (1000) → `.max(PRESCRIBED_CARDIO_DISTANCE_KM_MAX)` (500).
+- **`EditParamsSchema.targetSpeedKmh`** — gains
+  `.max(PRESCRIBED_CARDIO_SPEED_KMH_MAX)` (60).
+- **`EditParamsSchema.durationSeconds`** — unchanged
+  (`.min(1).max(DURATION_SECONDS_MAX)`); one shared field serves timed
+  holds and cardio efforts, so per-exercise-type floors/ceilings stay a
+  server-guard concern. `TimedSlottedExerciseSchema` is untouched.
+
+### `ai/workout-ai-wire.ts` — request content cap raised
+
+- **`ConversationMessageSchema.content`** — `.max(4000)` →
+  `.max(24_000)`. The client prepends a `=== SLOT MAP ===` preamble turn
+  (~60 chars/slot) on refine, and a large legal program exceeded the old
+  4000 cap and 400'd every refine. The response `message` stays capped at
+  4000, so echoed assistant turns always fit.
+
+### `ai/workout-ai-wire.ts` — new 422 error envelopes
+
+- **`SmartBuilderHallucinationExhaustedEnvelopeSchema`** (new) and
+  **`SmartBuilderGuardExhaustedEnvelopeSchema`** (new) — 422 bodies for
+  the Smart Builder chat route in the Workouts server's
+  `{ok:false, err:{...}}` shape (NOT `errors/errorResponseSchema.ts`,
+  which is the `{success:false}` Health shape). Carry
+  `err.code: "HALLUCINATION_EXHAUSTED"` with
+  `details.invalidIds: string[]`, and `err.code: "AI_GUARD_EXHAUSTED"`
+  with `details.reason: string`, respectively. The route `.parse()`s these
+  before send; the client keys off `err.code` and the typed details.
+
+### `ai/workout-ai-wire.ts` — retirements (breaking)
+
+- **`SmartBuilderResponseSchema`** — the `type:"questions"` branch is
+  removed, along with the (unexported) `AIQuestionSchema` and
+  `AIQuestionGroupSchema`. The build-first redesign made the builder
+  generate a program immediately; it no longer asks question batteries.
+  The gym-setup wizard's own `GymSetupQuestionSchema` /
+  `GymSetupQuestionGroupSchema` / `GymSetupResponseSchema` `questions`
+  branch are **untouched** — that flow is live.
+- **`SmartBuilderRequestSchema.action`** —
+  `z.enum(["converse","generate","refine"])` →
+  `z.enum(["generate","refine"])`. The build-first redesign removed the
+  converse gate and the server has rejected `converse` since.
+- **`LegacyProgramEditSchema`** and its `LegacyProgramEdit` type are
+  deleted. Introduced as deprecated in alpha.27 for one cycle; grep
+  verified zero consumers across every suite repo, so the cycle is over.
+
+### `ai/persistence.ts`
+
+Write-side hygiene bounds on the Smart Builder draft blob. These cap what
+a client may newly persist — the server's GET route must
+`safeParse`-quarantine stored rows and never throw, because rows written
+before these bounds existed may violate them.
+
+- **`SmartBuilderConversationTurnSchema.content`** — gains
+  `.max(24_000)`, mirroring the wire content cap. Deliberately not 4000:
+  verbose assistant replies written before the response cap existed may
+  already sit in stored drafts.
+- **`SmartBuilderDraftPayloadSchema.conversationHistory`** — gains
+  `.max(50)`, matching the wire request history cap (the client trims to
+  24).
+- **`SmartBuilderDraftPayloadSchema.userAnswers`** — the string branch of
+  the value union gains `.max(1000)`.
+- **`SmartBuilderDraftPayloadSchema.readyMessage`** — gains `.max(4000)`;
+  it stores a response `message`.
+- **`phase`** (including the converse-era `'conversing'`),
+  **`questionGroups`**, and **`currentProgram`** are deliberately
+  **unchanged and permissive** — converse-era rows are still in the
+  database even though the flow is retired from the wire.
+
 ## 0.2.0-alpha.48 (2026-08-12)
 
 **Two additive optional fields for Workouts data durability (issue
