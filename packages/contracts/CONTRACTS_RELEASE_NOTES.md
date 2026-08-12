@@ -1,5 +1,41 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.48 (2026-08-12)
+
+**Two additive optional fields for Workouts data durability (issue
+hollis-workouts#9). No breaking changes.**
+
+### `domain/training-session-log.ts`
+
+- **`TrainingSessionLogBaseSchema.deletedExerciseSlotIds`** (new,
+  `z.array(z.string()).optional()`) — append-only tombstone set of
+  `SessionExercise.slotId` values the user deleted from the session. Makes an
+  exercise delete expressible cross-device: without it, the client's loss-free
+  merge union resurrects a deleted exercise whenever the other side still
+  carries confirmed sets. Inherited by both `ActiveTrainingSessionLogSchema`
+  and `TrainingSessionLogSchema`. Absent means "no exercise deletes recorded".
+
+### `domain/workouts-user-profile.ts`
+
+- **`UserSettingsSchema.onboardingCompletedAt`** (new,
+  `z.number().optional()`, epoch ms) — server-durable record that the user
+  completed Workouts onboarding. Declared for discoverability; the settings
+  schema is `.passthrough()` so older servers/clients round-trip it
+  regardless.
+
+## 0.2.0-alpha.47 (2026-08-11)
+
+**Exports-only change (published without release notes; documented
+retroactively).** Added package.json subpath exports + typesVersions for
+`./api/routes/auth`, `./error-sanitization`, and `./sentry-sanitization`;
+extended the smoke-import script to cover them. No schema shape changes.
+
+## 0.2.0-alpha.46 (2026-08-01)
+
+**Nutrition contracts.** Added meal-template, food-catalog, and
+food-entry-move nutrition contracts (see commit `85217ca`). Documented
+retroactively alongside alpha.47.
+
 ## 0.2.0-alpha.45 (2026-07-17)
 
 **Content-only change to static legal documents; no schema shape change.**

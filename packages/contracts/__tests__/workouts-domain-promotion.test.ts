@@ -1,4 +1,5 @@
 import {
+  ActiveTrainingSessionLogSchema,
   CardioSessionDataSchema,
   EQUIPMENT_TYPES,
   EquipmentTypeSchema,
@@ -6,6 +7,7 @@ import {
   MuscleGroupSchema,
   TrainingSessionLogSchema,
   UserProfileSchema,
+  UserSettingsSchema,
 } from "../domain";
 import {
   BaselineEntrySchema,
@@ -122,6 +124,96 @@ describe("Workouts domain promotion", () => {
 
     expect(TrainingSessionLogSchema.safeParse({ ...base, exercises: [exercise] }).success).toBe(true);
     expect(TrainingSessionLogSchema.safeParse({ ...base, exercises: [] }).success).toBe(false);
+  });
+
+  it("round-trips optional deletedExerciseSlotIds and defaults to absent", () => {
+    const base = {
+      id: "session-1",
+      userId: "user-1",
+      programId: null,
+      programDayName: null,
+      gymProfileId: null,
+      startedAt: now,
+      completedAt: null,
+      isFreestyle: true,
+      isSubstitution: false,
+      status: "active",
+      questionnaire: {
+        sleepHours: 8,
+        sleepQuality: 4,
+        energyLevel: 4,
+        stressLevel: 1,
+        sorenessLevel: 2,
+        hitMacrosYesterday: true,
+        hydrationLevel: 4,
+        goEasier: false,
+        autoFilledSleep: false,
+      },
+      totalVolumeKg: 0,
+      durationMinutes: 0,
+      exercises: [],
+    };
+
+    const withoutField = ActiveTrainingSessionLogSchema.safeParse(base);
+    expect(withoutField.success).toBe(true);
+    if (withoutField.success) {
+      expect(withoutField.data.deletedExerciseSlotIds).toBeUndefined();
+    }
+
+    const slotIds = ["session-exercise-slot-a", "session-exercise-slot-b"];
+    const withField = ActiveTrainingSessionLogSchema.safeParse({
+      ...base,
+      deletedExerciseSlotIds: slotIds,
+    });
+    expect(withField.success).toBe(true);
+    if (withField.success) {
+      expect(withField.data.deletedExerciseSlotIds).toEqual(slotIds);
+    }
+
+    expect(
+      ActiveTrainingSessionLogSchema.safeParse({ ...base, deletedExerciseSlotIds: [42] }).success,
+    ).toBe(false);
+  });
+
+  it("declares onboardingCompletedAt on UserSettings and rejects non-numeric values", () => {
+    const baseSettings = {
+      defaultWeightUnit: "kg",
+      defaultWeightMode: "absolute",
+      defaultDistanceUnit: "km",
+      progressionIncrementKg: 2.5,
+      repIncrement: 1,
+      goEasierPercent: 0.1,
+      defaultRestTimerSec: 90,
+      theme: "auto",
+      appleHealthConnected: false,
+      repThresholdForWeightJump: 12,
+      cardioProgressionFocus: "duration",
+      notificationsEnabled: true,
+      dailySummaryTime: "18:00",
+      weeklySummaryDay: 0,
+      workoutReminderEnabled: false,
+      workoutReminderTime: "17:00",
+    };
+
+    const withField = UserSettingsSchema.safeParse({
+      ...baseSettings,
+      onboardingCompletedAt: 1754870400000,
+    });
+    expect(withField.success).toBe(true);
+    if (withField.success) {
+      expect(withField.data.onboardingCompletedAt).toBe(1754870400000);
+    }
+
+    const withoutField = UserSettingsSchema.safeParse(baseSettings);
+    expect(withoutField.success).toBe(true);
+    if (withoutField.success) {
+      expect(withoutField.data.onboardingCompletedAt).toBeUndefined();
+    }
+
+    expect(
+      UserSettingsSchema.safeParse({ ...baseSettings, onboardingCompletedAt: "2026-08-12" })
+        .success,
+    ).toBe(false);
   });
 
   it("parses UserProfile fitness slice and rejects invalid fitness values", () => {

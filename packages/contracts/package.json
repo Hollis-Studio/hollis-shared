@@ -1,7 +1,7 @@
 {
   "_comment_BUILD_001": "RESOLVED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Add explicit package.json exports only for currently consumed public subpaths. Do not add wildcard exports or local compatibility barrels. Reviewed: 2026-05-12 (Phase E/F shared extraction cleanup)",
   "name": "@hollis-studio/contracts",
-  "version": "0.2.0-alpha.46",
+  "version": "0.2.0-alpha.48",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -33,6 +33,11 @@
       "types": "./dist/api/routes/workouts.d.ts",
       "import": "./dist/api/routes/workouts.js",
       "default": "./dist/api/routes/workouts.js"
+    },
+    "./api/routes/auth": {
+      "types": "./dist/api/routes/auth.d.ts",
+      "import": "./dist/api/routes/auth.js",
+      "default": "./dist/api/routes/auth.js"
     },
     "./domain": {
       "types": "./dist/domain/index.d.ts",
@@ -328,6 +333,16 @@
       "types": "./dist/errors/index.d.ts",
       "import": "./dist/errors/index.js",
       "default": "./dist/errors/index.js"
+    },
+    "./error-sanitization": {
+      "types": "./dist/errorSanitization.d.ts",
+      "import": "./dist/errorSanitization.js",
+      "default": "./dist/errorSanitization.js"
+    },
+    "./sentry-sanitization": {
+      "types": "./dist/sentrySanitization.d.ts",
+      "import": "./dist/sentrySanitization.js",
+      "default": "./dist/sentrySanitization.js"
     }
   },
   "scripts": {
@@ -373,6 +388,9 @@
       "api": [
         "dist/api/index.d.ts"
       ],
+      "api/routes/auth": [
+        "dist/api/routes/auth.d.ts"
+      ],
       "api/*": [
         "dist/api/*.d.ts"
       ],
@@ -393,6 +411,9 @@
       ],
       "errors/*": [
         "dist/errors/*.d.ts"
+      ],
+      "error-sanitization": [
+        "dist/errorSanitization.d.ts"
       ],
       "password": [
         "dist/password/index.d.ts"
@@ -423,6 +444,9 @@
       ],
       "schemas/*": [
         "dist/schemas/*.d.ts"
+      ],
+      "sentry-sanitization": [
+        "dist/sentrySanitization.d.ts"
       ],
       "stripe": [
         "dist/stripe/index.d.ts"

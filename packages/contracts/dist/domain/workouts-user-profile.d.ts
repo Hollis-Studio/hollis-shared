@@ -164,6 +164,7 @@ export declare const UserSettingsSchema: z.ZodObject<{
         }, z.core.$strip>>;
     }, z.core.$strip>>;
     simpleModeEnabled: z.ZodOptional<z.ZodBoolean>;
+    onboardingCompletedAt: z.ZodOptional<z.ZodNumber>;
 }, z.core.$loose>;
 export type UserSettings = z.infer<typeof UserSettingsSchema>;
 export declare const WorkoutsUserProfileSchema: z.ZodObject<{
@@ -302,6 +303,7 @@ export declare const WorkoutsUserProfileSchema: z.ZodObject<{
             }, z.core.$strip>>;
         }, z.core.$strip>>;
         simpleModeEnabled: z.ZodOptional<z.ZodBoolean>;
+        onboardingCompletedAt: z.ZodOptional<z.ZodNumber>;
     }, z.core.$loose>;
     entitlements: z.ZodOptional<z.ZodNullable<z.ZodObject<{
         aiTier: z.ZodOptional<z.ZodEnum<{
@@ -472,6 +474,7 @@ export declare const WorkoutsUserProfilePutBodySchema: z.ZodObject<{
             }, z.core.$strip>>;
         }, z.core.$strip>>;
         simpleModeEnabled: z.ZodOptional<z.ZodBoolean>;
+        onboardingCompletedAt: z.ZodOptional<z.ZodNumber>;
     }, z.core.$loose>;
     entitlements: z.ZodOptional<z.ZodNullable<z.ZodObject<{
         aiTier: z.ZodOptional<z.ZodEnum<{

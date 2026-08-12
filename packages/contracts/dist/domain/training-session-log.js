@@ -217,6 +217,16 @@ const TrainingSessionLogBaseSchema = z.object({
     programPhase: ProgramPhaseSchema.optional(),
     skippedExerciseIds: z.array(z.string()).optional(),
     /**
+     * Append-only tombstone set of SessionExercise.slotId values the user has
+     * deleted from this session. Makes an exercise delete expressible
+     * cross-device: without it, the client's loss-free merge union resurrects a
+     * deleted exercise whenever the other side still carries confirmed sets.
+     * Merge semantics (client): union both sides' tombstones on every merge
+     * branch, and filter tombstoned slots out of the exercise union before any
+     * has-logged-work rescue. Absent means "no exercise deletes recorded".
+     */
+    deletedExerciseSlotIds: z.array(z.string()).optional(),
+    /**
      * When this session's completion was successfully written to the platform
      * Health store (Apple Health / Health Connect). Persisted on the synced session
      * record so the Health-write dedup guard survives reinstall: the device-local

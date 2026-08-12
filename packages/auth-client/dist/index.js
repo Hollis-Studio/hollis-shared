@@ -43,8 +43,11 @@ export function createAuthClient(opts) {
             return verifyTokenLocally(token, jwksSecret, audience);
         }
         // Slow path: delegate to Identity Service /verify endpoint.
-        // TODO(W6h): Replace this with JWKS-fetching local verification once the
-        // Identity Service exposes /.well-known/jwks.json and key rotation is stable.
+        // TODO(W6h): Replace this with JWKS-fetching local verification (RS256/asymmetric)
+        // once the Identity Service is deployed with RS256, /.well-known/jwks.json is
+        // stable, and key rotation is implemented. This is DEFERRED future scope — do
+        // not implement until then. For HS256 (current Workouts production model),
+        // provide jwksSecret above to use the local fast path instead.
         return verifyTokenRemote(token, identityServiceUrl, audience, verifyTimeoutMs);
     }
     function requireAuth() {
@@ -76,13 +79,23 @@ export function createAuthClient(opts) {
 // LOCAL VERIFICATION (fast path)
 // ============================================================================
 /**
- * Verifies a JWT locally using a known secret or public key.
+ * Verifies a JWT locally using a shared HS256 secret.
+ * This is the SUPPORTED production verification path for Hollis Workouts.
+ *
+ * Validates:
+ * - Signature: HS256 pinned — rejects RS256 and all other algorithms.
+ * - Expiry: jsonwebtoken enforces `exp` by default.
+ * - Audience: checked by parseClaims against the required audience string.
+ * - Claims shape: parseClaims runs AccessTokenClaimsSchema (requires `userId`,
+ *   `type`, `jti`, `aud`). The Workouts middleware additionally checks
+ *   `type === "access"` to reject refresh and mfa_pending tokens.
+ *
  * Used when `jwksSecret` is provided to createAuthClient.
  */
 function verifyTokenLocally(token, secret, audience) {
     let decoded;
     try {
-        decoded = jwt.verify(token, secret);
+        decoded = jwt.verify(token, secret, { algorithms: ["HS256"] });
     }
     catch (e) {
         const error = {

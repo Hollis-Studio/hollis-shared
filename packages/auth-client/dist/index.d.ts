@@ -70,14 +70,24 @@ export interface AuthClientOptions {
      */
     audience: Audience;
     /**
-     * Optional: provide a PEM-encoded RSA public key (or symmetric secret) to
-     * verify JWT signatures locally without a network call.
-     * When omitted, verification delegates to the Identity Service /verify endpoint.
+     * Shared HMAC-SHA256 secret (or PEM RSA public key) for local JWT verification.
+     * When provided, tokens are verified locally without a network call to the
+     * Identity Service — this is the SUPPORTED production verification model for
+     * Hollis Workouts (HS256 shared-secret mode).
      *
-     * TODO(W6h): Implement JWKS-fetching path — fetch public keys lazily from
-     * `identityServiceUrl + '/.well-known/jwks.json'` and cache them with
-     * a configurable TTL. This eliminates the per-request network hop for local
-     * signature verification while remaining key-rotation aware.
+     * For HS256 (current Workouts production mode): set this to the value of
+     * `IDENTITY_JWT_SECRET`, which must be provisioned bit-for-bit identical to
+     * the Identity Service's `JWT_SECRET`. The auth-client pins to `algorithms: ["HS256"]`
+     * and verifies expiry, audience, and required claims locally.
+     *
+     * When omitted, verification delegates to the Identity Service /verify endpoint
+     * (remote slow path — one HTTP call per request).
+     *
+     * TODO(W6h): JWKS-fetching path (RS256 asymmetric) is DEFERRED future scope.
+     * Implement by fetching public keys lazily from
+     * `identityServiceUrl + '/.well-known/jwks.json'` with a configurable cache TTL.
+     * This is NOT built yet — do not implement until Identity is deployed with RS256
+     * and key rotation is stable.
      */
     jwksSecret?: string;
     /**

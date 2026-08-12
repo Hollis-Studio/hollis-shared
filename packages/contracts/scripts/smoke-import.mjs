@@ -15,6 +15,9 @@ const imports = [
   ["@hollis-studio/contracts/password", ["passwordSchema"]],
   ["@hollis-studio/contracts/primitives", ["VolumeLevelSchema"]],
   ["@hollis-studio/contracts/errors", ["ApiError"]],
+  ["@hollis-studio/contracts/api/routes/auth", ["AUTH_ROUTES"]],
+  ["@hollis-studio/contracts/error-sanitization", ["sanitizeErrorMessage"]],
+  ["@hollis-studio/contracts/sentry-sanitization", ["sanitizeSentryEvent"]],
 ];
 
 for (const [specifier, expectedExports] of imports) {

@@ -121,6 +121,14 @@ export const UserSettingsSchema = z.object({
     }).optional(),
   }).optional(),
   simpleModeEnabled: z.boolean().optional(),
+  /**
+   * Epoch-ms timestamp of when the user completed Workouts onboarding.
+   * Server-durable record of completion: sign-out wipes the device-local
+   * preference mirror, so a returning/reinstalling user is re-onboarded unless
+   * this survives on the synced profile. Declared for discoverability — the
+   * schema is .passthrough() so older servers/clients round-trip it regardless.
+   */
+  onboardingCompletedAt: z.number().optional(),
 }).passthrough();
 export type UserSettings = z.infer<typeof UserSettingsSchema>;
 
