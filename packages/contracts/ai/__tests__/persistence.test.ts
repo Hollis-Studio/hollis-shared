@@ -9,7 +9,11 @@
  * them.
  */
 
-import { SmartBuilderDraftPayloadSchema } from "../persistence.js";
+import {
+  AiFeatureModelUsageSchema,
+  AiFeatureUsageSchema,
+  SmartBuilderDraftPayloadSchema,
+} from "../persistence.js";
 
 const turn = (content: string, role: "user" | "assistant" = "user") => ({
   role,
@@ -85,6 +89,58 @@ describe("SmartBuilderDraftPayloadSchema", () => {
     ).toBe(false);
   });
 
+  it("accepts pinnedConstraints and stays optional for pre-alpha.51 rows (workouts #60c)", () => {
+    const pin = {
+      id: "c-9f2a",
+      text: "never program deadlifts on a Monday",
+      label: "Never deadlifts on Monday",
+      kind: "prohibition" as const,
+      pinnedAt: 1_754_870_400_000,
+    };
+    // Absent (every pre-alpha.51 row) parses — covered by basePayload above.
+    expect(
+      SmartBuilderDraftPayloadSchema.safeParse({
+        ...basePayload,
+        pinnedConstraints: [pin, { ...pin, id: "c-1b3c", kind: "schedule" as const }],
+      }).success,
+    ).toBe(true);
+  });
+
+  it("bounds pinnedConstraints: text 1000, label 120, 20 entries, known kinds only", () => {
+    const pin = (over: Record<string, unknown> = {}) => ({
+      id: "c-9f2a",
+      text: "no squats",
+      label: "No squats",
+      kind: "prohibition",
+      pinnedAt: 1_754_870_400_000,
+      ...over,
+    });
+    expect(
+      SmartBuilderDraftPayloadSchema.safeParse({
+        ...basePayload,
+        pinnedConstraints: [pin({ text: "x".repeat(1001) })],
+      }).success,
+    ).toBe(false);
+    expect(
+      SmartBuilderDraftPayloadSchema.safeParse({
+        ...basePayload,
+        pinnedConstraints: [pin({ label: "x".repeat(121) })],
+      }).success,
+    ).toBe(false);
+    expect(
+      SmartBuilderDraftPayloadSchema.safeParse({
+        ...basePayload,
+        pinnedConstraints: [pin({ kind: "vendetta" })],
+      }).success,
+    ).toBe(false);
+    expect(
+      SmartBuilderDraftPayloadSchema.safeParse({
+        ...basePayload,
+        pinnedConstraints: Array.from({ length: 21 }, (_, i) => pin({ id: `c-${i}` })),
+      }).success,
+    ).toBe(false);
+  });
+
   it("bounds userAnswers string values and readyMessage", () => {
     expect(
       SmartBuilderDraftPayloadSchema.safeParse({
@@ -104,5 +160,30 @@ describe("SmartBuilderDraftPayloadSchema", () => {
         readyMessage: "x".repeat(4001),
       }).success,
     ).toBe(false);
+  });
+});
+
+describe("AiFeatureModelUsageSchema / AiFeatureUsageSchema token classes (workouts #62)", () => {
+  const base = { input: 100, output: 40, total: 140, calls: 2 };
+
+  it("legacy rows without cached/audio classes still parse (alpha.51 back-compat)", () => {
+    expect(AiFeatureModelUsageSchema.safeParse(base).success).toBe(true);
+    expect(AiFeatureUsageSchema.safeParse(base).success).toBe(true);
+  });
+
+  it("accepts the enriched token classes on both per-model and per-feature shapes", () => {
+    const enriched = { ...base, cachedInput: 60, audioInput: 900, cachedAudioInput: 300 };
+    expect(AiFeatureModelUsageSchema.safeParse(enriched).success).toBe(true);
+    expect(
+      AiFeatureUsageSchema.safeParse({
+        ...enriched,
+        byModel: { "gemini-3.6-flash": enriched },
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects negative or fractional token-class counts", () => {
+    expect(AiFeatureModelUsageSchema.safeParse({ ...base, cachedInput: -1 }).success).toBe(false);
+    expect(AiFeatureModelUsageSchema.safeParse({ ...base, audioInput: 1.5 }).success).toBe(false);
   });
 });

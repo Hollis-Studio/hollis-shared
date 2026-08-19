@@ -938,6 +938,15 @@ export const PrescriptionNarrationRequestSchema = z.object({
   action: PrescriptionActionSchema,
   targetSummary: z.string().max(300),
   displayUnit: z.enum(["kg", "lbs"]),
+  /**
+   * The deterministic engine's own confidence for this decision
+   * (PrescriptionDecision.confidence, sigma/e1rm-based). When present, the
+   * server caps the narration's self-reported confidence to it directly
+   * instead of inferring a ceiling from action + dropSteps (the
+   * calibrate-only heuristic). Optional for back-compat, alpha.51
+   * (workouts #39 residue).
+   */
+  engineConfidence: z.enum(["low", "medium", "high"]).optional(),
 });
 export type PrescriptionNarrationRequest = z.infer<typeof PrescriptionNarrationRequestSchema>;
 

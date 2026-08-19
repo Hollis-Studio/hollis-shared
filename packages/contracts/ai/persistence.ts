@@ -87,6 +87,23 @@ const SmartBuilderConversationTurnSchema = z.object({
  * `currentProgram` stay permissive for exactly that reason — converse-era rows
  * are still in the database even though the flow is retired from the wire.
  */
+/**
+ * A standing instruction the user gave mid-conversation that the builder
+ * agent holds explicitly and re-injects into every model request so the
+ * client-side history trim cannot drop it (workouts #60c, 2026-08-19).
+ * `id` is content-derived on the client, so restating a rule is idempotent.
+ */
+export const SmartBuilderPinnedConstraintSchema = z.object({
+  id: z.string().min(1).max(64),
+  /** The instruction as the user phrased it. */
+  text: z.string().min(1).max(1000),
+  /** Truncated display form for the chip UI. */
+  label: z.string().min(1).max(120),
+  kind: z.enum(['prohibition', 'preference', 'limitation', 'schedule']),
+  pinnedAt: z.number().finite().nonnegative(), // epoch-ms
+});
+export type SmartBuilderPinnedConstraint = z.infer<typeof SmartBuilderPinnedConstraintSchema>;
+
 export const SmartBuilderDraftPayloadSchema = z.object({
   conversationHistory: z.array(SmartBuilderConversationTurnSchema).max(50),
   currentProgram: z.unknown(),
@@ -99,6 +116,14 @@ export const SmartBuilderDraftPayloadSchema = z.object({
     z.string(),
     z.union([z.string().max(1000), z.number(), z.boolean()]),
   ),
+  /**
+   * Optional for back-compat (rows and clients predate it, alpha.51). NOTE:
+   * because this schema strips unknown keys, a client OLDER than alpha.51
+   * that round-trips a draft will silently drop another device's pins — the
+   * client must treat pins as device-authoritative until its own contracts
+   * pin is >= alpha.51.
+   */
+  pinnedConstraints: z.array(SmartBuilderPinnedConstraintSchema).max(20).optional(),
   createdAt: z.number().finite().nonnegative(), // epoch-ms inside blob
   updatedAt: z.number().finite().nonnegative(), // epoch-ms inside blob
 });
@@ -214,11 +239,22 @@ export type AiTokenUsageUpsert = z.infer<typeof AiTokenUsageUpsertSchema>;
 // Enriched per-feature usage shape (v2). Server records input/output split,
 // call counts, and per-model breakdown. Legacy rows store a bare `number`
 // (cumulative total) per feature; readers must normalize both shapes.
+// Token-class fields beyond input/output are optional for back-compat with
+// rows written before alpha.51: readers treat a missing field as 0. They
+// mirror the pricing dimensions in aiPricing.ts (cached text/image/video
+// input, audio input, cached audio input) so recorded usage can carry every
+// class its price row knows about (workouts #62).
 export const AiFeatureModelUsageSchema = z.object({
   input: z.number().int().nonnegative(),
   output: z.number().int().nonnegative(),
   total: z.number().int().nonnegative(),
   calls: z.number().int().nonnegative(),
+  /** Prompt tokens served from context cache (text / image / video). */
+  cachedInput: z.number().int().nonnegative().optional(),
+  /** Non-cached AUDIO prompt tokens, where the model prices audio apart. */
+  audioInput: z.number().int().nonnegative().optional(),
+  /** Audio prompt tokens served from context cache. */
+  cachedAudioInput: z.number().int().nonnegative().optional(),
 });
 export type AiFeatureModelUsage = z.infer<typeof AiFeatureModelUsageSchema>;
 
@@ -227,6 +263,9 @@ export const AiFeatureUsageSchema = z.object({
   output: z.number().int().nonnegative(),
   total: z.number().int().nonnegative(),
   calls: z.number().int().nonnegative(),
+  cachedInput: z.number().int().nonnegative().optional(),
+  audioInput: z.number().int().nonnegative().optional(),
+  cachedAudioInput: z.number().int().nonnegative().optional(),
   byModel: z.record(z.string(), AiFeatureModelUsageSchema).default({}),
 });
 export type AiFeatureUsage = z.infer<typeof AiFeatureUsageSchema>;

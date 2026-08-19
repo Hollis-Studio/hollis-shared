@@ -410,6 +410,23 @@ describe("PrescriptionNarrationRequestSchema / PrescriptionNarrationResponseSche
     ).toBe(false);
   });
 
+  it("engineConfidence is optional and bounded to the confidence enum (alpha.51, workouts #39)", () => {
+    const base = {
+      exerciseName: "Bench Press",
+      dropSteps: [],
+      action: "maintain",
+      targetSummary: "95 kg x 5",
+      displayUnit: "kg",
+    };
+    // Absent (pre-alpha.51 clients) parses — covered by the requests above.
+    expect(
+      PrescriptionNarrationRequestSchema.safeParse({ ...base, engineConfidence: "medium" }).success,
+    ).toBe(true);
+    expect(
+      PrescriptionNarrationRequestSchema.safeParse({ ...base, engineConfidence: "certain" }).success,
+    ).toBe(false);
+  });
+
   it("accepts a valid narration response", () => {
     expect(
       PrescriptionNarrationResponseSchema.safeParse({

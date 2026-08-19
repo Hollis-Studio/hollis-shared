@@ -1,5 +1,36 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.51 (2026-08-19)
+
+**Three pending additive fields from the Workouts 2026-08-19 batch (§AD
+decision round). Purely additive — every new field is optional; no existing
+payload changes validity.**
+
+### `ai/persistence.ts`
+
+- **`SmartBuilderPinnedConstraintSchema`** (new) and
+  **`SmartBuilderDraftPayloadSchema.pinnedConstraints`** (new, optional,
+  max 20) — standing user instructions the builder agent pins and re-injects
+  past the client history trim (workouts #60c). Persisting them on the draft
+  makes pins cross-device durable. NOTE: the payload schema strips unknown
+  keys, so a client older than alpha.51 that round-trips a draft silently
+  drops another device's pins — clients must treat pins as
+  device-authoritative until their own pin is >= alpha.51.
+- **`AiFeatureModelUsageSchema` / `AiFeatureUsageSchema`** gain optional
+  `cachedInput`, `audioInput`, `cachedAudioInput` token-class counts
+  (workouts #62) — mirrors the aiPricing dimensions (cached text/image/video
+  input, audio input, cached audio input) so recorded usage can carry every
+  class its price row knows about. Readers treat a missing field as 0.
+
+### `ai/workout-ai-wire.ts`
+
+- **`PrescriptionNarrationRequestSchema.engineConfidence`** (new, optional,
+  `low | medium | high`) — carries the deterministic engine's own
+  `PrescriptionDecision.confidence` so the server caps narration
+  self-reports to it directly instead of inferring a ceiling from
+  action + dropSteps (workouts #39 residue; removes the calibrate-only
+  heuristic once both sides adopt it).
+
 ## 0.2.0-alpha.50 (2026-08-12)
 
 **One-line fix from the alpha.49 dual audit (issue hollis-workouts#10):
