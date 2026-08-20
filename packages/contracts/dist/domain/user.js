@@ -235,6 +235,49 @@ export const USER_TIER_LABELS = {
     CONCIERGE: "Concierge",
 };
 /**
+ * Sponsored blood biomarker panel program (offer sheet v3.1.0, effective 2026-08-19).
+ *
+ * Hollis Health pays an independent third-party health-testing company's membership
+ * fee on behalf of CORE and CONCIERGE members. The account belongs to the member;
+ * the testing company and its own independent licensed providers order, perform, and
+ * interpret everything. Hollis receives results only if the member chooses to share
+ * an exported report, and then only to display and organize it.
+ *
+ * These values track the SPONSORSHIP — whether Hollis is paying — and nothing about
+ * the member's testing itself. Cadence, panel contents, and scheduling are governed
+ * by the testing company's terms, not ours, and are deliberately not modelled here.
+ */
+export const SPONSORED_PANEL_STATUSES = [
+    "NOT_ENROLLED",
+    "ENROLLED",
+    "DECLINED",
+    "LAPSED",
+];
+export const SponsoredPanelStatusSchema = z.enum(SPONSORED_PANEL_STATUSES);
+export const SPONSORED_PANEL_STATUS = {
+    NOT_ENROLLED: "NOT_ENROLLED",
+    ENROLLED: "ENROLLED",
+    DECLINED: "DECLINED",
+    LAPSED: "LAPSED",
+};
+export const DEFAULT_SPONSORED_PANEL_STATUS = SPONSORED_PANEL_STATUS.NOT_ENROLLED;
+/** Human-readable labels for sponsorship status */
+export const SPONSORED_PANEL_STATUS_LABELS = {
+    NOT_ENROLLED: "Not enrolled",
+    ENROLLED: "Enrolled",
+    DECLINED: "Declined by member",
+    LAPSED: "Lapsed",
+};
+/** Tiers at which Hollis sponsors the panel membership. */
+export const SPONSORED_PANEL_TIERS = [
+    USER_TIER.CORE,
+    USER_TIER.CONCIERGE,
+];
+/** Whether a tier is eligible for Hollis-sponsored panel membership. */
+export function isSponsoredPanelTier(tier) {
+    return SPONSORED_PANEL_TIERS.includes(tier);
+}
+/**
  * Monthly pricing for each tier in whole dollars.
  * Note: These are dollar amounts (e.g., 749 = $749), not cents.
  * Convert to cents with `USER_TIER_PRICES_DOLLARS[tier] * 100` when needed for Stripe.

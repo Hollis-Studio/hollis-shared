@@ -1,8 +1,8 @@
 {
     "meta": {
-        "version": "3.0.0",
-        "effectiveDate": "2026-07-17",
-        "status": "draft"
+        "version": "3.1.0",
+        "effectiveDate": "2026-08-19",
+        "status": "active"
     },
     "terms": [
         {
@@ -27,8 +27,9 @@
         "noticePeriod": "30 days' written notice before the end of the initial term or month-to-month termination date.",
         "pauseRights": "Only if expressly permitted in the signed Membership Agreement or an approved written addendum; the signed agreement controls duration, billing effect, and term-extension effect.",
         "earlyTermination": "If the member terminates early other than an approved or legally required cancellation, the remaining discounted contract value through the end date remains due as stated in the signed Membership Agreement.",
-        "thirdPartyDisclosure": "Independent physician, laboratory, imaging, pharmacy, and other third-party clinical charges are excluded from Hollis Health membership fees and may be billed separately by the applicable independent provider.",
-        "partnerFacilityDisclosure": "Hollis Health is not a medical provider, does not practice medicine, and does not bill for or sell medical services. Members receive medical care from independent licensed providers of their choosing, including providers in the Hollis referral network."
+        "thirdPartyDisclosure": "Independent physician, laboratory, imaging, pharmacy, and other third-party clinical charges are excluded from Hollis Health membership fees and may be billed separately by the applicable independent provider. Where Hollis Health sponsors a third-party testing membership as a membership benefit, Hollis Health pays that subscription fee on the member's behalf; the member holds the account directly with that company under its own terms, and that company and its independent licensed providers remain solely responsible for ordering, performing, and interpreting any testing.",
+        "partnerFacilityDisclosure": "Hollis Health is not a medical provider, does not practice medicine, and does not bill for or sell medical services. Members receive medical care from independent licensed providers of their choosing, including providers in the Hollis referral network.",
+        "sponsoredTestingBenefit": "The sponsored blood biomarker panel membership is included at the CORE and CONCIERGE tiers only. It is a standard membership with an independent third-party testing company, and testing cadence — twice yearly — along with panel contents, scheduling, and all clinical aspects are governed by that company's own terms and conditions, not by Hollis Health. Hollis Health is not the provider of any testing, does not select the panel, does not schedule collection, does not receive results, and does not interpret or monitor results. The benefit is not refundable, creditable, or exchangeable if declined or unused, and it does not renew once the member's Hollis membership lapses or moves to a tier at which it is not included. The member's account with the testing company is the member's own and must be cancelled by the member."
     },
     "tiers": {
         "ESSENTIALS": {
@@ -41,14 +42,14 @@
             "displayName": "Core",
             "baseMonthlyPriceDollars": 1349,
             "tagline": "Higher frequency, deeper insight",
-            "publicDescription": "Four private coaching sessions per week with recovery access, coach-led week-by-week macro and micronutrient progression, priority care coordination, and biomarker-informed planning when outside labs are shared with consent.",
+            "publicDescription": "Four private coaching sessions per week with recovery access, coach-led week-by-week macro and micronutrient progression, priority care coordination, a Hollis-sponsored 160+ biomarker blood panel membership, and biomarker-informed planning when results are shared with consent.",
             "isPopular": true
         },
         "CONCIERGE": {
             "displayName": "Concierge",
             "baseMonthlyPriceDollars": 1949,
             "tagline": "Full-spectrum coaching and coordination",
-            "publicDescription": "Our most comprehensive membership: six private coaching sessions per week, dedicated care coordination support, recovery access, and dashboard integration for outside medical data shared with consent."
+            "publicDescription": "Our most comprehensive membership: six private coaching sessions per week, dedicated care coordination support, recovery access, a Hollis-sponsored 160+ biomarker blood panel membership, and dashboard integration for outside medical data shared with consent."
         }
     },
     "comparisonRows": [
@@ -83,6 +84,16 @@
             }
         },
         {
+            "key": "sponsoredBiomarkerPanel",
+            "category": "Health data",
+            "label": "Sponsored blood biomarker panel (160+ biomarkers, twice yearly)",
+            "values": {
+                "ESSENTIALS": "Not included",
+                "CORE": "Included — sponsored by Hollis",
+                "CONCIERGE": "Included — sponsored by Hollis"
+            }
+        },
+        {
             "key": "dashboardAccess",
             "category": "Technology",
             "label": "Health progress dashboard",
@@ -95,7 +106,7 @@
         {
             "key": "careCoordination",
             "category": "Coordination",
-            "label": "Care coordination support",
+            "label": "Member coordination and scheduling support",
             "values": {
                 "ESSENTIALS": "Standard",
                 "CORE": "Priority",
@@ -105,7 +116,7 @@
     ],
     "separatelyBilledThirdPartyItems": [
         "Medical consultations and clinical evaluations with independent providers",
-        "Laboratory panels, lab draw fees, and laboratory interpretation by independent providers",
+        "Laboratory panels, lab draw fees, and laboratory interpretation by independent providers, except the sponsored biomarker panel membership where expressly included at the member's tier",
         "Imaging, CGM sensors, IV therapy, and related services furnished by independent providers",
         "Prescription items and pharmacy charges",
         "Specialist referrals or services outside the scope of the membership program",

@@ -79,6 +79,10 @@ export declare const ADMIN_PATIENT_ROUTES: {
     readonly updateGoals: (userId: string) => `/api/admin/patients/${string}/goals`;
     /** PUT - Update patient admin controls */
     readonly updateAdminControls: (userId: string) => `/api/admin/patients/${string}/admin-controls`;
+    /** GET - Sponsored blood biomarker panel record (sponsorship status only) */
+    readonly sponsoredPanel: (userId: string) => `/api/admin/patients/${string}/sponsored-panel`;
+    /** PUT - Update sponsored blood biomarker panel record */
+    readonly updateSponsoredPanel: (userId: string) => `/api/admin/patients/${string}/sponsored-panel`;
     /** POST - Archive (soft-delete) a patient */
     readonly archive: (userId: string) => `/api/admin/patients/${string}/archive`;
     /** PUT - Update patient daily metrics */
@@ -667,6 +671,10 @@ export declare const ADMIN_API_ROUTES: {
         readonly updateGoals: (userId: string) => `/api/admin/patients/${string}/goals`;
         /** PUT - Update patient admin controls */
         readonly updateAdminControls: (userId: string) => `/api/admin/patients/${string}/admin-controls`;
+        /** GET - Sponsored blood biomarker panel record (sponsorship status only) */
+        readonly sponsoredPanel: (userId: string) => `/api/admin/patients/${string}/sponsored-panel`;
+        /** PUT - Update sponsored blood biomarker panel record */
+        readonly updateSponsoredPanel: (userId: string) => `/api/admin/patients/${string}/sponsored-panel`;
         /** POST - Archive (soft-delete) a patient */
         readonly archive: (userId: string) => `/api/admin/patients/${string}/archive`;
         /** PUT - Update patient daily metrics */

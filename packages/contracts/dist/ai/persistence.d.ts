@@ -118,6 +118,25 @@ export type AiAuditLogEntry = z.infer<typeof AiAuditLogEntrySchema>;
  * `currentProgram` stay permissive for exactly that reason — converse-era rows
  * are still in the database even though the flow is retired from the wire.
  */
+/**
+ * A standing instruction the user gave mid-conversation that the builder
+ * agent holds explicitly and re-injects into every model request so the
+ * client-side history trim cannot drop it (workouts #60c, 2026-08-19).
+ * `id` is content-derived on the client, so restating a rule is idempotent.
+ */
+export declare const SmartBuilderPinnedConstraintSchema: z.ZodObject<{
+    id: z.ZodString;
+    text: z.ZodString;
+    label: z.ZodString;
+    kind: z.ZodEnum<{
+        limitation: "limitation";
+        schedule: "schedule";
+        prohibition: "prohibition";
+        preference: "preference";
+    }>;
+    pinnedAt: z.ZodNumber;
+}, z.core.$strip>;
+export type SmartBuilderPinnedConstraint = z.infer<typeof SmartBuilderPinnedConstraintSchema>;
 export declare const SmartBuilderDraftPayloadSchema: z.ZodObject<{
     conversationHistory: z.ZodArray<z.ZodObject<{
         role: z.ZodEnum<{
@@ -139,6 +158,18 @@ export declare const SmartBuilderDraftPayloadSchema: z.ZodObject<{
     readyMessage: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     selectedGymId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     userAnswers: z.ZodRecord<z.ZodString, z.ZodUnion<readonly [z.ZodString, z.ZodNumber, z.ZodBoolean]>>;
+    pinnedConstraints: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        text: z.ZodString;
+        label: z.ZodString;
+        kind: z.ZodEnum<{
+            limitation: "limitation";
+            schedule: "schedule";
+            prohibition: "prohibition";
+            preference: "preference";
+        }>;
+        pinnedAt: z.ZodNumber;
+    }, z.core.$strip>>>;
     createdAt: z.ZodNumber;
     updatedAt: z.ZodNumber;
 }, z.core.$strip>;
@@ -165,6 +196,18 @@ export declare const SmartBuilderDraftUpsertSchema: z.ZodObject<{
         readyMessage: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         selectedGymId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         userAnswers: z.ZodRecord<z.ZodString, z.ZodUnion<readonly [z.ZodString, z.ZodNumber, z.ZodBoolean]>>;
+        pinnedConstraints: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            text: z.ZodString;
+            label: z.ZodString;
+            kind: z.ZodEnum<{
+                limitation: "limitation";
+                schedule: "schedule";
+                prohibition: "prohibition";
+                preference: "preference";
+            }>;
+            pinnedAt: z.ZodNumber;
+        }, z.core.$strip>>>;
         createdAt: z.ZodNumber;
         updatedAt: z.ZodNumber;
     }, z.core.$strip>;
@@ -194,6 +237,18 @@ export declare const SmartBuilderDraftRecordSchema: z.ZodObject<{
         readyMessage: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         selectedGymId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         userAnswers: z.ZodRecord<z.ZodString, z.ZodUnion<readonly [z.ZodString, z.ZodNumber, z.ZodBoolean]>>;
+        pinnedConstraints: z.ZodOptional<z.ZodArray<z.ZodObject<{
+            id: z.ZodString;
+            text: z.ZodString;
+            label: z.ZodString;
+            kind: z.ZodEnum<{
+                limitation: "limitation";
+                schedule: "schedule";
+                prohibition: "prohibition";
+                preference: "preference";
+            }>;
+            pinnedAt: z.ZodNumber;
+        }, z.core.$strip>>>;
         createdAt: z.ZodNumber;
         updatedAt: z.ZodNumber;
     }, z.core.$strip>;
@@ -288,6 +343,9 @@ export declare const AiFeatureModelUsageSchema: z.ZodObject<{
     output: z.ZodNumber;
     total: z.ZodNumber;
     calls: z.ZodNumber;
+    cachedInput: z.ZodOptional<z.ZodNumber>;
+    audioInput: z.ZodOptional<z.ZodNumber>;
+    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
 }, z.core.$strip>;
 export type AiFeatureModelUsage = z.infer<typeof AiFeatureModelUsageSchema>;
 export declare const AiFeatureUsageSchema: z.ZodObject<{
@@ -295,11 +353,17 @@ export declare const AiFeatureUsageSchema: z.ZodObject<{
     output: z.ZodNumber;
     total: z.ZodNumber;
     calls: z.ZodNumber;
+    cachedInput: z.ZodOptional<z.ZodNumber>;
+    audioInput: z.ZodOptional<z.ZodNumber>;
+    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
     byModel: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodObject<{
         input: z.ZodNumber;
         output: z.ZodNumber;
         total: z.ZodNumber;
         calls: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
     }, z.core.$strip>>>;
 }, z.core.$strip>;
 export type AiFeatureUsage = z.infer<typeof AiFeatureUsageSchema>;
@@ -308,11 +372,17 @@ export declare const AiTokenValueSchema: z.ZodUnion<readonly [z.ZodNumber, z.Zod
     output: z.ZodNumber;
     total: z.ZodNumber;
     calls: z.ZodNumber;
+    cachedInput: z.ZodOptional<z.ZodNumber>;
+    audioInput: z.ZodOptional<z.ZodNumber>;
+    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
     byModel: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodObject<{
         input: z.ZodNumber;
         output: z.ZodNumber;
         total: z.ZodNumber;
         calls: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
     }, z.core.$strip>>>;
 }, z.core.$strip>]>;
 export type AiTokenValue = z.infer<typeof AiTokenValueSchema>;
@@ -324,11 +394,17 @@ export declare const AiTokenUsageSchema: z.ZodObject<{
         output: z.ZodNumber;
         total: z.ZodNumber;
         calls: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
         byModel: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodObject<{
             input: z.ZodNumber;
             output: z.ZodNumber;
             total: z.ZodNumber;
             calls: z.ZodNumber;
+            cachedInput: z.ZodOptional<z.ZodNumber>;
+            audioInput: z.ZodOptional<z.ZodNumber>;
+            cachedAudioInput: z.ZodOptional<z.ZodNumber>;
         }, z.core.$strip>>>;
     }, z.core.$strip>]>>;
     createdAt: z.ZodCoercedDate<unknown>;

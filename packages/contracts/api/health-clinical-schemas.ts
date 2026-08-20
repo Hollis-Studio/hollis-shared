@@ -32,6 +32,7 @@ import {
     PregnancyStatusSchema,
     PrimaryGoalSchema,
     SettableAccountStatusSchema,
+    SPONSORED_PANEL_STATUSES,
     USER_ROLES,
     USER_TIERS,
 } from "../domain/user.js";
@@ -518,6 +519,31 @@ export const userAdminUpdateBodySchema = z
     message: "At least one field must be provided",
   });
 
+/**
+ * Sponsored blood biomarker panel tracking (admin-managed).
+ *
+ * Tracks only whether Hollis is paying for the member's third-party testing
+ * membership. Deliberately models nothing clinical: no panel contents, no draw
+ * dates, no results. Cadence and scheduling are governed by the testing
+ * company's terms, not ours.
+ *
+ * `enrolledAt` and `renewalDate` are ISO date strings. `tierAtEnrollment` is a
+ * historical snapshot — it records the tier that justified the sponsorship at
+ * the time, and must not be recomputed from the member's current tier.
+ */
+export const sponsoredPanelUpdateBodySchema = z
+  .object({
+    status: z.enum(SPONSORED_PANEL_STATUSES).optional(),
+    enrolledAt: isoDateSchema.optional().nullable(),
+    renewalDate: isoDateSchema.optional().nullable(),
+    tierAtEnrollment: z.enum(USER_TIERS).optional().nullable(),
+    notes: z.string().max(500).optional().nullable(),
+  })
+  .strip()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field must be provided",
+  });
+
 export const createPatientBodySchema = z
   .object({
     email: emailSchema,
@@ -552,6 +578,9 @@ export const userPreferencesUpdateBodySchema = z
 export type UserProfileUpdateBody = z.infer<typeof userProfileUpdateBodySchema>;
 export type UserGoalsUpdateBody = z.infer<typeof userGoalsUpdateBodySchema>;
 export type UserAdminUpdateBody = z.infer<typeof userAdminUpdateBodySchema>;
+export type SponsoredPanelUpdateBody = z.infer<
+  typeof sponsoredPanelUpdateBodySchema
+>;
 export type CreatePatientBody = z.infer<typeof createPatientBodySchema>;
 export type UserPreferencesUpdateBody = z.infer<
   typeof userPreferencesUpdateBodySchema

@@ -15,9 +15,7 @@ export const meta = {
   contentHash: "6fca2f06",
 };
 
-export const content = `**DRAFT — FOR ATTORNEY REVIEW**
-
-# Photo, Video, and Testimonial Release
+export const content = `# Photo, Video, and Testimonial Release
 
 **Hollis Health LLC**
 Home Office: 691 S Seguin, New Braunfels, TX 78130
@@ -156,10 +154,7 @@ Signature: ______________________________________ Date: ______________
 Printed Name: ______________________________________
 
 Title: ______________________________________
-
----
-
-*This document was prepared for attorney review and is not a final legal instrument. Hollis Health LLC makes no representation that this document is legally sufficient without independent legal counsel review.*`;
+`;
 
 /**
  * No initials sections — this document uses opt-in checkboxes per use type.

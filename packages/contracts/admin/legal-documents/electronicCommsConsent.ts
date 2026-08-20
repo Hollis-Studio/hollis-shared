@@ -8,14 +8,12 @@
 
 export const meta = {
   title: "Electronic Communications Consent",
-  version: "1.1.0",
-  effectiveDate: "2026-03-04",
+  version: "1.2.0",
+  effectiveDate: "2026-08-19",
   contentHash: "0bfde85d",
 };
 
-export const content = `**DRAFT — FOR ATTORNEY REVIEW**
-
-# Electronic Communications Consent
+export const content = `# Electronic Communications Consent
 
 **Hollis Health LLC**
 Home Office: 691 S Seguin, New Braunfels, TX 78130
@@ -72,7 +70,7 @@ Program-support communications may include:
 
 - Training program updates;
 - Nutrition guidance and non-urgent coaching prompts;
-- Notifications that test results or assessments are available in a secure portal;
+- Notifications that an assessment performed by Company, or a health record you have chosen to share with Company, is available in your secure member dashboard;
 - Non-diagnostic check-in reminders;
 - Care coordination logistics; and
 - Non-marketing educational content related to services you requested.
@@ -190,10 +188,7 @@ Signature: ______________________________________ Date: ______________
 Printed Name: ______________________________________
 
 Title: ______________________________________
-
----
-
-*This document was prepared for attorney review and is not a final legal instrument. Hollis Health LLC makes no representation that this document is legally sufficient without independent legal counsel review.*`;
+`;
 
 /**
  * No initials sections for this document — only a final signature is required.

@@ -16,8 +16,8 @@ import { z } from "zod";
 import { type UserTier } from "./user.js";
 export declare const OfferSheetStatusSchema: z.ZodEnum<{
     active: "active";
-    draft: "draft";
     archived: "archived";
+    draft: "draft";
 }>;
 export type OfferSheetStatus = z.infer<typeof OfferSheetStatusSchema>;
 export declare const OfferTermMonthsSchema: z.ZodUnion<readonly [z.ZodLiteral<4>, z.ZodLiteral<8>, z.ZodLiteral<12>]>;
@@ -85,6 +85,7 @@ export declare const OfferPolicySetSchema: z.ZodObject<{
     earlyTermination: z.ZodString;
     thirdPartyDisclosure: z.ZodString;
     partnerFacilityDisclosure: z.ZodString;
+    sponsoredTestingBenefit: z.ZodString;
 }, z.core.$strip>;
 export type OfferPolicySet = z.infer<typeof OfferPolicySetSchema>;
 export declare const MasterOfferSheetSchema: z.ZodObject<{
@@ -93,8 +94,8 @@ export declare const MasterOfferSheetSchema: z.ZodObject<{
         effectiveDate: z.ZodString;
         status: z.ZodEnum<{
             active: "active";
-            draft: "draft";
             archived: "archived";
+            draft: "draft";
         }>;
     }, z.core.$strip>;
     terms: z.ZodArray<z.ZodObject<{
@@ -110,6 +111,7 @@ export declare const MasterOfferSheetSchema: z.ZodObject<{
         earlyTermination: z.ZodString;
         thirdPartyDisclosure: z.ZodString;
         partnerFacilityDisclosure: z.ZodString;
+        sponsoredTestingBenefit: z.ZodString;
     }, z.core.$strip>;
     tiers: z.ZodObject<{
         ESSENTIALS: z.ZodObject<{

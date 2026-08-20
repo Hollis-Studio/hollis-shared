@@ -23,6 +23,14 @@ import {
 } from "../../stripe/subscription.js";
 import type { UserTier } from "../../domain/user.js";
 
+/**
+ * Tiers at which Membership includes Company's payment of an independent
+ * third-party health-testing company's membership/subscription fee on the
+ * member's behalf. ESSENTIALS is deliberately excluded — see Membership
+ * Agreement Section 2.3.
+ */
+const SPONSORED_TESTING_TIERS: readonly UserTier[] = ["CORE", "CONCIERGE"];
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -52,6 +60,11 @@ export interface EnrollmentSummaryData {
   endDate: string;
   /** Included services comparison rows drawn from the offer sheet */
   includedServices: Array<{ label: string; value: string }>;
+  /**
+   * Whether this tier includes the Company-sponsored third-party testing
+   * membership (CORE and CONCIERGE only; never ESSENTIALS).
+   */
+  sponsoredTestingIncluded: boolean;
   /** Standard third-party billing disclosure items from the offer sheet */
   separatelyBilledItems: string[];
 }
@@ -140,6 +153,7 @@ export function generateEnrollmentSummary(
     startDate,
     endDate,
     includedServices,
+    sponsoredTestingIncluded: SPONSORED_TESTING_TIERS.includes(tier),
     separatelyBilledItems: MASTER_OFFER_SHEET.separatelyBilledThirdPartyItems,
   };
 }
@@ -172,6 +186,24 @@ export function renderEnrollmentSummaryMarkdown(
     .map((item) => `- ${item}`)
     .join("\n");
 
+  const sponsoredTestingValue = summary.sponsoredTestingIncluded
+    ? "Included — Company pays an independent third-party health-testing company's membership fee on Member's behalf"
+    : "Not included at this tier";
+
+  const sponsoredTestingNote = summary.sponsoredTestingIncluded
+    ? `## Sponsored Third-Party Testing Membership
+
+Membership at the ${summary.tierDisplayName} tier includes Company's payment of a membership or subscription fee with an independent third-party health-testing company on Member's behalf.
+
+The account is Member's — established in Member's name and governed by that company's own terms and privacy practices. That company and its own independent licensed providers order, arrange, and perform any testing and are solely responsible for interpretation of results and clinical follow-up. Company does not select Member's test panel, does not arrange or schedule Member's specimen collection, does not receive Member's results from that company, and has no access to Member's account with that company. Company's payment of a subscription fee on Member's behalf does not make Company the provider of, or responsible for, any testing, laboratory, or clinical service.
+
+The benefit has no cash value and is not refundable, creditable, or exchangeable if declined or unused. Specimen collection fees, additional or add-on panels, and clinical consultation charges are not covered and are billed separately. See Membership Agreement Section 2.3.
+
+---
+
+`
+    : "";
+
   return `# Exhibit A — Enrollment Summary and Service Schedule
 
 **Hollis Health LLC**
@@ -194,7 +226,8 @@ Home Office: 691 S Seguin, New Braunfels, TX 78130
 | End Date | ${summary.endDate} |
 | Initial Program Location | To be confirmed at enrollment |
 | Included Supplement Allowance / Package | None unless separately listed |
-| Included Diagnostic / Assessment Allowance | None unless separately listed |
+| Included Non-Clinical Assessment Allowance | None unless separately listed |
+| Sponsored Third-Party Testing Membership | ${sponsoredTestingValue} |
 | Add-On Services | None unless separately listed |
 
 ---
@@ -207,7 +240,7 @@ ${includedServicesRows}
 
 ---
 
-## Separately Billed Third-Party Items
+${sponsoredTestingNote}## Separately Billed Third-Party Items
 
 The following are **not** included in Membership fees unless this Exhibit A expressly lists them as included:
 

@@ -1704,6 +1704,11 @@ export declare const PrescriptionNarrationRequestSchema: z.ZodObject<{
         kg: "kg";
         lbs: "lbs";
     }>;
+    engineConfidence: z.ZodOptional<z.ZodEnum<{
+        low: "low";
+        high: "high";
+        medium: "medium";
+    }>>;
 }, z.core.$strip>;
 export type PrescriptionNarrationRequest = z.infer<typeof PrescriptionNarrationRequestSchema>;
 export declare const PrescriptionNarrationResponseSchema: z.ZodObject<{

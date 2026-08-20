@@ -82,6 +82,10 @@ export const ADMIN_PATIENT_ROUTES = {
     updateGoals: (userId) => `/api/admin/patients/${userId}/goals`,
     /** PUT - Update patient admin controls */
     updateAdminControls: (userId) => `/api/admin/patients/${userId}/admin-controls`,
+    /** GET - Sponsored blood biomarker panel record (sponsorship status only) */
+    sponsoredPanel: (userId) => `/api/admin/patients/${userId}/sponsored-panel`,
+    /** PUT - Update sponsored blood biomarker panel record */
+    updateSponsoredPanel: (userId) => `/api/admin/patients/${userId}/sponsored-panel`,
     /** POST - Archive (soft-delete) a patient */
     archive: (userId) => `/api/admin/patients/${userId}/archive`,
     /** PUT - Update patient daily metrics */

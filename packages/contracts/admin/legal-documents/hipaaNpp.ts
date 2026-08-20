@@ -13,8 +13,8 @@
 
 export const meta = {
   title: "HIPAA Notice of Privacy Practices",
-  version: "1.1.0",
-  effectiveDate: "2026-07-17",
+  version: "1.2.0",
+  effectiveDate: "2026-08-19",
   contentHash: "hipaa-npp-v1",
 } as const;
 
@@ -24,7 +24,7 @@ export const content = `# NOTICE OF PRIVACY PRACTICES
 691 S Seguin, New Braunfels, TX 78130
 (210) 891-9005 | isaac@hollis.health
 
-**Effective Date:** 2026-07-17
+**Effective Date:** 2026-08-19
 
 ---
 
@@ -34,7 +34,7 @@ export const content = `# NOTICE OF PRIVACY PRACTICES
 
 ### Who We Are
 
-Hollis Health LLC ("Hollis Health," "we," "us," or "our") is a Texas limited liability company that operates a direct-pay health and wellness clinic. Isaac D. Landes is the Privacy Officer for Hollis Health and the treating clinician.
+Hollis Health LLC ("Hollis Health," "we," "us," or "our") is a Texas limited liability company that operates a direct-pay health and wellness membership program. Hollis Health is not a medical provider. We do not practice medicine, do not employ or contract with a treating clinician, do not order, select, schedule, or interpret laboratory testing or imaging, do not prescribe, and do not bill for or sell medical services. Isaac D. Landes is the Privacy Officer for Hollis Health.
 
 ### Our Legal Duty
 
@@ -46,24 +46,34 @@ We are required by law to:
 
 ---
 
+### How We Obtain Your Health Information
+
+Most of the health information we hold comes directly from you. It includes your account and membership information, wellness questionnaires, intake and screening responses, training records, and body composition or other non-clinical assessment data recorded during wellness services we facilitate.
+
+We do not receive your health information automatically from any laboratory, testing company, physician, or other provider. Where your membership tier includes a subscription or membership with an independent third-party health-testing company that we pay for on your behalf, that account is yours — established in your name and governed by that company's own terms and privacy practices. We have no access to that account, and that company does not send us your results. Those results reach us only if you export them yourself and choose to give them to us, and we will not receive or display them without your written consent.
+
+Health records you choose to share with us are displayed and organized in your member dashboard and may be used as non-clinical context for your fitness and nutrition programming. We do not review shared records for urgent, abnormal, or otherwise clinically significant findings, and we have no duty to identify, flag, or notify you of any such finding; you must rely on the provider who ordered the test.
+
+---
+
 ### How We May Use and Disclose Your Health Information
 
 The following describes how we may use and disclose your PHI. Not every use or disclosure will be listed. However, all the ways we are permitted to use and disclose PHI will fall within one of these categories.
 
 **For Treatment**
-We may use and disclose your PHI to provide, coordinate, or manage your health care and any related services. For example, we may receive and organize health information that you authorize your independent providers to share with us, and we may share information with providers you designate as part of referral coordination you request.
+We do not provide, order, or direct medical treatment, and we do not coordinate or manage your clinical care on our own initiative. Your health information moves only at your direction. For example, we may organize and display health records that you have chosen to give us, and we may use the information in them as non-clinical context for the fitness, nutrition, and wellness programming you have requested. If you ask us to help you connect with an independent provider you have selected, we share only your name and contact information with that provider; we do not send clinical history, test results, or findings unless you separately authorize that specific disclosure in writing.
 
 **For Payment**
 We may use and disclose your PHI to bill and receive payment for services we have provided to you. For example, we may use your information to create a billing record or verify payment method.
 
 **For Health Care Operations**
-We may use and disclose your PHI for operating our practice. For example, we may use your information for quality assessment, training, legal services, or business planning.
+We may use and disclose your PHI for operating our business. For example, we may use your information for quality assessment, staff training, legal services, or business planning.
 
 **Appointment Reminders**
 We may use and disclose your PHI to contact you to remind you of an appointment.
 
-**Treatment Alternatives and Health Benefits**
-We may use and disclose your PHI to tell you about treatment alternatives or health-related benefits or services that may be of interest to you.
+**Health-Related Benefits and Services**
+We may use and disclose your PHI to tell you about wellness services, programs, or membership benefits offered by Hollis Health that may be of interest to you. We do not recommend or advise on treatment alternatives.
 
 **As Required by Law**
 We will use and disclose your PHI when required to do so by federal, state, or local law.
@@ -161,7 +171,7 @@ We will not retaliate against you for filing a complaint.
 
 ### Changes to This Notice
 
-We reserve the right to change this Notice. We reserve the right to make the revised Notice effective for PHI we already have about you as well as any information we receive in the future. We will post a copy of the current Notice in our clinic and on our website. The Notice will contain the effective date on the first page.
+We reserve the right to change this Notice. We reserve the right to make the revised Notice effective for PHI we already have about you as well as any information we receive in the future. We will post a copy of the current Notice at our program location and on our website. The Notice will contain the effective date on the first page.
 
 ---
 

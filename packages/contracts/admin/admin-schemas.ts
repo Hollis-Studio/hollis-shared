@@ -24,6 +24,7 @@ import {
     PregnancyStatusSchema,
     PrimaryGoalSchema,
     RegistrationStatusSchema,
+    SponsoredPanelStatusSchema,
     StrategyStatusSchema,
     StrategyTypeSchema,
     UserRoleSchema,
@@ -256,6 +257,41 @@ export const patientAdminControlsPayloadSchema = z.object({
 export type PatientAdminControlsPayload = z.infer<
   typeof patientAdminControlsPayloadSchema
 >;
+
+/**
+ * Sponsored blood biomarker panel — admin payload and record.
+ *
+ * Tracks the SPONSORSHIP only: whether Hollis Health pays an independent
+ * third-party testing company's membership fee on the member's behalf, a CORE
+ * and CONCIERGE benefit. Nothing clinical is modelled here — no panel contents,
+ * no draw dates, no results — and `renewalDate` is when Hollis pays again, not
+ * a testing schedule. Testing cadence is governed by the testing company's own
+ * terms and conditions.
+ */
+export const sponsoredPanelPayloadSchema = z.object({
+  status: SponsoredPanelStatusSchema.optional(),
+  enrolledAt: z.string().nullable().optional(),
+  renewalDate: z.string().nullable().optional(),
+  tierAtEnrollment: UserTierSchema.nullable().optional(),
+  notes: z.string().max(500).nullable().optional(),
+});
+export type SponsoredPanelPayload = z.infer<typeof sponsoredPanelPayloadSchema>;
+
+export const sponsoredPanelRecordSchema = z.object({
+  userId: z.string(),
+  status: SponsoredPanelStatusSchema,
+  enrolledAt: z.string().nullable(),
+  renewalDate: z.string().nullable(),
+  tierAtEnrollment: UserTierSchema.nullable(),
+  notes: z.string().nullable(),
+  /** The member's tier right now — not the enrollment snapshot. */
+  currentTier: UserTierSchema,
+  /** Whether the member's current tier qualifies for sponsorship. */
+  currentTierEligible: z.boolean(),
+  /** Hollis is still paying for someone whose tier no longer qualifies. */
+  sponsoredButIneligible: z.boolean(),
+});
+export type SponsoredPanelRecord = z.infer<typeof sponsoredPanelRecordSchema>;
 
 // ============================================================================
 // CLINICIAN MANAGEMENT SCHEMAS

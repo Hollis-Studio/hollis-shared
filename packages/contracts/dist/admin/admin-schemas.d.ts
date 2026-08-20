@@ -351,6 +351,58 @@ export declare const patientAdminControlsPayloadSchema: z.ZodObject<{
 }, z.core.$strip>;
 export type PatientAdminControlsPayload = z.infer<typeof patientAdminControlsPayloadSchema>;
 /**
+ * Sponsored blood biomarker panel — admin payload and record.
+ *
+ * Tracks the SPONSORSHIP only: whether Hollis Health pays an independent
+ * third-party testing company's membership fee on the member's behalf, a CORE
+ * and CONCIERGE benefit. Nothing clinical is modelled here — no panel contents,
+ * no draw dates, no results — and `renewalDate` is when Hollis pays again, not
+ * a testing schedule. Testing cadence is governed by the testing company's own
+ * terms and conditions.
+ */
+export declare const sponsoredPanelPayloadSchema: z.ZodObject<{
+    status: z.ZodOptional<z.ZodEnum<{
+        NOT_ENROLLED: "NOT_ENROLLED";
+        ENROLLED: "ENROLLED";
+        DECLINED: "DECLINED";
+        LAPSED: "LAPSED";
+    }>>;
+    enrolledAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    renewalDate: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    tierAtEnrollment: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+        ESSENTIALS: "ESSENTIALS";
+        CORE: "CORE";
+        CONCIERGE: "CONCIERGE";
+    }>>>;
+    notes: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+}, z.core.$strip>;
+export type SponsoredPanelPayload = z.infer<typeof sponsoredPanelPayloadSchema>;
+export declare const sponsoredPanelRecordSchema: z.ZodObject<{
+    userId: z.ZodString;
+    status: z.ZodEnum<{
+        NOT_ENROLLED: "NOT_ENROLLED";
+        ENROLLED: "ENROLLED";
+        DECLINED: "DECLINED";
+        LAPSED: "LAPSED";
+    }>;
+    enrolledAt: z.ZodNullable<z.ZodString>;
+    renewalDate: z.ZodNullable<z.ZodString>;
+    tierAtEnrollment: z.ZodNullable<z.ZodEnum<{
+        ESSENTIALS: "ESSENTIALS";
+        CORE: "CORE";
+        CONCIERGE: "CONCIERGE";
+    }>>;
+    notes: z.ZodNullable<z.ZodString>;
+    currentTier: z.ZodEnum<{
+        ESSENTIALS: "ESSENTIALS";
+        CORE: "CORE";
+        CONCIERGE: "CONCIERGE";
+    }>;
+    currentTierEligible: z.ZodBoolean;
+    sponsoredButIneligible: z.ZodBoolean;
+}, z.core.$strip>;
+export type SponsoredPanelRecord = z.infer<typeof sponsoredPanelRecordSchema>;
+/**
  * Clinician summary schema.
  */
 export declare const clinicianSummarySchema: z.ZodObject<{

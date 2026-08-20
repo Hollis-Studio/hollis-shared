@@ -8,14 +8,12 @@
 
 export const meta = {
   title: "Liability Waiver and Assumption of Risk Agreement",
-  version: "1.2.0",
-  effectiveDate: "2026-04-17",
+  version: "1.3.0",
+  effectiveDate: "2026-08-19",
   contentHash: "7f78624f",
 };
 
-export const content = `**DRAFT — FOR ATTORNEY REVIEW**
-
-# Liability Waiver and Assumption of Risk Agreement
+export const content = `# Liability Waiver and Assumption of Risk Agreement
 
 **Hollis Health LLC**
 Home Office: 691 S Seguin, New Braunfels, TX 78130
@@ -140,7 +138,7 @@ Participant agrees to promptly notify Company in writing of any material change 
 
 In the event Participant is incapacitated, Participant authorizes Company personnel to summon emergency medical services, provide basic first aid or CPR if trained to do so, provide disclosed emergency information to responding personnel, and contact Participant's emergency contact.
 
-Participant acknowledges that Company personnel are generally not licensed medical professionals and that Participant remains financially responsible for emergency medical care obtained on Participant's behalf.
+Participant acknowledges that Company personnel are not licensed medical professionals acting in a clinical capacity, that Company does not provide medical care, and that Participant remains financially responsible for emergency medical care obtained on Participant's behalf.
 
 ---
 
@@ -193,10 +191,7 @@ Signature: ______________________________________ Date: ______________
 Printed Name: ______________________________________
 
 Title: ______________________________________
-
----
-
-*This document was prepared for attorney review and is not a final legal instrument. Hollis Health LLC makes no representation that this document is legally sufficient without independent legal counsel review.*`;
+`;
 
 /**
  * Initials sections required in the Liability Waiver.

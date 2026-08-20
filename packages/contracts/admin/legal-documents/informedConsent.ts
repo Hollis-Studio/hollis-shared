@@ -8,14 +8,12 @@
 
 export const meta = {
   title: "Informed Consent for Health Services",
-  version: "2.0.0",
-  effectiveDate: "2026-07-17",
+  version: "2.1.0",
+  effectiveDate: "2026-08-19",
   contentHash: "917ccfac",
 };
 
-export const content = `**DRAFT — FOR ATTORNEY REVIEW**
-
-# Informed Consent for Health Services
+export const content = `# Informed Consent for Health Services
 
 **Hollis Health LLC**
 Home Office: 691 S Seguin, New Braunfels, TX 78130
@@ -30,7 +28,7 @@ This Informed Consent for Health Services ("Consent") describes certain health-r
 This Consent is intended to address two distinct categories of information and services:
 
 - **Company-facilitated wellness services**, such as body composition assessments (BIA), training-related screenings, supplement-related program tracking, and coordination support; and
-- **Records and referrals related to independent clinical care**, meaning health records or test results you obtain entirely on your own, through your own independent licensed physician, laboratory, imaging provider, or other third-party provider, which you may voluntarily choose to share with Company for display and organization in your member dashboard, or for which you may request Company's assistance in coordinating a referral. Company does not order, schedule, coordinate, or interpret any such testing or clinical care.
+- **Records and referrals related to independent clinical care**, meaning health records or test results you obtain on your own, through your own independent licensed physician, laboratory, imaging provider, or other third-party provider — including a third-party testing company whose membership fee Company pays on your behalf as a membership benefit — which you may voluntarily choose to share with Company for display and organization in your member dashboard, or for which you may request Company's assistance in coordinating a referral. Company does not order, select, schedule, coordinate, or interpret any such testing or clinical care, whether or not Company has paid the fee for the program through which you obtained it.
 
 By signing this Consent, you confirm that you have had a reasonable opportunity to review its contents, ask questions, and seek independent advice before signing. You are not required to sign this Consent in order to access basic non-clinical membership services; however, certain enhanced health-related services described below may not be available unless you sign it.
 
@@ -45,23 +43,33 @@ By signing this Consent, you confirm that you have had a reasonable opportunity 
 
 ---
 
-## Section 2. Member-Shared Laboratory Records
+## Section 2. Third-Party Testing Programs and Member-Shared Laboratory Records
 
-### 2.1 Description of Services
+### 2.1 Sponsored Third-Party Testing Programs
 
-Company does not order, schedule, or coordinate laboratory testing of any kind, and does not provide access to diagnostic testing. If you obtain laboratory testing on your own through your own independent licensed physician or other provider, you may voluntarily choose to share copies of your results or records with Company. With your written consent, Company will display and organize any laboratory results or related records you choose to share within your member dashboard, for your convenience and recordkeeping.
+As a benefit of certain membership tiers, Company may pay for, or reimburse the cost of, a membership or subscription with an independent third-party health-testing company on your behalf.
+
+Where Company does so, **the account is yours**. It is established in your name and your email address, and it is governed by that third-party company's own terms of service and privacy practices, not by this Consent. That company and its own independent licensed providers order, arrange, and perform any testing, and are solely responsible for the interpretation of your results and for any clinical follow-up.
+
+Company does not select your test panel, does not arrange or schedule your specimen collection, does not receive your results from that company, and has no access to your account with that company. **Company's payment of a subscription fee on your behalf does not make Company the provider of, or responsible for, any testing, laboratory service, or clinical service.** Your relationship for those services is with the third-party company and its providers, not with Company.
+
+You are not required to enroll in any such program. Declining does not affect your other membership services, and no portion of your membership fee is refundable or creditable if you decline.
 
 ### 2.2 No Clinical Role
 
-Company does not order, schedule, or coordinate laboratory testing, and does not interpret results, render diagnoses, prescribe treatment, or practice medicine. Any laboratory testing you undergo, and any ordering, collection, and interpretation associated with it, is arranged and performed solely by your independent licensed physician or other qualified third-party provider, entirely outside of Company's involvement.
+Company does not order, select, schedule, or coordinate laboratory testing, and does not interpret results, render diagnoses, prescribe treatment, or practice medicine. This is true of testing you obtain entirely on your own and equally true of testing you obtain through a program whose fee Company has paid on your behalf. Any laboratory testing you undergo, and any ordering, collection, and interpretation associated with it, is arranged and performed solely by an independent licensed physician or other qualified third-party provider, entirely outside of Company's involvement.
 
 ### 2.3 No Monitoring of Shared Records
 
-Company does not review or monitor any laboratory results or other records you choose to share for urgent, abnormal, or otherwise clinically significant findings, and has no duty to identify, flag, or notify you of any such findings. You must rely on your own independent ordering provider for interpretation of your results, follow-up care, and notification of any urgent or abnormal findings.
+Company does not review or monitor any laboratory results or other records you choose to share for urgent, abnormal, or otherwise clinically significant findings, and has no duty to identify, flag, or notify you of any such findings. You must rely on your own independent ordering provider — including the providers of any third-party testing program described in Section 2.1 — for interpretation of your results, follow-up care, and notification of any urgent or abnormal findings.
 
-### 2.4 Consent to Display and Organization
+Company will not tell you what a result means, whether a value is normal or abnormal, or whether you should seek care because of a result. If you have a question about a result, you must direct it to the provider who ordered the test.
 
-By signing this Consent, you authorize Company to display and organize, within your member dashboard, any laboratory results or related health records that you voluntarily choose to share with Company. You may decline to share any such records without affecting your ability to access other membership services.
+### 2.4 Voluntary Sharing; Consent to Display and Organization
+
+Results are provided to you by the testing provider. They reach Company only if you choose to give them to Company. By signing this Consent, you authorize Company to display and organize, within your member dashboard, any laboratory results or related health records that you voluntarily choose to share with Company, and to use the values contained in them as context for non-clinical fitness, nutrition, and wellness programming.
+
+You may decline to share any such records without affecting your ability to access other membership services, and you may ask Company at any time to remove records you previously shared.
 
 ---
 
@@ -77,7 +85,7 @@ BIA uses a low-level electrical current to estimate body composition. Results ma
 
 ### 3.3 Data Use
 
-Body composition data may be stored in your member record, displayed in your progress dashboard, and used by Company to support wellness-program tracking. If the data is shared with an independent clinician for program coordination or review, such sharing is governed by Section 5 below.
+Body composition data may be stored in your member record, displayed in your progress dashboard, and used by Company to support wellness-program tracking. If you direct Company to share that data with an independent provider, such sharing occurs only at your direction and is governed by Section 5 below. Company does not share it on its own initiative.
 
 ### 3.4 Consent to Assessment
 
@@ -89,7 +97,7 @@ By signing this Consent, you authorize Company to conduct the body composition a
 
 ### 4.1 Description of Services
 
-Company may conduct or coordinate non-diagnostic wellness screenings, which may include measurement of resting vital signs, anthropometric measurements, movement assessments, strength assessments, balance and flexibility assessments, and validated wellness questionnaires.
+Company may conduct non-diagnostic wellness screenings, which may include measurement of resting vital signs, anthropometric measurements, movement assessments, strength assessments, balance and flexibility assessments, and validated wellness questionnaires.
 
 ### 4.2 Purpose and Limitations
 
@@ -127,7 +135,7 @@ Company does not initiate, request, or receive clinical oversight of your care o
 
 ### 5.2 Acknowledgment Regarding Third-Party Clinical Providers
 
-You understand that information received from an independent physician, laboratory, or other provider you engage on your own remains subject to that provider's own legal and regulatory obligations, including that provider's notice of privacy practices where applicable. Company receives, displays, and organizes such information solely as directed by you, and does not act as an intermediary transmitting information on behalf of such providers except to the limited extent necessary to support a referral coordination you have requested.
+You understand that information received from an independent physician, laboratory, testing company, or other provider you engage — whether engaged entirely on your own or through a program whose fee Company has paid on your behalf — remains subject to that provider's own legal and regulatory obligations, including that provider's notice of privacy practices where applicable. Company receives, displays, and organizes such information solely as directed by you, and does not act as an intermediary transmitting information on behalf of such providers except to the limited extent necessary to support a referral coordination you have requested.
 
 ### 5.3 Voluntary Nature and Scope
 
@@ -195,7 +203,7 @@ Date of Birth: {{DATE_OF_BIRTH}}
 
 | Service | Participant's Initials |
 |---|---|
-| Section 2 — Member-Shared Laboratory Records | {{INITIALS_LAB_TESTING}} |
+| Section 2 — Third-Party Testing Programs and Member-Shared Laboratory Records | {{INITIALS_LAB_TESTING}} |
 | Section 3.2 — BIA Body Composition Assessment | {{INITIALS_BIA}} |
 | Section 4 — Wellness Screening Services | {{INITIALS_WELLNESS_SCREENING}} |
 | Section 5 — Authorization for Information Sharing | {{INITIALS_COORDINATION_AUTH}} |
@@ -209,10 +217,7 @@ Signature: ______________________________________ Date: ______________
 Printed Name: ______________________________________
 
 Title: ______________________________________
-
----
-
-*This document was prepared for attorney review and is not a final legal instrument. Hollis Health LLC makes no representation that this document is legally sufficient without independent legal counsel review.*`;
+`;
 
 /**
  * Initials sections required in the Informed Consent for Health Services.
@@ -221,9 +226,9 @@ Title: ______________________________________
 export const initialsSections = [
   {
     key: "lab_testing",
-    title: "Member-Shared Laboratory Records (Section 2)",
+    title: "Third-Party Testing Programs and Member-Shared Laboratory Records (Section 2)",
     excerpt:
-      "You authorize Company to display and organize, in your member dashboard, laboratory results and related health records that you voluntarily choose to share with Company from your own independent providers. Company does not order, schedule, or coordinate laboratory testing, and does not interpret results or monitor shared records for urgent or abnormal findings.",
+      "Company may pay for a membership with an independent third-party testing company on your behalf; that account is yours and that company and its providers are solely responsible for ordering, performing, and interpreting any testing. You authorize Company to display and organize, in your member dashboard, laboratory results and related health records that you voluntarily choose to share. Company does not order, select, schedule, or coordinate testing, does not interpret results, and does not monitor shared records for urgent or abnormal findings.",
   },
   {
     key: "bia",

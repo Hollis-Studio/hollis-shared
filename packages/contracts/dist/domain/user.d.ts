@@ -151,6 +151,40 @@ export declare const DEFAULT_USER_TIER: UserTier;
 /** Human-readable labels for membership tiers */
 export declare const USER_TIER_LABELS: Record<UserTier, string>;
 /**
+ * Sponsored blood biomarker panel program (offer sheet v3.1.0, effective 2026-08-19).
+ *
+ * Hollis Health pays an independent third-party health-testing company's membership
+ * fee on behalf of CORE and CONCIERGE members. The account belongs to the member;
+ * the testing company and its own independent licensed providers order, perform, and
+ * interpret everything. Hollis receives results only if the member chooses to share
+ * an exported report, and then only to display and organize it.
+ *
+ * These values track the SPONSORSHIP — whether Hollis is paying — and nothing about
+ * the member's testing itself. Cadence, panel contents, and scheduling are governed
+ * by the testing company's terms, not ours, and are deliberately not modelled here.
+ */
+export declare const SPONSORED_PANEL_STATUSES: readonly ["NOT_ENROLLED", "ENROLLED", "DECLINED", "LAPSED"];
+export declare const SponsoredPanelStatusSchema: z.ZodEnum<{
+    NOT_ENROLLED: "NOT_ENROLLED";
+    ENROLLED: "ENROLLED";
+    DECLINED: "DECLINED";
+    LAPSED: "LAPSED";
+}>;
+export type SponsoredPanelStatus = z.infer<typeof SponsoredPanelStatusSchema>;
+export declare const SPONSORED_PANEL_STATUS: {
+    readonly NOT_ENROLLED: "NOT_ENROLLED";
+    readonly ENROLLED: "ENROLLED";
+    readonly DECLINED: "DECLINED";
+    readonly LAPSED: "LAPSED";
+};
+export declare const DEFAULT_SPONSORED_PANEL_STATUS: SponsoredPanelStatus;
+/** Human-readable labels for sponsorship status */
+export declare const SPONSORED_PANEL_STATUS_LABELS: Record<SponsoredPanelStatus, string>;
+/** Tiers at which Hollis sponsors the panel membership. */
+export declare const SPONSORED_PANEL_TIERS: readonly UserTier[];
+/** Whether a tier is eligible for Hollis-sponsored panel membership. */
+export declare function isSponsoredPanelTier(tier: UserTier): boolean;
+/**
  * Monthly pricing for each tier in whole dollars.
  * Note: These are dollar amounts (e.g., 749 = $749), not cents.
  * Convert to cents with `USER_TIER_PRICES_DOLLARS[tier] * 100` when needed for Stripe.

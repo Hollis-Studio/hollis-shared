@@ -10,7 +10,7 @@
  * deps: zod, domain types | consumers: web-admin/*, server/src/routes/admin/*
  */
 import { z } from "zod";
-import { AccountStatusSchema, ActivityLevelSchema, aiPermanentNoteSchema, SettableAccountStatusSchema, BiologicalSexSchema, FitnessExperienceSchema, GoalDataSourceSchema, LegacyGoalDataSourceSchema, LeadStageSchema, PregnancyStatusSchema, PrimaryGoalSchema, RegistrationStatusSchema, StrategyStatusSchema, StrategyTypeSchema, UserRoleSchema, UserTierSchema, isoDateSchema, isoTimestampSchema, normalizeGoalDataSource, workoutSessionNoteSchema, } from "../domain/index.js";
+import { AccountStatusSchema, ActivityLevelSchema, aiPermanentNoteSchema, SettableAccountStatusSchema, BiologicalSexSchema, FitnessExperienceSchema, GoalDataSourceSchema, LegacyGoalDataSourceSchema, LeadStageSchema, PregnancyStatusSchema, PrimaryGoalSchema, RegistrationStatusSchema, SponsoredPanelStatusSchema, StrategyStatusSchema, StrategyTypeSchema, UserRoleSchema, UserTierSchema, isoDateSchema, isoTimestampSchema, normalizeGoalDataSource, workoutSessionNoteSchema, } from "../domain/index.js";
 import { AdminTaskPrioritySchema, AdminTaskStatusSchema, AdminTaskTypeSchema, } from "../domain/admin-tasks.js";
 import { InjuryRecoveryStatusSchema, LimitationSeveritySchema, MedicalConditionStatusSchema, } from "../domain/clinical.js";
 import { LabMappingStatusSchema, LabMetricCategorySchema, LabMetricDirectionalitySchema, MetricApprovalStatusSchema, } from "../domain/labs.js";
@@ -179,6 +179,37 @@ export const patientAdminControlsPayloadSchema = z.object({
     assignedTrainerId: z.string().nullable().optional(),
     accountStatus: SettableAccountStatusSchema.optional(),
     timezone: z.string().nullable().optional(),
+});
+/**
+ * Sponsored blood biomarker panel — admin payload and record.
+ *
+ * Tracks the SPONSORSHIP only: whether Hollis Health pays an independent
+ * third-party testing company's membership fee on the member's behalf, a CORE
+ * and CONCIERGE benefit. Nothing clinical is modelled here — no panel contents,
+ * no draw dates, no results — and `renewalDate` is when Hollis pays again, not
+ * a testing schedule. Testing cadence is governed by the testing company's own
+ * terms and conditions.
+ */
+export const sponsoredPanelPayloadSchema = z.object({
+    status: SponsoredPanelStatusSchema.optional(),
+    enrolledAt: z.string().nullable().optional(),
+    renewalDate: z.string().nullable().optional(),
+    tierAtEnrollment: UserTierSchema.nullable().optional(),
+    notes: z.string().max(500).nullable().optional(),
+});
+export const sponsoredPanelRecordSchema = z.object({
+    userId: z.string(),
+    status: SponsoredPanelStatusSchema,
+    enrolledAt: z.string().nullable(),
+    renewalDate: z.string().nullable(),
+    tierAtEnrollment: UserTierSchema.nullable(),
+    notes: z.string().nullable(),
+    /** The member's tier right now — not the enrollment snapshot. */
+    currentTier: UserTierSchema,
+    /** Whether the member's current tier qualifies for sponsorship. */
+    currentTierEligible: z.boolean(),
+    /** Hollis is still paying for someone whose tier no longer qualifies. */
+    sponsoredButIneligible: z.boolean(),
 });
 // ============================================================================
 // CLINICIAN MANAGEMENT SCHEMAS

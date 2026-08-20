@@ -3,7 +3,7 @@
  *
  * Source: docs/09-Legal/HH Legal/internal/membership-agreement.mdx
  *
- * Sections 2.1 (comparison table), 2.3 (separately-billed items), and 3.2
+ * Sections 2.1 (comparison table), 2.4 (separately-billed items), and 3.2
  * (pricing grid) are generated from MASTER_OFFER_SHEET so they stay in sync
  * with offer-sheet.json. All other sections are static markdown with template
  * tokens for the signing flow.
@@ -75,9 +75,7 @@ function generatePricingGrid(): string {
 // ---------------------------------------------------------------------------
 
 function generateMembershipAgreementContent(): string {
-  return `**DRAFT — FOR ATTORNEY REVIEW**
-
-# Membership Agreement
+  return `# Membership Agreement
 
 **Hollis Health LLC**
 Home Office: 691 S Seguin, New Braunfels, TX 78130
@@ -136,13 +134,26 @@ The specific commercial and operational details of Member's selected membership 
 - Start Date and End Date;
 - Any included supplement allowance or curated supplement package;
 - Any included non-clinical screening or assessment allowance;
+- Whether Member's tier includes the sponsored third-party testing membership described in Section 2.3;
 - Any add-on services;
 - The initial program location, if one has been designated as of the Effective Date; and
 - Any separately billed third-party clinical services disclosed at enrollment.
 
-### 2.3 Third-Party Clinical Services and Pass-Through Charges
+### 2.3 Sponsored Third-Party Testing Membership
 
-Member acknowledges that Hollis Health LLC is a wellness company and not a hospital, clinic, physician practice, or licensed medical provider. Hollis Health does not practice medicine and does not bill for or sell medical services. Medical care, clinical evaluations, laboratory services, imaging, prescriptions, and other clinical services are furnished only by independent licensed providers chosen by Member, including providers in Company's referral network. Those third-party charges are **not** included in Membership fees and may be billed separately by the applicable provider.
+At the Core and Concierge tiers, Membership includes Company's payment of a membership or subscription fee with an independent third-party health-testing company on Member's behalf. This benefit is **not** included at the Essentials tier.
+
+Where Company pays or reimburses that fee, **the account is Member's** — established in Member's name and governed by that company's own terms of service and privacy practices, not by this Agreement. That company and its own independent licensed providers order, arrange, and perform any testing and are solely responsible for interpretation of results and for any clinical follow-up. Company does not select Member's test panel, does not arrange or schedule Member's specimen collection, does not receive Member's results from that company, and has no access to Member's account with that company. **Company's payment of a subscription fee on Member's behalf does not make Company the provider of, or responsible for, any testing, laboratory, or clinical service.**
+
+The sponsored membership is a standard membership with that company, providing testing on a twice-yearly cadence. **Testing frequency, panel contents, scheduling windows, and all clinical aspects of the program are governed by that company's terms and conditions, not by this Agreement.** Company makes no representation or guarantee as to testing cadence, panel composition, availability, or turnaround, and any change that company makes to its own program is not a change to this Agreement or a reduction in Membership services.
+
+Member is not required to enroll in or use this benefit. The benefit has no cash value and is not refundable, creditable, or exchangeable if Member declines it or does not use it. The benefit does not continue after Member's Membership lapses, terminates, or converts to a tier at which it is not included, and Member remains responsible for cancelling or otherwise managing Member's own account with the third-party company after that time. Any charge that company or any provider imposes beyond the sponsored membership or subscription fee — including specimen collection fees, additional or add-on panels, and clinical consultation charges — is Member's responsibility and is billed separately.
+
+Results are provided to Member by the testing company. They reach Company only if Member chooses to give them to Company, subject to Section 8 and to Member's separately executed Informed Consent for Health Services.
+
+### 2.4 Third-Party Clinical Services and Pass-Through Charges
+
+Member acknowledges that Hollis Health LLC is a wellness company and not a hospital, clinic, physician practice, or licensed medical provider. Hollis Health does not practice medicine and does not bill for or sell medical services. Medical care, clinical evaluations, laboratory services, imaging, prescriptions, and other clinical services are furnished only by independent licensed providers, including providers Member selects from Company's referral network and the independent third-party testing company and its providers described in Section 2.3. Those third-party charges are **not** included in Membership fees and may be billed separately by the applicable provider.
 
 ${MASTER_OFFER_SHEET.policies.partnerFacilityDisclosure}
 
@@ -150,11 +161,11 @@ The following items are billed separately by independent providers or third part
 
 ${generateSeparatelyBilledItems()}
 
-### 2.4 Session Rollovers
+### 2.5 Session Rollovers
 
 Unused private coaching sessions do not roll over from month to month unless expressly authorized in writing by Company. Sessions not used within the applicable calendar month are forfeited without credit or refund.
 
-### 2.5 Recovery Modalities
+### 2.6 Recovery Modalities
 
 Access to recovery modalities, where made available by Company, is subject to posted operating rules, safety screening, the separately executed Liability Waiver, and the separately executed Informed Consent for Health Services where applicable. Member is responsible for obtaining physician guidance regarding any contraindication or restriction relevant to recovery modality use.
 
@@ -236,7 +247,9 @@ If a physical program location has been designated as of the Effective Date, it 
 
 ### 5.4 Services Not Included
 
-The following are not included in Membership fees: medical diagnosis, medical treatment, prescriptions, insurance-billed clinical services, and any other medical service furnished by an independent third party. Hollis Health does not bill for or sell medical services.
+The following are not included in Membership fees: medical diagnosis, medical treatment, prescriptions, laboratory testing, specimen collection, interpretation of test results, imaging, insurance-billed clinical services, and any other medical service furnished by an independent third party. Hollis Health does not bill for or sell medical services.
+
+Where Member's tier includes the sponsored third-party testing membership described in Section 2.3, Company's payment of that subscription fee on Member's behalf is a payment benefit only. It does not make Company the provider of any testing, laboratory, or clinical service, and it does not include any specimen collection fee, additional panel, clinical consultation, or interpretation charge imposed by that company or by any provider.
 
 ---
 
@@ -294,11 +307,17 @@ Member acknowledges that information provided directly to Company, including acc
 
 ### 8.2 Clinical Information and Independent Providers
 
-To the extent independent licensed physicians, laboratories, or other clinical providers furnish services, order tests, interpret results, or transmit clinical information for Member's program, those providers remain responsible for their own clinical decisions, billing, records, and notices of privacy practices where applicable. With Member's written consent or as otherwise permitted by law, Company may receive and handle certain health information from those providers for care coordination, platform display, or administrative support, subject to applicable law and contractual arrangements.
+To the extent independent licensed physicians, laboratories, testing companies, or other clinical providers furnish services, order tests, or interpret results for Member, those providers remain solely responsible for their own clinical decisions, billing, records, and notices of privacy practices where applicable. Company does not receive Member's clinical information from those providers. Company receives a clinical record only where Member obtains that record and voluntarily gives it to Company, and only after Member has given written consent for Company to receive and display it.
 
-### 8.3 Authorization for Program Coordination
+Where Member shares such a record, Company's use of it is limited to displaying and organizing the record in Member's dashboard and using the information in it as non-clinical context for Member's fitness, nutrition, and wellness programming. Company does not review shared records for urgent, abnormal, or otherwise clinically significant findings and has no duty to identify, flag, or notify Member of any such finding. Member must rely on the provider who ordered the test.
 
-Member authorizes Company to share Member's wellness-program information, training data, screening data, supplement usage records, and other program-related information with independent clinicians and providers to the extent reasonably necessary for care coordination, program administration, safety review, or related services requested by Member. Member also authorizes Company to receive information from such providers when reasonably necessary to coordinate Member's program or display results through Company's systems.
+### 8.3 Member-Directed Sharing and Referrals
+
+Company does not disclose Member's health information to any clinician or other provider on Company's own initiative. Where Member asks Company to do so and gives written consent for the specific disclosure, Company may share Member's wellness-program information, training data, non-clinical screening data, and supplement usage records with a provider Member designates.
+
+If Member requests Company's assistance with a referral, Company shares only Member's name and contact information with the independent provider Member selects. Company does not prepare or transmit referral letters containing clinical history or findings, does not order imaging or laboratory testing, and does not prescribe.
+
+Member may withdraw any authorization given under this Section 8.3 at any time by written notice to legal@hollis.health, except as to disclosures already made in reliance on it.
 
 ### 8.4 Applicable Notices
 
@@ -400,10 +419,7 @@ Signature: ______________________________________ Date: ______________
 Printed Name: ______________________________________
 
 Title: ______________________________________
-
----
-
-*This document was prepared for attorney review and is not a final legal instrument. Hollis Health LLC makes no representation that this document is legally sufficient without independent legal counsel review.*`;
+`;
 }
 
 // ---------------------------------------------------------------------------
@@ -412,15 +428,15 @@ Title: ______________________________________
 
 export const meta = {
   title: "Membership Agreement",
-  version: "2.2.0",
-  effectiveDate: "2026-05-26",
+  version: "2.3.0",
+  effectiveDate: "2026-08-19",
   /** Placeholder — will be recalculated by npm run sync:legal-docs */
   contentHash: "PENDING_SYNC",
 };
 
 /**
  * Full markdown content with {{TEMPLATE_TOKEN}} placeholders.
- * Sections 2.1, 2.3, and 3.2 are dynamically generated from
+ * Sections 2.1, 2.4, and 3.2 are dynamically generated from
  * MASTER_OFFER_SHEET (offer-sheet.json) at module load time.
  */
 export const content = generateMembershipAgreementContent();

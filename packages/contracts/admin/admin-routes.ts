@@ -142,6 +142,14 @@ export const ADMIN_PATIENT_ROUTES = {
   updateAdminControls: (userId: string) =>
     `/api/admin/patients/${userId}/admin-controls` as const,
 
+  /** GET - Sponsored blood biomarker panel record (sponsorship status only) */
+  sponsoredPanel: (userId: string) =>
+    `/api/admin/patients/${userId}/sponsored-panel` as const,
+
+  /** PUT - Update sponsored blood biomarker panel record */
+  updateSponsoredPanel: (userId: string) =>
+    `/api/admin/patients/${userId}/sponsored-panel` as const,
+
   /** POST - Archive (soft-delete) a patient */
   archive: (userId: string) =>
     `/api/admin/patients/${userId}/archive` as const,

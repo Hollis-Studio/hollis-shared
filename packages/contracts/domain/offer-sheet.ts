@@ -74,6 +74,13 @@ export const OfferPolicySetSchema = z.object({
   earlyTermination: z.string().min(1),
   thirdPartyDisclosure: z.string().min(1),
   partnerFacilityDisclosure: z.string().min(1),
+  /**
+   * Added in offer sheet v3.1.0 (2026-08-19). Describes the Hollis-sponsored
+   * third-party biomarker panel membership at CORE/CONCIERGE and, critically,
+   * the limits on it — Hollis pays a subscription fee on the member's behalf
+   * and is not the provider of any testing.
+   */
+  sponsoredTestingBenefit: z.string().min(1),
 });
 export type OfferPolicySet = z.infer<typeof OfferPolicySetSchema>;
 
@@ -142,13 +149,17 @@ export function getTierCardHighlights(tier: UserTier): string[] {
     getOfferComparisonValue("nutritionCoaching", tier) ?? "Included";
   const careCoordination =
     getOfferComparisonValue("careCoordination", tier) ?? "Included";
+  const sponsoredBiomarkerPanel =
+    getOfferComparisonValue("sponsoredBiomarkerPanel", tier) ?? "Not included";
 
   return [
     `Private coaching sessions: ${coachingSessions}`,
     `Recovery modality access: ${recoveryAccess}`,
     `Nutrition coaching: ${nutritionCoaching}`,
     `Care coordination: ${careCoordination}`,
+    `Sponsored blood biomarker panel: ${sponsoredBiomarkerPanel}`,
     MASTER_OFFER_SHEET.policies.thirdPartyDisclosure,
     MASTER_OFFER_SHEET.policies.partnerFacilityDisclosure,
+    MASTER_OFFER_SHEET.policies.sponsoredTestingBenefit,
   ];
 }
