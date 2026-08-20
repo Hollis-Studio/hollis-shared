@@ -35,6 +35,7 @@ export * from "./admin/index.js";
 export * from "./ai/index.js";
 export * from "./public/index.js";
 export * from "./stripe/index.js";
+export * from "./revenuecat/index.js";
 export { PASSWORD_POLICY, ZXCVBN_SCORE_LABELS, checkPasswordBreached, forgotPasswordRequestSchema, passwordLengthSchema, passwordResetResponseSchema, passwordSchema, resetPasswordRequestSchema, validatePassword, validatePasswordStrength, type ForgotPasswordRequest, type PasswordResetResponse, type PasswordValidationResult, type ResetPasswordRequest } from "./password/index.js";
 export { AccountStatusSchema as accountStatusSchema, ActivityLevelSchema as activityLevelSchema, BiologicalSexSchema as biologicalSexSchema, FITNESS_EXPERIENCES as EXPERIENCE_LEVELS, FitnessExperienceSchema as experienceLevelSchema, PregnancyStatusSchema as pregnancyStatusSchema, PrimaryGoalSchema as primaryGoalSchema, UserAccountSchema as userAccountSchema, UserGoalsSchema as userGoalsSchema, UserMetricsSchema as userMetricsSchema, UserPreferencesSchema as userPreferencesSchema, UserProfileSchema as userProfileSchema } from "./domain/user.js";
 export { FoodSourceSchema as foodSourceSchema } from "./domain/nutrition.js";

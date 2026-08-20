@@ -44,6 +44,8 @@ export * from "./ai/index.js";
 export * from "./public/index.js";
 // Stripe contracts (products, payment links)
 export * from "./stripe/index.js";
+// RevenueCat contracts (server-to-server webhook wire)
+export * from "./revenuecat/index.js";
 // Password contracts (validation, policies, reset)
 // NOTE: Explicitly re-export passwordSchema from password module to resolve ambiguity
 export { PASSWORD_POLICY, ZXCVBN_SCORE_LABELS, checkPasswordBreached, forgotPasswordRequestSchema, passwordLengthSchema, passwordResetResponseSchema, passwordSchema, resetPasswordRequestSchema, validatePassword, validatePasswordStrength } from "./password/index.js";
