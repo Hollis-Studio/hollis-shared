@@ -1,10 +1,12 @@
 # Client Acquisition Flow — Lead to First Visit
 
-**Purpose:** Define exactly what happens from the moment a prospect first sees a Hollis Health ad (or hears about us) through their first coaching session and their first medical visit with our partner clinician. This SOP is the source of truth for both operational training and end-to-end (E2E) flow testing prior to clinic opening.
+**Purpose:** Define exactly what happens from the moment a prospect first sees a Hollis Health ad (or hears about us) through their first coaching session. This SOP is the source of truth for both operational training and end-to-end (E2E) flow testing prior to clinic opening.
+
+> **Updated 2026-08-19.** The partner-clinician stage is gone. There is no Dr. Tavie, no White Horse Holistic Health, no external clinical scheduling, and no medical visit in the funnel. Booking and coordination are entirely in-house. Blood work is a sponsored third-party program at CORE and CONCIERGE. See [`../reports/2026-08-19-business-model-change.md`](../reports/2026-08-19-business-model-change.md) and [`biomarker-panel-program-sop.md`](./biomarker-panel-program-sop.md).
 
 **Scope:** Hollis Health LLC clinic only. Does not cover Hollis Studio (consumer Strength/Nutrition apps).
 
-**Audience:** Care Coordinator (Isaac), future Trainer hire, Partner Clinician (Dr. Tavie / White Horse Holistic Health), engineering for code references and gap-closure.
+**Audience:** Care Coordinator (Isaac), future Trainer hire, engineering for code references and gap-closure.
 
 **Related docs:**
 - [`day-1-clinic-runbook.md`](./day-1-clinic-runbook.md) — open/close procedures
@@ -16,15 +18,14 @@
 
 ## 1. Roles
 
-Hollis Health operates with **three distinct roles**, and most acquisition steps cross at least one role boundary. Mis-attributing a step to the wrong role is the #1 source of operational confusion.
+Hollis Health operates with **two distinct roles**, both in-house. (There was a third — an external Partner Clinician — through 2026-08-18. There is not one now, and no step in this flow may be attributed to one.)
 
 | Role | Person (today) | Responsible for |
 |------|----------------|-----------------|
 | **Care Coordinator** | Isaac (owner) | All lead handling, phone screens, in-person intros, membership signup, payment, data entry, scheduling, interpreter between client and clinician. Holds ISSA-CPT, ISSA Nutrition, ISSA Strength & Conditioning, CPR. **Not a medical provider.** |
 | **Trainer** | TBD hire — Isaac covers until hired | All hands-on coaching/PT sessions, weekly/daily training, recovery modality supervision, day-to-day fitness programming. |
-| **Partner Clinician** | Dr. Tavie (White Horse Holistic Health) | All medical visits, intake history, prescriptions, lab interpretation, clinical decision-making. Sees patients at most monthly (CONCIERGE), quarterly (CORE), or twice yearly (ESSENTIALS). External contractor; per-visit pay; uses her own scheduling system. |
 
-> When Isaac is on a call or in an intro and someone describes a clinical/medical concern, the answer is *always* "our medical provider is Dr. Tavie at White Horse Holistic Health — let me get you connected" or 911 if an emergency. Isaac may discuss fitness, nutrition, and program design freely under his ISSA credentials.
+> When Isaac is on a call or in an intro and someone describes a clinical/medical concern, the answer is *always* "that's one for your own doctor" — or 911 if an emergency. There is no Hollis clinician to hand it to. Isaac may discuss fitness, nutrition, and program design freely under his ISSA credentials. See [`walk-in-and-phone-sop.md`](./walk-in-and-phone-sop.md) §1.5 for the scripts.
 
 ---
 
@@ -33,9 +34,9 @@ Hollis Health operates with **three distinct roles**, and most acquisition steps
 ```
         STAGE 1                 STAGE 2                 STAGE 3                       STAGE 4
         ─────────               ─────────               ─────────                     ─────────
-Ad/word → Lead Capture  ─→  Phone Screen        ─→  In-Person Intro + Signup    ─→  First Visits
-of mouth (web form,         (15 min, free,          (60-90 min, free, in-clinic,    (trainer: ≤1 wk
-         phone, walk-in)    Isaac calls back)      ConsultationFlowModal wizard)   Tavie: when WHH books)
+Ad/word → Lead Capture  ─→  Phone Screen        ─→  In-Person Intro + Signup    ─→  First Session
+of mouth (web form,         (15 min, free,          (60-90 min, free, in-clinic,    (trainer: ≤1 wk,
+         phone, walk-in)    Isaac calls back)      ConsultationFlowModal wizard)   booked at signup)
 
 LeadPipeline       LeadPipeline           LeadPipeline                  User (CLIENT role)
 stage=INQUIRY      stage=CONSULTATION_    stage=CONSULTATION_COMPLETED   + Subscription
@@ -90,7 +91,7 @@ Then cover, in order:
 
 1. **What they're trying to accomplish.** Listen. Take notes in the lead `notes` field.
 2. **How they heard about us.** Set `LeadPipeline.source` accordingly.
-3. **Brief overview of our model.** "We're a coordinated coaching + medical clinic. You work weekly with a trainer for fitness and nutrition, and you see Dr. Tavie at our partner medical clinic for periodic clinical visits and labs — frequency depends on tier. I coordinate all of it for you."
+3. **Brief overview of our model.** "We're a private coaching studio — training, nutrition, and recovery, with everything tracked in one place so you can actually see what's changing. We're not a medical clinic and we don't provide medical care; you keep your own doctor for that. At Core and Concierge we also sponsor a blood panel membership, 160-plus markers, run by an independent company — the account is yours and their clinicians handle the medical side. If you share those results with me, I use them to shape your training and nutrition."
 4. **Tier fit.** Match their goal to ESSENTIALS / CORE / CONCIERGE. (Confirm tier interest from form; offer the tier you think actually fits and explain why.)
 5. **Pricing transparency.** Quote the base monthly rate and 4/8/12-month term discount (see §10 for current numbers).
 6. **Book the in-person intro.** "The next step is a free in-person visit at our clinic — about an hour. You'll meet me, see the space, walk through your goals in detail, and if it feels right, you can sign up that same visit. I have [Tue 2pm] or [Wed 10am] open this week — which works?"
@@ -176,13 +177,14 @@ After payment success, while the new member is still in the room:
 
 - Give the new member the QR barcode (printed receipt or shown on phone).
 - Walk them through downloading the patient app from the App Store / Play Store and scanning the barcode on first launch.
-- Tell them: "You'll see your first trainer session on your calendar already. For your first visit with Dr. Tavie, she or her assistant will reach out to you directly to coordinate, and I'll add it to your calendar as soon as it's set. That usually happens within a week or two."
+- Tell them: "Your first session is already on your calendar in the app. Everything you book with us, you'll see there."
+- If CORE or CONCIERGE: walk them through enrolling in the sponsored blood panel program per [`biomarker-panel-program-sop.md`](./biomarker-panel-program-sop.md) §3.2, and say the limits out loud — their account, their results, we don't read them medically.
 
 ---
 
-## 6. Stage 4 — First Visits
+## 6. Stage 4 — First Session
 
-Two visits, two different scheduling paths.
+One visit, one scheduling path, entirely in-house. (Through 2026-08-18 this stage had a second, externally-scheduled medical visit. It is gone. Nothing in this flow depends on an outside calendar any more.)
 
 ### 6.1 First trainer / PT session
 
@@ -191,34 +193,29 @@ Two visits, two different scheduling paths.
 - 24h and 1h push reminders fire automatically per existing `notifyAppointmentReminder*` infrastructure.
 - Standard `TRAINING_SESSION` appointment type.
 
-### 6.2 First medical visit with Dr. Tavie (White Horse Holistic Health)
+### 6.2 Sponsored blood panel enrollment (CORE and CONCIERGE only)
 
-Tavie operates her own scheduling system at White Horse Holistic Health. There is **no calendar integration** between WHH and the Hollis platform. Coordination is manual and SMS-driven.
+Not a Hollis visit and not a Hollis appointment. Do not create an appointment for it, and do not put a draw on the Hollis calendar — scheduling the draw is the member's business with the testing company, and putting it on our calendar makes it look like ours.
 
-**Path A (default):** Isaac texts Tavie from the shop number after signup: "Hi Tavie, new member [first name only, no PHI] signed up today, [tier] — needs first clinical visit. Please reach out at [phone]. Thanks." Tavie or her assistant contacts the member directly, schedules within her own system, then texts Isaac the confirmed date/time.
+1. Member is enrolled in their own name at signup (Stage 3 §5.7).
+2. They book their own draw through the testing company.
+3. If and when they want results in their Hollis dashboard, they export the PDF and share it, and Isaac uploads it against a logged consent.
 
-**Path B (if WHH workflow shifts):** Tavie tells Isaac available slots in batch (e.g. "Hollis members can take Mon/Wed 9–11 next two weeks"). Isaac books against that block during Stage 3 §5.6, then notifies Tavie.
+Full procedure and the hard limits: [`biomarker-panel-program-sop.md`](./biomarker-panel-program-sop.md).
 
-**Once a slot is confirmed (either path):**
-1. Isaac opens web-admin `/schedule` (or the patient's detail page).
-2. Creates a `CONSULTATION` appointment with `appointmentType=CONSULTATION`, the confirmed date/time, location = "White Horse Holistic Health" (free-text in notes today; no `PartnerClinic` model exists — see §11).
-3. Member sees the appointment in their patient app immediately.
-4. 24h and 1h push reminders fire automatically.
+### 6.3 Health information handling
 
-### 6.3 PHI-handling note on Tavie coordination
-
-When Isaac texts Tavie about a new member, use **first name only** plus tier — no DOB, no diagnoses, no symptoms in plain SMS. If Tavie needs full clinical context before the visit, send it through her HIPAA-secure channel at WHH, not via SMS. (BAA with WHH must be signed before any PHI is shared in either direction — tracked in `project_clinic_launch.md` remaining must-dos.)
+The only member health information Hollis receives is what the member gives Hollis directly: intake answers, in-house measurements, app-tracked data, and any records they choose to share. Hollis does not exchange information with any outside clinical entity on its own initiative, and does not text or email member details to any provider. If a member requests a referral and wants records sent, they sign a release first — [`imaging-and-referrals-sop.md`](./imaging-and-referrals-sop.md) §2.
 
 ---
 
 ## 7. Ongoing Care Coordination (Post-First-Visit)
 
-Once both first visits are complete, the member enters steady state:
+Once the first session is complete, the member enters steady state:
 
-- **Trainer sessions** per tier (1/wk ESSENTIALS, 2/wk CORE, 4/wk CONCIERGE). Booked recurring or per-week by trainer/coordinator.
+- **Trainer sessions** per tier (2/wk ESSENTIALS, 4/wk CORE, 6/wk CONCIERGE per offer sheet v3.1.0). Booked recurring or per-week by trainer/coordinator.
 - **Recovery modalities** (infrared sauna, cold plunge, red light) — unlimited at all tiers. No appointment needed; first-come.
-- **Clinician visits with Tavie** at tier cadence (2×/yr / quarterly / monthly). Each one coordinated SMS-style same as the first.
-- **Lab panels** at WHH, results flow back into Hollis system via existing lab workflow (`labs-manual-workflow.md`).
+- **Sponsored blood panel** at CORE/CONCIERGE — member-run, on the testing company's own cadence. Isaac may remind them a draw is available; Isaac does not schedule it. Shared results are uploaded per [`biomarker-panel-program-sop.md`](./biomarker-panel-program-sop.md).
 - **Push reminders** at 24h and 1h before every appointment (existing).
 - **Member messages** Isaac/care team in-app; Isaac triages per `walk-in-and-phone-sop.md` §2.
 
@@ -264,15 +261,17 @@ What the new member experiences after the in-person signup:
 
 ## 10. Current Pricing (for phone-screen reference)
 
-From `offer-sheet.json` v2.1.0 (effective 2026-04-09):
+From `offer-sheet.json` v3.1.0 (effective 2026-08-19). **The table below was three versions stale until 2026-08-19 — it still quoted the pre-descope $799/$1,599/$2,499 pricing.** Verify against the source before quoting anything.
 
-| Tier | Base monthly | 4mo (0% off) | 8mo (5% off) | 12mo (10% off) | Coaching/wk | Tavie visits |
-|------|-------------|-------------|-------------|---------------|------------|--------------|
-| ESSENTIALS | $799 | $799 | $759 | $719 | 1 | 2×/yr |
-| CORE | $1,599 | $1,599 | $1,519 | $1,439 | 2 | Quarterly |
-| CONCIERGE | $2,499 | $2,499 | $2,374 | $2,249 | 4 | Monthly |
+| Tier | Base monthly | 4mo (0% off) | 8mo (5% off) | 12mo (10% off) | Coaching/wk | Sponsored blood panel |
+|------|-------------|-------------|-------------|---------------|------------|----------------------|
+| ESSENTIALS | $749 | $749 | $711.55 | $674.10 | 2 | Not included |
+| CORE | $1,349 | $1,349 | $1,281.55 | $1,214.10 | 4 | Included |
+| CONCIERGE | $1,949 | $1,949 | $1,851.55 | $1,754.10 | 6 | Included |
 
-All tiers include unlimited recovery modalities, health dashboard, and care coordination. CORE and CONCIERGE include DEXA scans. CONCIERGE includes CGM. All medical services are provided through White Horse Holistic Health.
+All tiers include recovery modality access (infrared sauna, cold plunge, red light), the health progress dashboard, and care coordination support.
+
+**No tier includes medical services of any kind.** No physician access, no DXA, no registered-dietitian sessions, no imaging, no prescribing — all removed in the 2026-07-17 descope. Nutrition is coach-led under ISSA credentials. The sponsored blood panel at CORE/CONCIERGE is a third-party membership Hollis pays for; it is not a Hollis medical service.
 
 > **Always verify against the current `offer-sheet.json`** before quoting — pricing is the source of truth there, not this doc.
 
@@ -291,10 +290,10 @@ Status snapshot as of **2026-05-20** (post 7-fix engineering batch). See [`../re
 - Subscription creation atomicity — wizard no longer silently advances to success on Stripe failure; new `POST /api/admin/subscriptions/:userId/retry` endpoint + UI retry path + "Subscription Pending" success state.
 - CAN-SPAM for waitlist confirmations — `unsubscribeToken` / `emailOptIn` / `consentedAt` now populated; unsubscribe link in confirmation email.
 - Notification permission proactively requested in patient-app onboarding (new step before `complete`).
-- `location` field surfaced in `NewAppointmentModal` with WHH auto-suggest for `CONSULTATION` type.
+- `location` field surfaced in `NewAppointmentModal`. *(The WHH auto-suggest shipped with it is now wrong and must be removed — tracked in the admin dashboard alignment plan.)*
 
 ### 🔴 P0 — owner/ops actions still required (no code work)
-1. **BAA with White Horse Holistic Health** — must be signed before any PHI flows between systems.
+1. ~~**BAA with White Horse Holistic Health**~~ — **closed 2026-08-19, not by signing.** The WHH relationship ended; no data ever flowed and none will. See [`baa-tracker.md`](./baa-tracker.md).
 2. **BAA with Sentry** — error payloads visible to Sentry even with PHI scrubbing.
 3. **`HIPAA_NPP` consent type** — Agent K wrote NPP content (`hipaa-npp-content.md`) but the `ConsentDocumentType.HIPAA_NPP` enum value, migration, and `ConsultationFlowModal` enrollment integration are not yet shipped. Patients must acknowledge NPP before or at first service per 45 CFR §164.520.
 4. **Apply pending Prisma migrations to prod** — `20260520000000_phi_access_log_rls` (then `ALTER ROLE <app_service> BYPASSRLS;`) and `hollis-identity` initial migration.
@@ -324,11 +323,11 @@ Status snapshot as of **2026-05-20** (post 7-fix engineering batch). See [`../re
 
 ### 🟢 P2 — post-launch
 - UTM / ad attribution (skip until paid ads start).
-- `PartnerClinic` model + `ExternalClinician` reference (today: WHH location is free-text on appointments).
-- WHH calendar bridge (iCal/Google sync) — depends on Tavie's office committing.
+- ~~`PartnerClinic` model + `ExternalClinician` reference~~ — **dropped 2026-08-19.** There is no partner clinic to model.
+- ~~WHH calendar bridge (iCal/Google sync)~~ — **dropped 2026-08-19.** All booking is in-house; there is no external calendar to bridge.
 - SMS provider (Twilio HIPAA-eligible) — today: email-only, Isaac texts manually from (210) 891-9005.
 - Self-serve online checkout on `web-public` for prospects who want to skip the in-person intro.
-- Lab/DXA/sleep-screening appointment types auto-creating downstream records.
+- Sleep-screening appointment type auto-creating downstream records. (Lab and DXA appointment types are dormant — Hollis performs neither.)
 - Per-appointment deep-linking from push notifications (today: deep-links to appointments tab list).
 - Identity Service consumption (the standalone service exists but `hollis-health-app/server` doesn't consume it yet).
 
@@ -374,10 +373,14 @@ Run this full sequence in a staging environment with Stripe in test mode before 
 - [ ] In web-admin, create a `TRAINING_SESSION` appointment for the new member, tomorrow.
 - [ ] Verify it appears in the member's patient app `appointments` tab.
 
-### 12.6 Stage 4 — First Tavie visit
-- [ ] In web-admin, create a `CONSULTATION` appointment for the new member. **The location field should auto-suggest "White Horse Holistic Health"** when CONSULTATION is selected — verify the auto-fill. Set the date to 7 days out.
-- [ ] Verify it appears in member's patient app with the WHH location string.
-- [ ] Verify 24h reminder push fires (advance time or trigger manually).
+### 12.6 Stage 4 — Shared results upload (CORE/CONCIERGE)
+- [ ] Confirm the test member's Informed Consent is signed and the Section 2 initials block is present.
+- [ ] Log the per-report consent note on the member's record.
+- [ ] In web-admin, upload a sample biomarker PDF against the member.
+- [ ] Verify every extracted value against the source PDF and resolve all low-confidence rows.
+- [ ] Verify the report and its trends appear in the member's patient app.
+- [ ] Verify **no** notification is generated that characterizes any result.
+- [ ] Delete the report and verify removal propagates to the app.
 
 ### 12.7 Patient app first-run
 - [ ] Install patient app on a clean device or simulator.
@@ -385,7 +388,7 @@ Run this full sequence in a staging environment with Stripe in test mode before 
 - [ ] Set password.
 - [ ] Walk through onboarding wizard. **Verify the new `notifications-permission` step appears before `complete`** — tap "Enable Notifications" and grant the iOS/Android system prompt. Confirm push token registers (check `DevicePushToken` row in DB).
 - [ ] Repeat with a fresh install and tap "Skip" instead — verify the wizard still completes and lands on the dashboard.
-- [ ] Verify `appointments` tab shows both first visits (trainer + Tavie/WHH).
+- [ ] Verify `appointments` tab shows the first trainer session.
 - [ ] Verify `consent-documents` modal shows all 4 signed docs.
 
 ### 12.8 Cleanup
@@ -402,8 +405,12 @@ Run this full sequence in a staging environment with Stripe in test mode before 
 - Walk-in/phone SOP: [`walk-in-and-phone-sop.md`](./walk-in-and-phone-sop.md)
 - No-show/cancel policy: [`no-show-cancellation-policy.md`](./no-show-cancellation-policy.md)
 - Membership agreement: `hollis-health-app/web-admin/lib/legalDocuments/membershipAgreement.ts`
+- Sponsored blood panel: [`biomarker-panel-program-sop.md`](./biomarker-panel-program-sop.md)
+- Business model change record: [`../reports/2026-08-19-business-model-change.md`](../reports/2026-08-19-business-model-change.md)
 - HIPAA NPP: [`hipaa-npp-content.md`](./hipaa-npp-content.md)
 
 ---
 
-Last reviewed: 2026-05-20 (post 7-fix engineering batch — see [`../reports/2026-05-20-launch-readiness-snapshot.md`](../reports/2026-05-20-launch-readiness-snapshot.md))
+Last reviewed: 2026-08-19 (partner-clinician exit + sponsored biomarker panel — see [`../reports/2026-08-19-business-model-change.md`](../reports/2026-08-19-business-model-change.md))
+
+Prior review: 2026-05-20 (post 7-fix engineering batch — see [`../reports/2026-05-20-launch-readiness-snapshot.md`](../reports/2026-05-20-launch-readiness-snapshot.md))

@@ -2,7 +2,9 @@
 
 **Purpose:** Define how Isaac handles walk-in prospects/members and inbound phone calls. Applies from day 1 through any period of solo operation.
 
-**Critical role clarification:** Isaac is the **Care Coordinator**, not a medical clinician. Isaac holds ISSA-CPT (Certified Personal Trainer), ISSA Nutrition, ISSA Strength & Conditioning, and current CPR certification. All **medical** services — diagnosis, prescription, lab interpretation, clinical evaluation — are provided by Dr. Tavie at **White Horse Holistic Health (WHH)**, our partner medical facility. Isaac may give fitness, nutrition, and program-design guidance under his ISSA credentials. Isaac may NOT diagnose, prescribe, evaluate medical complaints, or provide any service that requires a medical license.
+**Critical role clarification:** Isaac is the **Care Coordinator**, not a medical clinician. Isaac holds ISSA-CPT (Certified Personal Trainer), ISSA Nutrition, ISSA Strength & Conditioning, and current CPR certification. Isaac may give fitness, nutrition, and program-design guidance under his ISSA credentials. Isaac may NOT diagnose, prescribe, evaluate medical complaints, interpret lab results, or provide any service that requires a medical license.
+
+**Hollis Health does not provide medical services and has no clinician.** As of 2026-08-19 there is no partner clinician and no partner medical facility — the White Horse Holistic Health arrangement ended. Members get medical care from providers of their own choosing. There is nobody on the Hollis side to "pass it along to," which means the redirect scripts below are the entire answer, not a holding pattern. See [`../reports/2026-08-19-business-model-change.md`](../reports/2026-08-19-business-model-change.md).
 
 **Related docs:**
 - [`client-acquisition-flow.md`](./client-acquisition-flow.md) — full lead → first-visit flow
@@ -15,7 +17,8 @@
 ## Guiding Principles
 
 - **Safety first.** Any potential emergency is redirected to 911 or the ER immediately.
-- **No medical advice.** Isaac never diagnoses, never recommends medications or dosing, never tells a member "that's probably nothing" or "you should be fine." Medical questions → Tavie / WHH or 911.
+- **No medical advice.** Isaac never diagnoses, never recommends medications or dosing, never tells a member "that's probably nothing" or "you should be fine." Medical questions → the member's own provider, urgent care, or 911.
+- **"You're fine" is medical advice.** Reassurance is as far out of scope as a diagnosis. There is no safe version of guessing.
 - **Fitness and nutrition are fair game.** Form, programming, macros, sleep habits, supplement education at a general level — these are within Isaac's ISSA scope.
 - You cannot run a coaching session mid-conversation with a walk-in. Your existing member comes first.
 - Declining a walk-in is not refusing care — it is managing capacity honestly.
@@ -84,18 +87,22 @@ After they leave: document the interaction in your daily log (no PHI in plain te
 
 ### 1.5 Medical Redirect (non-emergency)
 
-Any non-emergency medical complaint from a member or prospect — symptoms, medication questions, "is this normal," prescription refills, lab interpretation, anything diagnostic — goes to Dr. Tavie at White Horse Holistic Health.
+Any non-emergency medical complaint from a member or prospect — symptoms, medication questions, "is this normal," prescription refills, lab or biomarker interpretation, anything diagnostic — is redirected out. Hollis has no clinician and does not arrange medical visits.
 
 **Script for a member:**
 
-> "That's a great question for Dr. Tavie. She handles all the medical side at White Horse Holistic Health, our partner clinic. Let me get you connected — either she or her office will reach out to schedule you, and I'll put the appointment on your Hollis calendar as soon as it's set. In the meantime, if it worsens or feels urgent, go to urgent care or call 911."
+> "That's outside what I do — I'm your coach and coordinator, not a medical provider, and I'd be doing you a disservice if I guessed. That's one for your doctor. If you don't have one, I'm glad to give you names of practices nearby and you can call whoever you like. And if it gets worse or feels urgent, urgent care or 911, don't wait on an appointment."
 
 **Script for a prospect (not yet a member):**
 
-> "Our medical services are provided through our partner Dr. Tavie at White Horse Holistic Health, and they're included in the membership. The way to start is to come in for a free intro — I'll show you the space and walk you through how it works. Want to set that up now?"
+> "I want to be straight with you about what we are: Hollis is coaching, nutrition, and recovery. We're not a medical clinic and we don't provide medical care — you'd keep seeing your own doctor for that. What we do is the training and nutrition side, and we make your health data easy to see in one place. Want to come in for a free intro so I can show you?"
+
+**If they ask about the blood panel:**
+
+> "At Core and Concierge we sponsor a blood panel membership — 160-plus markers. It's run by an independent company, the account's in your name, and their clinicians handle the medical side of it. If you want your results in your Hollis dashboard, you share them with me and I'll put them in. I use them for your training and nutrition. I don't read them medically."
 
 After the conversation:
-1. If member: send Tavie a secure message (her HIPAA-secure channel — NOT plain SMS for clinical content). Note in the member's Hollis chart that you referred to Tavie and why.
+1. If member: note in the member's Hollis record that a medical question was raised and redirected. **Do not record your impression of the symptom.** Do not contact any provider on their behalf unless they asked for a referral and signed a release.
 2. If prospect: enter as a `LeadPipeline` row per §1.2.
 
 ### 1.6 Declining or Deferring a Walk-In
@@ -145,9 +152,9 @@ Use the §1.5 Medical Redirect script. **Do NOT improvise medical advice over th
 
 ### 2.6 Caller asking to speak with a doctor
 
-> "Our medical provider is Dr. Tavie at White Horse Holistic Health, our partner clinic. I coordinate scheduling with her — would you like me to set up a visit, or do you have a quick question I can pass along?"
+> "We don't have a doctor here — Hollis is coaching, nutrition, and recovery, and we're not a medical practice. For anything medical you'd want your own physician. If you're looking for one, I can give you a couple of names in the area, but you'd be calling them directly."
 
-If urgent / they want to speak to her directly: take a clear message, then contact Tavie's office. Do not promise a callback time you cannot guarantee Tavie will meet.
+Do not take a clinical message "to pass along." There is nobody to pass it to, and holding a message implies a duty to act on it. If it sounds urgent, say so and point them at urgent care or 911.
 
 ### 2.7 Angry or difficult caller
 
@@ -172,8 +179,8 @@ Stay on the line only if they refuse to call 911 and are in immediate danger, an
 Every walk-in and every returned call involving meaningful content gets a brief log entry:
 - Date and time
 - First name (or "unknown walk-in")
-- Purpose (general, e.g., "prospect inquiry", "fitness question", "medical redirect to Tavie") — no detailed PHI outside the secure system
-- Outcome (scheduled, deferred, lead-created, emergency redirect, voicemail left, referred to Tavie)
+- Purpose (general, e.g., "prospect inquiry", "fitness question", "medical question redirected") — no detailed health information outside the secure system
+- Outcome (scheduled, deferred, lead-created, emergency redirect, voicemail left, redirected to own provider)
 
 Keep this log in a dated section of your daily paper notes or as a draft note in the web-admin messaging system.
 
@@ -188,13 +195,15 @@ Keep this log in a dated section of your daily paper notes or as a draft note in
 | Sleep, stress, lifestyle coaching | ✅ Yes (general wellness) | Diagnose sleep disorders or prescribe sleep meds |
 | CPR / basic first aid | ✅ Yes (CPR cert) | Advanced interventions |
 | Membership signup, scheduling, billing | ✅ Yes (Care Coordinator) | — |
-| Symptom evaluation, diagnosis | ❌ — | All → Dr. Tavie / WHH or 911 |
-| Prescriptions, refills, dosing | ❌ — | All → Dr. Tavie / WHH |
-| Lab orders or interpretation | ❌ — | All → Dr. Tavie / WHH |
-| "Should I see a doctor for this?" | "Yes — let me get you connected with Dr. Tavie. If it feels urgent, 911 or urgent care." | Imply it's nothing |
+| Symptom evaluation, diagnosis | ❌ — | All → member's own provider or 911 |
+| Prescriptions, refills, dosing | ❌ — | All → member's own provider |
+| Lab or biomarker interpretation | ❌ — | All → the provider who ordered the test |
+| Telling a member a value is normal / fine / nothing to worry about | ❌ — | This is interpretation. It is the easiest line to cross and the one most likely to be crossed by accident. |
+| Naming outside practices when a member asks for a referral | ✅ Yes (name + contact info only) | Write a referral letter, state a clinical reason, or send records without a signed release |
+| "Should I see a doctor for this?" | "That's worth bringing to a doctor. If it feels urgent, 911 or urgent care." | Imply it's nothing |
 
-When in doubt: **defer to Tavie**. There is no penalty for over-referring; there is significant liability for under-referring.
+When in doubt: **redirect out**. There is no penalty for over-redirecting; there is significant liability for handling something you are not licensed to handle.
 
 ---
 
-Last reviewed: 2026-05-20
+Last reviewed: 2026-08-19

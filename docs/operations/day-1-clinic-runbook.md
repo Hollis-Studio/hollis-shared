@@ -5,8 +5,8 @@
 **Related docs:**
 - [`walk-in-and-phone-sop.md`](./walk-in-and-phone-sop.md)
 - [`no-show-cancellation-policy.md`](./no-show-cancellation-policy.md)
-- [`labs-manual-workflow.md`](./labs-manual-workflow.md)
-- [`prescribing-workflow-sop.md`](./prescribing-workflow-sop.md)
+- [`biomarker-panel-program-sop.md`](./biomarker-panel-program-sop.md)
+- [`imaging-and-referrals-sop.md`](./imaging-and-referrals-sop.md)
 
 ---
 
@@ -15,7 +15,7 @@
 ### 1.1 Physical space
 - [ ] Unlock clinic door and turn on lights.
 - [ ] Confirm exam room is clean, stocked, and equipment is powered on.
-- [ ] Verify paper supply: Rx pads, lab requisition forms, Release of Information forms, NPP handouts, intake paper forms (emergency backup).
+- [ ] Verify paper supply: Release of Information forms, NPP handouts, intake paper forms (emergency backup). **No Rx pads and no lab requisition forms — Hollis does not prescribe or order tests.**
 - [ ] Post the clinic phone number and hours on the door.
 
 ### 1.2 Technology
@@ -60,10 +60,10 @@ DO NOT cancel appointments because the system is unavailable. The clinic continu
 1. Confirm it is a platform outage and not a local network issue (check your phone's mobile data; try loading the web-admin from a mobile hotspot).
 2. If outage is confirmed, switch to **paper mode**:
    - Pull the printed (or screenshotted) appointment list from morning prep.
-   - Use paper intake forms (stored in the supply cabinet) for any new clinical data.
+   - Use paper intake forms (stored in the supply cabinet) for any new member data.
    - Document the visit in a dated paper SOAP note (pad in the exam room).
 3. **Do not write any ePHI in unencrypted text messages or email** during the outage period.
-4. **Notify patients** if their secure message access is affected. You may send a plain email: "Our patient portal is temporarily unavailable. Your appointment is confirmed. I will update your chart as soon as systems are restored. For clinical needs, call (210) 891-9005."
+4. **Notify members** if their secure message access is affected. You may send a plain email: "Our member portal is temporarily unavailable. Your appointment is confirmed. I will update your record as soon as systems are restored." **Do not invite clinical contact** — if a member has a medical need, it goes to their own provider or 911, not to the studio phone.
 
 ### 3.2 After restoration
 - Enter all paper encounter notes into the system within 24 hours.
@@ -72,7 +72,7 @@ DO NOT cancel appointments because the system is unavailable. The clinic continu
 - Log the outage in your incident tracking (email chain to yourself or a note in `docs/temp/` is fine for now).
 
 ### 3.3 Emergency ePHI access during outage
-Per the HIPAA-DR-PLAN §4.3: if you need to access a patient record and the platform is down, you as both clinician and Privacy Officer authorize your own emergency access. Document the clinical justification in a dated note, access the most recent backup export (contact AWS support if needed), and log the access in the post-incident record.
+Per the HIPAA-DR-PLAN §4.3: if you need to access a member record and the platform is down, you as Privacy Officer authorize your own emergency access. Document the business justification in a dated note, access the most recent backup export (contact AWS support if needed), and log the access in the post-incident record.
 
 ---
 
@@ -81,7 +81,7 @@ Per the HIPAA-DR-PLAN §4.3: if you need to access a patient record and the plat
 ### 4.1 Normal flow
 - Stripe Terminal reader processes card-present payments.
 - Subscription billing runs automatically via Stripe.
-- New charges (add-ons, labs pass-through, etc.) are entered in web-admin > Billing.
+- New charges (add-ons, retail, etc.) are entered in web-admin > Billing. There are no lab pass-through charges — Hollis does not bill for testing.
 
 ### 4.2 If Stripe Terminal fails
 
@@ -112,8 +112,7 @@ Per the HIPAA-DR-PLAN §4.3: if you need to access a patient record and the plat
 
 - [ ] All encounter notes finalized in the system.
 - [ ] Any paper forms scanned or photographed and uploaded to the patient chart.
-- [ ] Paper Rx copies filed in the locked Rx log binder (see [`prescribing-workflow-sop.md`](./prescribing-workflow-sop.md)).
-- [ ] Lab requisitions for specimens sent out today — logged in the lab order tracker (see [`labs-manual-workflow.md`](./labs-manual-workflow.md)).
+- [ ] Any member-shared biomarker reports received today uploaded against a logged consent (see [`biomarker-panel-program-sop.md`](./biomarker-panel-program-sop.md) §4).
 - [ ] Stripe Terminal powered down.
 - [ ] Clinic locked.
 - [ ] After-hours auto-reply active (see [`after-hours-messaging-sop.md`](./after-hours-messaging-sop.md)).
