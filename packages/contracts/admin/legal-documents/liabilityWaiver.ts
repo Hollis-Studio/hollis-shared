@@ -10,7 +10,7 @@ export const meta = {
   title: "Liability Waiver and Assumption of Risk Agreement",
   version: "1.3.0",
   effectiveDate: "2026-08-19",
-  contentHash: "7f78624f",
+  contentHash: "b5dde872",
 };
 
 export const content = `# Liability Waiver and Assumption of Risk Agreement

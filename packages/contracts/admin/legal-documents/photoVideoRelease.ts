@@ -10,9 +10,9 @@
 
 export const meta = {
   title: "Photo, Video, and Testimonial Release",
-  version: "1.1.0",
-  effectiveDate: "2026-03-04",
-  contentHash: "6fca2f06",
+  version: "1.2.0",
+  effectiveDate: "2026-08-19",
+  contentHash: "e08cf374",
 };
 
 export const content = `# Photo, Video, and Testimonial Release

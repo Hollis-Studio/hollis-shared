@@ -10,7 +10,7 @@ export const meta = {
   title: "Informed Consent for Health Services",
   version: "2.1.0",
   effectiveDate: "2026-08-19",
-  contentHash: "917ccfac",
+  contentHash: "4038d8fb",
 };
 
 export const content = `# Informed Consent for Health Services

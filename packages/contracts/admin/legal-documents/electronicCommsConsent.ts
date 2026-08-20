@@ -10,7 +10,7 @@ export const meta = {
   title: "Electronic Communications Consent",
   version: "1.2.0",
   effectiveDate: "2026-08-19",
-  contentHash: "0bfde85d",
+  contentHash: "e937a23a",
 };
 
 export const content = `# Electronic Communications Consent
