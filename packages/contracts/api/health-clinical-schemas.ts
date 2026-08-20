@@ -229,6 +229,20 @@ export type PatientIntakeV1Body = z.infer<typeof patientIntakeV1BodySchema>;
  * Returns the stored intake data (if any) + whether it is complete.
  */
 export const patientIntakeV1ResponseSchema = patientIntakeV1BodySchema.extend({
+  /**
+   * Optional on READ even though it is required on WRITE.
+   *
+   * The body schema requires `reasonForVisit` because a *submission* is not
+   * valid without one. But this response also represents a DRAFT: the server
+   * returns a bare `{ isComplete: false, acknowledged: false }` for a patient
+   * who has no intake row yet, and returns partially-filled intakes as they are
+   * saved. Inheriting the body's requirement made this schema reject responses
+   * the API actually and correctly produces.
+   *
+   * `isComplete` is the field that tells a consumer whether the intake is
+   * finished — do not infer completeness from the presence of this one.
+   */
+  reasonForVisit: patientIntakeV1BodySchema.shape.reasonForVisit.optional(),
   isComplete: z.boolean(),
   submittedAt: z.string().datetime().nullable().optional(),
 });
