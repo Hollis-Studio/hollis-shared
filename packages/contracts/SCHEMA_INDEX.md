@@ -72,6 +72,7 @@ documented here.
 | `@hollis-studio/contracts/public` | Public web/contact/waitlist contracts |
 | `@hollis-studio/contracts/public/contact` | Public contact and waitlist validation helpers used by server and web-public |
 | `@hollis-studio/contracts/stripe` | Stripe-related contract helpers |
+| `@hollis-studio/contracts/revenuecat` | RevenueCat server-to-server webhook wire contract |
 | `@hollis-studio/contracts/password` | Password policy, reset, and validation contracts |
 | `@hollis-studio/contracts/primitives` | Cross-domain primitives and result helpers |
 | `@hollis-studio/contracts/errors` | Shared error codes and result/error helpers |

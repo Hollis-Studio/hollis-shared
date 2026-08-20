@@ -1,5 +1,32 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.55 (2026-08-20)
+
+**New `revenuecat/` module — RevenueCat server-to-server webhook wire
+contract (workouts #4, U.5 decision: webhook receiver approved by Isaac
+2026-08-20). Purely additive; no existing schema changes.**
+
+### `revenuecat/webhook.ts` (new)
+
+- **`RevenueCatWebhookRequestSchema` / `RevenueCatWebhookEventSchema`** —
+  tolerant-reader POST body for RevenueCat webhooks. Only `event.type` is
+  required; all other fields optional + nullish, both objects passthrough,
+  so unknown event types/fields parse (and get acked) instead of making
+  RevenueCat retry traffic the receiver ignores. Authentication (the
+  configured Authorization header) is the receiver's job, not the schema's.
+- **`RevenueCatWebhookAckSchema`** — `{ received: true }` 200 body so the
+  route satisfies WC-1..WC-4 response-parse discipline.
+- **`REVENUECAT_WEBHOOK_EVENT_TYPES` / `isKnownRevenueCatEventType`** —
+  known-event-type const + guard for handler switches (deliberately not a
+  z.enum).
+
+New package subpath export: `@hollis-studio/contracts/revenuecat`.
+
+### Consumer upgrade path
+
+1. Pin `0.2.0-alpha.55` in hollis-workouts root + server `package.json`
+   (+ lockfiles). No breaking changes for hollis-health-app.
+
 ## 0.2.0-alpha.51 (2026-08-19)
 
 **Three pending additive fields from the Workouts 2026-08-19 batch (§AD
