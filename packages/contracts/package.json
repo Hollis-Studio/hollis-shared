@@ -1,7 +1,7 @@
 {
   "_comment_BUILD_001": "RESOLVED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Add explicit package.json exports only for currently consumed public subpaths. Do not add wildcard exports or local compatibility barrels. Reviewed: 2026-05-12 (Phase E/F shared extraction cleanup)",
   "name": "@hollis-studio/contracts",
-  "version": "0.2.0-alpha.55",
+  "version": "0.2.0-alpha.57",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -38,6 +38,11 @@
       "types": "./dist/api/routes/auth.d.ts",
       "import": "./dist/api/routes/auth.js",
       "default": "./dist/api/routes/auth.js"
+    },
+    "./api/workouts-envelope": {
+      "types": "./dist/api/workouts-envelope.d.ts",
+      "import": "./dist/api/workouts-envelope.js",
+      "default": "./dist/api/workouts-envelope.js"
     },
     "./domain": {
       "types": "./dist/domain/index.d.ts",
@@ -303,6 +308,11 @@
       "import": "./dist/domain/workouts-conversation-summary.js",
       "types": "./dist/domain/workouts-conversation-summary.d.ts",
       "default": "./dist/domain/workouts-conversation-summary.js"
+    },
+    "./domain/workouts-account": {
+      "types": "./dist/domain/workouts-account.d.ts",
+      "import": "./dist/domain/workouts-account.js",
+      "default": "./dist/domain/workouts-account.js"
     },
     "./public": {
       "types": "./dist/public/index.d.ts",

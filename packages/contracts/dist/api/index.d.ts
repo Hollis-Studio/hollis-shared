@@ -12,6 +12,7 @@ export * from "./csrf.js";
 export * from "./endpoints.js";
 export * from "./health-clinical-schemas.js";
 export * from "./response.js";
+export * from "./workouts-envelope.js";
 export * from "./routes.js";
 export { USER_ROUTES, type UserRoute } from "./routes/users.js";
 export { HEALTH_METRICS_ROUTES, type HealthMetricsRoute } from "./routes/health-metrics.js";

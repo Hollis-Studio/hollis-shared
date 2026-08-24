@@ -139,4 +139,6 @@ export * from './workouts-injuries.js';
 export * from './workouts-weeks.js';
 // Workouts conversation rolling summary - ConversationRollingSummarySchema, etc.
 export * from './workouts-conversation-summary.js';
+// Workouts account lifecycle - WorkoutsAccountDeletionAckSchema
+export * from './workouts-account.js';
 //# sourceMappingURL=index.js.map
