@@ -374,6 +374,7 @@ export * from './workouts-conversation-summary.js';
 
 // Workouts AI conversation threads - ConversationThreadSchema, ConversationAppendBodySchema, etc.
 export * from './workouts-conversations.js';
+export * from './workouts-session-analysis.js';
 
 // Workouts user-generated exercise moderation (#46) - ExerciseSubmissionCreateSchema,
 // ExerciseModerationDecisionSchema, ExerciseDedupSuggestionSchema, etc.
