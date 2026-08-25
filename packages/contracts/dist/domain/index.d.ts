@@ -68,5 +68,7 @@ export * from './workouts-user-profile.js';
 export * from './workouts-injuries.js';
 export * from './workouts-weeks.js';
 export * from './workouts-conversation-summary.js';
+export * from './workouts-conversations.js';
+export * from './workouts-exercise-moderation.js';
 export * from './workouts-account.js';
 //# sourceMappingURL=index.d.ts.map

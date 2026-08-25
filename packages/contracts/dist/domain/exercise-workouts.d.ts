@@ -67,6 +67,50 @@ export declare const ExerciseAliasSourceSchema: z.ZodEnum<{
     user_confirmed: "user_confirmed";
 }>;
 export type ExerciseAliasSource = z.infer<typeof ExerciseAliasSourceSchema>;
+export declare const EXERCISE_MODERATION_STATUSES: readonly ["draft", "pending", "approved", "rejected", "merged"];
+export declare const ExerciseModerationStatusSchema: z.ZodEnum<{
+    draft: "draft";
+    rejected: "rejected";
+    pending: "pending";
+    approved: "approved";
+    merged: "merged";
+}>;
+export type ExerciseModerationStatus = z.infer<typeof ExerciseModerationStatusSchema>;
+/**
+ * Provenance/moderation block carried by every exercise row (canonical and
+ * user-owned alike). Every field defaults to the "plain canonical library row"
+ * value so pre-#46 rows and pre-#46 clients keep parsing unchanged.
+ */
+export declare const ExerciseProvenanceSchema: z.ZodObject<{
+    ownerUserId: z.ZodDefault<z.ZodNullable<z.ZodString>>;
+    submittedForReview: z.ZodDefault<z.ZodBoolean>;
+    submittedAt: z.ZodDefault<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
+    moderationStatus: z.ZodDefault<z.ZodNullable<z.ZodEnum<{
+        draft: "draft";
+        rejected: "rejected";
+        pending: "pending";
+        approved: "approved";
+        merged: "merged";
+    }>>>;
+    rejectionReason: z.ZodDefault<z.ZodNullable<z.ZodString>>;
+    supersededBy: z.ZodDefault<z.ZodNullable<z.ZodString>>;
+    moderatedAt: z.ZodDefault<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
+    moderatedBy: z.ZodDefault<z.ZodNullable<z.ZodString>>;
+}, z.core.$strip>;
+export type ExerciseProvenance = z.infer<typeof ExerciseProvenanceSchema>;
+/** The provenance shape of a plain, unsubmitted, user-owned row. */
+export declare const EXERCISE_PROVENANCE_DEFAULTS: ExerciseProvenance;
+/**
+ * Structural canonical-library predicate. Every surface that presents the
+ * public library MUST gate on this — filtering on `source` alone lets a
+ * promoted-then-merged redirect row leak back into pickers.
+ */
+export declare function isCanonicalLibraryExercise(row: {
+    /** Widened to `string` so it can be called directly on a DB row. */
+    source: string;
+    ownerUserId?: string | null;
+    supersededBy?: string | null;
+}): boolean;
 export declare const UserExerciseSyncSchema: z.ZodObject<{
     name: z.ZodString;
     description: z.ZodString;
@@ -313,6 +357,20 @@ export declare const UserExerciseRecordSchema: z.ZodObject<{
         stretch: "stretch";
     }>>;
     isActive: z.ZodDefault<z.ZodBoolean>;
+    ownerUserId: z.ZodDefault<z.ZodNullable<z.ZodString>>;
+    submittedForReview: z.ZodDefault<z.ZodBoolean>;
+    submittedAt: z.ZodDefault<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
+    moderationStatus: z.ZodDefault<z.ZodNullable<z.ZodEnum<{
+        draft: "draft";
+        rejected: "rejected";
+        pending: "pending";
+        approved: "approved";
+        merged: "merged";
+    }>>>;
+    rejectionReason: z.ZodDefault<z.ZodNullable<z.ZodString>>;
+    supersededBy: z.ZodDefault<z.ZodNullable<z.ZodString>>;
+    moderatedAt: z.ZodDefault<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
+    moderatedBy: z.ZodDefault<z.ZodNullable<z.ZodString>>;
     id: z.ZodString;
     userId: z.ZodString;
     createdAt: z.ZodCoercedDate<unknown>;
@@ -394,6 +452,20 @@ export declare const ExerciseAliasRecordSchema: z.ZodObject<{
 }, z.core.$strip>;
 export type ExerciseAliasRecord = z.infer<typeof ExerciseAliasRecordSchema>;
 export declare const CanonicalExerciseRecordSchema: z.ZodObject<{
+    ownerUserId: z.ZodDefault<z.ZodNullable<z.ZodString>>;
+    submittedForReview: z.ZodDefault<z.ZodBoolean>;
+    submittedAt: z.ZodDefault<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
+    moderationStatus: z.ZodDefault<z.ZodNullable<z.ZodEnum<{
+        draft: "draft";
+        rejected: "rejected";
+        pending: "pending";
+        approved: "approved";
+        merged: "merged";
+    }>>>;
+    rejectionReason: z.ZodDefault<z.ZodNullable<z.ZodString>>;
+    supersededBy: z.ZodDefault<z.ZodNullable<z.ZodString>>;
+    moderatedAt: z.ZodDefault<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
+    moderatedBy: z.ZodDefault<z.ZodNullable<z.ZodString>>;
     id: z.ZodString;
     name: z.ZodString;
     description: z.ZodString;

@@ -372,5 +372,12 @@ export * from './workouts-weeks.js';
 // Workouts conversation rolling summary - ConversationRollingSummarySchema, etc.
 export * from './workouts-conversation-summary.js';
 
+// Workouts AI conversation threads - ConversationThreadSchema, ConversationAppendBodySchema, etc.
+export * from './workouts-conversations.js';
+
+// Workouts user-generated exercise moderation (#46) - ExerciseSubmissionCreateSchema,
+// ExerciseModerationDecisionSchema, ExerciseDedupSuggestionSchema, etc.
+export * from './workouts-exercise-moderation.js';
+
 // Workouts account lifecycle - WorkoutsAccountDeletionAckSchema
 export * from './workouts-account.js';
