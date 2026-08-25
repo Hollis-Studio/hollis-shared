@@ -195,31 +195,72 @@ export const AiTokenUsageUpsertSchema = z.object({
 // Enriched per-feature usage shape (v2). Server records input/output split,
 // call counts, and per-model breakdown. Legacy rows store a bare `number`
 // (cumulative total) per feature; readers must normalize both shapes.
-// Token-class fields beyond input/output are optional for back-compat with
-// rows written before alpha.51: readers treat a missing field as 0. They
-// mirror the pricing dimensions in aiPricing.ts (cached text/image/video
-// input, audio input, cached audio input) so recorded usage can carry every
-// class its price row knows about (workouts #62).
-export const AiFeatureModelUsageSchema = z.object({
-    input: z.number().int().nonnegative(),
-    output: z.number().int().nonnegative(),
-    total: z.number().int().nonnegative(),
-    calls: z.number().int().nonnegative(),
+//
+// TOKEN-CLASS FIELDS (workouts #62). Everything beyond input/output is optional
+// for back-compat: alpha.51 added the cache/audio counters, alpha.58 added
+// `imageInput` and `longContext`. Readers treat a missing field as 0. Together
+// they mirror every dimension the price table in ./pricing.ts can charge apart,
+// so a recorded row can be repriced exactly instead of being flattened onto the
+// plain input rate.
+//
+// SUBSET INVARIANT: `cachedInput`, `audioInput`, `cachedAudioInput` and
+// `imageInput` are SUBSETS of `input`, never extra tokens beside it. `input`
+// keeps meaning the provider's `promptTokenCount` for every row ever written,
+// so `total`, the admin rollups, and pre-alpha.51 rows all keep one consistent
+// meaning; the class fields only say how that prompt broke down. The first
+// three are mutually exclusive; `imageInput` lives inside the plain (non-cached,
+// non-audio) remainder, because Gemini prices image and video at the text input
+// rate and it is recorded for ATTRIBUTION (which surface burns media tokens),
+// not to change a number.
+//
+// NOT MODELLED: context-cache STORAGE token-hours. ./pricing.ts can charge that
+// dimension, but nothing in Workouts creates an explicit cache
+// (`caches.create`) — every cache hit recorded here comes from Gemini's
+// IMPLICIT caching, which bills no storage. Adding a persisted counter now
+// would be a field guaranteed to be 0. `RecordedUsageCounts` in ./pricing.ts
+// still accepts `cacheStorageTokenHours` so an explicit-cache path can be
+// priced the day it ships.
+const aiTokenClassShape = {
     /** Prompt tokens served from context cache (text / image / video). */
     cachedInput: z.number().int().nonnegative().optional(),
     /** Non-cached AUDIO prompt tokens, where the model prices audio apart. */
     audioInput: z.number().int().nonnegative().optional(),
     /** Audio prompt tokens served from context cache. */
     cachedAudioInput: z.number().int().nonnegative().optional(),
+    /** Non-cached IMAGE / VIDEO prompt tokens. Attribution only — priced as input. */
+    imageInput: z.number().int().nonnegative().optional(),
+};
+// The slice of an entry contributed by calls whose OWN prompt crossed the
+// model's long-context threshold (`longContextThresholdTokens` in ./pricing.ts;
+// 200k on gemini-3.1-pro-preview, the only tiered model today).
+//
+// This has to be decided at record time and carried, because the >200k step is
+// a per-REQUEST property: a month of ordinary calls sums past 200k without any
+// single prompt doing so, and pricing an aggregate as long-context on that
+// basis would over-charge by up to 2x. Every field is a subset of the
+// same-named field on the parent entry.
+export const AiLongContextUsageSchema = z.object({
+    input: z.number().int().nonnegative(),
+    output: z.number().int().nonnegative(),
+    cachedInput: z.number().int().nonnegative().optional(),
+    audioInput: z.number().int().nonnegative().optional(),
+    cachedAudioInput: z.number().int().nonnegative().optional(),
+});
+export const AiFeatureModelUsageSchema = z.object({
+    input: z.number().int().nonnegative(),
+    output: z.number().int().nonnegative(),
+    total: z.number().int().nonnegative(),
+    calls: z.number().int().nonnegative(),
+    ...aiTokenClassShape,
+    longContext: AiLongContextUsageSchema.optional(),
 });
 export const AiFeatureUsageSchema = z.object({
     input: z.number().int().nonnegative(),
     output: z.number().int().nonnegative(),
     total: z.number().int().nonnegative(),
     calls: z.number().int().nonnegative(),
-    cachedInput: z.number().int().nonnegative().optional(),
-    audioInput: z.number().int().nonnegative().optional(),
-    cachedAudioInput: z.number().int().nonnegative().optional(),
+    ...aiTokenClassShape,
+    longContext: AiLongContextUsageSchema.optional(),
     byModel: z.record(z.string(), AiFeatureModelUsageSchema).default({}),
 });
 // A stored token value is either a legacy bare total (number) or the enriched
@@ -243,35 +284,51 @@ export const AiTokenUsageSchema = z.object({
 export const AiTokenUsageAdminQuerySchema = z.object({
     month: AiTokenUsageMonthSchema.optional(),
 });
-const AiUsageTotalsSchema = z.object({
+// Every rollup below carries the same token-class breakdown as the recorded
+// row (workouts #62) plus a server-computed `costUsd`. Before alpha.58 the
+// rollups carried only input/output, so the admin "All users" view had to price
+// every cached token at the flat input rate — the one place cost telemetry was
+// still knowingly wrong after the recording half shipped. Cost is computed
+// SERVER-SIDE with estimateUsageCostUsd from ./pricing.ts because only the
+// server holds the per-(feature, model) split that pricing needs; a client
+// pricing a feature rollup could only guess a model.
+const aiRollupCountsShape = {
     input: z.number().int().nonnegative(),
     output: z.number().int().nonnegative(),
     total: z.number().int().nonnegative(),
     calls: z.number().int().nonnegative(),
+    ...aiTokenClassShape,
+    longContext: AiLongContextUsageSchema.optional(),
+    /** USD estimate for this rollup, priced per model across every token class. */
+    costUsd: z.number().nonnegative(),
+};
+const AiUsageTotalsSchema = z.object({
+    ...aiRollupCountsShape,
     users: z.number().int().nonnegative(),
 });
 export const AiTokenUsageFeatureRollupSchema = z.object({
     feature: z.string(),
-    input: z.number().int().nonnegative(),
-    output: z.number().int().nonnegative(),
-    total: z.number().int().nonnegative(),
-    calls: z.number().int().nonnegative(),
+    ...aiRollupCountsShape,
     users: z.number().int().nonnegative(),
 });
 export const AiTokenUsageModelRollupSchema = z.object({
     model: z.string(),
-    input: z.number().int().nonnegative(),
-    output: z.number().int().nonnegative(),
-    total: z.number().int().nonnegative(),
-    calls: z.number().int().nonnegative(),
+    ...aiRollupCountsShape,
+    users: z.number().int().nonnegative(),
+});
+// The (feature x model) cell — the grain the unit-economics decision register
+// asks for ("track cost by uid + feature + model + input + cachedInput +
+// output + image/audio count"). byFeature and byModel are its margins; neither
+// alone can answer "which surface is expensive ON WHICH MODEL".
+export const AiTokenUsageFeatureModelRollupSchema = z.object({
+    feature: z.string(),
+    model: z.string(),
+    ...aiRollupCountsShape,
     users: z.number().int().nonnegative(),
 });
 export const AiTokenUsageAccountRollupSchema = z.object({
     userId: z.string(),
-    input: z.number().int().nonnegative(),
-    output: z.number().int().nonnegative(),
-    total: z.number().int().nonnegative(),
-    calls: z.number().int().nonnegative(),
+    ...aiRollupCountsShape,
     lastActiveMonth: AiTokenUsageMonthSchema.nullable(),
 });
 export const AiTokenUsageAdminSummarySchema = z.object({
@@ -280,6 +337,7 @@ export const AiTokenUsageAdminSummarySchema = z.object({
     totals: AiUsageTotalsSchema,
     byFeature: z.array(AiTokenUsageFeatureRollupSchema),
     byModel: z.array(AiTokenUsageModelRollupSchema),
+    byFeatureModel: z.array(AiTokenUsageFeatureModelRollupSchema).default([]),
     topAccounts: z.array(AiTokenUsageAccountRollupSchema),
     // How many (userId, month) rows were aggregated, and whether the scan was
     // capped (so the UI can warn instead of implying full coverage).

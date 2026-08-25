@@ -338,74 +338,138 @@ export declare const AiTokenUsageUpsertSchema: z.ZodObject<{
     updatedAt: z.ZodOptional<z.ZodCoercedDate<unknown>>;
 }, z.core.$strip>;
 export type AiTokenUsageUpsert = z.infer<typeof AiTokenUsageUpsertSchema>;
+export declare const AiLongContextUsageSchema: z.ZodObject<{
+    input: z.ZodNumber;
+    output: z.ZodNumber;
+    cachedInput: z.ZodOptional<z.ZodNumber>;
+    audioInput: z.ZodOptional<z.ZodNumber>;
+    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+}, z.core.$strip>;
+export type AiLongContextUsage = z.infer<typeof AiLongContextUsageSchema>;
 export declare const AiFeatureModelUsageSchema: z.ZodObject<{
+    longContext: z.ZodOptional<z.ZodObject<{
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>>;
+    cachedInput: z.ZodOptional<z.ZodNumber>;
+    audioInput: z.ZodOptional<z.ZodNumber>;
+    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    imageInput: z.ZodOptional<z.ZodNumber>;
     input: z.ZodNumber;
     output: z.ZodNumber;
     total: z.ZodNumber;
     calls: z.ZodNumber;
-    cachedInput: z.ZodOptional<z.ZodNumber>;
-    audioInput: z.ZodOptional<z.ZodNumber>;
-    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
 }, z.core.$strip>;
 export type AiFeatureModelUsage = z.infer<typeof AiFeatureModelUsageSchema>;
 export declare const AiFeatureUsageSchema: z.ZodObject<{
-    input: z.ZodNumber;
-    output: z.ZodNumber;
-    total: z.ZodNumber;
-    calls: z.ZodNumber;
-    cachedInput: z.ZodOptional<z.ZodNumber>;
-    audioInput: z.ZodOptional<z.ZodNumber>;
-    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    longContext: z.ZodOptional<z.ZodObject<{
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>>;
     byModel: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodObject<{
+        longContext: z.ZodOptional<z.ZodObject<{
+            input: z.ZodNumber;
+            output: z.ZodNumber;
+            cachedInput: z.ZodOptional<z.ZodNumber>;
+            audioInput: z.ZodOptional<z.ZodNumber>;
+            cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>>;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        imageInput: z.ZodOptional<z.ZodNumber>;
         input: z.ZodNumber;
         output: z.ZodNumber;
         total: z.ZodNumber;
         calls: z.ZodNumber;
-        cachedInput: z.ZodOptional<z.ZodNumber>;
-        audioInput: z.ZodOptional<z.ZodNumber>;
-        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
     }, z.core.$strip>>>;
+    cachedInput: z.ZodOptional<z.ZodNumber>;
+    audioInput: z.ZodOptional<z.ZodNumber>;
+    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    imageInput: z.ZodOptional<z.ZodNumber>;
+    input: z.ZodNumber;
+    output: z.ZodNumber;
+    total: z.ZodNumber;
+    calls: z.ZodNumber;
 }, z.core.$strip>;
 export type AiFeatureUsage = z.infer<typeof AiFeatureUsageSchema>;
 export declare const AiTokenValueSchema: z.ZodUnion<readonly [z.ZodNumber, z.ZodObject<{
-    input: z.ZodNumber;
-    output: z.ZodNumber;
-    total: z.ZodNumber;
-    calls: z.ZodNumber;
-    cachedInput: z.ZodOptional<z.ZodNumber>;
-    audioInput: z.ZodOptional<z.ZodNumber>;
-    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    longContext: z.ZodOptional<z.ZodObject<{
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>>;
     byModel: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodObject<{
+        longContext: z.ZodOptional<z.ZodObject<{
+            input: z.ZodNumber;
+            output: z.ZodNumber;
+            cachedInput: z.ZodOptional<z.ZodNumber>;
+            audioInput: z.ZodOptional<z.ZodNumber>;
+            cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>>;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        imageInput: z.ZodOptional<z.ZodNumber>;
         input: z.ZodNumber;
         output: z.ZodNumber;
         total: z.ZodNumber;
         calls: z.ZodNumber;
-        cachedInput: z.ZodOptional<z.ZodNumber>;
-        audioInput: z.ZodOptional<z.ZodNumber>;
-        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
     }, z.core.$strip>>>;
+    cachedInput: z.ZodOptional<z.ZodNumber>;
+    audioInput: z.ZodOptional<z.ZodNumber>;
+    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    imageInput: z.ZodOptional<z.ZodNumber>;
+    input: z.ZodNumber;
+    output: z.ZodNumber;
+    total: z.ZodNumber;
+    calls: z.ZodNumber;
 }, z.core.$strip>]>;
 export type AiTokenValue = z.infer<typeof AiTokenValueSchema>;
 export declare const AiTokenUsageSchema: z.ZodObject<{
     id: z.ZodString;
     month: z.ZodString;
     tokens: z.ZodRecord<z.ZodString, z.ZodUnion<readonly [z.ZodNumber, z.ZodObject<{
-        input: z.ZodNumber;
-        output: z.ZodNumber;
-        total: z.ZodNumber;
-        calls: z.ZodNumber;
-        cachedInput: z.ZodOptional<z.ZodNumber>;
-        audioInput: z.ZodOptional<z.ZodNumber>;
-        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        longContext: z.ZodOptional<z.ZodObject<{
+            input: z.ZodNumber;
+            output: z.ZodNumber;
+            cachedInput: z.ZodOptional<z.ZodNumber>;
+            audioInput: z.ZodOptional<z.ZodNumber>;
+            cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>>;
         byModel: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodObject<{
+            longContext: z.ZodOptional<z.ZodObject<{
+                input: z.ZodNumber;
+                output: z.ZodNumber;
+                cachedInput: z.ZodOptional<z.ZodNumber>;
+                audioInput: z.ZodOptional<z.ZodNumber>;
+                cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+            }, z.core.$strip>>;
+            cachedInput: z.ZodOptional<z.ZodNumber>;
+            audioInput: z.ZodOptional<z.ZodNumber>;
+            cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+            imageInput: z.ZodOptional<z.ZodNumber>;
             input: z.ZodNumber;
             output: z.ZodNumber;
             total: z.ZodNumber;
             calls: z.ZodNumber;
-            cachedInput: z.ZodOptional<z.ZodNumber>;
-            audioInput: z.ZodOptional<z.ZodNumber>;
-            cachedAudioInput: z.ZodOptional<z.ZodNumber>;
         }, z.core.$strip>>>;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        imageInput: z.ZodOptional<z.ZodNumber>;
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        total: z.ZodNumber;
+        calls: z.ZodNumber;
     }, z.core.$strip>]>>;
     createdAt: z.ZodCoercedDate<unknown>;
     updatedAt: z.ZodCoercedDate<unknown>;
@@ -416,64 +480,191 @@ export declare const AiTokenUsageAdminQuerySchema: z.ZodObject<{
 }, z.core.$strip>;
 export type AiTokenUsageAdminQuery = z.infer<typeof AiTokenUsageAdminQuerySchema>;
 export declare const AiTokenUsageFeatureRollupSchema: z.ZodObject<{
-    feature: z.ZodString;
+    users: z.ZodNumber;
+    longContext: z.ZodOptional<z.ZodObject<{
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>>;
+    costUsd: z.ZodNumber;
+    cachedInput: z.ZodOptional<z.ZodNumber>;
+    audioInput: z.ZodOptional<z.ZodNumber>;
+    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    imageInput: z.ZodOptional<z.ZodNumber>;
     input: z.ZodNumber;
     output: z.ZodNumber;
     total: z.ZodNumber;
     calls: z.ZodNumber;
-    users: z.ZodNumber;
+    feature: z.ZodString;
 }, z.core.$strip>;
 export type AiTokenUsageFeatureRollup = z.infer<typeof AiTokenUsageFeatureRollupSchema>;
 export declare const AiTokenUsageModelRollupSchema: z.ZodObject<{
-    model: z.ZodString;
+    users: z.ZodNumber;
+    longContext: z.ZodOptional<z.ZodObject<{
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>>;
+    costUsd: z.ZodNumber;
+    cachedInput: z.ZodOptional<z.ZodNumber>;
+    audioInput: z.ZodOptional<z.ZodNumber>;
+    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    imageInput: z.ZodOptional<z.ZodNumber>;
     input: z.ZodNumber;
     output: z.ZodNumber;
     total: z.ZodNumber;
     calls: z.ZodNumber;
-    users: z.ZodNumber;
+    model: z.ZodString;
 }, z.core.$strip>;
 export type AiTokenUsageModelRollup = z.infer<typeof AiTokenUsageModelRollupSchema>;
-export declare const AiTokenUsageAccountRollupSchema: z.ZodObject<{
-    userId: z.ZodString;
+export declare const AiTokenUsageFeatureModelRollupSchema: z.ZodObject<{
+    users: z.ZodNumber;
+    longContext: z.ZodOptional<z.ZodObject<{
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>>;
+    costUsd: z.ZodNumber;
+    cachedInput: z.ZodOptional<z.ZodNumber>;
+    audioInput: z.ZodOptional<z.ZodNumber>;
+    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    imageInput: z.ZodOptional<z.ZodNumber>;
     input: z.ZodNumber;
     output: z.ZodNumber;
     total: z.ZodNumber;
     calls: z.ZodNumber;
+    feature: z.ZodString;
+    model: z.ZodString;
+}, z.core.$strip>;
+export type AiTokenUsageFeatureModelRollup = z.infer<typeof AiTokenUsageFeatureModelRollupSchema>;
+export declare const AiTokenUsageAccountRollupSchema: z.ZodObject<{
     lastActiveMonth: z.ZodNullable<z.ZodString>;
+    longContext: z.ZodOptional<z.ZodObject<{
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    }, z.core.$strip>>;
+    costUsd: z.ZodNumber;
+    cachedInput: z.ZodOptional<z.ZodNumber>;
+    audioInput: z.ZodOptional<z.ZodNumber>;
+    cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+    imageInput: z.ZodOptional<z.ZodNumber>;
+    input: z.ZodNumber;
+    output: z.ZodNumber;
+    total: z.ZodNumber;
+    calls: z.ZodNumber;
+    userId: z.ZodString;
 }, z.core.$strip>;
 export type AiTokenUsageAccountRollup = z.infer<typeof AiTokenUsageAccountRollupSchema>;
 export declare const AiTokenUsageAdminSummarySchema: z.ZodObject<{
     month: z.ZodNullable<z.ZodString>;
     totals: z.ZodObject<{
+        users: z.ZodNumber;
+        longContext: z.ZodOptional<z.ZodObject<{
+            input: z.ZodNumber;
+            output: z.ZodNumber;
+            cachedInput: z.ZodOptional<z.ZodNumber>;
+            audioInput: z.ZodOptional<z.ZodNumber>;
+            cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>>;
+        costUsd: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        imageInput: z.ZodOptional<z.ZodNumber>;
         input: z.ZodNumber;
         output: z.ZodNumber;
         total: z.ZodNumber;
         calls: z.ZodNumber;
-        users: z.ZodNumber;
     }, z.core.$strip>;
     byFeature: z.ZodArray<z.ZodObject<{
-        feature: z.ZodString;
+        users: z.ZodNumber;
+        longContext: z.ZodOptional<z.ZodObject<{
+            input: z.ZodNumber;
+            output: z.ZodNumber;
+            cachedInput: z.ZodOptional<z.ZodNumber>;
+            audioInput: z.ZodOptional<z.ZodNumber>;
+            cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>>;
+        costUsd: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        imageInput: z.ZodOptional<z.ZodNumber>;
         input: z.ZodNumber;
         output: z.ZodNumber;
         total: z.ZodNumber;
         calls: z.ZodNumber;
-        users: z.ZodNumber;
+        feature: z.ZodString;
     }, z.core.$strip>>;
     byModel: z.ZodArray<z.ZodObject<{
-        model: z.ZodString;
-        input: z.ZodNumber;
-        output: z.ZodNumber;
-        total: z.ZodNumber;
-        calls: z.ZodNumber;
         users: z.ZodNumber;
-    }, z.core.$strip>>;
-    topAccounts: z.ZodArray<z.ZodObject<{
-        userId: z.ZodString;
+        longContext: z.ZodOptional<z.ZodObject<{
+            input: z.ZodNumber;
+            output: z.ZodNumber;
+            cachedInput: z.ZodOptional<z.ZodNumber>;
+            audioInput: z.ZodOptional<z.ZodNumber>;
+            cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>>;
+        costUsd: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        imageInput: z.ZodOptional<z.ZodNumber>;
         input: z.ZodNumber;
         output: z.ZodNumber;
         total: z.ZodNumber;
         calls: z.ZodNumber;
+        model: z.ZodString;
+    }, z.core.$strip>>;
+    byFeatureModel: z.ZodDefault<z.ZodArray<z.ZodObject<{
+        users: z.ZodNumber;
+        longContext: z.ZodOptional<z.ZodObject<{
+            input: z.ZodNumber;
+            output: z.ZodNumber;
+            cachedInput: z.ZodOptional<z.ZodNumber>;
+            audioInput: z.ZodOptional<z.ZodNumber>;
+            cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>>;
+        costUsd: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        imageInput: z.ZodOptional<z.ZodNumber>;
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        total: z.ZodNumber;
+        calls: z.ZodNumber;
+        feature: z.ZodString;
+        model: z.ZodString;
+    }, z.core.$strip>>>;
+    topAccounts: z.ZodArray<z.ZodObject<{
         lastActiveMonth: z.ZodNullable<z.ZodString>;
+        longContext: z.ZodOptional<z.ZodObject<{
+            input: z.ZodNumber;
+            output: z.ZodNumber;
+            cachedInput: z.ZodOptional<z.ZodNumber>;
+            audioInput: z.ZodOptional<z.ZodNumber>;
+            cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        }, z.core.$strip>>;
+        costUsd: z.ZodNumber;
+        cachedInput: z.ZodOptional<z.ZodNumber>;
+        audioInput: z.ZodOptional<z.ZodNumber>;
+        cachedAudioInput: z.ZodOptional<z.ZodNumber>;
+        imageInput: z.ZodOptional<z.ZodNumber>;
+        input: z.ZodNumber;
+        output: z.ZodNumber;
+        total: z.ZodNumber;
+        calls: z.ZodNumber;
+        userId: z.ZodString;
     }, z.core.$strip>>;
     rowsScanned: z.ZodNumber;
     truncated: z.ZodBoolean;

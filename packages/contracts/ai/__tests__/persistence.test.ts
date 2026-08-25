@@ -12,6 +12,7 @@
 import {
   AiFeatureModelUsageSchema,
   AiFeatureUsageSchema,
+  AiTokenUsageAdminSummarySchema,
   SmartBuilderDraftPayloadSchema,
 } from "../persistence.js";
 
@@ -185,5 +186,83 @@ describe("AiFeatureModelUsageSchema / AiFeatureUsageSchema token classes (workou
   it("rejects negative or fractional token-class counts", () => {
     expect(AiFeatureModelUsageSchema.safeParse({ ...base, cachedInput: -1 }).success).toBe(false);
     expect(AiFeatureModelUsageSchema.safeParse({ ...base, audioInput: 1.5 }).success).toBe(false);
+  });
+});
+
+describe("AiFeatureModelUsageSchema — alpha.58 image + long-context classes", () => {
+  const base = { input: 100, output: 40, total: 140, calls: 2 };
+
+  it("accepts imageInput and a longContext sub-bucket", () => {
+    const enriched = {
+      ...base,
+      cachedInput: 30,
+      imageInput: 20,
+      longContext: { input: 60, output: 10, cachedInput: 30 },
+    };
+    expect(AiFeatureModelUsageSchema.safeParse(enriched).success).toBe(true);
+    expect(
+      AiFeatureUsageSchema.safeParse({ ...enriched, byModel: { "gemini-3.1-pro-preview": enriched } })
+        .success,
+    ).toBe(true);
+  });
+
+  it("still parses a row that carries no image / long-context fields", () => {
+    expect(AiFeatureModelUsageSchema.safeParse(base).success).toBe(true);
+  });
+
+  it("rejects a longContext bucket missing its required input/output", () => {
+    expect(
+      AiFeatureModelUsageSchema.safeParse({ ...base, longContext: { input: 10 } }).success,
+    ).toBe(false);
+  });
+
+  it("rejects negative image counts", () => {
+    expect(AiFeatureModelUsageSchema.safeParse({ ...base, imageInput: -1 }).success).toBe(false);
+  });
+});
+
+describe("AiTokenUsageAdminSummarySchema — classed cost rollups (workouts #62)", () => {
+  const rollupCounts = {
+    input: 1_000,
+    output: 200,
+    total: 1_200,
+    calls: 3,
+    cachedInput: 400,
+    imageInput: 100,
+    costUsd: 0.0021,
+    users: 1,
+  };
+
+  const { users: _users, ...accountCounts } = rollupCounts;
+
+  it("requires costUsd on every rollup grain and defaults byFeatureModel", () => {
+    const parsed = AiTokenUsageAdminSummarySchema.safeParse({
+      month: "2026-08",
+      totals: { ...rollupCounts },
+      byFeature: [{ feature: "smart_builder_chat", ...rollupCounts }],
+      byModel: [{ model: "gemini-3.7-flash", ...rollupCounts }],
+      topAccounts: [{ userId: "u1", ...accountCounts, lastActiveMonth: "2026-08" }],
+      rowsScanned: 1,
+      truncated: false,
+      generatedAt: "2026-08-24T00:00:00.000Z",
+    });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) expect(parsed.data.byFeatureModel).toEqual([]);
+  });
+
+  it("rejects a feature rollup with no costUsd", () => {
+    const { costUsd: _costUsd, ...noCost } = rollupCounts;
+    expect(
+      AiTokenUsageAdminSummarySchema.safeParse({
+        month: null,
+        totals: { ...rollupCounts },
+        byFeature: [{ feature: "smart_builder_chat", ...noCost }],
+        byModel: [],
+        topAccounts: [],
+        rowsScanned: 0,
+        truncated: false,
+        generatedAt: "2026-08-24T00:00:00.000Z",
+      }).success,
+    ).toBe(false);
   });
 });

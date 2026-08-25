@@ -1,5 +1,74 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.58 (2026-08-24)
+
+**Closes the cost-accounting half of Workouts AI telemetry (workouts #62).
+Additive only; no existing field changed meaning and nothing for
+hollis-health-app to do.**
+
+alpha.51 taught the recorded usage row to carry cache and audio token counts,
+but three things were still missing before recorded spend could be repriced
+exactly: media attribution, the >200k long-context tier, and a price table the
+*server* was allowed to import.
+
+### `ai/pricing.ts` (new)
+
+The Gemini price table and its estimators move here from
+`hollis-workouts/src/utils/aiPricing.ts`, unchanged in behaviour:
+**`ModelPricing`**, **`MODEL_PRICING`**, **`DEFAULT_PRICING`**,
+**`estimateCostUsd`**, **`estimateCostUsdFromTotals`**,
+**`estimateCostUsdDetailed`**, **`estimateUsageCostUsd`**, plus two additions —
+**`longContextThresholdFor(model)`** and the `longContext` / `imageInput` /
+`cacheStorageTokenHours` fields on `RecordedUsageCounts`.
+
+It belongs in contracts because BOTH sides of Workouts price the same recorded
+rows and must agree to the cent: the mobile Token Usage dashboard renders the
+"≈ $X" labels, and the server now enforces a per-entitlement monthly COST
+budget off the same table. Workouts' architecture contract forbids the server
+importing app `src/`, so the only alternative was a second copy of the price
+sheet with nothing keeping the two in step.
+
+`estimateUsageCostUsd` gained one real behaviour change: it prices the
+long-context tier from the `longContext` sub-bucket the recorder classified per
+request, and **never** infers the tier from a monthly aggregate. A month of
+ordinary calls sums past 200k without any single prompt doing so; charging that
+at the >200k rate would over-price by up to 2x.
+
+New subpath export: `@hollis-studio/contracts/ai/pricing` (also re-exported from
+the `ai` and root barrels, and pinned by the Node-ESM smoke import).
+
+### `ai/persistence.ts`
+
+- **`AiFeatureModelUsageSchema` / `AiFeatureUsageSchema`** gain optional
+  **`imageInput`** (non-cached IMAGE/VIDEO prompt tokens — recorded for
+  attribution, priced at the text input rate) and optional **`longContext`**
+  (**`AiLongContextUsageSchema`**: the counters contributed by calls whose own
+  prompt crossed the model's threshold). Both are subsets of the parent
+  counters; `input` still means the provider's `promptTokenCount` on every row
+  ever written.
+- Deliberately **not** modelled: context-cache STORAGE token-hours. Workouts
+  never calls `caches.create` — every recorded cache hit comes from Gemini's
+  implicit caching, which bills no storage — so a persisted counter would be a
+  field guaranteed to be 0. `RecordedUsageCounts` still accepts
+  `cacheStorageTokenHours` so an explicit-cache path can be priced the day one
+  ships.
+- **Admin rollups now carry cost.** `AiTokenUsageFeatureRollupSchema`,
+  `AiTokenUsageModelRollupSchema`, `AiTokenUsageAccountRollupSchema` and the
+  summary `totals` all gain the full token-class breakdown plus a required
+  **`costUsd`**, and the summary gains **`byFeatureModel`**
+  (**`AiTokenUsageFeatureModelRollupSchema`**, defaults to `[]`). Before this,
+  the admin "All users" view could only price a feature rollup at the flat
+  `unknown` rate, because the per-(feature, model) split it needed lived on the
+  server. `costUsd` is computed server-side for that reason. The
+  (feature × model) grain is the one the unit-economics decision register asks
+  for: `byFeature` and `byModel` are its margins, and neither alone answers
+  "which surface is expensive on which model".
+
+**Breaking for one consumer only:** anything constructing an
+`AiTokenUsageAdminSummary` must now supply `costUsd` on each rollup. That is the
+Workouts admin summary route and nothing else.
+
+
 ## 0.2.0-alpha.57 (2026-08-24)
 
 > **`0.2.0-alpha.56` is a burned version — do not consume it.** It was published
