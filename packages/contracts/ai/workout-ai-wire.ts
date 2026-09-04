@@ -1147,6 +1147,10 @@ export const SmartNotificationChannelSchema = z.enum([
   "post_workout_recap",
   "missed_slot",
   "weekly_review",
+  // Evidence-only coaching nudge: sent ONLY when the deterministic snapshot
+  // already carries a plateau signal, and deep-linked to the one surface that
+  // renders that evidence. The gate lives on the sender, not in the copy.
+  "coaching_nudge",
 ]);
 export type SmartNotificationChannel = z.infer<typeof SmartNotificationChannelSchema>;
 
@@ -1209,6 +1213,14 @@ const SmartNotificationProgressionSummarySchema = z.object({
     .array(
       z.object({
         exerciseId: z.string(),
+        /**
+         * Human-readable catalog name for `exerciseId`. Optional because
+         * snapshots persisted before it existed (SmartNotificationDelivery.snapshot)
+         * must still re-parse; the server always populates it. Without this the
+         * copy model only ever saw a slug, so a plateau nudge that named the
+         * lift named it "barbell_bench_press".
+         */
+        name: z.string().max(200).nullable().optional(),
         currentE1RMKg: z.number().nullable(),
         missStreak: z.number().int().nullable(),
         plateauDeloadUntil: z.string().nullable(),

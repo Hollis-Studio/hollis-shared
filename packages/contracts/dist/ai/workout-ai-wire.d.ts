@@ -2062,6 +2062,7 @@ export declare const SmartNotificationChannelSchema: z.ZodEnum<{
     post_workout_recap: "post_workout_recap";
     missed_slot: "missed_slot";
     weekly_review: "weekly_review";
+    coaching_nudge: "coaching_nudge";
 }>;
 export type SmartNotificationChannel = z.infer<typeof SmartNotificationChannelSchema>;
 export declare const SmartNotificationSnapshotSchema: z.ZodObject<{
@@ -2072,6 +2073,7 @@ export declare const SmartNotificationSnapshotSchema: z.ZodObject<{
         post_workout_recap: "post_workout_recap";
         missed_slot: "missed_slot";
         weekly_review: "weekly_review";
+        coaching_nudge: "coaching_nudge";
     }>;
     generatedAt: z.ZodString;
     localDate: z.ZodString;
@@ -2144,6 +2146,7 @@ export declare const SmartNotificationSnapshotSchema: z.ZodObject<{
         activeModes: z.ZodArray<z.ZodString>;
         watchlist: z.ZodArray<z.ZodObject<{
             exerciseId: z.ZodString;
+            name: z.ZodOptional<z.ZodNullable<z.ZodString>>;
             currentE1RMKg: z.ZodNullable<z.ZodNumber>;
             missStreak: z.ZodNullable<z.ZodNumber>;
             plateauDeloadUntil: z.ZodNullable<z.ZodString>;
@@ -2174,6 +2177,7 @@ export declare const SmartNotificationPreviewRequestSchema: z.ZodObject<{
         post_workout_recap: "post_workout_recap";
         missed_slot: "missed_slot";
         weekly_review: "weekly_review";
+        coaching_nudge: "coaching_nudge";
     }>;
     referenceDateIso: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
@@ -2185,6 +2189,7 @@ export declare const SmartNotificationSendRequestSchema: z.ZodObject<{
         post_workout_recap: "post_workout_recap";
         missed_slot: "missed_slot";
         weekly_review: "weekly_review";
+        coaching_nudge: "coaching_nudge";
     }>;
     referenceDateIso: z.ZodOptional<z.ZodString>;
     dryRun: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
@@ -2199,6 +2204,7 @@ export declare const SmartNotificationPreviewResponseSchema: z.ZodObject<{
             post_workout_recap: "post_workout_recap";
             missed_slot: "missed_slot";
             weekly_review: "weekly_review";
+            coaching_nudge: "coaching_nudge";
         }>;
         generatedAt: z.ZodString;
         localDate: z.ZodString;
@@ -2271,6 +2277,7 @@ export declare const SmartNotificationPreviewResponseSchema: z.ZodObject<{
             activeModes: z.ZodArray<z.ZodString>;
             watchlist: z.ZodArray<z.ZodObject<{
                 exerciseId: z.ZodString;
+                name: z.ZodOptional<z.ZodNullable<z.ZodString>>;
                 currentE1RMKg: z.ZodNullable<z.ZodNumber>;
                 missStreak: z.ZodNullable<z.ZodNumber>;
                 plateauDeloadUntil: z.ZodNullable<z.ZodString>;
@@ -2302,6 +2309,7 @@ export declare const SmartNotificationSendResponseSchema: z.ZodObject<{
             post_workout_recap: "post_workout_recap";
             missed_slot: "missed_slot";
             weekly_review: "weekly_review";
+            coaching_nudge: "coaching_nudge";
         }>;
         generatedAt: z.ZodString;
         localDate: z.ZodString;
@@ -2374,6 +2382,7 @@ export declare const SmartNotificationSendResponseSchema: z.ZodObject<{
             activeModes: z.ZodArray<z.ZodString>;
             watchlist: z.ZodArray<z.ZodObject<{
                 exerciseId: z.ZodString;
+                name: z.ZodOptional<z.ZodNullable<z.ZodString>>;
                 currentE1RMKg: z.ZodNullable<z.ZodNumber>;
                 missStreak: z.ZodNullable<z.ZodNumber>;
                 plateauDeloadUntil: z.ZodNullable<z.ZodString>;

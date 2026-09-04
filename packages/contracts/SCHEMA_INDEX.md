@@ -69,10 +69,13 @@ documented here.
 | `@hollis-studio/contracts/admin/legal-documents` | Rendered legal document contracts (membership agreement, liability waiver, etc.) |
 | `@hollis-studio/contracts/ai` | AI validation and generated-content contracts |
 | `@hollis-studio/contracts/ai/ai-types` | AI type definitions used directly by server AI service code |
+| `@hollis-studio/contracts/ai/pricing` | Provider token rates + USD cost estimation shared by the Workouts token dashboard and the server-side cost budget |
 | `@hollis-studio/contracts/public` | Public web/contact/waitlist contracts |
 | `@hollis-studio/contracts/public/contact` | Public contact and waitlist validation helpers used by server and web-public |
 | `@hollis-studio/contracts/stripe` | Stripe-related contract helpers |
 | `@hollis-studio/contracts/revenuecat` | RevenueCat server-to-server webhook wire contract |
+| `@hollis-studio/contracts/api/workouts-envelope` | Workouts `{ ok, data \| err }` REST envelope (distinct from the Health/Identity `{ success, data }` envelope) |
+| `@hollis-studio/contracts/domain/workouts-account` | Workouts account-deletion acknowledgement (`DELETE /v1/users/me`) |
 | `@hollis-studio/contracts/password` | Password policy, reset, and validation contracts |
 | `@hollis-studio/contracts/primitives` | Cross-domain primitives and result helpers |
 | `@hollis-studio/contracts/errors` | Shared error codes and result/error helpers |

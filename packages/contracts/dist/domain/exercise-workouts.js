@@ -51,6 +51,76 @@ export const WorkoutsExerciseTrackingModeSchema = z.enum(WORKOUTS_EXERCISE_TRACK
 export const EXERCISE_ALIAS_SOURCES = ['scan', 'manual', 'ai_match', 'user_confirmed'];
 export const ExerciseAliasSourceSchema = z.enum(EXERCISE_ALIAS_SOURCES);
 // ---------------------------------------------------------------------------
+// Exercise provenance + moderation (Hollis Workouts #46)
+//
+// The user-generated exercise pipeline EXTENDS the canonical exercise row
+// rather than introducing a parallel persistence model. A row is "canonical"
+// (publicly presentable library content) iff:
+//
+//     source === 'library' && ownerUserId === null && supersededBy === null
+//
+// Anything else is user-owned content that must never be presented as
+// canonical. `source` keeps its existing three-value vocabulary — 'library'
+// IS the founder decision's `canonical`, and the two user-scoped values are
+// its `user`.
+//
+// Moderation outcomes:
+//   promote → source flips to 'library', ownerUserId cleared, status 'approved'
+//   merge   → supersededBy set to the surviving id, status 'merged', row kept
+//             as a redirect so existing session/program/baseline references
+//             resolve without silent ID loss
+//   reject  → status 'rejected' + rejectionReason, row stays user-owned
+// ---------------------------------------------------------------------------
+export const EXERCISE_MODERATION_STATUSES = [
+    'draft',
+    'pending',
+    'approved',
+    'rejected',
+    'merged',
+];
+export const ExerciseModerationStatusSchema = z.enum(EXERCISE_MODERATION_STATUSES);
+/**
+ * Provenance/moderation block carried by every exercise row (canonical and
+ * user-owned alike). Every field defaults to the "plain canonical library row"
+ * value so pre-#46 rows and pre-#46 clients keep parsing unchanged.
+ */
+export const ExerciseProvenanceSchema = z.object({
+    /** Owning user for user-generated rows; null for canonical library rows. */
+    ownerUserId: z.string().min(1).nullable().default(null),
+    /** True once the owner has explicitly suggested the row for the public library. */
+    submittedForReview: z.boolean().default(false),
+    submittedAt: z.coerce.date().nullable().default(null),
+    moderationStatus: ExerciseModerationStatusSchema.nullable().default(null),
+    /** Moderator-supplied reason; only meaningful when moderationStatus === 'rejected'. */
+    rejectionReason: z.string().max(1000).nullable().default(null),
+    /** Surviving exercise id this row was merged into. Non-null == redirect row. */
+    supersededBy: z.string().min(1).nullable().default(null),
+    moderatedAt: z.coerce.date().nullable().default(null),
+    /** Moderator user id that recorded the last decision. */
+    moderatedBy: z.string().min(1).nullable().default(null),
+});
+/** The provenance shape of a plain, unsubmitted, user-owned row. */
+export const EXERCISE_PROVENANCE_DEFAULTS = {
+    ownerUserId: null,
+    submittedForReview: false,
+    submittedAt: null,
+    moderationStatus: null,
+    rejectionReason: null,
+    supersededBy: null,
+    moderatedAt: null,
+    moderatedBy: null,
+};
+/**
+ * Structural canonical-library predicate. Every surface that presents the
+ * public library MUST gate on this — filtering on `source` alone lets a
+ * promoted-then-merged redirect row leak back into pickers.
+ */
+export function isCanonicalLibraryExercise(row) {
+    return (row.source === 'library' &&
+        (row.ownerUserId ?? null) === null &&
+        (row.supersededBy ?? null) === null);
+}
+// ---------------------------------------------------------------------------
 // UserExerciseSyncSchema — request body for POST/PUT /v1/user-exercises
 // AUDIT-3 fix: trackingMode is .nullable() (was .optional() server-side,
 // rejecting explicit null from the client).
@@ -83,6 +153,10 @@ export const UserExerciseRecordSchema = UserExerciseSyncSchema.extend({
     userId: z.string().min(1),
     createdAt: z.coerce.date(),
     updatedAt: z.coerce.date(),
+    // #46 provenance/moderation mirror. Response-only on purpose: these fields
+    // are absent from UserExerciseSyncSchema so a client PUT can never forge its
+    // own moderation state — only the moderation routes write them.
+    ...ExerciseProvenanceSchema.shape,
 });
 // ---------------------------------------------------------------------------
 // ExerciseAliasSyncSchema — request body for POST/PUT /v1/exercise-aliases
@@ -129,5 +203,7 @@ export const CanonicalExerciseRecordSchema = z.object({
     isActive: z.boolean(),
     trackingMode: WorkoutsExerciseTrackingModeSchema.nullable(),
     createdAt: z.coerce.date(),
+    // #46 provenance/moderation. Canonical library rows carry the defaults.
+    ...ExerciseProvenanceSchema.shape,
 });
 //# sourceMappingURL=exercise-workouts.js.map

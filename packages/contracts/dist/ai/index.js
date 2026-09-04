@@ -32,4 +32,7 @@ export * from './workout-ai-wire.js';
 // No need to re-export them here to avoid duplicate exports
 // Workouts AI persistence entities - AiAuditLogEntrySchema, SmartBuilderDraftPayloadSchema, etc.
 export * from './persistence.js';
+// AI token pricing + USD cost estimation - MODEL_PRICING, estimateUsageCostUsd.
+// Also available as the leaner subpath '@hollis-studio/contracts/ai/pricing'.
+export * from './pricing.js';
 //# sourceMappingURL=index.js.map

@@ -12,6 +12,7 @@ export * from "./csrf.js";
 export * from "./endpoints.js";
 export * from "./health-clinical-schemas.js";
 export * from "./response.js";
+export * from "./workouts-envelope.js";
 export * from "./routes.js";
 // Legacy ./routes.ts takes precedence over ./routes/index.ts during resolution,
 // so route modules added under ./routes/* need explicit re-exports here until

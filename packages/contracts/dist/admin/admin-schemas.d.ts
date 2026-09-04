@@ -1554,8 +1554,8 @@ export type LabDataExtractionResultWithGovernanceFromSchema = z.infer<typeof lab
  */
 export declare const metricGovernanceActionSchema: z.ZodObject<{
     action: z.ZodEnum<{
-        approve: "approve";
         reject: "reject";
+        approve: "approve";
     }>;
     reviewNotes: z.ZodOptional<z.ZodString>;
     setAsCanonical: z.ZodOptional<z.ZodBoolean>;

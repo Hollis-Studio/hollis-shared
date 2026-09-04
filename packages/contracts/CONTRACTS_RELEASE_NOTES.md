@@ -1,9 +1,12 @@
 # @hollis-studio/contracts — Release Notes
 
-## Unreleased (2026-08-23) — audit follow-up batch
+## 0.2.0-alpha.62 (2026-09-04) — audit follow-up batch
 
-**Version header to be filled in by the release/bump step.** Two behavior
-changes (session allocations, contract-duration discounts); everything else is
+**Released as alpha.62. This content was authored for alpha.56 but never reached
+`main`, so alpha.57 through alpha.61 were all cut from a tree without it — the
+offer sheet had silently reverted to 3.1.0 and the legal documents to their
+pre-correction versions. alpha.62 is the first release carrying both lines.**
+Two behavior changes (session allocations, contract-duration discounts); everything else is
 additive.
 
 ### `domain/sessions.ts` — BEHAVIOR CHANGE
@@ -76,6 +79,148 @@ additive.
   `admin/admin-schemas.ts` can reuse it without an import cycle.
   `api/health-clinical-schemas.ts` re-exports every moved name, so all existing
   import sites are unaffected.
+## 0.2.0-alpha.58 (2026-08-24)
+
+**Closes the cost-accounting half of Workouts AI telemetry (workouts #62).
+Additive only; no existing field changed meaning and nothing for
+hollis-health-app to do.**
+
+alpha.51 taught the recorded usage row to carry cache and audio token counts,
+but three things were still missing before recorded spend could be repriced
+exactly: media attribution, the >200k long-context tier, and a price table the
+*server* was allowed to import.
+
+### `ai/pricing.ts` (new)
+
+The Gemini price table and its estimators move here from
+`hollis-workouts/src/utils/aiPricing.ts`, unchanged in behaviour:
+**`ModelPricing`**, **`MODEL_PRICING`**, **`DEFAULT_PRICING`**,
+**`estimateCostUsd`**, **`estimateCostUsdFromTotals`**,
+**`estimateCostUsdDetailed`**, **`estimateUsageCostUsd`**, plus two additions —
+**`longContextThresholdFor(model)`** and the `longContext` / `imageInput` /
+`cacheStorageTokenHours` fields on `RecordedUsageCounts`.
+
+It belongs in contracts because BOTH sides of Workouts price the same recorded
+rows and must agree to the cent: the mobile Token Usage dashboard renders the
+"≈ $X" labels, and the server now enforces a per-entitlement monthly COST
+budget off the same table. Workouts' architecture contract forbids the server
+importing app `src/`, so the only alternative was a second copy of the price
+sheet with nothing keeping the two in step.
+
+`estimateUsageCostUsd` gained one real behaviour change: it prices the
+long-context tier from the `longContext` sub-bucket the recorder classified per
+request, and **never** infers the tier from a monthly aggregate. A month of
+ordinary calls sums past 200k without any single prompt doing so; charging that
+at the >200k rate would over-price by up to 2x.
+
+New subpath export: `@hollis-studio/contracts/ai/pricing` (also re-exported from
+the `ai` and root barrels, and pinned by the Node-ESM smoke import).
+
+### `ai/persistence.ts`
+
+- **`AiFeatureModelUsageSchema` / `AiFeatureUsageSchema`** gain optional
+  **`imageInput`** (non-cached IMAGE/VIDEO prompt tokens — recorded for
+  attribution, priced at the text input rate) and optional **`longContext`**
+  (**`AiLongContextUsageSchema`**: the counters contributed by calls whose own
+  prompt crossed the model's threshold). Both are subsets of the parent
+  counters; `input` still means the provider's `promptTokenCount` on every row
+  ever written.
+- Deliberately **not** modelled: context-cache STORAGE token-hours. Workouts
+  never calls `caches.create` — every recorded cache hit comes from Gemini's
+  implicit caching, which bills no storage — so a persisted counter would be a
+  field guaranteed to be 0. `RecordedUsageCounts` still accepts
+  `cacheStorageTokenHours` so an explicit-cache path can be priced the day one
+  ships.
+- **Admin rollups now carry cost.** `AiTokenUsageFeatureRollupSchema`,
+  `AiTokenUsageModelRollupSchema`, `AiTokenUsageAccountRollupSchema` and the
+  summary `totals` all gain the full token-class breakdown plus a required
+  **`costUsd`**, and the summary gains **`byFeatureModel`**
+  (**`AiTokenUsageFeatureModelRollupSchema`**, defaults to `[]`). Before this,
+  the admin "All users" view could only price a feature rollup at the flat
+  `unknown` rate, because the per-(feature, model) split it needed lived on the
+  server. `costUsd` is computed server-side for that reason. The
+  (feature × model) grain is the one the unit-economics decision register asks
+  for: `byFeature` and `byModel` are its margins, and neither alone answers
+  "which surface is expensive on which model".
+
+**Breaking for one consumer only:** anything constructing an
+`AiTokenUsageAdminSummary` must now supply `costUsd` on each rollup. That is the
+Workouts admin summary route and nothing else.
+
+
+## 0.2.0-alpha.57 (2026-08-24)
+
+> **`0.2.0-alpha.56` is a burned version — do not consume it.** It was published
+> from a killed agent session as a bare version bump: identical content to
+> alpha.55, with none of the modules described below and no new subpath exports.
+> It is not broken, just empty. Everything for workouts #43 ships in alpha.57.
+
+
+**Closes the Workouts REST single-contract-source migration (workouts #43).
+Two additions, both purely additive: the Workouts response envelope gets a
+contracts owner, and `DELETE /v1/users/me` gets a response body it can be held
+to. No existing schema changes.**
+
+### `api/workouts-envelope.ts` (new)
+
+The suite runs two different response envelopes and this package now owns both,
+under names that cannot shadow each other:
+
+| Server                    | Envelope                | Unwrap                     |
+| ------------------------- | ----------------------- | -------------------------- |
+| Hollis Health / Identity  | `{ success: true, data }` | `unwrapEnvelope`         |
+| Hollis Workouts           | `{ ok: true, data }`      | `unwrapWorkoutsEnvelope` |
+
+- **`WorkoutsErrorEnvelopeSchema` / `WorkoutsErrorDetailSchema`** — the
+  `{ ok: false, err: { code, message, details? } }` body emitted by
+  `AppError.toJSON()`, the error-handler middleware, and `sendError()`.
+- **`WorkoutsSuccessEnvelope<T>`** (interface) +
+  **`createWorkoutsSuccessEnvelopeSchema(dataSchema)`** — the server's send
+  helpers are generic over an already-parsed payload and want the type; a client
+  validating a whole body wants the schema.
+- **`isWorkoutsErrorEnvelope`**, **`unwrapWorkoutsEnvelope`**.
+
+The two envelopes are deliberately **not** unified: the servers deploy
+independently, so renaming either one is a breaking wire change on every route
+of whichever side moved. This module makes the divergence explicit and
+single-sourced instead of hand-mirrored across four files in two repos, and its
+tests fail if the shapes ever drift together.
+
+New subpath export: `@hollis-studio/contracts/api/workouts-envelope` (also
+re-exported from the `api` and root barrels).
+
+### `domain/workouts-account.ts` (new)
+
+- **`WorkoutsAccountDeletionAckSchema`** — `200` body for the Workouts
+  `DELETE /v1/users/me` account wipe: `{ deleted: true, userId, deletedAt,
+  deletedModels, ackVersion }`. The endpoint answered a bare `204 No Content`
+  before, which made the one destructive endpoint in the API the only one whose
+  response no contract could describe (the last straggler in the Workouts
+  wire-contracts registry).
+- `deletedModels` is a per-Prisma-model count map, open-ended by design: the
+  wipe transaction spans ~20 user-scoped tables and grows, and a closed enum
+  would make a *correct* deletion fail its own response parse. "Which tables did
+  this actually clear" is the question a GDPR/CCPA or App Store Guideline 5.1.1
+  erasure audit asks.
+- **`WORKOUTS_ACCOUNT_DELETION_ACK_VERSION`** — ack revision, so a client can
+  tell an older server from a newer one that genuinely reported nothing.
+
+Named with the `Workouts` prefix (the `WorkoutsUserProfileSchema` convention)
+because Identity Service also deletes accounts, at `DELETE /auth/account`, and
+erases a different thing — the mobile flow calls both and reports differently
+depending on which half failed.
+
+New subpath export: `@hollis-studio/contracts/domain/workouts-account`.
+
+### Consumer upgrade path
+
+1. Pin `0.2.0-alpha.57` in hollis-workouts root + server `package.json`
+   (+ lockfiles) and in `scripts/checks/wire-contracts-registry.json`.
+2. `DELETE /v1/users/me` now answers `200` with a body instead of `204`. The
+   only caller is `deleteAccount()` in `src/services/auth/identityApi.ts`, which
+   requests it as `workoutsFetch<unknown>` and ignores the body — no client
+   change is required. Greenfield: no external API consumers.
+3. No changes for hollis-health-app.
 
 ## 0.2.0-alpha.55 (2026-08-20)
 

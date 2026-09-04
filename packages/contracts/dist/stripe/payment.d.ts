@@ -53,8 +53,8 @@ export declare const RefundRequestSchema: z.ZodObject<{
     paymentIntentId: z.ZodString;
     amountInCents: z.ZodOptional<z.ZodNumber>;
     reason: z.ZodOptional<z.ZodEnum<{
-        requested_by_customer: "requested_by_customer";
         duplicate: "duplicate";
+        requested_by_customer: "requested_by_customer";
         fraudulent: "fraudulent";
     }>>;
     notes: z.ZodOptional<z.ZodString>;
