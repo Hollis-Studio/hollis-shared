@@ -1,11 +1,15 @@
 # @hollis-studio/contracts — Release Notes
 
-## 0.2.0-alpha.62 (2026-09-04) — audit follow-up batch
+## 0.2.0-alpha.63 (2026-09-04) — audit follow-up batch
 
-**Released as alpha.62. This content was authored for alpha.56 but never reached
-`main`, so alpha.57 through alpha.61 were all cut from a tree without it — the
-offer sheet had silently reverted to 3.1.0 and the legal documents to their
-pre-correction versions. alpha.62 is the first release carrying both lines.**
+**Released as alpha.63. alpha.62 was burned: a concurrent session published it
+at 16:51Z from the pre-merge tree, five minutes before this merge landed, so the
+published alpha.62 carries offer sheet 3.1.0 and the OLD legal versions. Do not
+consume alpha.62 — it regresses the legal documents. This content was
+originally authored for alpha.56 but never reached `main`, so alpha.57 through
+alpha.62 were all cut from a tree without it — the offer sheet had silently
+reverted to 3.1.0 and the legal documents to their pre-correction versions.
+alpha.63 is the first release carrying both lines.**
 Two behavior changes (session allocations, contract-duration discounts); everything else is
 additive.
 
