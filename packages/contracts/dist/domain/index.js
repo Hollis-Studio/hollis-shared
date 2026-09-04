@@ -142,6 +142,9 @@ export * from './workouts-conversation-summary.js';
 // Workouts AI conversation threads - ConversationThreadSchema, ConversationAppendBodySchema, etc.
 export * from './workouts-conversations.js';
 export * from './workouts-session-analysis.js';
+// Workouts program rotation (#70) - ProgramRotationSchema, ProgramRotationPutBodySchema,
+// ProgramRotationAdvanceBodySchema, ProgramRotationEntrySchema
+export * from './workouts-program-rotation.js';
 // Workouts user-generated exercise moderation (#46) - ExerciseSubmissionCreateSchema,
 // ExerciseModerationDecisionSchema, ExerciseDedupSuggestionSchema, etc.
 export * from './workouts-exercise-moderation.js';

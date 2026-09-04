@@ -1,7 +1,7 @@
 {
   "_comment_BUILD_001": "RESOLVED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Add explicit package.json exports only for currently consumed public subpaths. Do not add wildcard exports or local compatibility barrels. Reviewed: 2026-05-12 (Phase E/F shared extraction cleanup)",
   "name": "@hollis-studio/contracts",
-  "version": "0.2.0-alpha.61",
+  "version": "0.2.0-alpha.62",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -323,6 +323,11 @@
       "import": "./dist/domain/workouts-session-analysis.js",
       "types": "./dist/domain/workouts-session-analysis.d.ts",
       "default": "./dist/domain/workouts-session-analysis.js"
+    },
+    "./domain/workouts-program-rotation": {
+      "import": "./dist/domain/workouts-program-rotation.js",
+      "types": "./dist/domain/workouts-program-rotation.d.ts",
+      "default": "./dist/domain/workouts-program-rotation.js"
     },
     "./domain/workouts-exercise-moderation": {
       "import": "./dist/domain/workouts-exercise-moderation.js",
