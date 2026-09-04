@@ -963,6 +963,13 @@ export const ADMIN_LEADS_ROUTES = {
   /** POST - Create a lead manually (phone call / walk-in) */
   CREATE: "/api/admin/leads",
 
+  /**
+   * POST - Atomically find the most recent convertible lead by email and
+   * convert it to ACTIVE_MEMBER, linking the new User.id. Replaces the racy
+   * client-side lookup-then-patch pair.
+   */
+  CONVERT_BY_EMAIL: "/api/admin/leads/convert-by-email",
+
   /** PATCH - Update lead stage */
   updateStage: (id: string) => `/api/admin/leads/${id}/stage` as const,
 

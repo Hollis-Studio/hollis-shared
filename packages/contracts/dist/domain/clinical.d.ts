@@ -519,4 +519,195 @@ export declare const createMockMedication: (overrides?: Partial<Medication>) => 
  * Mock factory for Limitation (testing)
  */
 export declare const createMockLimitation: (overrides?: Partial<Limitation>) => Limitation;
+/** Tobacco use status for lifestyle section. */
+export declare const TOBACCO_USE_OPTIONS: readonly ["never", "former", "current"];
+export declare const tobaccoUseSchema: z.ZodEnum<{
+    never: "never";
+    former: "former";
+    current: "current";
+}>;
+export type TobaccoUse = z.infer<typeof tobaccoUseSchema>;
+/** Alcohol use frequency for lifestyle section. */
+export declare const ALCOHOL_USE_OPTIONS: readonly ["none", "occasional", "regular"];
+export declare const alcoholUseSchema: z.ZodEnum<{
+    none: "none";
+    occasional: "occasional";
+    regular: "regular";
+}>;
+export type AlcoholUse = z.infer<typeof alcoholUseSchema>;
+/** Exercise frequency per week for lifestyle section. */
+export declare const EXERCISE_FREQUENCY_OPTIONS: readonly ["none", "1-2", "3-5", "6+"];
+export declare const exerciseFrequencySchema: z.ZodEnum<{
+    none: "none";
+    "1-2": "1-2";
+    "3-5": "3-5";
+    "6+": "6+";
+}>;
+export type ExerciseFrequency = z.infer<typeof exerciseFrequencySchema>;
+/** Yes/No/Unknown family history flag per condition. */
+export declare const FAMILY_HISTORY_FLAG_OPTIONS: readonly ["yes", "no", "unknown"];
+export declare const familyHistoryFlagSchema: z.ZodEnum<{
+    unknown: "unknown";
+    yes: "yes";
+    no: "no";
+}>;
+export type FamilyHistoryFlag = z.infer<typeof familyHistoryFlagSchema>;
+/**
+ * Common conditions for past medical history checkbox list.
+ * Includes "other" for free-text extension.
+ */
+export declare const PAST_MEDICAL_HISTORY_CONDITIONS: readonly ["diabetes", "hypertension", "high_cholesterol", "heart_disease", "stroke", "thyroid_disorder", "asthma", "cancer", "mental_health_condition"];
+/** Family history schema — yes/no/unknown per condition. */
+export declare const familyHistorySchema: z.ZodObject<{
+    cancer: z.ZodOptional<z.ZodEnum<{
+        unknown: "unknown";
+        yes: "yes";
+        no: "no";
+    }>>;
+    heartDisease: z.ZodOptional<z.ZodEnum<{
+        unknown: "unknown";
+        yes: "yes";
+        no: "no";
+    }>>;
+    diabetes: z.ZodOptional<z.ZodEnum<{
+        unknown: "unknown";
+        yes: "yes";
+        no: "no";
+    }>>;
+    mentalHealth: z.ZodOptional<z.ZodEnum<{
+        unknown: "unknown";
+        yes: "yes";
+        no: "no";
+    }>>;
+}, z.core.$strip>;
+export type FamilyHistory = z.infer<typeof familyHistorySchema>;
+/**
+ * Lifecycle schema for the patient self-intake form (v1).
+ * All fields optional except acknowledgment (which must be true to submit).
+ * PHI: stored encrypted in ClinicalProfile JSON columns on server.
+ *
+ * POST /users/:userId/intake
+ */
+export declare const patientIntakeV1BodySchema: z.ZodObject<{
+    reasonForVisit: z.ZodString;
+    currentMedications: z.ZodOptional<z.ZodString>;
+    allergies: z.ZodOptional<z.ZodString>;
+    pastMedicalHistoryConditions: z.ZodOptional<z.ZodArray<z.ZodEnum<{
+        diabetes: "diabetes";
+        hypertension: "hypertension";
+        high_cholesterol: "high_cholesterol";
+        heart_disease: "heart_disease";
+        stroke: "stroke";
+        thyroid_disorder: "thyroid_disorder";
+        asthma: "asthma";
+        cancer: "cancer";
+        mental_health_condition: "mental_health_condition";
+    }>>>;
+    pastMedicalHistoryOther: z.ZodOptional<z.ZodString>;
+    pastSurgicalHistory: z.ZodOptional<z.ZodString>;
+    familyHistory: z.ZodOptional<z.ZodObject<{
+        cancer: z.ZodOptional<z.ZodEnum<{
+            unknown: "unknown";
+            yes: "yes";
+            no: "no";
+        }>>;
+        heartDisease: z.ZodOptional<z.ZodEnum<{
+            unknown: "unknown";
+            yes: "yes";
+            no: "no";
+        }>>;
+        diabetes: z.ZodOptional<z.ZodEnum<{
+            unknown: "unknown";
+            yes: "yes";
+            no: "no";
+        }>>;
+        mentalHealth: z.ZodOptional<z.ZodEnum<{
+            unknown: "unknown";
+            yes: "yes";
+            no: "no";
+        }>>;
+    }, z.core.$strip>>;
+    tobaccoUse: z.ZodOptional<z.ZodEnum<{
+        never: "never";
+        former: "former";
+        current: "current";
+    }>>;
+    alcoholUse: z.ZodOptional<z.ZodEnum<{
+        none: "none";
+        occasional: "occasional";
+        regular: "regular";
+    }>>;
+    exerciseFrequency: z.ZodOptional<z.ZodEnum<{
+        none: "none";
+        "1-2": "1-2";
+        "3-5": "3-5";
+        "6+": "6+";
+    }>>;
+    acknowledged: z.ZodOptional<z.ZodBoolean>;
+}, z.core.$strip>;
+export type PatientIntakeV1Body = z.infer<typeof patientIntakeV1BodySchema>;
+/**
+ * Response shape for GET /users/:userId/intake
+ * Returns the stored intake data (if any) + whether it is complete.
+ */
+export declare const patientIntakeV1ResponseSchema: z.ZodObject<{
+    currentMedications: z.ZodOptional<z.ZodString>;
+    allergies: z.ZodOptional<z.ZodString>;
+    pastMedicalHistoryConditions: z.ZodOptional<z.ZodArray<z.ZodEnum<{
+        diabetes: "diabetes";
+        hypertension: "hypertension";
+        high_cholesterol: "high_cholesterol";
+        heart_disease: "heart_disease";
+        stroke: "stroke";
+        thyroid_disorder: "thyroid_disorder";
+        asthma: "asthma";
+        cancer: "cancer";
+        mental_health_condition: "mental_health_condition";
+    }>>>;
+    pastMedicalHistoryOther: z.ZodOptional<z.ZodString>;
+    pastSurgicalHistory: z.ZodOptional<z.ZodString>;
+    familyHistory: z.ZodOptional<z.ZodObject<{
+        cancer: z.ZodOptional<z.ZodEnum<{
+            unknown: "unknown";
+            yes: "yes";
+            no: "no";
+        }>>;
+        heartDisease: z.ZodOptional<z.ZodEnum<{
+            unknown: "unknown";
+            yes: "yes";
+            no: "no";
+        }>>;
+        diabetes: z.ZodOptional<z.ZodEnum<{
+            unknown: "unknown";
+            yes: "yes";
+            no: "no";
+        }>>;
+        mentalHealth: z.ZodOptional<z.ZodEnum<{
+            unknown: "unknown";
+            yes: "yes";
+            no: "no";
+        }>>;
+    }, z.core.$strip>>;
+    tobaccoUse: z.ZodOptional<z.ZodEnum<{
+        never: "never";
+        former: "former";
+        current: "current";
+    }>>;
+    alcoholUse: z.ZodOptional<z.ZodEnum<{
+        none: "none";
+        occasional: "occasional";
+        regular: "regular";
+    }>>;
+    exerciseFrequency: z.ZodOptional<z.ZodEnum<{
+        none: "none";
+        "1-2": "1-2";
+        "3-5": "3-5";
+        "6+": "6+";
+    }>>;
+    acknowledged: z.ZodOptional<z.ZodBoolean>;
+    reasonForVisit: z.ZodOptional<z.ZodString>;
+    isComplete: z.ZodBoolean;
+    submittedAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+}, z.core.$strip>;
+export type PatientIntakeV1Response = z.infer<typeof patientIntakeV1ResponseSchema>;
 //# sourceMappingURL=clinical.d.ts.map

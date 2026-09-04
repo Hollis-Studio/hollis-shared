@@ -1,14 +1,17 @@
 /**
  * @ai-context Sessions domain contracts | session types, reset frequencies, allocations
  *
- * Session types map to the services offered by Hollis Health:
+ * Session types currently offered by Hollis Health:
  * - FITNESS_SESSION: 1:1 private coaching sessions
  * - RECOVERY_SESSION: Sauna, ice bath, red light therapy
- * - LABWORK: Blood panel (CMP + hormones)
- * - CLINICIAN_INITIAL: Initial consultation with PCP/RN
- * - CLINICIAN_FOLLOWUP: Regular PCP check-ins
- * - DXA_SCAN: Body composition DEXA scan
- * - SLEEP_SCREENING: Overnight O2/sleep health screening
+ * - MOBILE_SESSION: Mobile/on-location sessions (CONCIERGE only)
+ *
+ * Retired session types (LABWORK, CLINICIAN_INITIAL, CLINICIAN_FOLLOWUP,
+ * DXA_SCAN, SLEEP_SCREENING) remain in the enum because historical
+ * SessionUsage / SessionBalance rows and Appointment records reference them.
+ * They are NOT entitlements: Hollis removed medical services from the business
+ * (2026-07-17 / 2026-08-19) and "does not bill for or sell medical services"
+ * per the signed membership agreement, so they carry no allocation at any tier.
  *
  * deps: zod, user.ts | consumers: all codebases
  */
@@ -193,36 +196,41 @@ export declare const FREE_MONTHLY_ALLOCATION = 2;
  */
 export declare const FREE_MAX_ROLLOVER = 4;
 /**
- * Default tier allocations based on Hollis Health membership structure
+ * Default tier allocations based on Hollis Health membership structure.
  *
- * ESSENTIALS ($749/mo):
+ * Hollis bills for coaching, recovery access and care coordination only. The
+ * medical services that once carried credits here (LABWORK, CLINICIAN_INITIAL,
+ * CLINICIAN_FOLLOWUP, DXA_SCAN, SLEEP_SCREENING) were removed from the business
+ * on 2026-07-17 / 2026-08-19, and the signed membership agreement states Hollis
+ * "does not bill for or sell medical services". Granting credits for them would
+ * be an entitlement the company cannot and must not fulfil, so they are absent
+ * from every tier. The SessionType enum values themselves are retained for
+ * historical usage/balance rows.
+ *
+ * ESSENTIALS:
  * - 8x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
- * - 2x Labwork/year (biannual)
- * - 1x Initial Clinician Consult (annual)
- * - 1x Clinician Followup/year
- * - 1x DXA Scan/year
- * - 2x Sleep Screenings/year (biannual)
  *
- * CORE ($1349/mo):
+ * CORE:
  * - 16x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
- * - 4x Labwork/year (quarterly)
- * - 1x Initial Clinician Consult (annual)
- * - 2x Clinician Followups/year (biannual)
- * - 2x DXA Scans/year (biannual)
- * - 2x Sleep Screenings/month
  *
- * CONCIERGE ($1949/mo):
+ * CONCIERGE:
  * - 24x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
- * - 12x Labwork/year (monthly)
- * - 1x Initial Clinician Consult (annual)
- * - 12x Clinician Followups/year (monthly)
- * - 4x DXA Scans/year (quarterly)
- * - 4x Sleep Screenings/month (weekly)
+ * - 2x Mobile Sessions/mo
  */
 export declare const DEFAULT_TIER_ALLOCATIONS: Record<UserTier, SessionAllocationContract[]>;
+/**
+ * Session types that no longer carry any membership entitlement.
+ *
+ * Kept as data (not just prose) so callers seeding balances, rendering credit
+ * UIs, or auditing allocations can filter deterministically instead of
+ * re-deriving the list from `DEFAULT_TIER_ALLOCATIONS`.
+ */
+export declare const RETIRED_SESSION_TYPES: readonly SessionType[];
+/** Whether a session type is retired (historical data only, never allocated). */
+export declare function isRetiredSessionType(sessionType: SessionType): boolean;
 /**
  * Sources for session usage records.
  * Tracks how sessions were consumed or credited.

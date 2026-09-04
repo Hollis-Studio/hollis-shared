@@ -8,9 +8,9 @@
 
 export const meta = {
   title: "Electronic Communications Consent",
-  version: "1.2.0",
-  effectiveDate: "2026-08-19",
-  contentHash: "e937a23a",
+  version: "1.3.0",
+  effectiveDate: "2026-08-23",
+  contentHash: "bbaa6deb",
 };
 
 export const content = `# Electronic Communications Consent
@@ -23,12 +23,12 @@ Home Office: 691 S Seguin, New Braunfels, TX 78130
 
 ## Section 1. Purpose
 
-This Electronic Communications Consent ("Consent") explains how Hollis Health LLC ("Company," "we," "us," or "our") may communicate with you by electronic means in connection with your membership, account, scheduling, security, care coordination, and related services.
+This Electronic Communications Consent ("Consent") explains how Hollis Health LLC ("Company," "we," "us," or "our") may communicate with you by electronic means in connection with your membership, account, scheduling, security, independent-provider referrals, third-party subscription benefits included with your tier, and related services. Company is not a medical provider and does not send clinical communications.
 
 This Consent is intended to separate:
 
 - **Operational and safety communications**, which are necessary to provide services and manage your account;
-- **Program-support communications**, which support your requested wellness program or coordinated services; and
+- **Program-support communications**, which support your requested wellness program or independent-provider referrals; and
 - **Marketing communications**, which are optional.
 
 ---
@@ -69,10 +69,11 @@ These communications are a required part of maintaining an active membership or 
 Program-support communications may include:
 
 - Training program updates;
-- Nutrition guidance and non-urgent coaching prompts;
-- Notifications that an assessment performed by Company, or a health record you have chosen to share with Company, is available in your secure member dashboard;
+- Wellness coaching prompts and general nutrition information;
+- Notifications that records you've shared or your wellness assessments are available in a secure portal;
 - Non-diagnostic check-in reminders;
-- Care coordination logistics; and
+- Referral logistics for independent providers you've chosen to work with;
+- Enrollment, renewal, and administrative logistics for any third-party subscription benefit included with your membership tier — for example, a reminder to complete your own enrollment with an independent third-party health-testing company whose subscription Company pays for on your behalf. These messages are administrative only; Company does not select your test panel, does not arrange or schedule your specimen collection, does not receive your results from that company, and has no access to your account with that company; and
 - Non-marketing educational content related to services you requested.
 
 To the extent a communication is essential to a service you requested, Company may treat it as an operational communication even if it also supports your program.
@@ -104,6 +105,10 @@ You understand that some communications may be sent using automated systems, inc
 
 Company will use reasonable efforts not to include detailed laboratory results, diagnoses, prescription instructions, or clinical notes in ordinary unencrypted SMS messages or unencrypted email notifications.
 
+### 5.1.1 No Clinical or Results Notifications
+
+Company does not send, and you should not expect, any communication reporting, interpreting, or alerting you to an abnormal, urgent, or clinically significant finding in any record or result. Company does not review or monitor records or results you share for such findings and has no duty to identify, flag, or notify. A notification that a document is available in your secure portal is an availability notice only and is not a review, an interpretation, or a clinical communication. You must rely on the provider who ordered the test or created the record.
+
 ### 5.2 Secure Delivery
 
 Sensitive health information, where made available by Company, is intended to be accessed through secure channels such as:
@@ -131,7 +136,7 @@ You may opt out of marketing communications at any time by:
 
 ### 6.2 Program-Support Preference Changes
 
-You may request to reduce or limit non-essential educational or wellness-content communications. Company may still send communications that are necessary to provide requested services, coordinate care, maintain safety, or administer your account.
+You may request to reduce or limit non-essential educational or wellness-content communications. Company may still send communications that are necessary to provide requested services, coordinate scheduling and program logistics, maintain safety, or administer your account. Company does not coordinate medical care.
 
 ### 6.3 Operational Communications
 

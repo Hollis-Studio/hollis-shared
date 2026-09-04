@@ -12,12 +12,12 @@
 import { z } from "zod";
 import { AccountStatusSchema, ActivityLevelSchema, aiPermanentNoteSchema, SettableAccountStatusSchema, BiologicalSexSchema, FitnessExperienceSchema, GoalDataSourceSchema, LegacyGoalDataSourceSchema, LeadStageSchema, PregnancyStatusSchema, PrimaryGoalSchema, RegistrationStatusSchema, SponsoredPanelStatusSchema, StrategyStatusSchema, StrategyTypeSchema, UserRoleSchema, UserTierSchema, isoDateSchema, isoTimestampSchema, normalizeGoalDataSource, workoutSessionNoteSchema, } from "../domain/index.js";
 import { AdminTaskPrioritySchema, AdminTaskStatusSchema, AdminTaskTypeSchema, } from "../domain/admin-tasks.js";
-import { InjuryRecoveryStatusSchema, LimitationSeveritySchema, MedicalConditionStatusSchema, } from "../domain/clinical.js";
+import { InjuryRecoveryStatusSchema, LimitationSeveritySchema, MedicalConditionStatusSchema, patientIntakeV1BodySchema, } from "../domain/clinical.js";
 import { LabMappingStatusSchema, LabMetricCategorySchema, LabMetricDirectionalitySchema, MetricApprovalStatusSchema, } from "../domain/labs.js";
 import { createPaginatedListSchema } from "../domain/pagination.js";
 import { DynamicMetricGoalDataSourceSchema } from "../domain/training.js";
 import { VolumeLevelSchema } from "../primitives/volume-level.js";
-import { USER_ID_REGEX, bodyWeightKgSchema, heightCmSchema, uuidSchema } from "../schemas/index.js";
+import { USER_ID_REGEX, bodyWeightKgSchema, heightCmSchema, userIdSchema, uuidSchema } from "../schemas/index.js";
 import { FulfillmentStatusSchema } from "../stripe/order.js";
 import { SubscriptionStatusSchema } from "../stripe/subscription.js";
 // ============================================================================
@@ -696,6 +696,33 @@ export const clientIntakePayloadSchema = z.object({
     limitations: z.string().max(5000).optional(),
     medications: z.string().max(5000).optional(),
     medicalConditions: z.string().max(5000).optional(),
+    // --------------------------------------------------------------------------
+    // Patient Intake V1 fields (ClinicalProfile.intake* columns)
+    //
+    // The in-clinic wizard writes the same ClinicalProfile columns the patient
+    // self-intake writes, and `intakeService.isComplete` is
+    // `intakeAcknowledged && Boolean(intakeReasonForVisit)`. Without these two
+    // fields an admin-captured intake could never be marked complete.
+    //
+    // Field names and types are reused from `patientIntakeV1BodySchema` (see
+    // domain/clinical.ts) rather than redefined, so the admin and patient paths
+    // cannot drift. All are optional here: the admin wizard saves partially.
+    // --------------------------------------------------------------------------
+    reasonForVisit: patientIntakeV1BodySchema.shape.reasonForVisit.optional(),
+    currentMedications: patientIntakeV1BodySchema.shape.currentMedications,
+    allergies: patientIntakeV1BodySchema.shape.allergies,
+    pastMedicalHistoryConditions: patientIntakeV1BodySchema.shape.pastMedicalHistoryConditions,
+    pastMedicalHistoryOther: patientIntakeV1BodySchema.shape.pastMedicalHistoryOther,
+    pastSurgicalHistory: patientIntakeV1BodySchema.shape.pastSurgicalHistory,
+    familyHistory: patientIntakeV1BodySchema.shape.familyHistory,
+    tobaccoUse: patientIntakeV1BodySchema.shape.tobaccoUse,
+    alcoholUse: patientIntakeV1BodySchema.shape.alcoholUse,
+    exerciseFrequency: patientIntakeV1BodySchema.shape.exerciseFrequency,
+    /**
+     * Patient confirmed accuracy. `true` + a non-empty `reasonForVisit` is what
+     * makes the stored intake complete — see server/src/services/intakeService.ts.
+     */
+    acknowledged: patientIntakeV1BodySchema.shape.acknowledged,
 });
 // ============================================================================
 // EXERCISE FILTER SCHEMAS
@@ -966,8 +993,53 @@ export const adminLeadStageUpdateBodySchema = z.object({
      * Optional: set the convertedUserId on the lead row when transitioning to
      * ACTIVE_MEMBER.  Ignored by existing callers that omit it — fully backward-
      * compatible.
+     *
+     * This is a `User.id`, and User IDs are HH-XXXXXX barcodes, never UUIDs
+     * (server/prisma/schema.prisma: "This value IS the barcode"). The schema
+     * declared `uuidSchema` until 2026-08-23, which would have rejected every
+     * real user ID had a caller ever sent one.
      */
-    convertedUserId: uuidSchema.optional(),
+    convertedUserId: userIdSchema.optional(),
+});
+/**
+ * PATCH /api/admin/leads/:id — update mutable lead fields.
+ *
+ * When `convertedUserId` is supplied the server atomically transitions the lead
+ * to ACTIVE_MEMBER and sets the FK, so a single PATCH covers both the stage
+ * change and the linkage. `null` clears the field.
+ */
+export const adminLeadUpdateBodySchema = z.object({
+    /** ISO datetime string (with offset), or null to clear the consultation date. */
+    consultationDate: z.string().datetime({ offset: true }).nullable().optional(),
+    /** User.id (HH-XXXXXX barcode) of the newly registered member. */
+    convertedUserId: userIdSchema.nullable().optional(),
+});
+/**
+ * POST /api/admin/leads/convert-by-email — atomic lookup + convert.
+ *
+ * Replaces the racy two-step (client fetches lead id, then PATCHes it) with a
+ * single serializable server transaction.
+ */
+export const adminLeadConvertByEmailBodySchema = z.object({
+    /** Normalized email of the lead to convert. Not logged — treat as PHI-adjacent. */
+    email: z.string().email("Valid email is required"),
+    /** User.id (HH-XXXXXX barcode) of the newly registered member. */
+    userId: userIdSchema,
+    /**
+     * When true, the caller asserts a convertible lead MUST exist for this email.
+     * The server then answers 422 (hard error) instead of 404 (walk-in no-op) when
+     * none is found, so a mistyped email cannot masquerade as a walk-in.
+     */
+    expectedLead: z.boolean().optional().default(false),
+});
+/** Success payload for POST /api/admin/leads/convert-by-email. */
+export const adminLeadConvertByEmailResponseSchema = z.object({
+    /** LeadPipeline row id (UUID). */
+    id: uuidSchema,
+    stage: LeadStageSchema,
+    stageChangedAt: isoTimestampSchema,
+    /** Always populated on success — the server rejects a conversion that did not persist. */
+    convertedUserId: userIdSchema,
 });
 export const adminMessagesThreadParamsSchema = z.object({
     userId: z

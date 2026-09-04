@@ -1,14 +1,17 @@
 /**
  * @ai-context Sessions domain contracts | session types, reset frequencies, allocations
  *
- * Session types map to the services offered by Hollis Health:
+ * Session types currently offered by Hollis Health:
  * - FITNESS_SESSION: 1:1 private coaching sessions
  * - RECOVERY_SESSION: Sauna, ice bath, red light therapy
- * - LABWORK: Blood panel (CMP + hormones)
- * - CLINICIAN_INITIAL: Initial consultation with PCP/RN
- * - CLINICIAN_FOLLOWUP: Regular PCP check-ins
- * - DXA_SCAN: Body composition DEXA scan
- * - SLEEP_SCREENING: Overnight O2/sleep health screening
+ * - MOBILE_SESSION: Mobile/on-location sessions (CONCIERGE only)
+ *
+ * Retired session types (LABWORK, CLINICIAN_INITIAL, CLINICIAN_FOLLOWUP,
+ * DXA_SCAN, SLEEP_SCREENING) remain in the enum because historical
+ * SessionUsage / SessionBalance rows and Appointment records reference them.
+ * They are NOT entitlements: Hollis removed medical services from the business
+ * (2026-07-17 / 2026-08-19) and "does not bill for or sell medical services"
+ * per the signed membership agreement, so they carry no allocation at any tier.
  *
  * deps: zod, user.ts | consumers: all codebases
  */
@@ -24,6 +27,7 @@ import { USER_TIERS } from "./user.js";
 export const SESSION_TYPES = [
     "FITNESS_SESSION", // 1:1 Training sessions
     "RECOVERY_SESSION", // Sauna, Ice Bath, Red Light (unlimited in all tiers, but tracked)
+    // RETIRED (no allocation at any tier) — retained for historical rows only.
     "LABWORK", // CMP + hormones blood panel
     "CLINICIAN_INITIAL", // Initial PCP/RN consultation
     "CLINICIAN_FOLLOWUP", // Regular PCP check-ins
@@ -143,34 +147,29 @@ export const FREE_MONTHLY_ALLOCATION = 2;
  */
 export const FREE_MAX_ROLLOVER = 4;
 /**
- * Default tier allocations based on Hollis Health membership structure
+ * Default tier allocations based on Hollis Health membership structure.
  *
- * ESSENTIALS ($749/mo):
+ * Hollis bills for coaching, recovery access and care coordination only. The
+ * medical services that once carried credits here (LABWORK, CLINICIAN_INITIAL,
+ * CLINICIAN_FOLLOWUP, DXA_SCAN, SLEEP_SCREENING) were removed from the business
+ * on 2026-07-17 / 2026-08-19, and the signed membership agreement states Hollis
+ * "does not bill for or sell medical services". Granting credits for them would
+ * be an entitlement the company cannot and must not fulfil, so they are absent
+ * from every tier. The SessionType enum values themselves are retained for
+ * historical usage/balance rows.
+ *
+ * ESSENTIALS:
  * - 8x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
- * - 2x Labwork/year (biannual)
- * - 1x Initial Clinician Consult (annual)
- * - 1x Clinician Followup/year
- * - 1x DXA Scan/year
- * - 2x Sleep Screenings/year (biannual)
  *
- * CORE ($1349/mo):
+ * CORE:
  * - 16x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
- * - 4x Labwork/year (quarterly)
- * - 1x Initial Clinician Consult (annual)
- * - 2x Clinician Followups/year (biannual)
- * - 2x DXA Scans/year (biannual)
- * - 2x Sleep Screenings/month
  *
- * CONCIERGE ($1949/mo):
+ * CONCIERGE:
  * - 24x Fitness Sessions/mo
  * - Unlimited Recovery (tracked)
- * - 12x Labwork/year (monthly)
- * - 1x Initial Clinician Consult (annual)
- * - 12x Clinician Followups/year (monthly)
- * - 4x DXA Scans/year (quarterly)
- * - 4x Sleep Screenings/month (weekly)
+ * - 2x Mobile Sessions/mo
  */
 export const DEFAULT_TIER_ALLOCATIONS = {
     ESSENTIALS: [
@@ -184,31 +183,6 @@ export const DEFAULT_TIER_ALLOCATIONS = {
             quantity: -1,
             resetFrequency: RESET_FREQUENCY.MONTHLY,
         }, // Unlimited
-        {
-            sessionType: SESSION_TYPE.LABWORK,
-            quantity: 1,
-            resetFrequency: RESET_FREQUENCY.BIANNUAL,
-        },
-        {
-            sessionType: SESSION_TYPE.CLINICIAN_INITIAL,
-            quantity: 1,
-            resetFrequency: RESET_FREQUENCY.ANNUAL,
-        },
-        {
-            sessionType: SESSION_TYPE.CLINICIAN_FOLLOWUP,
-            quantity: 1,
-            resetFrequency: RESET_FREQUENCY.ANNUAL,
-        },
-        {
-            sessionType: SESSION_TYPE.DXA_SCAN,
-            quantity: 1,
-            resetFrequency: RESET_FREQUENCY.ANNUAL,
-        },
-        {
-            sessionType: SESSION_TYPE.SLEEP_SCREENING,
-            quantity: 1,
-            resetFrequency: RESET_FREQUENCY.BIANNUAL,
-        },
     ],
     CORE: [
         {
@@ -221,31 +195,6 @@ export const DEFAULT_TIER_ALLOCATIONS = {
             quantity: -1,
             resetFrequency: RESET_FREQUENCY.MONTHLY,
         }, // Unlimited
-        {
-            sessionType: SESSION_TYPE.LABWORK,
-            quantity: 1,
-            resetFrequency: RESET_FREQUENCY.QUARTERLY,
-        },
-        {
-            sessionType: SESSION_TYPE.CLINICIAN_INITIAL,
-            quantity: 1,
-            resetFrequency: RESET_FREQUENCY.ANNUAL,
-        },
-        {
-            sessionType: SESSION_TYPE.CLINICIAN_FOLLOWUP,
-            quantity: 1,
-            resetFrequency: RESET_FREQUENCY.BIANNUAL,
-        },
-        {
-            sessionType: SESSION_TYPE.DXA_SCAN,
-            quantity: 1,
-            resetFrequency: RESET_FREQUENCY.BIANNUAL,
-        },
-        {
-            sessionType: SESSION_TYPE.SLEEP_SCREENING,
-            quantity: 2,
-            resetFrequency: RESET_FREQUENCY.MONTHLY,
-        },
     ],
     CONCIERGE: [
         {
@@ -259,37 +208,30 @@ export const DEFAULT_TIER_ALLOCATIONS = {
             resetFrequency: RESET_FREQUENCY.MONTHLY,
         }, // Unlimited
         {
-            sessionType: SESSION_TYPE.LABWORK,
-            quantity: 1,
-            resetFrequency: RESET_FREQUENCY.MONTHLY,
-        },
-        {
-            sessionType: SESSION_TYPE.CLINICIAN_INITIAL,
-            quantity: 1,
-            resetFrequency: RESET_FREQUENCY.ANNUAL,
-        },
-        {
-            sessionType: SESSION_TYPE.CLINICIAN_FOLLOWUP,
-            quantity: 1,
-            resetFrequency: RESET_FREQUENCY.MONTHLY,
-        },
-        {
-            sessionType: SESSION_TYPE.DXA_SCAN,
-            quantity: 1,
-            resetFrequency: RESET_FREQUENCY.QUARTERLY,
-        },
-        {
-            sessionType: SESSION_TYPE.SLEEP_SCREENING,
-            quantity: 4,
-            resetFrequency: RESET_FREQUENCY.MONTHLY,
-        },
-        {
             sessionType: SESSION_TYPE.MOBILE_SESSION,
             quantity: 2,
             resetFrequency: RESET_FREQUENCY.MONTHLY,
         },
     ],
 };
+/**
+ * Session types that no longer carry any membership entitlement.
+ *
+ * Kept as data (not just prose) so callers seeding balances, rendering credit
+ * UIs, or auditing allocations can filter deterministically instead of
+ * re-deriving the list from `DEFAULT_TIER_ALLOCATIONS`.
+ */
+export const RETIRED_SESSION_TYPES = [
+    SESSION_TYPE.LABWORK,
+    SESSION_TYPE.CLINICIAN_INITIAL,
+    SESSION_TYPE.CLINICIAN_FOLLOWUP,
+    SESSION_TYPE.DXA_SCAN,
+    SESSION_TYPE.SLEEP_SCREENING,
+];
+/** Whether a session type is retired (historical data only, never allocated). */
+export function isRetiredSessionType(sessionType) {
+    return RETIRED_SESSION_TYPES.includes(sessionType);
+}
 // ============================================================================
 // SESSION USAGE SOURCES
 // ============================================================================

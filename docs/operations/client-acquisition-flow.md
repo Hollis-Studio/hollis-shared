@@ -132,21 +132,22 @@ Then cover, in order:
 4. **Ask for the sign-up.** "Does this feel right? If so, I'll get you set up today so we can start this week."
 5. **If yes:** open `/registrations` in web-admin and launch `ConsultationFlowModal`. If no: thank them, ask if they want to stay in the pipeline, and either move lead to `PROPOSAL_SENT` (will follow up) or `CHURNED` (with reason).
 
-### 5.3 ConsultationFlowModal — 11 steps
+### 5.3 ConsultationFlowModal — 12 steps
 
-`hollis-health-app/web-admin/components/admin/ConsultationFlowModal.tsx` walks through these in order. All run on Isaac's laptop with the prospect sitting next to him.
+`hollis-health-app/web-admin/components/admin/ConsultationFlowModal.tsx` walks through these in order (`CONSULTATION_FLOW_STEPS` in `ConsultationFlowTransitions.ts` is the authoritative list). All run on Isaac's laptop with the prospect sitting next to him.
 
-1. **client-info** — Full name, DOB, email, phone, address, emergency contact. Issues a pre-issued patient barcode at flow start.
+1. **client-info** — Full name, DOB, email, phone, address, emergency contact.
 2. **intake** — Reason for visit, current medications, allergies, past medical history, family history, social history (writes to `ClinicalProfile.intake*` fields).
 3. **tier-selection** — ESSENTIALS / CORE / CONCIERGE.
-4. **contract-duration** — 4 mo (0% off) / 8 mo (5% off) / 12 mo (10% off).
-5. **sign-membership** — Membership Agreement. Signed on tablet. Stored in `ConsentRecord` with version hash + IP + UA.
-6. **sign-liability** — Liability Waiver. Same.
-7. **sign-consent** — Informed Consent. Same.
-8. **sign-comms** — Electronic Communications Consent. Same.
-9. **sign-release** *(optional)* — Photo/Video Release if you want to use their image in marketing.
-10. **payment** — Stripe payment. See §5.4 for the two paths.
-11. **success** — Generates a scannable QR-encoded barcode for the new member. Member uses this in the patient app on first launch.
+4. **contract-duration** — 4 mo (0% off) / 8 mo (5% off) / 12 mo (10% off). **The registration record — and with it the patient barcode — is created on leaving this step**, not at flow start: the wizard needs the tier and term before it can create the user. If registration creation fails here the wizard refuses to advance.
+5. **sign-npp** — HIPAA Notice of Privacy Practices. Acknowledgment-only (45 CFR §164.520 requires it at or before first service). Stored in `ConsentRecord` with version hash + IP + UA, like every other signed document.
+6. **sign-membership** — Membership Agreement. Signed on tablet. Same storage.
+7. **sign-liability** — Liability Waiver. Same.
+8. **sign-consent** — Informed Consent. Same.
+9. **sign-comms** — Electronic Communications Consent. Same.
+10. **sign-release** *(optional)* — Photo/Video Release if you want to use their image in marketing. The only signing step not in `REQUIRED_CONSENT_DOCS`.
+11. **payment** — Stripe payment. See §5.4 for the two paths.
+12. **success** — Displays the scannable QR-encoded barcode created at step 4. Member uses this in the patient app on first launch.
 
 ### 5.4 Payment — manual entry at launch; Terminal post-launch
 
@@ -295,7 +296,7 @@ Status snapshot as of **2026-05-20** (post 7-fix engineering batch). See [`../re
 ### 🔴 P0 — owner/ops actions still required (no code work)
 1. ~~**BAA with White Horse Holistic Health**~~ — **closed 2026-08-19, not by signing.** The WHH relationship ended; no data ever flowed and none will. See [`baa-tracker.md`](./baa-tracker.md).
 2. **BAA with Sentry** — error payloads visible to Sentry even with PHI scrubbing.
-3. **`HIPAA_NPP` consent type** — Agent K wrote NPP content (`hipaa-npp-content.md`) but the `ConsentDocumentType.HIPAA_NPP` enum value, migration, and `ConsultationFlowModal` enrollment integration are not yet shipped. Patients must acknowledge NPP before or at first service per 45 CFR §164.520.
+3. ~~**`HIPAA_NPP` consent type**~~ — **CLOSED / SHIPPED.** `ConsentDocumentType.HIPAA_NPP` exists, `HIPAA_NPP` is in `REQUIRED_CONSENT_DOCS`, the document ships as `@hollis-studio/contracts/admin/legal-documents/hipaaNpp.ts` (v1.2.0), and `ConsultationFlowModal` collects the acknowledgment at the `sign-npp` step (§5.3 step 5) — satisfying 45 CFR §164.520.
 4. **Apply pending Prisma migrations to prod** — `20260520000000_phi_access_log_rls` (then `ALTER ROLE <app_service> BYPASSRLS;`) and `hollis-identity` initial migration.
 5. **Stripe prod keys → AWS Secrets Manager** — currently only test keys in `server/.env`.
 6. **`SENTRY_DSN` → AWS Secrets Manager** — blank in all environments today; prod crashes will be silent.
@@ -357,10 +358,10 @@ Run this full sequence in a staging environment with Stripe in test mode before 
 
 ### 12.4 Stage 3 — In-person intro + signup
 - [ ] In web-admin, open `/registrations` and launch `ConsultationFlowModal`.
-- [ ] Walk through all 11 steps with test data.
-- [ ] At step 10 (payment): the wizard uses Stripe `SetupIntent` (mode=`setup`) — coordinator sees a "Save Payment Method" UI, **not** a dollar amount. This is correct. Use test card `4242 4242 4242 4242`.
-- [ ] Verify wizard reaches step 11 (success) with a QR barcode in the GREEN success state (not the amber "Subscription Pending" state).
-- [ ] Verify in DB: new `User` row, `Subscription` row, 4 `ConsentRecord` rows, `ClinicalProfile` row.
+- [ ] Walk through all 12 steps with test data (including `sign-npp`).
+- [ ] At step 11 (payment): the wizard uses Stripe `SetupIntent` (mode=`setup`) — coordinator sees a "Save Payment Method" UI, **not** a dollar amount. This is correct. Use test card `4242 4242 4242 4242`.
+- [ ] Verify wizard reaches step 12 (success) with a QR barcode in the GREEN success state (not the amber "Subscription Pending" state).
+- [ ] Verify in DB: new `User` row, `Subscription` row, `ClinicalProfile` row, and **5 required `ConsentRecord` rows** — `HIPAA_NPP`, `MEMBERSHIP_AGREEMENT`, `LIABILITY_WAIVER`, `INFORMED_CONSENT`, `ELECTRONIC_COMMS_CONSENT` (the full `REQUIRED_CONSENT_DOCS` set) — plus a 6th `PHOTO_VIDEO_RELEASE` row if the optional release was signed. Each row must carry the `contentHash` of the version presented.
 - [ ] **Verify lead `convertedUserId` is set and stage moved to `ACTIVE_MEMBER` automatically** (no manual stage update required).
 - [ ] **Failure path test:** repeat with a card that will cause the subscription POST to fail (e.g. mock Stripe to throw, or use a card that triggers webhook decline). Verify:
   - Wizard stays on the payment step (does NOT silently advance).

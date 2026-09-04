@@ -462,4 +462,124 @@ export const createMockLimitation = (overrides = {}) => ({
     notes: "Avoid high-impact exercises",
     ...overrides,
 });
+// ============================================================================
+// Patient Clinical Intake V1 (clinic-launch self-intake form)
+// Added: 2026-05-19 by patient-intake agent
+// Moved here from api/health-clinical-schemas.ts on 2026-08-23 (re-exported
+// there) so admin/admin-schemas.ts can reuse these fields without an import
+// cycle. This is the definition site.
+// ============================================================================
+/** Tobacco use status for lifestyle section. */
+export const TOBACCO_USE_OPTIONS = [
+    "never",
+    "former",
+    "current",
+];
+export const tobaccoUseSchema = z.enum(TOBACCO_USE_OPTIONS);
+/** Alcohol use frequency for lifestyle section. */
+export const ALCOHOL_USE_OPTIONS = [
+    "none",
+    "occasional",
+    "regular",
+];
+export const alcoholUseSchema = z.enum(ALCOHOL_USE_OPTIONS);
+/** Exercise frequency per week for lifestyle section. */
+export const EXERCISE_FREQUENCY_OPTIONS = [
+    "none",
+    "1-2",
+    "3-5",
+    "6+",
+];
+export const exerciseFrequencySchema = z.enum(EXERCISE_FREQUENCY_OPTIONS);
+/** Yes/No/Unknown family history flag per condition. */
+export const FAMILY_HISTORY_FLAG_OPTIONS = [
+    "yes",
+    "no",
+    "unknown",
+];
+export const familyHistoryFlagSchema = z.enum(FAMILY_HISTORY_FLAG_OPTIONS);
+/**
+ * Common conditions for past medical history checkbox list.
+ * Includes "other" for free-text extension.
+ */
+export const PAST_MEDICAL_HISTORY_CONDITIONS = [
+    "diabetes",
+    "hypertension",
+    "high_cholesterol",
+    "heart_disease",
+    "stroke",
+    "thyroid_disorder",
+    "asthma",
+    "cancer",
+    "mental_health_condition",
+];
+/** Family history schema — yes/no/unknown per condition. */
+export const familyHistorySchema = z.object({
+    cancer: familyHistoryFlagSchema.optional(),
+    heartDisease: familyHistoryFlagSchema.optional(),
+    diabetes: familyHistoryFlagSchema.optional(),
+    mentalHealth: familyHistoryFlagSchema.optional(),
+});
+/**
+ * Lifecycle schema for the patient self-intake form (v1).
+ * All fields optional except acknowledgment (which must be true to submit).
+ * PHI: stored encrypted in ClinicalProfile JSON columns on server.
+ *
+ * POST /users/:userId/intake
+ */
+export const patientIntakeV1BodySchema = z.object({
+    /** Free-text reason for visit (≤500 chars). Required. */
+    reasonForVisit: z
+        .string()
+        .min(1, "Reason for visit is required")
+        .max(500, "Reason for visit must be 500 characters or fewer"),
+    /** Free-text medication list. Optional. */
+    currentMedications: z.string().max(2000).optional(),
+    /** Free-text allergy list. Optional. "None known" is a valid value. */
+    allergies: z.string().max(2000).optional(),
+    /** Checkbox list of known conditions (well-known enum values). */
+    pastMedicalHistoryConditions: z
+        .array(z.enum(PAST_MEDICAL_HISTORY_CONDITIONS))
+        .optional(),
+    /** Free-text for conditions not in the checkbox list. */
+    pastMedicalHistoryOther: z.string().max(1000).optional(),
+    /** Free-text past surgical history (surgeries + approximate years). */
+    pastSurgicalHistory: z.string().max(2000).optional(),
+    /** Family history flags per condition. */
+    familyHistory: familyHistorySchema.optional(),
+    /** Lifestyle: tobacco use. */
+    tobaccoUse: tobaccoUseSchema.optional(),
+    /** Lifestyle: alcohol use. */
+    alcoholUse: alcoholUseSchema.optional(),
+    /** Lifestyle: exercise frequency per week. */
+    exerciseFrequency: exerciseFrequencySchema.optional(),
+    /**
+     * Acknowledgment checkbox: patient confirms accuracy.
+     * Must be true when submitting a complete intake.
+     * When false or absent, the submission is treated as a partial/draft save.
+     */
+    acknowledged: z.boolean().optional(),
+});
+/**
+ * Response shape for GET /users/:userId/intake
+ * Returns the stored intake data (if any) + whether it is complete.
+ */
+export const patientIntakeV1ResponseSchema = patientIntakeV1BodySchema.extend({
+    /**
+     * Optional on READ even though it is required on WRITE.
+     *
+     * The body schema requires `reasonForVisit` because a *submission* is not
+     * valid without one. But this response also represents a DRAFT: the server
+     * returns a bare `{ isComplete: false, acknowledged: false }` for a patient
+     * who has no intake row yet, and returns partially-filled intakes as they are
+     * saved. Inheriting the body's requirement made this schema reject responses
+     * the API actually and correctly produces.
+     *
+     * `isComplete` is the field that tells a consumer whether the intake is
+     * finished — do not infer completeness from the presence of this one.
+     */
+    reasonForVisit: patientIntakeV1BodySchema.shape.reasonForVisit.optional(),
+    isComplete: z.boolean(),
+    submittedAt: z.string().datetime().nullable().optional(),
+});
 //# sourceMappingURL=clinical.js.map

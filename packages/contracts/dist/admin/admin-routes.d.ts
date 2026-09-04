@@ -563,6 +563,12 @@ export declare const ADMIN_LEADS_ROUTES: {
     readonly LIST: "/api/admin/leads";
     /** POST - Create a lead manually (phone call / walk-in) */
     readonly CREATE: "/api/admin/leads";
+    /**
+     * POST - Atomically find the most recent convertible lead by email and
+     * convert it to ACTIVE_MEMBER, linking the new User.id. Replaces the racy
+     * client-side lookup-then-patch pair.
+     */
+    readonly CONVERT_BY_EMAIL: "/api/admin/leads/convert-by-email";
     /** PATCH - Update lead stage */
     readonly updateStage: (id: string) => `/api/admin/leads/${string}/stage`;
     /** PATCH - Update lead fields (consultationDate, etc.) */
@@ -1047,6 +1053,12 @@ export declare const ADMIN_API_ROUTES: {
         readonly LIST: "/api/admin/leads";
         /** POST - Create a lead manually (phone call / walk-in) */
         readonly CREATE: "/api/admin/leads";
+        /**
+         * POST - Atomically find the most recent convertible lead by email and
+         * convert it to ACTIVE_MEMBER, linking the new User.id. Replaces the racy
+         * client-side lookup-then-patch pair.
+         */
+        readonly CONVERT_BY_EMAIL: "/api/admin/leads/convert-by-email";
         /** PATCH - Update lead stage */
         readonly updateStage: (id: string) => `/api/admin/leads/${string}/stage`;
         /** PATCH - Update lead fields (consultationDate, etc.) */

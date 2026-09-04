@@ -7,6 +7,7 @@
  * deps: zod, domain/user | consumers: server routes, web-admin
  */
 import { z } from "zod";
+import { MASTER_OFFER_TERMS } from "../domain/offer-sheet.js";
 import { USER_TIERS } from "../domain/user.js";
 import { emailSchema } from "../schemas/index.js";
 // ============================================================================
@@ -166,15 +167,32 @@ export const CONTRACT_DURATION_MONTHS = {
     MONTH_12: 12,
 };
 /**
- * Map duration to discount percentage.
- * Source of truth: shared/contracts/domain/offer-sheet.json
- * 4mo = 0%, 8mo = 5%, 12mo = 10%
+ * Resolve the offer-sheet discount for a contract length in months.
+ *
+ * Throws at module load when the offer sheet no longer carries a term for a
+ * duration this package still advertises — a loud failure is correct here:
+ * silently defaulting to 0% would under-bill every member on that term.
  */
-export const CONTRACT_DURATION_DISCOUNTS = {
-    MONTH_4: 0,
-    MONTH_8: 5,
-    MONTH_12: 10,
-};
+function offerSheetDiscountPercentForMonths(months) {
+    const term = MASTER_OFFER_TERMS.find((candidate) => candidate.months === months);
+    if (!term) {
+        throw new Error(`Master offer sheet has no term for a ${months}-month contract duration. ` +
+            "CONTRACT_DURATIONS and offer-sheet.json terms have diverged.");
+    }
+    return term.discountPercent;
+}
+/**
+ * Map duration to discount percentage.
+ *
+ * Derived from the master offer sheet (`domain/offer-sheet.json`) — the single
+ * source of truth for commercial terms. Editing a term's `discountPercent`
+ * there changes billing here with no code edit, and a removed term fails loudly
+ * instead of silently reverting to the old hardcoded number.
+ */
+export const CONTRACT_DURATION_DISCOUNTS = Object.fromEntries(CONTRACT_DURATIONS.map((duration) => [
+    duration,
+    offerSheetDiscountPercentForMonths(CONTRACT_DURATION_MONTHS[duration]),
+]));
 /** Constant object for contract duration comparisons (avoids magic strings) */
 export const CONTRACT_DURATION = {
     MONTH_4: "MONTH_4",
@@ -238,6 +256,53 @@ export const SubscriptionSchema = z.object({
     updatedAt: z.string(),
 });
 // ============================================================================
+// PAYMENT INTENT STATUS (off-session confirmation outcome)
+// ============================================================================
+/**
+ * Terminal-or-actionable status of the PaymentIntent the server confirms
+ * off-session while creating a subscription.
+ *
+ * Only "succeeded" means the card was actually charged. "requires_action" means
+ * the issuer demanded 3DS, which an off-session confirmation cannot complete —
+ * the admin wizard has to finish it on-session with `paymentClientSecret`.
+ */
+export const PAYMENT_INTENT_STATUSES = [
+    "succeeded",
+    "requires_action",
+    "processing",
+    "requires_payment_method",
+];
+export const PaymentIntentStatusSchema = z.enum(PAYMENT_INTENT_STATUSES);
+// ============================================================================
+// ADMIN SUBSCRIPTION CREATE / RETRY RESPONSE
+// ============================================================================
+/**
+ * Response payload for:
+ * - POST /api/admin/subscriptions        (create)
+ * - POST /api/admin/subscriptions/:userId/retry
+ *
+ * The subscription record, plus optional first-invoice payment outcome fields.
+ * Both extras are optional so older servers (which return the bare subscription)
+ * still validate.
+ *
+ * `paymentIntentStatus` exists because a Subscription row can be created while
+ * its first invoice was never actually paid — the never-charged-subscription
+ * bug. A wizard that only looks at the subscription cannot tell. When the status
+ * is "requires_action", `paymentClientSecret` carries the secret the wizard needs
+ * to complete 3DS on-session.
+ */
+export const AdminSubscriptionCreateResponseSchema = SubscriptionSchema.extend({
+    /** Status of the off-session first-invoice PaymentIntent, when the server confirmed one. */
+    paymentIntentStatus: PaymentIntentStatusSchema.optional(),
+    /**
+     * client_secret for completing 3DS on-session. Present only when
+     * `paymentIntentStatus === "requires_action"`; null/absent otherwise.
+     */
+    paymentClientSecret: z.string().nullable().optional(),
+});
+/** Retry returns the same shape as create. */
+export const AdminSubscriptionRetryResponseSchema = AdminSubscriptionCreateResponseSchema;
+// ============================================================================
 // CREATE SUBSCRIPTION REQUEST
 // ============================================================================
 export const CreateSubscriptionRequestSchema = z.object({
@@ -273,6 +338,22 @@ export const PauseSubscriptionRequestSchema = z.object({
     pauseMonths: z.number().int().min(1).max(6),
     reason: z.string().optional(),
 });
+/**
+ * Response for PATCH /api/admin/subscriptions/:id/pause.
+ * The server returns the pause bookkeeping, NOT the subscription record.
+ */
+export const PauseSubscriptionResponseSchema = z.object({
+    /** ISO-8601 UTC timestamp the membership auto-resumes. */
+    pauseResumeDate: z.string(),
+    pauseMonthsUsed: z.number(),
+});
+// ============================================================================
+// RESUME RESPONSE
+// ============================================================================
+/** Response for PATCH /api/admin/subscriptions/:id/resume. */
+export const ResumeSubscriptionResponseSchema = z.object({
+    resumed: z.boolean(),
+});
 // ============================================================================
 // TIER CHANGE REQUEST
 // ============================================================================
@@ -280,6 +361,29 @@ export const TierChangeRequestSchema = z.object({
     newTier: z.enum(USER_TIERS),
     effectiveDate: z.string().optional(),
 });
+/**
+ * Response for PATCH /api/admin/subscriptions/:id/tier.
+ *
+ * Discriminated on `type`: an upgrade takes effect immediately and returns the
+ * session credits prorated onto the new tier; a downgrade is scheduled for the
+ * end of the current period.
+ */
+export const TierChangeResponseSchema = z.discriminatedUnion("type", [
+    z.object({
+        type: z.literal("upgrade"),
+        effectiveImmediately: z.literal(true),
+        proratedCredits: z.array(z.object({
+            sessionType: z.string(),
+            creditAmount: z.number(),
+        })),
+    }),
+    z.object({
+        type: z.literal("downgrade"),
+        effectiveImmediately: z.literal(false),
+        /** ISO-8601 UTC timestamp the downgrade takes effect. */
+        effectiveDate: z.string(),
+    }),
+]);
 // ============================================================================
 // SUBSCRIPTION LIST
 // ============================================================================
