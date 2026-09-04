@@ -66,6 +66,28 @@ export type PurchaseMobileSessionsRequest = z.infer<
   typeof PurchaseMobileSessionsRequestSchema
 >;
 
+/**
+ * Response for POST /api/admin/mobile-sessions/:userId/purchase.
+ *
+ * The server creates AND confirms the PaymentIntent off-session, so `status` is
+ * terminal: anything other than "succeeded" means the card was NOT charged.
+ * Kept as a free-form string (not the Stripe enum) because it is passed through
+ * from Stripe verbatim.
+ */
+export const PurchaseMobileSessionsResponseSchema = z.object({
+  paymentIntentId: z.string(),
+  totalInCents: z.number(),
+  /** Stripe PaymentIntent status, passed through verbatim. */
+  status: z.string(),
+  /** True when the issuer demanded 3DS — the off-session charge did not complete. */
+  requiresAction: z.boolean(),
+  /** Post-purchase paid balance; null when the server could not recompute it. */
+  newBalance: z.number().nullable(),
+});
+export type PurchaseMobileSessionsResponse = z.infer<
+  typeof PurchaseMobileSessionsResponseSchema
+>;
+
 // ============================================================================
 // PURCHASE RESPONSE
 // ============================================================================

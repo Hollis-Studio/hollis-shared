@@ -9,7 +9,7 @@
  * 5. TierChangeRequestSchema validates tier change data
  * 6. SUBSCRIPTION_STATUS tuple/constants contain all expected values
  * 7. CONTRACT_DURATION_MONTHS maps correctly
- * 8. CONTRACT_DURATION_DISCOUNTS has correct discount values
+ * 8. CONTRACT_DURATION_DISCOUNTS is derived from the master offer sheet
  *
  * Run: npx jest shared/contracts/__tests__/stripe-subscription.test.ts
  */
@@ -37,6 +37,7 @@ import {
     SubscriptionStatusSchema,
     TierChangeRequestSchema,
 } from "../stripe/subscription";
+import { MASTER_OFFER_SHEET } from "../domain/offer-sheet";
 
 // ============================================================================
 // HELPERS
@@ -238,17 +239,30 @@ describe("Stripe Subscription Contracts", () => {
     });
 
     describe("CONTRACT_DURATION_DISCOUNTS", () => {
-      // Canonical values per shared/contracts/domain/offer-sheet.json
-      it("should have 0% discount for MONTH_4", () => {
-        expect(CONTRACT_DURATION_DISCOUNTS.MONTH_4).toBe(0);
+      // The offer sheet is the source of truth. These assertions deliberately
+      // avoid literals so a term change in offer-sheet.json cannot silently
+      // diverge from what the billing code charges.
+      function offerSheetDiscountFor(months: number): number {
+        const term = MASTER_OFFER_SHEET.terms.find((t) => t.months === months);
+        expect(term).toBeDefined();
+        return term!.discountPercent;
+      }
+
+      it("should match the offer sheet discount for every contract duration", () => {
+        for (const duration of CONTRACT_DURATIONS) {
+          expect(CONTRACT_DURATION_DISCOUNTS[duration]).toBe(
+            offerSheetDiscountFor(CONTRACT_DURATION_MONTHS[duration]),
+          );
+        }
       });
 
-      it("should have 5% discount for MONTH_8", () => {
-        expect(CONTRACT_DURATION_DISCOUNTS.MONTH_8).toBe(5);
-      });
-
-      it("should have 10% discount for MONTH_12", () => {
-        expect(CONTRACT_DURATION_DISCOUNTS.MONTH_12).toBe(10);
+      it("should cover every offer sheet term with a contract duration", () => {
+        const coveredMonths = CONTRACT_DURATIONS.map(
+          (duration) => CONTRACT_DURATION_MONTHS[duration],
+        );
+        for (const term of MASTER_OFFER_SHEET.terms) {
+          expect(coveredMonths).toContain(term.months);
+        }
       });
 
       it("should have an entry for every contract duration", () => {

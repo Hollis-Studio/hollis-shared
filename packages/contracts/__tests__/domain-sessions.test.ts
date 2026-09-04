@@ -3,7 +3,8 @@
  *
  * This test suite verifies:
  * 1. SESSION_TYPES tuple contains expected types
- * 2. DEFAULT_TIER_ALLOCATIONS has correct session counts per tier
+ * 2. DEFAULT_TIER_ALLOCATIONS has correct session counts per tier and grants
+ *    no credits for retired medical-service session types
  * 3. SESSION_USAGE_SOURCES contains expected sources
  * 4. Session-related schemas validate correctly
  * 5. Edge cases: missing fields, invalid types
@@ -16,6 +17,8 @@ import {
     // Appointment to Session mapping
     APPOINTMENT_TO_SESSION_MAP,
     DEFAULT_TIER_ALLOCATIONS,
+    RETIRED_SESSION_TYPES,
+    isRetiredSessionType,
     isSessionType,
     isSessionUsageSource,
     // Reset Frequencies
@@ -519,24 +522,6 @@ describe('Session Domain Contracts', () => {
         expect(recovery!.quantity).toBe(-1);
       });
 
-      it('should have 1 labwork per biannual period', () => {
-        const lab = DEFAULT_TIER_ALLOCATIONS.ESSENTIALS.find(
-          (a) => a.sessionType === 'LABWORK',
-        );
-        expect(lab).toBeDefined();
-        expect(lab!.quantity).toBe(1);
-        expect(lab!.resetFrequency).toBe('BIANNUAL');
-      });
-
-      it('should have 1 initial clinician consult per year', () => {
-        const initial = DEFAULT_TIER_ALLOCATIONS.ESSENTIALS.find(
-          (a) => a.sessionType === 'CLINICIAN_INITIAL',
-        );
-        expect(initial).toBeDefined();
-        expect(initial!.quantity).toBe(1);
-        expect(initial!.resetFrequency).toBe('ANNUAL');
-      });
-
       it('should NOT include MOBILE_SESSION', () => {
         const mobile = DEFAULT_TIER_ALLOCATIONS.ESSENTIALS.find(
           (a) => a.sessionType === 'MOBILE_SESSION',
@@ -561,24 +546,6 @@ describe('Session Domain Contracts', () => {
         );
         expect(recovery).toBeDefined();
         expect(recovery!.quantity).toBe(-1);
-      });
-
-      it('should have 1 labwork per quarter', () => {
-        const lab = DEFAULT_TIER_ALLOCATIONS.CORE.find(
-          (a) => a.sessionType === 'LABWORK',
-        );
-        expect(lab).toBeDefined();
-        expect(lab!.quantity).toBe(1);
-        expect(lab!.resetFrequency).toBe('QUARTERLY');
-      });
-
-      it('should have 2 sleep screenings per month', () => {
-        const sleep = DEFAULT_TIER_ALLOCATIONS.CORE.find(
-          (a) => a.sessionType === 'SLEEP_SCREENING',
-        );
-        expect(sleep).toBeDefined();
-        expect(sleep!.quantity).toBe(2);
-        expect(sleep!.resetFrequency).toBe('MONTHLY');
       });
 
       it('should NOT include MOBILE_SESSION', () => {
@@ -607,15 +574,6 @@ describe('Session Domain Contracts', () => {
         expect(recovery!.quantity).toBe(-1);
       });
 
-      it('should have 1 labwork per month', () => {
-        const lab = DEFAULT_TIER_ALLOCATIONS.CONCIERGE.find(
-          (a) => a.sessionType === 'LABWORK',
-        );
-        expect(lab).toBeDefined();
-        expect(lab!.quantity).toBe(1);
-        expect(lab!.resetFrequency).toBe('MONTHLY');
-      });
-
       it('should include MOBILE_SESSION (2 per month)', () => {
         const mobile = DEFAULT_TIER_ALLOCATIONS.CONCIERGE.find(
           (a) => a.sessionType === 'MOBILE_SESSION',
@@ -623,15 +581,6 @@ describe('Session Domain Contracts', () => {
         expect(mobile).toBeDefined();
         expect(mobile!.quantity).toBe(2);
         expect(mobile!.resetFrequency).toBe('MONTHLY');
-      });
-
-      it('should have 4 sleep screenings per month', () => {
-        const sleep = DEFAULT_TIER_ALLOCATIONS.CONCIERGE.find(
-          (a) => a.sessionType === 'SLEEP_SCREENING',
-        );
-        expect(sleep).toBeDefined();
-        expect(sleep!.quantity).toBe(4);
-        expect(sleep!.resetFrequency).toBe('MONTHLY');
       });
     });
 
@@ -643,6 +592,24 @@ describe('Session Domain Contracts', () => {
 
       expect(getFitness('ESSENTIALS')).toBeLessThan(getFitness('CORE'));
       expect(getFitness('CORE')).toBeLessThan(getFitness('CONCIERGE'));
+    });
+
+    it('should grant no medical-service credits at any tier', () => {
+      // Hollis removed medical services from the business (2026-07-17 / 2026-08-19)
+      // and the signed agreement states it does not bill for or sell them.
+      for (const tier of USER_TIERS) {
+        for (const allocation of DEFAULT_TIER_ALLOCATIONS[tier]) {
+          expect(RETIRED_SESSION_TYPES).not.toContain(allocation.sessionType);
+        }
+      }
+    });
+
+    it('should keep retired session types in the enum for historical rows', () => {
+      for (const sessionType of RETIRED_SESSION_TYPES) {
+        expect(SESSION_TYPES).toContain(sessionType);
+        expect(isRetiredSessionType(sessionType)).toBe(true);
+      }
+      expect(isRetiredSessionType('FITNESS_SESSION')).toBe(false);
     });
 
     it('all allocations should conform to SessionAllocationSchema', () => {

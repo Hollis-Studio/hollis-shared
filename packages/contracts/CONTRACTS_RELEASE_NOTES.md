@@ -1,5 +1,82 @@
 # @hollis-studio/contracts — Release Notes
 
+## Unreleased (2026-08-23) — audit follow-up batch
+
+**Version header to be filled in by the release/bump step.** Two behavior
+changes (session allocations, contract-duration discounts); everything else is
+additive.
+
+### `domain/sessions.ts` — BEHAVIOR CHANGE
+
+- **`DEFAULT_TIER_ALLOCATIONS` no longer grants LABWORK, CLINICIAN_INITIAL,
+  CLINICIAN_FOLLOWUP, DXA_SCAN or SLEEP_SCREENING at any tier.** Hollis removed
+  medical services from the business (2026-07-17 / 2026-08-19) and the signed
+  membership agreement states it "does not bill for or sell medical services";
+  the map was still handing out those credits. ESSENTIALS/CORE/CONCIERGE now
+  allocate fitness + recovery only (CONCIERGE keeps 2 mobile sessions/mo).
+  Consumers that seed or reset balances (server `sessionBalanceCore`,
+  `sessionResetService`, `tierChangeService`) will stop creating those rows.
+- The `SessionType` enum values, labels and `APPOINTMENT_TO_SESSION_MAP` are
+  unchanged — historical `SessionUsage` / `SessionBalance` / `Appointment` rows
+  still reference them.
+- **`RETIRED_SESSION_TYPES`** / **`isRetiredSessionType()`** (new) — the retired
+  set as data, for filtering credit UIs and allocation audits.
+
+### `stripe/subscription.ts`
+
+- **`CONTRACT_DURATION_DISCOUNTS` is now derived from `domain/offer-sheet.json`**
+  instead of hardcoding 0/5/10. Values are unchanged today; a term change in the
+  offer sheet now flows through automatically, and a duration with no matching
+  offer-sheet term throws at import instead of silently billing the old number.
+- **`AdminSubscriptionCreateResponseSchema` / `AdminSubscriptionRetryResponseSchema`**
+  (new) — `SubscriptionSchema` plus optional `paymentIntentStatus`
+  (`PaymentIntentStatusSchema`: succeeded | requires_action | processing |
+  requires_payment_method) and `paymentClientSecret` (string, nullable), so the
+  admin wizard can detect a subscription whose first invoice was never actually
+  paid and complete 3DS on-session. Optional → non-breaking.
+- **`PAYMENT_INTENT_STATUSES` / `PaymentIntentStatusSchema` / `PaymentIntentStatus`** (new).
+- **`PauseSubscriptionResponseSchema`**, **`ResumeSubscriptionResponseSchema`**,
+  **`TierChangeResponseSchema`** (new) — promoted from local web-admin
+  `billingService.ts` schemas (their `TODO(contracts)` markers).
+
+### `stripe/mobileSession.ts`
+
+- **`PurchaseMobileSessionsResponseSchema`** (new) — promoted from
+  web-admin `billingService.ts`.
+
+### `admin/admin-schemas.ts`
+
+- **`adminLeadStageUpdateBodySchema.convertedUserId` is now `userIdSchema`
+  (HH-XXXXXX), not `uuidSchema`** — User IDs are barcodes, so the old schema
+  would have rejected every real value.
+- **`adminLeadUpdateBodySchema`**, **`adminLeadConvertByEmailBodySchema`**,
+  **`adminLeadConvertByEmailResponseSchema`** (new) — promoted from server-local
+  schemas in `routes/admin/leads.ts`.
+- **`clientIntakePayloadSchema`** gains the optional Patient Intake V1 fields
+  (`reasonForVisit`, `currentMedications`, `allergies`,
+  `pastMedicalHistoryConditions`, `pastMedicalHistoryOther`,
+  `pastSurgicalHistory`, `familyHistory`, `tobaccoUse`, `alcoholUse`,
+  `exerciseFrequency`, `acknowledged`), reusing `patientIntakeV1BodySchema`'s
+  field definitions. Without `reasonForVisit` + `acknowledged` the in-clinic
+  wizard could never satisfy `intakeService`'s completeness rule.
+
+### `admin/admin-routes.ts`
+
+- **`ADMIN_LEADS_ROUTES.CONVERT_BY_EMAIL`** (new) —
+  `POST /api/admin/leads/convert-by-email`, previously a magic string in
+  web-admin.
+
+### Internal move (no public surface change)
+
+- The Patient Intake V1 block (`patientIntakeV1BodySchema`,
+  `patientIntakeV1ResponseSchema`, `tobaccoUseSchema`, `alcoholUseSchema`,
+  `exerciseFrequencySchema`, `familyHistorySchema`,
+  `PAST_MEDICAL_HISTORY_CONDITIONS`, and friends) moved from
+  `api/health-clinical-schemas.ts` to `domain/clinical.ts` so
+  `admin/admin-schemas.ts` can reuse it without an import cycle.
+  `api/health-clinical-schemas.ts` re-exports every moved name, so all existing
+  import sites are unaffected.
+
 ## 0.2.0-alpha.55 (2026-08-20)
 
 **New `revenuecat/` module — RevenueCat server-to-server webhook wire

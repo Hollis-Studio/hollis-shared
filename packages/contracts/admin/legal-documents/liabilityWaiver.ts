@@ -8,9 +8,9 @@
 
 export const meta = {
   title: "Liability Waiver and Assumption of Risk Agreement",
-  version: "1.3.0",
-  effectiveDate: "2026-08-19",
-  contentHash: "b5dde872",
+  version: "1.4.0",
+  effectiveDate: "2026-08-23",
+  contentHash: "0d5972c7",
 };
 
 export const content = `# Liability Waiver and Assumption of Risk Agreement
@@ -41,7 +41,7 @@ This Liability Waiver and Assumption of Risk Agreement ("Waiver") is entered int
 | Email Address | {{EMAIL}} |
 | Phone Number | {{PHONE}} |
 
-This Waiver applies to Participant's participation in physical training, movement, recovery, and related wellness activities made available by Company at a Hollis Health location or other Company-approved location ("Activities"), including private coaching sessions, conditioning programs, infrared sauna use, cold water immersion, red light therapy, body composition assessments, and related wellness activities.
+This Waiver applies to Participant's participation in physical training, movement, recovery, and related wellness activities made available by Company at a Hollis Health location or other Company-approved location ("Activities"), including private coaching sessions, conditioning programs, infrared sauna use, cold water immersion, red light therapy, non-diagnostic body composition assessments, and related wellness activities. The Activities do not include, and Company does not provide, any medical, laboratory, testing, imaging, or other clinical service (see Sections 5.4 and 5.5).
 
 Unless Company expressly approves a separate minor-participant process in writing, this Waiver is intended for adult participants only.
 
@@ -132,13 +132,25 @@ Participant represents and warrants that Participant has disclosed to Company, i
 
 Participant agrees to promptly notify Company in writing of any material change in health status that may affect safe participation.
 
+### 5.4 No Medical Services by Company
+
+Company is not a medical provider and does not practice medicine. The Activities are fitness, movement, recovery, and wellness services only. Company does not provide, arrange, or include in membership any medical visit, examination, diagnosis, treatment, prescription, laboratory or biomarker testing, imaging, or other clinical service, and does not order, select, schedule, coordinate, or interpret testing of any kind. Company has no partner clinician and no partner medical facility. Company personnel are generally not licensed medical professionals, and no statement by Company personnel is a medical diagnosis, prescription, treatment plan, or substitute for medical care.
+
+Where Participant voluntarily shares records or results from Participant's own independent healthcare providers, Company displays and organizes them and may use them as non-clinical context for fitness or nutrition programming. Company does not review or monitor shared records for urgent, abnormal, or clinically significant findings and has no duty to identify, flag, or notify. Participant must rely on Participant's own ordering provider.
+
+### 5.5 Third-Party Programs and Sponsored Subscriptions
+
+Company may pay for, or reimburse the cost of, a membership or subscription with an independent third-party health-testing company on Participant's behalf as a benefit of certain membership tiers. Where Company does so, the account is Participant's — established in Participant's name, governed by that company's own terms and privacy practices. That company and its own independent licensed providers order, arrange, and perform any testing and are solely responsible for interpretation of results and clinical follow-up. Company does not select Participant's test panel, does not arrange or schedule Participant's specimen collection, does not receive Participant's results from that company, and has no access to Participant's account with that company. Company's payment of a subscription fee on Participant's behalf does not make Company the provider of, or responsible for, any testing, laboratory, or clinical service.
+
+This Waiver does not cover, and Company assumes no responsibility for, services provided by any third party, including specimen collection, testing, interpretation, and any clinical follow-up. Participant's rights and remedies with respect to those services are governed by Participant's own agreement with that third party. Nothing in this Section is intended to release any third party or to alter any right Participant has against that third party.
+
 ---
 
 ## Section 6. Emergency Response Authorization
 
 In the event Participant is incapacitated, Participant authorizes Company personnel to summon emergency medical services, provide basic first aid or CPR if trained to do so, provide disclosed emergency information to responding personnel, and contact Participant's emergency contact.
 
-Participant acknowledges that Company personnel are not licensed medical professionals acting in a clinical capacity, that Company does not provide medical care, and that Participant remains financially responsible for emergency medical care obtained on Participant's behalf.
+Participant acknowledges that Company personnel are generally not licensed medical professionals and that Participant remains financially responsible for emergency medical care obtained on Participant's behalf.
 
 ---
 

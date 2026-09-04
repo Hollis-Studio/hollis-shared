@@ -1,7 +1,7 @@
 {
   "meta": {
-    "version": "3.1.0",
-    "effectiveDate": "2026-08-19",
+    "version": "3.2.0",
+    "effectiveDate": "2026-08-23",
     "status": "active"
   },
   "terms": [
@@ -23,10 +23,10 @@
   ],
   "policies": {
     "enrollmentScheduleControl": "The signed Enrollment Summary and Service Schedule controls the selected tier, term, monthly rate, exact Hollis-provided services, Hollis-billed add-ons, and any separately billed third-party items.",
-    "autoRenewal": "After the initial term, membership converts to month-to-month unless either party gives at least 30 days' written notice of non-renewal.",
-    "noticePeriod": "30 days' written notice before the end of the initial term or month-to-month termination date.",
+    "autoRenewal": "After the initial term, membership converts to month-to-month unless either party gives written notice of non-renewal: at least 7 days' notice from the member, at least 30 days' notice from Hollis Health.",
+    "noticePeriod": "Member: at least 7 days' written notice before the next billing date (matching the cancellation window enforced in the app). Hollis Health: 30 days' written notice.",
     "pauseRights": "Only if expressly permitted in the signed Membership Agreement or an approved written addendum; the signed agreement controls duration, billing effect, and term-extension effect.",
-    "earlyTermination": "If the member terminates early other than an approved or legally required cancellation, the remaining discounted contract value through the end date remains due as stated in the signed Membership Agreement.",
+    "earlyTermination": "If the member terminates early other than an approved or legally required cancellation, an early termination amount equal to 50% of the remaining discounted contract value through the end date is due, calculated at the discounted monthly rate actually selected with any partial month counted as a whole month, as stated in the signed Membership Agreement.",
     "thirdPartyDisclosure": "Independent physician, laboratory, imaging, pharmacy, and other third-party clinical charges are excluded from Hollis Health membership fees and may be billed separately by the applicable independent provider. Where Hollis Health sponsors a third-party testing membership as a membership benefit, Hollis Health pays that subscription fee on the member's behalf; the member holds the account directly with that company under its own terms, and that company and its independent licensed providers remain solely responsible for ordering, performing, and interpreting any testing.",
     "partnerFacilityDisclosure": "Hollis Health is not a medical provider, does not practice medicine, and does not bill for or sell medical services. Members receive medical care from independent licensed providers of their choosing, including providers in the Hollis referral network.",
     "sponsoredTestingBenefit": "The sponsored blood biomarker panel membership is included at the CORE and CONCIERGE tiers only. It is a standard membership with an independent third-party testing company, and testing cadence — twice yearly — along with panel contents, scheduling, and all clinical aspects are governed by that company's own terms and conditions, not by Hollis Health. Hollis Health is not the provider of any testing, does not select the panel, does not schedule collection, does not receive results, and does not interpret or monitor results. The benefit is not refundable, creditable, or exchangeable if declined or unused, and it does not renew once the member's Hollis membership lapses or moves to a tier at which it is not included. The member's account with the testing company is the member's own and must be cancelled by the member."

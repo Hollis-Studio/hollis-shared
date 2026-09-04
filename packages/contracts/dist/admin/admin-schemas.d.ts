@@ -1287,6 +1287,61 @@ export declare const clientIntakePayloadSchema: z.ZodObject<{
     limitations: z.ZodOptional<z.ZodString>;
     medications: z.ZodOptional<z.ZodString>;
     medicalConditions: z.ZodOptional<z.ZodString>;
+    reasonForVisit: z.ZodOptional<z.ZodString>;
+    currentMedications: z.ZodOptional<z.ZodString>;
+    allergies: z.ZodOptional<z.ZodString>;
+    pastMedicalHistoryConditions: z.ZodOptional<z.ZodArray<z.ZodEnum<{
+        diabetes: "diabetes";
+        hypertension: "hypertension";
+        high_cholesterol: "high_cholesterol";
+        heart_disease: "heart_disease";
+        stroke: "stroke";
+        thyroid_disorder: "thyroid_disorder";
+        asthma: "asthma";
+        cancer: "cancer";
+        mental_health_condition: "mental_health_condition";
+    }>>>;
+    pastMedicalHistoryOther: z.ZodOptional<z.ZodString>;
+    pastSurgicalHistory: z.ZodOptional<z.ZodString>;
+    familyHistory: z.ZodOptional<z.ZodObject<{
+        cancer: z.ZodOptional<z.ZodEnum<{
+            unknown: "unknown";
+            yes: "yes";
+            no: "no";
+        }>>;
+        heartDisease: z.ZodOptional<z.ZodEnum<{
+            unknown: "unknown";
+            yes: "yes";
+            no: "no";
+        }>>;
+        diabetes: z.ZodOptional<z.ZodEnum<{
+            unknown: "unknown";
+            yes: "yes";
+            no: "no";
+        }>>;
+        mentalHealth: z.ZodOptional<z.ZodEnum<{
+            unknown: "unknown";
+            yes: "yes";
+            no: "no";
+        }>>;
+    }, z.core.$strip>>;
+    tobaccoUse: z.ZodOptional<z.ZodEnum<{
+        never: "never";
+        former: "former";
+        current: "current";
+    }>>;
+    alcoholUse: z.ZodOptional<z.ZodEnum<{
+        none: "none";
+        occasional: "occasional";
+        regular: "regular";
+    }>>;
+    exerciseFrequency: z.ZodOptional<z.ZodEnum<{
+        none: "none";
+        "1-2": "1-2";
+        "3-5": "3-5";
+        "6+": "6+";
+    }>>;
+    acknowledged: z.ZodOptional<z.ZodBoolean>;
 }, z.core.$strip>;
 export type ClientIntakePayload = z.infer<typeof clientIntakePayloadSchema>;
 /**
@@ -1953,6 +2008,45 @@ export declare const adminLeadStageUpdateBodySchema: z.ZodObject<{
     convertedUserId: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type AdminLeadStageUpdateBody = z.infer<typeof adminLeadStageUpdateBodySchema>;
+/**
+ * PATCH /api/admin/leads/:id — update mutable lead fields.
+ *
+ * When `convertedUserId` is supplied the server atomically transitions the lead
+ * to ACTIVE_MEMBER and sets the FK, so a single PATCH covers both the stage
+ * change and the linkage. `null` clears the field.
+ */
+export declare const adminLeadUpdateBodySchema: z.ZodObject<{
+    consultationDate: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    convertedUserId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+}, z.core.$strip>;
+export type AdminLeadUpdateBody = z.infer<typeof adminLeadUpdateBodySchema>;
+/**
+ * POST /api/admin/leads/convert-by-email — atomic lookup + convert.
+ *
+ * Replaces the racy two-step (client fetches lead id, then PATCHes it) with a
+ * single serializable server transaction.
+ */
+export declare const adminLeadConvertByEmailBodySchema: z.ZodObject<{
+    email: z.ZodString;
+    userId: z.ZodString;
+    expectedLead: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
+}, z.core.$strip>;
+export type AdminLeadConvertByEmailBody = z.infer<typeof adminLeadConvertByEmailBodySchema>;
+/** Success payload for POST /api/admin/leads/convert-by-email. */
+export declare const adminLeadConvertByEmailResponseSchema: z.ZodObject<{
+    id: z.ZodString;
+    stage: z.ZodEnum<{
+        INQUIRY: "INQUIRY";
+        CONSULTATION_BOOKED: "CONSULTATION_BOOKED";
+        CONSULTATION_COMPLETED: "CONSULTATION_COMPLETED";
+        PROPOSAL_SENT: "PROPOSAL_SENT";
+        ACTIVE_MEMBER: "ACTIVE_MEMBER";
+        CHURNED: "CHURNED";
+    }>;
+    stageChangedAt: z.ZodString;
+    convertedUserId: z.ZodString;
+}, z.core.$strip>;
+export type AdminLeadConvertByEmailResponse = z.infer<typeof adminLeadConvertByEmailResponseSchema>;
 export declare const adminMessagesThreadParamsSchema: z.ZodObject<{
     userId: z.ZodString;
     partnerId: z.ZodString;

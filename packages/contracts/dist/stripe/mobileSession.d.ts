@@ -39,6 +39,22 @@ export declare const PurchaseMobileSessionsRequestSchema: z.ZodObject<{
     quantity: z.ZodNumber;
 }, z.core.$strip>;
 export type PurchaseMobileSessionsRequest = z.infer<typeof PurchaseMobileSessionsRequestSchema>;
+/**
+ * Response for POST /api/admin/mobile-sessions/:userId/purchase.
+ *
+ * The server creates AND confirms the PaymentIntent off-session, so `status` is
+ * terminal: anything other than "succeeded" means the card was NOT charged.
+ * Kept as a free-form string (not the Stripe enum) because it is passed through
+ * from Stripe verbatim.
+ */
+export declare const PurchaseMobileSessionsResponseSchema: z.ZodObject<{
+    paymentIntentId: z.ZodString;
+    totalInCents: z.ZodNumber;
+    status: z.ZodString;
+    requiresAction: z.ZodBoolean;
+    newBalance: z.ZodNullable<z.ZodNumber>;
+}, z.core.$strip>;
+export type PurchaseMobileSessionsResponse = z.infer<typeof PurchaseMobileSessionsResponseSchema>;
 export declare const MobileSessionPurchaseSchema: z.ZodObject<{
     id: z.ZodString;
     userId: z.ZodString;

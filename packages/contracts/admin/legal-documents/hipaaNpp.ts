@@ -15,7 +15,7 @@ export const meta = {
   title: "HIPAA Notice of Privacy Practices",
   version: "1.2.0",
   effectiveDate: "2026-08-19",
-  contentHash: "hipaa-npp-v1",
+  contentHash: "a0010a56",
 } as const;
 
 export const content = `# NOTICE OF PRIVACY PRACTICES

@@ -134,8 +134,11 @@ export type ContractDuration = z.infer<typeof ContractDurationSchema>;
 export declare const CONTRACT_DURATION_MONTHS: Record<ContractDuration, number>;
 /**
  * Map duration to discount percentage.
- * Source of truth: shared/contracts/domain/offer-sheet.json
- * 4mo = 0%, 8mo = 5%, 12mo = 10%
+ *
+ * Derived from the master offer sheet (`domain/offer-sheet.json`) — the single
+ * source of truth for commercial terms. Editing a term's `discountPercent`
+ * there changes billing here with no code edit, and a removed term fails loudly
+ * instead of silently reverting to the old hardcoded number.
  */
 export declare const CONTRACT_DURATION_DISCOUNTS: Record<ContractDuration, number>;
 /** Constant object for contract duration comparisons (avoids magic strings) */
@@ -217,6 +220,176 @@ export declare const SubscriptionSchema: z.ZodObject<{
     updatedAt: z.ZodString;
 }, z.core.$strip>;
 export type SubscriptionContract = z.infer<typeof SubscriptionSchema>;
+/**
+ * Terminal-or-actionable status of the PaymentIntent the server confirms
+ * off-session while creating a subscription.
+ *
+ * Only "succeeded" means the card was actually charged. "requires_action" means
+ * the issuer demanded 3DS, which an off-session confirmation cannot complete —
+ * the admin wizard has to finish it on-session with `paymentClientSecret`.
+ */
+export declare const PAYMENT_INTENT_STATUSES: readonly ["succeeded", "requires_action", "processing", "requires_payment_method"];
+export declare const PaymentIntentStatusSchema: z.ZodEnum<{
+    succeeded: "succeeded";
+    requires_action: "requires_action";
+    processing: "processing";
+    requires_payment_method: "requires_payment_method";
+}>;
+export type PaymentIntentStatus = z.infer<typeof PaymentIntentStatusSchema>;
+/**
+ * Response payload for:
+ * - POST /api/admin/subscriptions        (create)
+ * - POST /api/admin/subscriptions/:userId/retry
+ *
+ * The subscription record, plus optional first-invoice payment outcome fields.
+ * Both extras are optional so older servers (which return the bare subscription)
+ * still validate.
+ *
+ * `paymentIntentStatus` exists because a Subscription row can be created while
+ * its first invoice was never actually paid — the never-charged-subscription
+ * bug. A wizard that only looks at the subscription cannot tell. When the status
+ * is "requires_action", `paymentClientSecret` carries the secret the wizard needs
+ * to complete 3DS on-session.
+ */
+export declare const AdminSubscriptionCreateResponseSchema: z.ZodObject<{
+    id: z.ZodString;
+    userId: z.ZodString;
+    stripeSubscriptionId: z.ZodString;
+    stripeCustomerId: z.ZodString;
+    stripePriceId: z.ZodString;
+    tier: z.ZodEnum<{
+        ESSENTIALS: "ESSENTIALS";
+        CORE: "CORE";
+        CONCIERGE: "CONCIERGE";
+    }>;
+    status: z.ZodEnum<{
+        ACTIVE: "ACTIVE";
+        PAUSED: "PAUSED";
+        PENDING: "PENDING";
+        TRIAL: "TRIAL";
+        PAST_DUE: "PAST_DUE";
+        CANCELED: "CANCELED";
+        TERMINATED: "TERMINATED";
+        SUSPENDED: "SUSPENDED";
+    }>;
+    contractDuration: z.ZodEnum<{
+        MONTH_4: "MONTH_4";
+        MONTH_8: "MONTH_8";
+        MONTH_12: "MONTH_12";
+    }>;
+    contractStartDate: z.ZodString;
+    contractEndDate: z.ZodString;
+    discountPercent: z.ZodCoercedNumber<unknown>;
+    billingSource: z.ZodEnum<{
+        DIRECT: "DIRECT";
+        ORGANIZATION: "ORGANIZATION";
+    }>;
+    billingOrganizationId: z.ZodNullable<z.ZodString>;
+    monthlyPriceInCents: z.ZodNumber;
+    currentPeriodStart: z.ZodString;
+    currentPeriodEnd: z.ZodString;
+    billingAnchorDay: z.ZodNumber;
+    isInGracePeriod: z.ZodBoolean;
+    gracePeriodEndsAt: z.ZodNullable<z.ZodString>;
+    isPaused: z.ZodBoolean;
+    pausedAt: z.ZodNullable<z.ZodString>;
+    pauseResumeDate: z.ZodNullable<z.ZodString>;
+    pauseMonthsUsed: z.ZodNumber;
+    pauseMonthsRemaining: z.ZodNumber;
+    isCanceled: z.ZodBoolean;
+    canceledAt: z.ZodNullable<z.ZodString>;
+    cancelEffectiveDate: z.ZodNullable<z.ZodString>;
+    scheduledTierChange: z.ZodNullable<z.ZodEnum<{
+        ESSENTIALS: "ESSENTIALS";
+        CORE: "CORE";
+        CONCIERGE: "CONCIERGE";
+    }>>;
+    tierChangeEffectiveDate: z.ZodNullable<z.ZodString>;
+    signedContractKey: z.ZodNullable<z.ZodString>;
+    failedPaymentCount: z.ZodDefault<z.ZodNumber>;
+    cancelReason: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    earlyTerminationFee: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    createdAt: z.ZodString;
+    updatedAt: z.ZodString;
+    paymentIntentStatus: z.ZodOptional<z.ZodEnum<{
+        succeeded: "succeeded";
+        requires_action: "requires_action";
+        processing: "processing";
+        requires_payment_method: "requires_payment_method";
+    }>>;
+    paymentClientSecret: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+}, z.core.$strip>;
+export type AdminSubscriptionCreateResponse = z.infer<typeof AdminSubscriptionCreateResponseSchema>;
+/** Retry returns the same shape as create. */
+export declare const AdminSubscriptionRetryResponseSchema: z.ZodObject<{
+    id: z.ZodString;
+    userId: z.ZodString;
+    stripeSubscriptionId: z.ZodString;
+    stripeCustomerId: z.ZodString;
+    stripePriceId: z.ZodString;
+    tier: z.ZodEnum<{
+        ESSENTIALS: "ESSENTIALS";
+        CORE: "CORE";
+        CONCIERGE: "CONCIERGE";
+    }>;
+    status: z.ZodEnum<{
+        ACTIVE: "ACTIVE";
+        PAUSED: "PAUSED";
+        PENDING: "PENDING";
+        TRIAL: "TRIAL";
+        PAST_DUE: "PAST_DUE";
+        CANCELED: "CANCELED";
+        TERMINATED: "TERMINATED";
+        SUSPENDED: "SUSPENDED";
+    }>;
+    contractDuration: z.ZodEnum<{
+        MONTH_4: "MONTH_4";
+        MONTH_8: "MONTH_8";
+        MONTH_12: "MONTH_12";
+    }>;
+    contractStartDate: z.ZodString;
+    contractEndDate: z.ZodString;
+    discountPercent: z.ZodCoercedNumber<unknown>;
+    billingSource: z.ZodEnum<{
+        DIRECT: "DIRECT";
+        ORGANIZATION: "ORGANIZATION";
+    }>;
+    billingOrganizationId: z.ZodNullable<z.ZodString>;
+    monthlyPriceInCents: z.ZodNumber;
+    currentPeriodStart: z.ZodString;
+    currentPeriodEnd: z.ZodString;
+    billingAnchorDay: z.ZodNumber;
+    isInGracePeriod: z.ZodBoolean;
+    gracePeriodEndsAt: z.ZodNullable<z.ZodString>;
+    isPaused: z.ZodBoolean;
+    pausedAt: z.ZodNullable<z.ZodString>;
+    pauseResumeDate: z.ZodNullable<z.ZodString>;
+    pauseMonthsUsed: z.ZodNumber;
+    pauseMonthsRemaining: z.ZodNumber;
+    isCanceled: z.ZodBoolean;
+    canceledAt: z.ZodNullable<z.ZodString>;
+    cancelEffectiveDate: z.ZodNullable<z.ZodString>;
+    scheduledTierChange: z.ZodNullable<z.ZodEnum<{
+        ESSENTIALS: "ESSENTIALS";
+        CORE: "CORE";
+        CONCIERGE: "CONCIERGE";
+    }>>;
+    tierChangeEffectiveDate: z.ZodNullable<z.ZodString>;
+    signedContractKey: z.ZodNullable<z.ZodString>;
+    failedPaymentCount: z.ZodDefault<z.ZodNumber>;
+    cancelReason: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    earlyTerminationFee: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    createdAt: z.ZodString;
+    updatedAt: z.ZodString;
+    paymentIntentStatus: z.ZodOptional<z.ZodEnum<{
+        succeeded: "succeeded";
+        requires_action: "requires_action";
+        processing: "processing";
+        requires_payment_method: "requires_payment_method";
+    }>>;
+    paymentClientSecret: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+}, z.core.$strip>;
+export type AdminSubscriptionRetryResponse = AdminSubscriptionCreateResponse;
 export declare const CreateSubscriptionRequestSchema: z.ZodObject<{
     userId: z.ZodString;
     tier: z.ZodEnum<{
@@ -254,6 +427,20 @@ export declare const PauseSubscriptionRequestSchema: z.ZodObject<{
     reason: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type PauseSubscriptionRequest = z.infer<typeof PauseSubscriptionRequestSchema>;
+/**
+ * Response for PATCH /api/admin/subscriptions/:id/pause.
+ * The server returns the pause bookkeeping, NOT the subscription record.
+ */
+export declare const PauseSubscriptionResponseSchema: z.ZodObject<{
+    pauseResumeDate: z.ZodString;
+    pauseMonthsUsed: z.ZodNumber;
+}, z.core.$strip>;
+export type PauseSubscriptionResponse = z.infer<typeof PauseSubscriptionResponseSchema>;
+/** Response for PATCH /api/admin/subscriptions/:id/resume. */
+export declare const ResumeSubscriptionResponseSchema: z.ZodObject<{
+    resumed: z.ZodBoolean;
+}, z.core.$strip>;
+export type ResumeSubscriptionResponse = z.infer<typeof ResumeSubscriptionResponseSchema>;
 export declare const TierChangeRequestSchema: z.ZodObject<{
     newTier: z.ZodEnum<{
         ESSENTIALS: "ESSENTIALS";
@@ -263,6 +450,26 @@ export declare const TierChangeRequestSchema: z.ZodObject<{
     effectiveDate: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type TierChangeRequest = z.infer<typeof TierChangeRequestSchema>;
+/**
+ * Response for PATCH /api/admin/subscriptions/:id/tier.
+ *
+ * Discriminated on `type`: an upgrade takes effect immediately and returns the
+ * session credits prorated onto the new tier; a downgrade is scheduled for the
+ * end of the current period.
+ */
+export declare const TierChangeResponseSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
+    type: z.ZodLiteral<"upgrade">;
+    effectiveImmediately: z.ZodLiteral<true>;
+    proratedCredits: z.ZodArray<z.ZodObject<{
+        sessionType: z.ZodString;
+        creditAmount: z.ZodNumber;
+    }, z.core.$strip>>;
+}, z.core.$strip>, z.ZodObject<{
+    type: z.ZodLiteral<"downgrade">;
+    effectiveImmediately: z.ZodLiteral<false>;
+    effectiveDate: z.ZodString;
+}, z.core.$strip>], "type">;
+export type TierChangeResponse = z.infer<typeof TierChangeResponseSchema>;
 export declare const SubscriptionListParamsSchema: z.ZodObject<{
     status: z.ZodOptional<z.ZodString>;
     tier: z.ZodOptional<z.ZodString>;
