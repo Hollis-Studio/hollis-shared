@@ -65,7 +65,12 @@ onboarding intake steps and the standalone intake modal duplicate a flow that no
 before the member ever has an account.
 
 Nutrition self-logging: **deferred, not cut** (Isaac 2026-09-04 — "leave this stuff for now").
-Training programming: **kept in full**, minus AI generation.
+Training programming: **kept in full, INCLUDING AI generation.** Plans, strategies, the workout
+builder, `AIGenerateModal`, `AIGenerateStrategyModal`, `GeneratedPlanPreview`,
+`ExerciseReviewPanel`, `useGenerateWorkoutPlan`, and `useAIContext` — the hook that reads a
+patient's history to ground generation — all stay. This was briefly cut on 2026-09-04 and
+restored the same day (v3.8.87); do not cut it again. The analytics `AIChatWidget` is a
+separate surface and remains cut.
 
 ## 4. Staffing
 
@@ -116,7 +121,8 @@ filter.
 Consultation wizard · `PaymentModal` · `subscriptionService` · lab PDF extraction + metric
 governance · `BiomarkerPicker` · member↔admin messaging · coaching booking + availability ·
 wearable/device sync · sponsored-panel tracking · nutrition (deferred) · training plans,
-exercise library, and strategies (minus AI generation).
+exercise library, strategies, and **AI workout/strategy generation with its history-grounded
+`useAIContext`** · the retail storefront.
 
 ## 9. Open questions this document does not settle
 
