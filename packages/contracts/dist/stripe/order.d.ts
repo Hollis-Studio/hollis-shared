@@ -30,9 +30,9 @@ export declare const FULFILLMENT_STATUSES: readonly ["PENDING", "PROCESSING", "S
 export declare const FulfillmentStatusSchema: z.ZodEnum<{
     CANCELLED: "CANCELLED";
     PENDING: "PENDING";
+    DELIVERED: "DELIVERED";
     PROCESSING: "PROCESSING";
     SHIPPED: "SHIPPED";
-    DELIVERED: "DELIVERED";
     RETURNED: "RETURNED";
 }>;
 export type FulfillmentStatus = z.infer<typeof FulfillmentStatusSchema>;
@@ -93,9 +93,9 @@ export declare const OrderSchema: z.ZodObject<{
     fulfillmentStatus: z.ZodEnum<{
         CANCELLED: "CANCELLED";
         PENDING: "PENDING";
+        DELIVERED: "DELIVERED";
         PROCESSING: "PROCESSING";
         SHIPPED: "SHIPPED";
-        DELIVERED: "DELIVERED";
         RETURNED: "RETURNED";
     }>;
     shippingAddress: z.ZodNullable<z.ZodObject<{
@@ -126,9 +126,9 @@ export declare const UpdateFulfillmentRequestSchema: z.ZodObject<{
     status: z.ZodEnum<{
         CANCELLED: "CANCELLED";
         PENDING: "PENDING";
+        DELIVERED: "DELIVERED";
         PROCESSING: "PROCESSING";
         SHIPPED: "SHIPPED";
-        DELIVERED: "DELIVERED";
         RETURNED: "RETURNED";
     }>;
     trackingNumber: z.ZodOptional<z.ZodString>;

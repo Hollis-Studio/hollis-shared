@@ -1,0 +1,31 @@
+/** Typed API paths for the life-coaching service. */
+export const COACHING_ROUTES = {
+  CAPACITY: "/api/coaching/capacity",
+  LEADS: "/api/coaching/leads",
+  ME: "/api/coaching/me",
+  CHECKOUT: "/api/coaching/checkout",
+  CANCEL_RENEWAL: "/api/coaching/renewal/cancel",
+  BILLING_PORTAL: "/api/coaching/billing/payment-method",
+  LINK_APP: "/api/coaching/app-link",
+  IDENTITY_EXCHANGE: "/api/coaching/identity/exchange",
+  IDENTITY_LINK: "/api/coaching/identity/link",
+  APPOINTMENTS: "/api/coaching/appointments",
+  CHECK_INS: "/api/coaching/check-ins",
+  MESSAGES: "/api/coaching/messages",
+  ADMIN: {
+    OVERVIEW: "/api/admin/coaching/overview",
+    CLIENTS: "/api/admin/coaching/clients",
+    LEADS: "/api/admin/coaching/leads",
+    lead: (leadId: string) => `/api/admin/coaching/leads/${leadId}` as const,
+    client: (memberId: string) => `/api/admin/coaching/clients/${memberId}` as const,
+    AVAILABILITY: "/api/admin/coaching/availability",
+    APPOINTMENTS: "/api/admin/coaching/appointments",
+    BILLING: "/api/admin/coaching/billing",
+    ASSIGNMENTS: "/api/admin/coaching/assignments",
+    RECONCILE: "/api/admin/coaching/reconcile",
+    INVITES: "/api/admin/coaching/invites",
+  },
+  WORKOUTS: {
+    APP_ACCESS: "/v1/coaching/app-access",
+  },
+} as const;

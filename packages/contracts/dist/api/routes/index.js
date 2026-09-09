@@ -25,6 +25,7 @@ export * from "./types.js";
 export * from "./admin.js";
 export * from "./ai.js";
 export * from "./appointments.js";
+export * from "./coaching.js";
 export * from "./auth.js";
 export * from "./biometrics.js";
 export * from "./health-metrics.js";

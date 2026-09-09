@@ -18,5 +18,6 @@ export { USER_ROUTES, type UserRoute } from "./routes/users.js";
 export { HEALTH_METRICS_ROUTES, type HealthMetricsRoute } from "./routes/health-metrics.js";
 export { ASSIGNMENT_ROUTES, MFA_ROUTES, type AssignmentRoute, type MfaRoute } from "./routes/mfa.js";
 export { WORKOUT_PLANS_ROUTES } from "./routes/workouts.js";
+export { COACHING_ROUTES } from "./routes/coaching.js";
 export * from "./routes/health-route-contracts.js";
 //# sourceMappingURL=index.d.ts.map

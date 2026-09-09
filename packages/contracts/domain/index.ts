@@ -144,6 +144,7 @@ export * from "./biometrics.js";
 export * from "./organization.js";
 
 export * from "./appointment-config.js";
+export * from "./coaching.js";
 export * from "./documents.js";
 
 // Consent domain - patient consent record types and endpoint constants

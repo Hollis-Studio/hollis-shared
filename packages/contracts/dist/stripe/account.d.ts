@@ -89,9 +89,9 @@ export declare const CustomerOrderSchema: z.ZodObject<{
     fulfillmentStatus: z.ZodEnum<{
         CANCELLED: "CANCELLED";
         PENDING: "PENDING";
+        DELIVERED: "DELIVERED";
         PROCESSING: "PROCESSING";
         SHIPPED: "SHIPPED";
-        DELIVERED: "DELIVERED";
         RETURNED: "RETURNED";
     }>;
     shippingAddress: z.ZodNullable<z.ZodObject<{

@@ -1786,9 +1786,9 @@ export declare const adminTaskSchema: z.ZodObject<{
         fulfillmentStatus: z.ZodEnum<{
             CANCELLED: "CANCELLED";
             PENDING: "PENDING";
+            DELIVERED: "DELIVERED";
             PROCESSING: "PROCESSING";
             SHIPPED: "SHIPPED";
-            DELIVERED: "DELIVERED";
             RETURNED: "RETURNED";
         }>;
     }, z.core.$strip>>>;
@@ -1866,9 +1866,9 @@ export declare const adminTaskListResponseSchema: z.ZodObject<{
             fulfillmentStatus: z.ZodEnum<{
                 CANCELLED: "CANCELLED";
                 PENDING: "PENDING";
+                DELIVERED: "DELIVERED";
                 PROCESSING: "PROCESSING";
                 SHIPPED: "SHIPPED";
-                DELIVERED: "DELIVERED";
                 RETURNED: "RETURNED";
             }>;
         }, z.core.$strip>>>;
@@ -1956,9 +1956,9 @@ export declare const adminTaskDetailResponseSchema: z.ZodObject<{
             fulfillmentStatus: z.ZodEnum<{
                 CANCELLED: "CANCELLED";
                 PENDING: "PENDING";
+                DELIVERED: "DELIVERED";
                 PROCESSING: "PROCESSING";
                 SHIPPED: "SHIPPED";
-                DELIVERED: "DELIVERED";
                 RETURNED: "RETURNED";
             }>;
         }, z.core.$strip>>>;

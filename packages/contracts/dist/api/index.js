@@ -28,6 +28,7 @@ export { ASSIGNMENT_ROUTES, MFA_ROUTES } from "./routes/mfa.js";
 // Workout Plans routes are defined in the modular routes/ directory (not in routes.ts).
 // Explicitly re-exported here so they are available via @hollis-studio/contracts/api.
 export { WORKOUT_PLANS_ROUTES } from "./routes/workouts.js";
+export { COACHING_ROUTES } from "./routes/coaching.js";
 // Health app route request/query/param schemas promoted from server validation.
 export * from "./routes/health-route-contracts.js";
 //# sourceMappingURL=index.js.map

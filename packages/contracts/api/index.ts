@@ -47,6 +47,7 @@ export {
 export {
     WORKOUT_PLANS_ROUTES
 } from "./routes/workouts.js";
+export { COACHING_ROUTES } from "./routes/coaching.js";
 
 // Health app route request/query/param schemas promoted from server validation.
 export * from "./routes/health-route-contracts.js";
