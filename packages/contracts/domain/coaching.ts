@@ -25,10 +25,15 @@ export const COACHING_INITIAL_TERM_CALLS = 6;
 export const COACHING_LEAD_STAGES = [
   "NEW", "CONSULTATION_BOOKED", "ATTENDED", "ELIGIBLE_INVITED", "ENROLLED", "DECLINED", "CLOSED",
 ] as const;
+export const COACHING_LEAD_STAGE = {
+  NEW: "NEW", CONSULTATION_BOOKED: "CONSULTATION_BOOKED", ATTENDED: "ATTENDED", ELIGIBLE_INVITED: "ELIGIBLE_INVITED",
+  ENROLLED: "ENROLLED", DECLINED: "DECLINED", CLOSED: "CLOSED",
+} as const;
 export const CoachingLeadStageSchema = z.enum(COACHING_LEAD_STAGES);
 export type CoachingLeadStage = z.infer<typeof CoachingLeadStageSchema>;
 
 export const COACHING_MEMBERSHIP_STATUSES = ["PENDING", "ACTIVE", "PAST_DUE", "ENDED", "REFUNDED"] as const;
+export const COACHING_MEMBERSHIP_STATUS = { PENDING: "PENDING", ACTIVE: "ACTIVE", PAST_DUE: "PAST_DUE", ENDED: "ENDED", REFUNDED: "REFUNDED" } as const;
 export const CoachingMembershipStatusSchema = z.enum(COACHING_MEMBERSHIP_STATUSES);
 export type CoachingMembershipStatus = z.infer<typeof CoachingMembershipStatusSchema>;
 
@@ -41,14 +46,17 @@ export const CoachingAppointmentKindSchema = z.enum(COACHING_APPOINTMENT_KINDS);
 export type CoachingAppointmentKind = z.infer<typeof CoachingAppointmentKindSchema>;
 
 export const COACHING_ASSIGNMENT_STATUSES = ["QUEUED", "DELIVERED", "FAILED"] as const;
+export const COACHING_ASSIGNMENT_STATUS = { QUEUED: "QUEUED", DELIVERED: "DELIVERED", FAILED: "FAILED" } as const;
 export const CoachingAssignmentStatusSchema = z.enum(COACHING_ASSIGNMENT_STATUSES);
 export type CoachingAssignmentStatus = z.infer<typeof CoachingAssignmentStatusSchema>;
 
 export const COACHING_CALL_CREDIT_STATUSES = ["AVAILABLE", "RESERVED", "CONSUMED", "RELEASED", "EXPIRED"] as const;
+export const COACHING_CALL_CREDIT_STATUS = { AVAILABLE: "AVAILABLE", RESERVED: "RESERVED", CONSUMED: "CONSUMED", RELEASED: "RELEASED", EXPIRED: "EXPIRED" } as const;
 export const CoachingCallCreditStatusSchema = z.enum(COACHING_CALL_CREDIT_STATUSES);
 export type CoachingCallCreditStatus = z.infer<typeof CoachingCallCreditStatusSchema>;
 
 export const COACHING_FULFILLMENT_STATUSES = ["NOT_STARTED", "ELIGIBILITY_PENDING", "PENDING_ACTIVATION", "ACTIVATED", "FAILED", "RESOLUTION_REQUIRED"] as const;
+export const COACHING_FULFILLMENT_STATUS = { NOT_STARTED: "NOT_STARTED", ELIGIBILITY_PENDING: "ELIGIBILITY_PENDING", PENDING_ACTIVATION: "PENDING_ACTIVATION", ACTIVATED: "ACTIVATED", FAILED: "FAILED", RESOLUTION_REQUIRED: "RESOLUTION_REQUIRED" } as const;
 export const CoachingFulfillmentStatusSchema = z.enum(COACHING_FULFILLMENT_STATUSES);
 export type CoachingFulfillmentStatus = z.infer<typeof CoachingFulfillmentStatusSchema>;
 
