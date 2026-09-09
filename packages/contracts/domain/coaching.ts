@@ -44,6 +44,14 @@ export const COACHING_ASSIGNMENT_STATUSES = ["QUEUED", "DELIVERED", "FAILED"] as
 export const CoachingAssignmentStatusSchema = z.enum(COACHING_ASSIGNMENT_STATUSES);
 export type CoachingAssignmentStatus = z.infer<typeof CoachingAssignmentStatusSchema>;
 
+export const COACHING_CALL_CREDIT_STATUSES = ["AVAILABLE", "RESERVED", "CONSUMED", "RELEASED", "EXPIRED"] as const;
+export const CoachingCallCreditStatusSchema = z.enum(COACHING_CALL_CREDIT_STATUSES);
+export type CoachingCallCreditStatus = z.infer<typeof CoachingCallCreditStatusSchema>;
+
+export const COACHING_FULFILLMENT_STATUSES = ["NOT_STARTED", "ELIGIBILITY_PENDING", "PENDING_ACTIVATION", "ACTIVATED", "FAILED", "RESOLUTION_REQUIRED"] as const;
+export const CoachingFulfillmentStatusSchema = z.enum(COACHING_FULFILLMENT_STATUSES);
+export type CoachingFulfillmentStatus = z.infer<typeof CoachingFulfillmentStatusSchema>;
+
 export const CoachingLeadCreateSchema = z.object({
   fullName: z.string().trim().min(1).max(120),
   email: z.string().email().max(320),
