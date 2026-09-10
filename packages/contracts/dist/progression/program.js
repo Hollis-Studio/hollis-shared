@@ -30,6 +30,14 @@ export const MaintenanceTargetSchema = z.object({
     weightKg: z.number().min(0),
     reps: z.number().int().min(1),
 });
+export const ProgramExerciseGuidanceSchema = z.object({
+    coachingNotes: z.string().max(4000).optional(),
+    demonstrationUrl: z.string().url().max(2000).optional(),
+    sectionType: z.enum(["warmup", "working", "cooldown"]).optional(),
+    sectionTitle: z.string().max(200).optional(),
+    restSeconds: z.number().int().min(0).max(3600).optional(),
+    tempo: z.string().max(100).optional(),
+});
 export const ProgramExerciseSchema = z
     .object({
     canonicalExerciseId: z.string().min(1),
@@ -43,6 +51,8 @@ export const ProgramExerciseSchema = z
     maintenanceTarget: MaintenanceTargetSchema.nullable().default(null),
     cardioMaintenanceTarget: CardioTargetsSchema.nullable().default(null),
     priorityLevel: z.enum(["primary", "secondary", "supporting"]).optional(),
+    /** Coach-authored instructions remain attached to the exercise through sync. */
+    ...ProgramExerciseGuidanceSchema.shape,
 })
     .transform((data) => {
     const goalMode = data.goalMode ?? (data.useSmartProgress === false ? "track_only" : "progress");

@@ -23,6 +23,25 @@ export declare const GeneratedExerciseSchema: z.ZodObject<{
     name: z.ZodString;
     exerciseId: z.ZodOptional<z.ZodString>;
     sets: z.ZodOptional<z.ZodNumber>;
+    targetRIR: z.ZodOptional<z.ZodNumber>;
+    restSeconds: z.ZodOptional<z.ZodNumber>;
+    tempo: z.ZodOptional<z.ZodString>;
+    progressionMode: z.ZodOptional<z.ZodEnum<{
+        weight_first: "weight_first";
+        reps_first: "reps_first";
+        duration_first: "duration_first";
+    }>>;
+    cardioTargets: z.ZodOptional<z.ZodObject<{
+        targetDurationSeconds: z.ZodNullable<z.ZodNumber>;
+        targetDistanceKm: z.ZodNullable<z.ZodNumber>;
+        targetSpeedKmh: z.ZodNullable<z.ZodNumber>;
+        targetIncline: z.ZodNullable<z.ZodNumber>;
+        targetResistance: z.ZodNullable<z.ZodNumber>;
+        targetFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+        targetSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+        targetJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+    }, z.core.$strip>>;
+    modality: z.ZodOptional<z.ZodString>;
     reps: z.ZodOptional<z.ZodString>;
     weight: z.ZodOptional<z.ZodString>;
     duration: z.ZodOptional<z.ZodString>;
@@ -44,6 +63,25 @@ export declare const GeneratedWorkoutSectionSchema: z.ZodObject<{
         name: z.ZodString;
         exerciseId: z.ZodOptional<z.ZodString>;
         sets: z.ZodOptional<z.ZodNumber>;
+        targetRIR: z.ZodOptional<z.ZodNumber>;
+        restSeconds: z.ZodOptional<z.ZodNumber>;
+        tempo: z.ZodOptional<z.ZodString>;
+        progressionMode: z.ZodOptional<z.ZodEnum<{
+            weight_first: "weight_first";
+            reps_first: "reps_first";
+            duration_first: "duration_first";
+        }>>;
+        cardioTargets: z.ZodOptional<z.ZodObject<{
+            targetDurationSeconds: z.ZodNullable<z.ZodNumber>;
+            targetDistanceKm: z.ZodNullable<z.ZodNumber>;
+            targetSpeedKmh: z.ZodNullable<z.ZodNumber>;
+            targetIncline: z.ZodNullable<z.ZodNumber>;
+            targetResistance: z.ZodNullable<z.ZodNumber>;
+            targetFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+            targetSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+            targetJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+        }, z.core.$strip>>;
+        modality: z.ZodOptional<z.ZodString>;
         reps: z.ZodOptional<z.ZodString>;
         weight: z.ZodOptional<z.ZodString>;
         duration: z.ZodOptional<z.ZodString>;
@@ -70,6 +108,25 @@ export declare const GeneratedWorkoutDaySchema: z.ZodObject<{
             name: z.ZodString;
             exerciseId: z.ZodOptional<z.ZodString>;
             sets: z.ZodOptional<z.ZodNumber>;
+            targetRIR: z.ZodOptional<z.ZodNumber>;
+            restSeconds: z.ZodOptional<z.ZodNumber>;
+            tempo: z.ZodOptional<z.ZodString>;
+            progressionMode: z.ZodOptional<z.ZodEnum<{
+                weight_first: "weight_first";
+                reps_first: "reps_first";
+                duration_first: "duration_first";
+            }>>;
+            cardioTargets: z.ZodOptional<z.ZodObject<{
+                targetDurationSeconds: z.ZodNullable<z.ZodNumber>;
+                targetDistanceKm: z.ZodNullable<z.ZodNumber>;
+                targetSpeedKmh: z.ZodNullable<z.ZodNumber>;
+                targetIncline: z.ZodNullable<z.ZodNumber>;
+                targetResistance: z.ZodNullable<z.ZodNumber>;
+                targetFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+                targetSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+                targetJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+            }, z.core.$strip>>;
+            modality: z.ZodOptional<z.ZodString>;
             reps: z.ZodOptional<z.ZodString>;
             weight: z.ZodOptional<z.ZodString>;
             duration: z.ZodOptional<z.ZodString>;
@@ -98,6 +155,25 @@ export declare const GeneratedWorkoutPlanSchema: z.ZodObject<{
                 name: z.ZodString;
                 exerciseId: z.ZodOptional<z.ZodString>;
                 sets: z.ZodOptional<z.ZodNumber>;
+                targetRIR: z.ZodOptional<z.ZodNumber>;
+                restSeconds: z.ZodOptional<z.ZodNumber>;
+                tempo: z.ZodOptional<z.ZodString>;
+                progressionMode: z.ZodOptional<z.ZodEnum<{
+                    weight_first: "weight_first";
+                    reps_first: "reps_first";
+                    duration_first: "duration_first";
+                }>>;
+                cardioTargets: z.ZodOptional<z.ZodObject<{
+                    targetDurationSeconds: z.ZodNullable<z.ZodNumber>;
+                    targetDistanceKm: z.ZodNullable<z.ZodNumber>;
+                    targetSpeedKmh: z.ZodNullable<z.ZodNumber>;
+                    targetIncline: z.ZodNullable<z.ZodNumber>;
+                    targetResistance: z.ZodNullable<z.ZodNumber>;
+                    targetFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+                    targetSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+                    targetJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+                }, z.core.$strip>>;
+                modality: z.ZodOptional<z.ZodString>;
                 reps: z.ZodOptional<z.ZodString>;
                 weight: z.ZodOptional<z.ZodString>;
                 duration: z.ZodOptional<z.ZodString>;
@@ -169,6 +245,25 @@ export declare const WorkoutPlanGenerationResultSchema: z.ZodObject<{
                     name: z.ZodString;
                     exerciseId: z.ZodOptional<z.ZodString>;
                     sets: z.ZodOptional<z.ZodNumber>;
+                    targetRIR: z.ZodOptional<z.ZodNumber>;
+                    restSeconds: z.ZodOptional<z.ZodNumber>;
+                    tempo: z.ZodOptional<z.ZodString>;
+                    progressionMode: z.ZodOptional<z.ZodEnum<{
+                        weight_first: "weight_first";
+                        reps_first: "reps_first";
+                        duration_first: "duration_first";
+                    }>>;
+                    cardioTargets: z.ZodOptional<z.ZodObject<{
+                        targetDurationSeconds: z.ZodNullable<z.ZodNumber>;
+                        targetDistanceKm: z.ZodNullable<z.ZodNumber>;
+                        targetSpeedKmh: z.ZodNullable<z.ZodNumber>;
+                        targetIncline: z.ZodNullable<z.ZodNumber>;
+                        targetResistance: z.ZodNullable<z.ZodNumber>;
+                        targetFloors: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+                        targetSteps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+                        targetJumps: z.ZodDefault<z.ZodNullable<z.ZodNumber>>;
+                    }, z.core.$strip>>;
+                    modality: z.ZodOptional<z.ZodString>;
                     reps: z.ZodOptional<z.ZodString>;
                     weight: z.ZodOptional<z.ZodString>;
                     duration: z.ZodOptional<z.ZodString>;

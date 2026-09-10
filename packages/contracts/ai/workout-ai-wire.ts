@@ -25,6 +25,7 @@
  */
 
 import { z } from "zod";
+import { ProgramExerciseGuidanceSchema } from "../progression/program.js";
 import { MuscleGroupSchema } from "../domain/muscles.js";
 import {
   PrescriptionActionSchema,
@@ -208,6 +209,7 @@ export type VoiceLogOperation = z.infer<typeof VoiceLogOperationSchema>;
 // ============================================================================
 
 const LiftingSlottedExerciseSchema = z.object({
+  ...ProgramExerciseGuidanceSchema.shape,
   slotId: z.string().min(1),
   canonicalExerciseId: z.string(),
   exerciseType: z.literal("lifting"),
@@ -220,6 +222,7 @@ const LiftingSlottedExerciseSchema = z.object({
 });
 
 const TimedSlottedExerciseSchema = z.object({
+  ...ProgramExerciseGuidanceSchema.shape,
   slotId: z.string().min(1),
   canonicalExerciseId: z.string(),
   exerciseType: z.literal("timed"),
@@ -232,6 +235,7 @@ const TimedSlottedExerciseSchema = z.object({
 
 const CardioSlottedExerciseSchema = z
   .object({
+    ...ProgramExerciseGuidanceSchema.shape,
     slotId: z.string().min(1),
     canonicalExerciseId: z.string(),
     exerciseType: z.literal("cardio"),

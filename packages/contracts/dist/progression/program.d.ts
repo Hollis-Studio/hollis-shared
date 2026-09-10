@@ -56,7 +56,29 @@ export declare const MaintenanceTargetSchema: z.ZodObject<{
     weightKg: z.ZodNumber;
     reps: z.ZodNumber;
 }, z.core.$strip>;
+export declare const ProgramExerciseGuidanceSchema: z.ZodObject<{
+    coachingNotes: z.ZodOptional<z.ZodString>;
+    demonstrationUrl: z.ZodOptional<z.ZodString>;
+    sectionType: z.ZodOptional<z.ZodEnum<{
+        warmup: "warmup";
+        working: "working";
+        cooldown: "cooldown";
+    }>>;
+    sectionTitle: z.ZodOptional<z.ZodString>;
+    restSeconds: z.ZodOptional<z.ZodNumber>;
+    tempo: z.ZodOptional<z.ZodString>;
+}, z.core.$strip>;
 export declare const ProgramExerciseSchema: z.ZodPipe<z.ZodObject<{
+    coachingNotes: z.ZodOptional<z.ZodString>;
+    demonstrationUrl: z.ZodOptional<z.ZodString>;
+    sectionType: z.ZodOptional<z.ZodEnum<{
+        warmup: "warmup";
+        working: "working";
+        cooldown: "cooldown";
+    }>>;
+    sectionTitle: z.ZodOptional<z.ZodString>;
+    restSeconds: z.ZodOptional<z.ZodNumber>;
+    tempo: z.ZodOptional<z.ZodString>;
     canonicalExerciseId: z.ZodString;
     order: z.ZodNumber;
     sets: z.ZodArray<z.ZodObject<{
@@ -158,6 +180,12 @@ export declare const ProgramExerciseSchema: z.ZodPipe<z.ZodObject<{
         targetSteps: number | null;
         targetJumps: number | null;
     } | null;
+    readonly coachingNotes?: string | undefined;
+    readonly demonstrationUrl?: string | undefined;
+    readonly sectionType?: "warmup" | "working" | "cooldown" | undefined;
+    readonly sectionTitle?: string | undefined;
+    readonly restSeconds?: number | undefined;
+    readonly tempo?: string | undefined;
     readonly priorityLevel?: "primary" | "secondary" | "supporting" | undefined;
 }, {
     canonicalExerciseId: string;
@@ -199,6 +227,12 @@ export declare const ProgramExerciseSchema: z.ZodPipe<z.ZodObject<{
         targetSteps: number | null;
         targetJumps: number | null;
     } | null;
+    coachingNotes?: string | undefined;
+    demonstrationUrl?: string | undefined;
+    sectionType?: "warmup" | "working" | "cooldown" | undefined;
+    sectionTitle?: string | undefined;
+    restSeconds?: number | undefined;
+    tempo?: string | undefined;
     goalMode?: "maintain" | "progress" | "track_only" | undefined;
     useSmartProgress?: boolean | undefined;
     priorityLevel?: "primary" | "secondary" | "supporting" | undefined;
@@ -207,6 +241,16 @@ export declare const ProgramDaySchema: z.ZodObject<{
     dayOfWeek: z.ZodNumber;
     name: z.ZodString;
     exercises: z.ZodArray<z.ZodPipe<z.ZodObject<{
+        coachingNotes: z.ZodOptional<z.ZodString>;
+        demonstrationUrl: z.ZodOptional<z.ZodString>;
+        sectionType: z.ZodOptional<z.ZodEnum<{
+            warmup: "warmup";
+            working: "working";
+            cooldown: "cooldown";
+        }>>;
+        sectionTitle: z.ZodOptional<z.ZodString>;
+        restSeconds: z.ZodOptional<z.ZodNumber>;
+        tempo: z.ZodOptional<z.ZodString>;
         canonicalExerciseId: z.ZodString;
         order: z.ZodNumber;
         sets: z.ZodArray<z.ZodObject<{
@@ -308,6 +352,12 @@ export declare const ProgramDaySchema: z.ZodObject<{
             targetSteps: number | null;
             targetJumps: number | null;
         } | null;
+        readonly coachingNotes?: string | undefined;
+        readonly demonstrationUrl?: string | undefined;
+        readonly sectionType?: "warmup" | "working" | "cooldown" | undefined;
+        readonly sectionTitle?: string | undefined;
+        readonly restSeconds?: number | undefined;
+        readonly tempo?: string | undefined;
         readonly priorityLevel?: "primary" | "secondary" | "supporting" | undefined;
     }, {
         canonicalExerciseId: string;
@@ -349,6 +399,12 @@ export declare const ProgramDaySchema: z.ZodObject<{
             targetSteps: number | null;
             targetJumps: number | null;
         } | null;
+        coachingNotes?: string | undefined;
+        demonstrationUrl?: string | undefined;
+        sectionType?: "warmup" | "working" | "cooldown" | undefined;
+        sectionTitle?: string | undefined;
+        restSeconds?: number | undefined;
+        tempo?: string | undefined;
         goalMode?: "maintain" | "progress" | "track_only" | undefined;
         useSmartProgress?: boolean | undefined;
         priorityLevel?: "primary" | "secondary" | "supporting" | undefined;
@@ -374,6 +430,16 @@ export declare const ProgramSchema: z.ZodObject<{
         dayOfWeek: z.ZodNumber;
         name: z.ZodString;
         exercises: z.ZodArray<z.ZodPipe<z.ZodObject<{
+            coachingNotes: z.ZodOptional<z.ZodString>;
+            demonstrationUrl: z.ZodOptional<z.ZodString>;
+            sectionType: z.ZodOptional<z.ZodEnum<{
+                warmup: "warmup";
+                working: "working";
+                cooldown: "cooldown";
+            }>>;
+            sectionTitle: z.ZodOptional<z.ZodString>;
+            restSeconds: z.ZodOptional<z.ZodNumber>;
+            tempo: z.ZodOptional<z.ZodString>;
             canonicalExerciseId: z.ZodString;
             order: z.ZodNumber;
             sets: z.ZodArray<z.ZodObject<{
@@ -475,6 +541,12 @@ export declare const ProgramSchema: z.ZodObject<{
                 targetSteps: number | null;
                 targetJumps: number | null;
             } | null;
+            readonly coachingNotes?: string | undefined;
+            readonly demonstrationUrl?: string | undefined;
+            readonly sectionType?: "warmup" | "working" | "cooldown" | undefined;
+            readonly sectionTitle?: string | undefined;
+            readonly restSeconds?: number | undefined;
+            readonly tempo?: string | undefined;
             readonly priorityLevel?: "primary" | "secondary" | "supporting" | undefined;
         }, {
             canonicalExerciseId: string;
@@ -516,6 +588,12 @@ export declare const ProgramSchema: z.ZodObject<{
                 targetSteps: number | null;
                 targetJumps: number | null;
             } | null;
+            coachingNotes?: string | undefined;
+            demonstrationUrl?: string | undefined;
+            sectionType?: "warmup" | "working" | "cooldown" | undefined;
+            sectionTitle?: string | undefined;
+            restSeconds?: number | undefined;
+            tempo?: string | undefined;
             goalMode?: "maintain" | "progress" | "track_only" | undefined;
             useSmartProgress?: boolean | undefined;
             priorityLevel?: "primary" | "secondary" | "supporting" | undefined;

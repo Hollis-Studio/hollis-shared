@@ -200,8 +200,39 @@ export const CoachingProgramSnapshotSchema = ProgramSchema.omit({
   isActive: true,
   createdAt: true,
   updatedAt: true,
+}).superRefine((program, ctx) => {
+  const reject = (message: string, path: (string | number)[]) => ctx.addIssue({ code: "custom", message, path });
+  if (program.schedule.length > 7) reject("A coaching week supports at most seven training days", ["schedule"]);
+  if (new Set(program.schedule.map((day) => day.dayOfWeek)).size !== program.schedule.length) reject("Training days must be unique", ["schedule"]);
+  if (program.durationWeeks > 52) reject("Coaching plans support at most 52 weeks", ["durationWeeks"]);
+  program.schedule.forEach((day, d) => {
+    if (day.exercises.length > 50) reject("At most 50 exercises per day", ["schedule", d, "exercises"]);
+    day.exercises.forEach((exercise, e) => {
+      const path = ["schedule", d, "exercises", e];
+      if (exercise.sets.length > 20) reject("At most 20 sets per exercise", [...path, "sets"]);
+      if (!exercise.cardioTargets && exercise.sets.length === 0) reject("An exercise needs sets or cardio targets", path);
+      if (exercise.cardioTargets && !Object.values(exercise.cardioTargets).some((value) => typeof value === "number" && value > 0)) reject("Cardio needs a positive target", [...path, "cardioTargets"]);
+      if (exercise.sets.some((set) => set.targetReps === 0 && !set.targetDurationSeconds)) reject("Each set needs reps or a duration", [...path, "sets"]);
+    });
+  });
 });
 export type CoachingProgramSnapshot = z.infer<typeof CoachingProgramSnapshotSchema>;
+
+export const CoachingExerciseCatalogQuerySchema = z.object({
+  search: z.string().trim().min(1).max(200).optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(100),
+  cursor: z.string().min(1).max(200).optional(),
+});
+export const CoachingExerciseCatalogSchema = z.array(z.object({
+  id: z.string().min(1), name: z.string().min(1),
+  modality: z.string().min(1), equipmentType: z.string().min(1),
+})).max(200);
+
+/** Trusted bridge only: subject must come from Health's verified Identity link. */
+export const CoachingAccountProvisionRequestSchema = z.object({
+  coachingMemberId: z.string().uuid(), identitySubject: z.string().min(1).max(256),
+  displayName: z.string().trim().min(1).max(200),
+});
 
 export const CoachingPlanAssignmentRequestSchema = z.object({
   assignmentId: z.string().uuid(), coachingMemberId: z.string().uuid(), appUserId: z.string().min(1).max(256),

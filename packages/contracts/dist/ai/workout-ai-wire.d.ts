@@ -109,6 +109,16 @@ export declare const SlottedExerciseSchema: z.ZodPipe<z.ZodTransform<unknown, un
         secondary: "secondary";
         supporting: "supporting";
     }>>;
+    coachingNotes: z.ZodOptional<z.ZodString>;
+    demonstrationUrl: z.ZodOptional<z.ZodString>;
+    sectionType: z.ZodOptional<z.ZodEnum<{
+        warmup: "warmup";
+        working: "working";
+        cooldown: "cooldown";
+    }>>;
+    sectionTitle: z.ZodOptional<z.ZodString>;
+    restSeconds: z.ZodOptional<z.ZodNumber>;
+    tempo: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>, z.ZodObject<{
     slotId: z.ZodString;
     canonicalExerciseId: z.ZodString;
@@ -126,6 +136,16 @@ export declare const SlottedExerciseSchema: z.ZodPipe<z.ZodTransform<unknown, un
         secondary: "secondary";
         supporting: "supporting";
     }>>;
+    coachingNotes: z.ZodOptional<z.ZodString>;
+    demonstrationUrl: z.ZodOptional<z.ZodString>;
+    sectionType: z.ZodOptional<z.ZodEnum<{
+        warmup: "warmup";
+        working: "working";
+        cooldown: "cooldown";
+    }>>;
+    sectionTitle: z.ZodOptional<z.ZodString>;
+    restSeconds: z.ZodOptional<z.ZodNumber>;
+    tempo: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>, z.ZodObject<{
     slotId: z.ZodString;
     canonicalExerciseId: z.ZodString;
@@ -143,6 +163,16 @@ export declare const SlottedExerciseSchema: z.ZodPipe<z.ZodTransform<unknown, un
         secondary: "secondary";
         supporting: "supporting";
     }>>;
+    coachingNotes: z.ZodOptional<z.ZodString>;
+    demonstrationUrl: z.ZodOptional<z.ZodString>;
+    sectionType: z.ZodOptional<z.ZodEnum<{
+        warmup: "warmup";
+        working: "working";
+        cooldown: "cooldown";
+    }>>;
+    sectionTitle: z.ZodOptional<z.ZodString>;
+    restSeconds: z.ZodOptional<z.ZodNumber>;
+    tempo: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>], "exerciseType">>;
 export declare const SlottedProgramSchema: z.ZodObject<{
     name: z.ZodString;
@@ -180,6 +210,16 @@ export declare const SlottedProgramSchema: z.ZodObject<{
                 secondary: "secondary";
                 supporting: "supporting";
             }>>;
+            coachingNotes: z.ZodOptional<z.ZodString>;
+            demonstrationUrl: z.ZodOptional<z.ZodString>;
+            sectionType: z.ZodOptional<z.ZodEnum<{
+                warmup: "warmup";
+                working: "working";
+                cooldown: "cooldown";
+            }>>;
+            sectionTitle: z.ZodOptional<z.ZodString>;
+            restSeconds: z.ZodOptional<z.ZodNumber>;
+            tempo: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>, z.ZodObject<{
             slotId: z.ZodString;
             canonicalExerciseId: z.ZodString;
@@ -197,6 +237,16 @@ export declare const SlottedProgramSchema: z.ZodObject<{
                 secondary: "secondary";
                 supporting: "supporting";
             }>>;
+            coachingNotes: z.ZodOptional<z.ZodString>;
+            demonstrationUrl: z.ZodOptional<z.ZodString>;
+            sectionType: z.ZodOptional<z.ZodEnum<{
+                warmup: "warmup";
+                working: "working";
+                cooldown: "cooldown";
+            }>>;
+            sectionTitle: z.ZodOptional<z.ZodString>;
+            restSeconds: z.ZodOptional<z.ZodNumber>;
+            tempo: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>, z.ZodObject<{
             slotId: z.ZodString;
             canonicalExerciseId: z.ZodString;
@@ -214,6 +264,16 @@ export declare const SlottedProgramSchema: z.ZodObject<{
                 secondary: "secondary";
                 supporting: "supporting";
             }>>;
+            coachingNotes: z.ZodOptional<z.ZodString>;
+            demonstrationUrl: z.ZodOptional<z.ZodString>;
+            sectionType: z.ZodOptional<z.ZodEnum<{
+                warmup: "warmup";
+                working: "working";
+                cooldown: "cooldown";
+            }>>;
+            sectionTitle: z.ZodOptional<z.ZodString>;
+            restSeconds: z.ZodOptional<z.ZodNumber>;
+            tempo: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>], "exerciseType">>>;
     }, z.core.$strip>>;
 }, z.core.$strip>;
@@ -603,6 +663,16 @@ export declare const SmartBuilderResponseSchema: z.ZodDiscriminatedUnion<[z.ZodO
                     secondary: "secondary";
                     supporting: "supporting";
                 }>>;
+                coachingNotes: z.ZodOptional<z.ZodString>;
+                demonstrationUrl: z.ZodOptional<z.ZodString>;
+                sectionType: z.ZodOptional<z.ZodEnum<{
+                    warmup: "warmup";
+                    working: "working";
+                    cooldown: "cooldown";
+                }>>;
+                sectionTitle: z.ZodOptional<z.ZodString>;
+                restSeconds: z.ZodOptional<z.ZodNumber>;
+                tempo: z.ZodOptional<z.ZodString>;
             }, z.core.$strip>, z.ZodObject<{
                 slotId: z.ZodString;
                 canonicalExerciseId: z.ZodString;
@@ -620,6 +690,16 @@ export declare const SmartBuilderResponseSchema: z.ZodDiscriminatedUnion<[z.ZodO
                     secondary: "secondary";
                     supporting: "supporting";
                 }>>;
+                coachingNotes: z.ZodOptional<z.ZodString>;
+                demonstrationUrl: z.ZodOptional<z.ZodString>;
+                sectionType: z.ZodOptional<z.ZodEnum<{
+                    warmup: "warmup";
+                    working: "working";
+                    cooldown: "cooldown";
+                }>>;
+                sectionTitle: z.ZodOptional<z.ZodString>;
+                restSeconds: z.ZodOptional<z.ZodNumber>;
+                tempo: z.ZodOptional<z.ZodString>;
             }, z.core.$strip>, z.ZodObject<{
                 slotId: z.ZodString;
                 canonicalExerciseId: z.ZodString;
@@ -637,6 +717,16 @@ export declare const SmartBuilderResponseSchema: z.ZodDiscriminatedUnion<[z.ZodO
                     secondary: "secondary";
                     supporting: "supporting";
                 }>>;
+                coachingNotes: z.ZodOptional<z.ZodString>;
+                demonstrationUrl: z.ZodOptional<z.ZodString>;
+                sectionType: z.ZodOptional<z.ZodEnum<{
+                    warmup: "warmup";
+                    working: "working";
+                    cooldown: "cooldown";
+                }>>;
+                sectionTitle: z.ZodOptional<z.ZodString>;
+                restSeconds: z.ZodOptional<z.ZodNumber>;
+                tempo: z.ZodOptional<z.ZodString>;
             }, z.core.$strip>], "exerciseType">>>;
         }, z.core.$strip>>;
     }, z.core.$strip>;
@@ -1456,6 +1546,16 @@ export declare const SmartBuilderRequestSchema: z.ZodObject<{
                     secondary: "secondary";
                     supporting: "supporting";
                 }>>;
+                coachingNotes: z.ZodOptional<z.ZodString>;
+                demonstrationUrl: z.ZodOptional<z.ZodString>;
+                sectionType: z.ZodOptional<z.ZodEnum<{
+                    warmup: "warmup";
+                    working: "working";
+                    cooldown: "cooldown";
+                }>>;
+                sectionTitle: z.ZodOptional<z.ZodString>;
+                restSeconds: z.ZodOptional<z.ZodNumber>;
+                tempo: z.ZodOptional<z.ZodString>;
             }, z.core.$strip>, z.ZodObject<{
                 slotId: z.ZodString;
                 canonicalExerciseId: z.ZodString;
@@ -1473,6 +1573,16 @@ export declare const SmartBuilderRequestSchema: z.ZodObject<{
                     secondary: "secondary";
                     supporting: "supporting";
                 }>>;
+                coachingNotes: z.ZodOptional<z.ZodString>;
+                demonstrationUrl: z.ZodOptional<z.ZodString>;
+                sectionType: z.ZodOptional<z.ZodEnum<{
+                    warmup: "warmup";
+                    working: "working";
+                    cooldown: "cooldown";
+                }>>;
+                sectionTitle: z.ZodOptional<z.ZodString>;
+                restSeconds: z.ZodOptional<z.ZodNumber>;
+                tempo: z.ZodOptional<z.ZodString>;
             }, z.core.$strip>, z.ZodObject<{
                 slotId: z.ZodString;
                 canonicalExerciseId: z.ZodString;
@@ -1490,6 +1600,16 @@ export declare const SmartBuilderRequestSchema: z.ZodObject<{
                     secondary: "secondary";
                     supporting: "supporting";
                 }>>;
+                coachingNotes: z.ZodOptional<z.ZodString>;
+                demonstrationUrl: z.ZodOptional<z.ZodString>;
+                sectionType: z.ZodOptional<z.ZodEnum<{
+                    warmup: "warmup";
+                    working: "working";
+                    cooldown: "cooldown";
+                }>>;
+                sectionTitle: z.ZodOptional<z.ZodString>;
+                restSeconds: z.ZodOptional<z.ZodNumber>;
+                tempo: z.ZodOptional<z.ZodString>;
             }, z.core.$strip>], "exerciseType">>>;
         }, z.core.$strip>>;
     }, z.core.$strip>>;

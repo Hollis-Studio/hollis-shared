@@ -260,6 +260,45 @@ describe("SlottedProgram name / description / prescription bounds", () => {
   });
 });
 
+describe("Slotted program exercise guidance", () => {
+  it("retains coaching guidance through the editor wire schema", () => {
+    const parsed = SlottedProgramSchema.parse({
+      name: "Coach plan",
+      description: "",
+      type: "custom",
+      durationWeeks: 4,
+      schedule: [{
+        dayOfWeek: 1,
+        name: "Monday",
+        exercises: [{
+          slotId: "monday-1",
+          canonicalExerciseId: "barbell_back_squat",
+          exerciseType: "lifting",
+          sets: 3,
+          reps: 8,
+          rir: 2,
+          progressionMode: "reps_first",
+          coachingNotes: "Keep ribs down.",
+          demonstrationUrl: "https://example.com/squat",
+          sectionType: "working",
+          sectionTitle: "Strength",
+          restSeconds: 120,
+          tempo: "3-1-1",
+        }],
+      }],
+    });
+
+    expect(parsed.schedule[0]?.exercises[0]).toMatchObject({
+      coachingNotes: "Keep ribs down.",
+      demonstrationUrl: "https://example.com/squat",
+      sectionType: "working",
+      sectionTitle: "Strength",
+      restSeconds: 120,
+      tempo: "3-1-1",
+    });
+  });
+});
+
 describe("SmartBuilderRequestSchema action enum", () => {
   const userContext = {
     profile: {},

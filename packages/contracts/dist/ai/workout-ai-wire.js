@@ -24,6 +24,7 @@
  * deps: zod, domain/muscles | consumers: hollis-workouts server + mobile client
  */
 import { z } from "zod";
+import { ProgramExerciseGuidanceSchema } from "../progression/program.js";
 import { MuscleGroupSchema } from "../domain/muscles.js";
 import { PrescriptionActionSchema, PrescriptionDropStepSchema, AiContextDriverInputSchema, AiSetSignalOverrideSchema, } from "../progression/engine.js";
 // ============================================================================
@@ -185,6 +186,7 @@ export const VoiceLogOperationSchema = VoiceLogOperationRawSchema.superRefine((v
 // Smart program builder — slotted program + response union
 // ============================================================================
 const LiftingSlottedExerciseSchema = z.object({
+    ...ProgramExerciseGuidanceSchema.shape,
     slotId: z.string().min(1),
     canonicalExerciseId: z.string(),
     exerciseType: z.literal("lifting"),
@@ -196,6 +198,7 @@ const LiftingSlottedExerciseSchema = z.object({
     priorityLevel: z.enum(["primary", "secondary", "supporting"]).optional(),
 });
 const TimedSlottedExerciseSchema = z.object({
+    ...ProgramExerciseGuidanceSchema.shape,
     slotId: z.string().min(1),
     canonicalExerciseId: z.string(),
     exerciseType: z.literal("timed"),
@@ -207,6 +210,7 @@ const TimedSlottedExerciseSchema = z.object({
 });
 const CardioSlottedExerciseSchema = z
     .object({
+    ...ProgramExerciseGuidanceSchema.shape,
     slotId: z.string().min(1),
     canonicalExerciseId: z.string(),
     exerciseType: z.literal("cardio"),

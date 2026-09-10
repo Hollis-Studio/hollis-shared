@@ -23,6 +23,7 @@ import {
     type StrategyGoalDraftContract,
 } from "../domain/training-strategy.js";
 import { WorkoutSectionTypeSchema } from "../domain/workouts.js";
+import { CardioTargetsSchema, ProgressionModeSchema } from "../progression/program.js";
 import { nutritionPlanGenerationResultSchema } from "./ai-validation.js";
 
 // ============================================================================
@@ -38,7 +39,14 @@ export const GeneratedExerciseSchema = z.object({
   /** ID from exercise library if using existing exercise */
   exerciseId: z.string().optional(),
   /** Number of sets */
-  sets: z.number().int().positive().optional(),
+  sets: z.number().int().positive().max(20).optional(),
+  targetRIR: z.number().int().min(0).max(10).optional(),
+  restSeconds: z.number().int().min(0).max(3600).optional(),
+  tempo: z.string().max(100).optional(),
+  progressionMode: ProgressionModeSchema.optional(),
+  cardioTargets: CardioTargetsSchema.optional(),
+  /** Filled by the server from the authoritative catalog, never trusted from AI. */
+  modality: z.string().max(50).optional(),
   /** Rep target (e.g., "8-10", "5", "12-15", "AMRAP") */
   reps: z.string().optional(),
   /** Weight/intensity target (e.g., "185lbs", "70% 1RM", "RPE 7-8") */

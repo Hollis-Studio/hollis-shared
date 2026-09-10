@@ -13,6 +13,7 @@ export const COACHING_ROUTES = {
   CHECK_INS: "/api/coaching/check-ins",
   MESSAGES: "/api/coaching/messages",
   ADMIN: {
+    PROVIDERS: "/api/admin/coaching/providers",
     OVERVIEW: "/api/admin/coaching/overview",
     CLIENTS: "/api/admin/coaching/clients",
     LEADS: "/api/admin/coaching/leads",
