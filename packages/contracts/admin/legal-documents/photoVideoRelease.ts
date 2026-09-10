@@ -10,16 +10,16 @@
 
 export const meta = {
   title: "Photo, Video, and Testimonial Release",
-  version: "1.2.0",
-  effectiveDate: "2026-08-19",
-  contentHash: "e08cf374",
+  version: "1.2.1",
+  effectiveDate: "2026-09-09",
+  contentHash: "7d8af97e",
 };
 
 export const content = `# Photo, Video, and Testimonial Release
 
 **Hollis Health LLC**
 Home Office: 691 S Seguin, New Braunfels, TX 78130
-(210) 891-9005 | legal@hollis.health
+(210) 891-9005 | admin@hollis.health
 
 ---
 
@@ -125,7 +125,7 @@ For materials you authorize, you waive claims based solely on the ordinary autho
 
 ## Section 9. Revocation
 
-You may revoke this Release at any time by written notice to legal@hollis.health. Revocation applies prospectively only. Company will use commercially reasonable efforts to stop new uses after receipt of revocation, but revocation does not require Company to recall or remove already published materials or archived third-party copies outside Company's control.
+You may revoke this Release at any time by written notice to admin@hollis.health. Revocation applies prospectively only. Company will use commercially reasonable efforts to stop new uses after receipt of revocation, but revocation does not require Company to recall or remove already published materials or archived third-party copies outside Company's control.
 
 ---
 

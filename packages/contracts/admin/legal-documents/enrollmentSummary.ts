@@ -208,7 +208,7 @@ The benefit has no cash value and is not refundable, creditable, or exchangeable
 
 **Hollis Health LLC**
 Home Office: 691 S Seguin, New Braunfels, TX 78130
-(210) 891-9005 | legal@hollis.health
+(210) 891-9005 | admin@hollis.health
 
 ---
 

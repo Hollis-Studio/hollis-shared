@@ -8,16 +8,16 @@
 
 export const meta = {
   title: "Informed Consent for Health Services",
-  version: "2.1.0",
-  effectiveDate: "2026-08-19",
-  contentHash: "4038d8fb",
+  version: "2.1.1",
+  effectiveDate: "2026-09-09",
+  contentHash: "f14bcd01",
 };
 
 export const content = `# Informed Consent for Health Services
 
 **Hollis Health LLC**
 Home Office: 691 S Seguin, New Braunfels, TX 78130
-(210) 891-9005 | legal@hollis.health
+(210) 891-9005 | admin@hollis.health
 
 ---
 
@@ -155,7 +155,7 @@ If you revoke this authorization, Company may stop displaying or organizing newl
 
 ### 6.1 Withdrawal Method
 
-You may withdraw this Consent or revoke the authorization in Section 5 by providing written notice to Company at legal@hollis.health or by mail to the home office listed above.
+You may withdraw this Consent or revoke the authorization in Section 5 by providing written notice to Company at admin@hollis.health or by mail to the home office listed above.
 
 ### 6.2 Effect on Services
 

@@ -8,16 +8,16 @@
 
 export const meta = {
   title: "Liability Waiver and Assumption of Risk Agreement",
-  version: "1.4.0",
-  effectiveDate: "2026-08-23",
-  contentHash: "0d5972c7",
+  version: "1.4.1",
+  effectiveDate: "2026-09-09",
+  contentHash: "17a94bc1",
 };
 
 export const content = `# Liability Waiver and Assumption of Risk Agreement
 
 **Hollis Health LLC**
 Home Office: 691 S Seguin, New Braunfels, TX 78130
-(210) 891-9005 | legal@hollis.health
+(210) 891-9005 | admin@hollis.health
 
 ---
 

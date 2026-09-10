@@ -98,7 +98,7 @@ If you deny the waiver request:
 
 Two or more late cancels or no-shows within a 90-day period may trigger membership suspension or termination. Before taking that step:
 1. Send a written warning after the second offense.
-2. If a third offense occurs within 90 days, contact legal@hollis.health (yourself) and document the decision to suspend or terminate in writing.
+2. If a third offense occurs within 90 days, contact admin@hollis.health (yourself) and document the decision to suspend or terminate in writing.
 3. Termination follows Section 6.5 of the Membership Agreement.
 
 ---

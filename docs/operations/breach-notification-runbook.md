@@ -86,7 +86,7 @@ Involve a HIPAA-knowledgeable attorney when:
 - You are uncertain about the scope of your notification obligations.
 - A business associate caused the breach.
 
-Contact: legal@hollis.health (currently Isaac) + engage an external healthcare attorney. Do not make public statements about the breach without counsel review.
+Contact: admin@hollis.health (currently Isaac) + engage an external healthcare attorney. Do not make public statements about the breach without counsel review.
 
 ---
 

@@ -8,16 +8,16 @@
 
 export const meta = {
   title: "Electronic Communications Consent",
-  version: "1.3.0",
-  effectiveDate: "2026-08-23",
-  contentHash: "bbaa6deb",
+  version: "1.3.1",
+  effectiveDate: "2026-09-09",
+  contentHash: "75ef92d0",
 };
 
 export const content = `# Electronic Communications Consent
 
 **Hollis Health LLC**
 Home Office: 691 S Seguin, New Braunfels, TX 78130
-(210) 891-9005 | legal@hollis.health
+(210) 891-9005 | admin@hollis.health
 
 ---
 
@@ -132,7 +132,7 @@ You may opt out of marketing communications at any time by:
 - Using the unsubscribe link in a marketing email;
 - Replying \`STOP\` to a marketing text message, where supported;
 - Adjusting marketing-notification settings in the application, where available; or
-- Contacting Company at legal@hollis.health.
+- Contacting Company at admin@hollis.health.
 
 ### 6.2 Program-Support Preference Changes
 
@@ -158,7 +158,7 @@ You are responsible for keeping your contact information accurate and current. C
 
 ## Section 9. Revocation
 
-You may revoke optional portions of this Consent, including marketing consent, by providing written notice to legal@hollis.health. Revocation does not affect communications already sent and does not eliminate Company's ability to send operational and safety communications needed to administer an active account or membership.
+You may revoke optional portions of this Consent, including marketing consent, by providing written notice to admin@hollis.health. Revocation does not affect communications already sent and does not eliminate Company's ability to send operational and safety communications needed to administer an active account or membership.
 
 ---
 

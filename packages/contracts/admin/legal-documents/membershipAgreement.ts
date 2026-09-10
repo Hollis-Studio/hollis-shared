@@ -85,7 +85,7 @@ function generateMembershipAgreementContent(): string {
 
 **Hollis Health LLC**
 Home Office: 691 S Seguin, New Braunfels, TX 78130
-(210) 891-9005 | legal@hollis.health
+(210) 891-9005 | admin@hollis.health
 
 ---
 
@@ -221,7 +221,7 @@ By executing this Agreement, Member authorizes Company to charge the payment met
 
 ### 4.3 Payment Method Updates
 
-Member is responsible for ensuring that payment method information remains current and accurate. Member may update payment information by contacting Company at legal@hollis.health or (210) 891-9005.
+Member is responsible for ensuring that payment method information remains current and accurate. Member may update payment information by contacting Company at admin@hollis.health or (210) 891-9005.
 
 ### 4.4 Late Payment
 
@@ -251,7 +251,7 @@ Written notices to Company under this Agreement may be sent to:
 
 **Hollis Health LLC**
 691 S Seguin, New Braunfels, TX 78130
-Email: legal@hollis.health
+Email: admin@hollis.health
 
 ### 5.3 Program Location
 
@@ -289,7 +289,7 @@ Company may suspend or terminate this Agreement for material breach, non-payment
 
 ### 6.6 Notice of Cancellation
 
-Cancellation requests must be submitted in writing to legal@hollis.health or delivered by certified mail to the home office listed in Section 5.2. Oral cancellations are not effective.
+Cancellation requests must be submitted in writing to admin@hollis.health or delivered by certified mail to the home office listed in Section 5.2. Oral cancellations are not effective.
 
 To take effect at the end of the then-current billing period, a cancellation request must be received at least seven (7) days before Member's next Billing Date. A request received fewer than seven (7) days before the next Billing Date takes effect at the end of the following billing period, and the intervening monthly payment remains due. Nothing in this Section limits any non-waivable cancellation right Member has under applicable law.
 
@@ -331,7 +331,7 @@ Company shares Member's information with an independent clinician or other provi
 
 Company does not share Member's wellness-program information, training data, screening data, supplement usage records, or any health information with any provider absent Member's request and written authorization, except as required by law.
 
-Member may withdraw any authorization given under this Section 8.3 at any time by written notice to legal@hollis.health, except as to disclosures already made in reliance on it.
+Member may withdraw any authorization given under this Section 8.3 at any time by written notice to admin@hollis.health, except as to disclosures already made in reliance on it.
 
 ### 8.4 Applicable Notices
 
@@ -446,8 +446,8 @@ Title: ______________________________________
 
 export const meta = {
   title: "Membership Agreement",
-  version: "2.4.0",
-  effectiveDate: "2026-08-23",
+  version: "2.4.1",
+  effectiveDate: "2026-09-09",
   /**
    * sha256 of the fully-rendered `content` export, first 8 hex chars.
    * `content` is deterministic at module load (it interpolates
@@ -455,7 +455,7 @@ export const meta = {
    * verifiable — scripts/check-legal-doc-versions.js in hollis-health-app
    * evaluates the built module and compares.
    */
-  contentHash: "d0a82717",
+  contentHash: "25fd9f5a",
 };
 
 /**
