@@ -18,6 +18,12 @@ export declare const BaselineEntrySchema: z.ZodObject<{
         e: z.ZodNumber;
     }, z.core.$strip>>;
     isMiss: z.ZodOptional<z.ZodBoolean>;
+    observation: z.ZodOptional<z.ZodObject<{
+        effectiveLoadKg: z.ZodNumber;
+        rir: z.ZodNullable<z.ZodNumber>;
+        capacityMultiplier: z.ZodNumber;
+        bodyWeightKg: z.ZodNullable<z.ZodNumber>;
+    }, z.core.$strip>>;
 }, z.core.$strip>;
 export declare const ProgressionBaselineSchema: z.ZodObject<{
     canonicalExerciseId: z.ZodString;
@@ -46,6 +52,12 @@ export declare const ProgressionBaselineSchema: z.ZodObject<{
             e: z.ZodNumber;
         }, z.core.$strip>>;
         isMiss: z.ZodOptional<z.ZodBoolean>;
+        observation: z.ZodOptional<z.ZodObject<{
+            effectiveLoadKg: z.ZodNumber;
+            rir: z.ZodNullable<z.ZodNumber>;
+            capacityMultiplier: z.ZodNumber;
+            bodyWeightKg: z.ZodNullable<z.ZodNumber>;
+        }, z.core.$strip>>;
     }, z.core.$strip>>;
     engineState: z.ZodOptional<z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodObject<{
         calibrationState: z.ZodEnum<{

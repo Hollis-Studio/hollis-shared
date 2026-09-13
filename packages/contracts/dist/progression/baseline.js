@@ -14,6 +14,14 @@ export const BaselineEntrySchema = z.object({
         .object({ s: z.number(), h: z.number(), e: z.number() })
         .optional(),
     isMiss: z.boolean().optional(),
+    // Versioned observation semantics; legacy summary fields remain readable by
+    // older clients. Never infer unknown effort from the summary's zero default.
+    observation: z.object({
+        effectiveLoadKg: z.number().finite().min(0),
+        rir: z.number().int().min(0).max(10).nullable(),
+        capacityMultiplier: z.number().finite().min(0.65).max(1),
+        bodyWeightKg: z.number().finite().min(0).nullable(),
+    }).optional(),
 });
 export const ProgressionBaselineSchema = z.object({
     canonicalExerciseId: z.string().min(1),
