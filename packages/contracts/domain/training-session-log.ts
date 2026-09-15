@@ -81,6 +81,16 @@ export const SetTargetSnapshotSchema = z.object({
   steps: z.number().min(0).nullable().optional(),
   jumps: z.number().min(0).nullable().optional(),
   isWarmup: z.boolean(),
+  /**
+   * Superset stamps, mirroring the same three fields on SessionSetSchema. A
+   * merged superset's `originalTargets` spine carries them so a cold resume
+   * that rebuilds targets from `originalTargets` (rather than from the
+   * document's sets) keeps the pair joined. All optional: snapshots written
+   * before alpha.77 omit them and are read as plain `normal` sets.
+   */
+  setType: z.enum(["normal", "warmup", "drop_set", "rest_pause", "superset"]).optional(),
+  setGroupId: z.string().nullable().optional(),
+  originExerciseId: z.string().nullable().optional(),
 });
 export type SetTargetSnapshot = z.infer<typeof SetTargetSnapshotSchema>;
 

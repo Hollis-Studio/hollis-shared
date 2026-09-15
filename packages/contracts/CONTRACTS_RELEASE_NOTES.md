@@ -1,5 +1,18 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.77 (2026-09-15) — superset stamps on SetTargetSnapshot
+
+Additive only.
+
+### `domain/training-session-log.ts`
+
+- **`SetTargetSnapshotSchema` gains optional `setType`, `setGroupId`,
+  `originExerciseId`**, mirroring the same fields on `SessionSetSchema`. A
+  merged superset's persisted `originalTargets` now round-trips its identity,
+  so a Workouts cold resume that rebuilds targets from `originalTargets` keeps
+  the pair joined instead of rebuilding two un-joined exercises. Snapshots
+  written by older clients omit the fields and parse unchanged.
+
 ## 0.2.0-alpha.76 (2026-09-15) — Workouts haptics toggle
 
 Additive only.

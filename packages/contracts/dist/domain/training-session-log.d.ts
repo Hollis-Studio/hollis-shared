@@ -70,6 +70,15 @@ export declare const SetTargetSnapshotSchema: z.ZodObject<{
     steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     isWarmup: z.ZodBoolean;
+    setType: z.ZodOptional<z.ZodEnum<{
+        normal: "normal";
+        warmup: "warmup";
+        drop_set: "drop_set";
+        rest_pause: "rest_pause";
+        superset: "superset";
+    }>>;
+    setGroupId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    originExerciseId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
 }, z.core.$strip>;
 export type SetTargetSnapshot = z.infer<typeof SetTargetSnapshotSchema>;
 /**
@@ -134,6 +143,15 @@ export declare const SessionSetSchema: z.ZodObject<{
         steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isWarmup: z.ZodBoolean;
+        setType: z.ZodOptional<z.ZodEnum<{
+            normal: "normal";
+            warmup: "warmup";
+            drop_set: "drop_set";
+            rest_pause: "rest_pause";
+            superset: "superset";
+        }>>;
+        setGroupId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        originExerciseId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     }, z.core.$strip>>;
     signal: z.ZodOptional<z.ZodEnum<{
         on_target: "on_target";
@@ -253,6 +271,15 @@ export declare const SessionExerciseSchema: z.ZodObject<{
             steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
+            setType: z.ZodOptional<z.ZodEnum<{
+                normal: "normal";
+                warmup: "warmup";
+                drop_set: "drop_set";
+                rest_pause: "rest_pause";
+                superset: "superset";
+            }>>;
+            setGroupId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+            originExerciseId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         }, z.core.$strip>>;
         signal: z.ZodOptional<z.ZodEnum<{
             on_target: "on_target";
@@ -345,6 +372,15 @@ export declare const SessionExerciseSchema: z.ZodObject<{
         steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isWarmup: z.ZodBoolean;
+        setType: z.ZodOptional<z.ZodEnum<{
+            normal: "normal";
+            warmup: "warmup";
+            drop_set: "drop_set";
+            rest_pause: "rest_pause";
+            superset: "superset";
+        }>>;
+        setGroupId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        originExerciseId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     }, z.core.$strip>>>;
     adaptationEvents: z.ZodOptional<z.ZodArray<z.ZodObject<{
         setIndex: z.ZodNumber;
@@ -500,6 +536,15 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
                 steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 isWarmup: z.ZodBoolean;
+                setType: z.ZodOptional<z.ZodEnum<{
+                    normal: "normal";
+                    warmup: "warmup";
+                    drop_set: "drop_set";
+                    rest_pause: "rest_pause";
+                    superset: "superset";
+                }>>;
+                setGroupId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+                originExerciseId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
             }, z.core.$strip>>;
             signal: z.ZodOptional<z.ZodEnum<{
                 on_target: "on_target";
@@ -592,6 +637,15 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
             steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
+            setType: z.ZodOptional<z.ZodEnum<{
+                normal: "normal";
+                warmup: "warmup";
+                drop_set: "drop_set";
+                rest_pause: "rest_pause";
+                superset: "superset";
+            }>>;
+            setGroupId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+            originExerciseId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         }, z.core.$strip>>>;
         adaptationEvents: z.ZodOptional<z.ZodArray<z.ZodObject<{
             setIndex: z.ZodNumber;
@@ -731,6 +785,15 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
                 steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 isWarmup: z.ZodBoolean;
+                setType: z.ZodOptional<z.ZodEnum<{
+                    normal: "normal";
+                    warmup: "warmup";
+                    drop_set: "drop_set";
+                    rest_pause: "rest_pause";
+                    superset: "superset";
+                }>>;
+                setGroupId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+                originExerciseId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
             }, z.core.$strip>>;
             signal: z.ZodOptional<z.ZodEnum<{
                 on_target: "on_target";
@@ -823,6 +886,15 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
             steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
+            setType: z.ZodOptional<z.ZodEnum<{
+                normal: "normal";
+                warmup: "warmup";
+                drop_set: "drop_set";
+                rest_pause: "rest_pause";
+                superset: "superset";
+            }>>;
+            setGroupId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+            originExerciseId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         }, z.core.$strip>>>;
         adaptationEvents: z.ZodOptional<z.ZodArray<z.ZodObject<{
             setIndex: z.ZodNumber;
