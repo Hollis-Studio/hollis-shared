@@ -73,6 +73,7 @@ export declare const UserSettingsSchema: z.ZodObject<{
     timeZone: z.ZodOptional<z.ZodString>;
     workoutReminderEnabled: z.ZodBoolean;
     workoutReminderTime: z.ZodString;
+    hapticsEnabled: z.ZodOptional<z.ZodBoolean>;
     hapticIntensity: z.ZodOptional<z.ZodEnum<{
         light: "light";
         medium: "medium";
@@ -212,6 +213,7 @@ export declare const WorkoutsUserProfileSchema: z.ZodObject<{
         timeZone: z.ZodOptional<z.ZodString>;
         workoutReminderEnabled: z.ZodBoolean;
         workoutReminderTime: z.ZodString;
+        hapticsEnabled: z.ZodOptional<z.ZodBoolean>;
         hapticIntensity: z.ZodOptional<z.ZodEnum<{
             light: "light";
             medium: "medium";
@@ -383,6 +385,7 @@ export declare const WorkoutsUserProfilePutBodySchema: z.ZodObject<{
         timeZone: z.ZodOptional<z.ZodString>;
         workoutReminderEnabled: z.ZodBoolean;
         workoutReminderTime: z.ZodString;
+        hapticsEnabled: z.ZodOptional<z.ZodBoolean>;
         hapticIntensity: z.ZodOptional<z.ZodEnum<{
             light: "light";
             medium: "medium";

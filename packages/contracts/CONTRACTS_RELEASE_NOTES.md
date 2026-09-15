@@ -1,5 +1,19 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.76 (2026-09-15) — Workouts haptics toggle
+
+Additive only.
+
+### `domain/workouts-user-profile.ts`, `domain/user.ts`
+
+- **`hapticsEnabled: boolean` (optional, new)** on the Workouts user settings.
+  Undefined means enabled. The Workouts haptics preference is now a plain
+  on/off toggle; "on" plays each haptic at its declared token.
+- **`hapticIntensity` is deprecated** but still accepted (`'light' | 'medium' |
+  'heavy' | 'off'`) so Workouts builds older than 4.34 keep syncing. Consumers
+  derive `hapticsEnabled = hapticIntensity !== 'off'` when the new field is
+  absent; new clients never write the legacy field.
+
 ## 0.2.0-alpha.63 (2026-09-04) — audit follow-up batch
 
 **Released as alpha.63. alpha.62 was burned: a concurrent session published it

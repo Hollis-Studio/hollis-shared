@@ -665,6 +665,7 @@ export declare const UserProfileSchema: z.ZodObject<{
         }>>;
         appleHealthConnected: z.ZodOptional<z.ZodBoolean>;
         maxHRBpm: z.ZodOptional<z.ZodNumber>;
+        hapticsEnabled: z.ZodOptional<z.ZodBoolean>;
         hapticIntensity: z.ZodOptional<z.ZodEnum<{
             light: "light";
             medium: "medium";
@@ -1441,6 +1442,7 @@ export declare const UserAccountSchema: z.ZodObject<{
             }>>;
             appleHealthConnected: z.ZodOptional<z.ZodBoolean>;
             maxHRBpm: z.ZodOptional<z.ZodNumber>;
+            hapticsEnabled: z.ZodOptional<z.ZodBoolean>;
             hapticIntensity: z.ZodOptional<z.ZodEnum<{
                 light: "light";
                 medium: "medium";

@@ -850,6 +850,8 @@ export const UserProfileSchema = z.object({
             .optional(),
         appleHealthConnected: z.boolean().optional(),
         maxHRBpm: z.number().optional(),
+        hapticsEnabled: z.boolean().optional(),
+        /** @deprecated Replaced by `hapticsEnabled` (alpha.76); accepted for pre-4.34 Workouts builds. */
         hapticIntensity: z.enum(["light", "medium", "heavy", "off"]).optional(),
         defaultRIR: z.number().int().min(0).max(5).optional(),
     })

@@ -52,6 +52,17 @@ export const UserSettingsSchema = z.object({
     timeZone: z.string().min(1).optional(),
     workoutReminderEnabled: z.boolean(),
     workoutReminderTime: z.string().regex(/^\d{2}:\d{2}$/),
+    /**
+     * Haptic feedback on/off. Undefined means enabled. Replaces `hapticIntensity`
+     * (alpha.76, Workouts 2026-09-15): the setting is a plain toggle, and "on"
+     * plays every haptic at its declared token (the former `medium` behavior).
+     */
+    hapticsEnabled: z.boolean().optional(),
+    /**
+     * @deprecated Legacy intensity ladder. Still accepted so builds older than
+     * Workouts 4.34 keep syncing; new clients never write it. Consumers derive
+     * `hapticsEnabled = hapticIntensity !== 'off'` when `hapticsEnabled` is absent.
+     */
     hapticIntensity: z.enum(['light', 'medium', 'heavy', 'off']).optional(),
     defaultRIR: z.number().int().min(0).max(5).optional(),
     dailyNotificationTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
