@@ -29,6 +29,7 @@ const imports = [
   ["@hollis-studio/contracts/domain/workouts-weeks", ["WeekDocumentSchema", "WeekDocumentBodySchema"]],
   ["@hollis-studio/contracts/domain/workouts-conversation-summary", ["ConversationRollingSummarySchema", "ConversationRollingSummaryBodySchema"]],
   ["@hollis-studio/contracts/domain/workouts-account", ["WorkoutsAccountDeletionAckSchema", "WORKOUTS_ACCOUNT_DELETION_ACK_VERSION"]],
+  ["@hollis-studio/contracts/domain/workouts-pricing", ["LifetimeAvailabilityResponseSchema"]],
   ["@hollis-studio/contracts/ai/persistence", ["AiAuditLogEntrySchema", "AiAuditLogCreateSchema"]],
   ["@hollis-studio/contracts/ai/pricing", ["MODEL_PRICING", "estimateUsageCostUsd", "longContextThresholdFor"]],
   ["@hollis-studio/contracts/ai/workout-ai-wire", ["RecognizeEquipmentBodySchema"]],

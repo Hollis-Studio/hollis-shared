@@ -1,5 +1,19 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.79 (2026-09-16) — Workouts lifetime seat availability
+
+Additive only.
+
+### `domain/workouts-pricing.ts` (new subpath `@hollis-studio/contracts/domain/workouts-pricing`)
+
+- **`LifetimeAvailabilityResponseSchema`** — `{ claimed, cap, available }` for
+  `GET /v1/pricing/lifetime-availability` on the Workouts server
+  (hollis-workouts#89). `claimed` is the count of non-refunded production
+  purchases of the $199.99 lifetime SKU, `cap` the seat limit (server-owned,
+  1,000 at launch), `available` = `claimed < cap`. The client renders the
+  lifetime paywall option only when `available` is true and hides it on any
+  fetch failure, so the number shown is always the real one.
+
 ## 0.2.0-alpha.78 (2026-09-15) — gemini-3.8-flash pricing
 
 Additive only.

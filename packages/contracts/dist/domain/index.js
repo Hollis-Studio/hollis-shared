@@ -151,4 +151,6 @@ export * from './workouts-program-rotation.js';
 export * from './workouts-exercise-moderation.js';
 // Workouts account lifecycle - WorkoutsAccountDeletionAckSchema
 export * from './workouts-account.js';
+// Workouts launch pricing (hollis-workouts#89) - LifetimeAvailabilityResponseSchema
+export * from './workouts-pricing.js';
 //# sourceMappingURL=index.js.map
