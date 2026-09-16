@@ -446,8 +446,8 @@ Title: ______________________________________
 
 export const meta = {
   title: "Membership Agreement",
-  version: "2.4.1",
-  effectiveDate: "2026-09-09",
+  version: "2.5.0",
+  effectiveDate: "2026-09-16",
   /**
    * sha256 of the fully-rendered `content` export, first 8 hex chars.
    * `content` is deterministic at module load (it interpolates
@@ -455,7 +455,7 @@ export const meta = {
    * verifiable — scripts/check-legal-doc-versions.js in hollis-health-app
    * evaluates the built module and compares.
    */
-  contentHash: "25fd9f5a",
+  contentHash: "40b6f2e5",
 };
 
 /**
