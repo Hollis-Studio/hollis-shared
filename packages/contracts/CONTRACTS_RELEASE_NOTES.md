@@ -1,5 +1,23 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.78 (2026-09-15) — gemini-3.8-flash pricing
+
+Additive only.
+
+### `ai/pricing.ts`
+
+- **`MODEL_PRICING` gains `gemini-3.8-flash`** — the suite-wide unified default
+  as of 2026-09-15. Rates match the superseded `gemini-3.7-flash` row exactly on
+  the current price sheet: $0.75/1M input, $3.75/1M output, $0.075/1M cached
+  input, $0.50/1M/hr cache storage. No audio rate and no long-context tier, so
+  the >200k step does not apply.
+- **TIME-BOXED** — like 3.7 and 3.6, these are introductory rates through
+  2026-12-31; every one of them doubles on 2027-01-01.
+- `gemini-3.7-flash` and `gemini-3.6-flash` are **retained**. The server
+  accumulator stamps the model string on every historical `AiTokenUsage` row, so
+  dropping a superseded key would silently reprice months of recorded spend at
+  the conservative `DEFAULT_PRICING`.
+
 ## 0.2.0-alpha.77 (2026-09-15) — superset stamps on SetTargetSnapshot
 
 Additive only.

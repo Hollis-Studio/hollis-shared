@@ -122,16 +122,18 @@ const MILLION = 1_000_000;
  * Keys are the model identifiers passed to the server-side recorder (see server
  * env GEMINI_MODEL / GEMINI_EMBEDDING_MODEL).
  *
- * TIME-BOXED RATE — `gemini-3.7-flash` and `gemini-3.6-flash` are discounted
- * THROUGH 2026-12-31 and double on 2027-01-01 (input 0.75 → 1.50, output
- * 3.75 → 7.50, cached 0.075 → 0.15, cache storage 0.50 → 1.00). The values
- * below are the CURRENT (discounted) rates; a reader after that date must step
- * them up rather than assume the table is simply wrong.
+ * TIME-BOXED RATE — `gemini-3.8-flash`, `gemini-3.7-flash` and
+ * `gemini-3.6-flash` are discounted THROUGH 2026-12-31 and double on
+ * 2027-01-01 (input 0.75 → 1.50, output 3.75 → 7.50, cached 0.075 → 0.15,
+ * cache storage 0.50 → 1.00). The values below are the CURRENT (discounted)
+ * rates; a reader after that date must step them up rather than assume the
+ * table is simply wrong.
  *
- * `gemini-3.6-flash` is retained after the 2026-08-17 default bump to
- * `gemini-3.7-flash` because the server accumulator stores the model string on
- * every historical AiTokenUsage row — dropping the key would silently reprice
- * months of recorded spend at the conservative DEFAULT_PRICING.
+ * `gemini-3.7-flash` and `gemini-3.6-flash` are retained after the 2026-09-15
+ * default bump to `gemini-3.8-flash` because the server accumulator stores the
+ * model string on every historical AiTokenUsage row — dropping a key would
+ * silently reprice months of recorded spend at the conservative
+ * DEFAULT_PRICING.
  *
  * `gemini-3.1-flash` (no suffix) was removed on 2026-08-14: it is not on the
  * price sheet, is not referenced anywhere in the repo, and carried an
@@ -148,9 +150,17 @@ export const MODEL_PRICING: Readonly<Record<string, ModelPricing>> = {
     longContextCachedInputPerMillion: 0.4,
     cacheStoragePerMillionPerHour: 4.5,
   },
-  // Current unified default (server env GEMINI_MODEL). Rates are identical to
-  // gemini-3.6-flash on the 2026-08-17 price sheet: no audio-specific rate and
+  // Current unified default (server env GEMINI_MODEL). Rates on the 2026-09-15
+  // price sheet are identical to gemini-3.7-flash: no audio-specific rate and
   // no long-context tier, so the >200k pricing step does not apply.
+  'gemini-3.8-flash': {
+    inputPerMillion: 0.75,
+    outputPerMillion: 3.75,
+    cachedInputPerMillion: 0.075,
+    cacheStoragePerMillionPerHour: 0.5,
+  },
+  // Previous default (bumped to 3.8 on 2026-09-15). Retained to price
+  // historical AiTokenUsage rows.
   'gemini-3.7-flash': {
     inputPerMillion: 0.75,
     outputPerMillion: 3.75,

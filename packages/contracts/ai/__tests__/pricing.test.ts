@@ -18,8 +18,28 @@ import {
 } from "../pricing.js";
 
 const PRO = "gemini-3.1-pro-preview";
-const FLASH = "gemini-3.7-flash";
+const FLASH = "gemini-3.8-flash";
 const LITE = "gemini-3.1-flash-lite";
+
+describe("MODEL_PRICING keys", () => {
+  it("prices the current unified default gemini-3.8-flash", () => {
+    expect(MODEL_PRICING["gemini-3.8-flash"]).toEqual({
+      inputPerMillion: 0.75,
+      outputPerMillion: 3.75,
+      cachedInputPerMillion: 0.075,
+      cacheStoragePerMillionPerHour: 0.5,
+    });
+  });
+
+  // Retiring a key silently reprices every historical AiTokenUsage row that
+  // carries it at the conservative DEFAULT_PRICING, so superseded defaults stay.
+  it.each(["gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.5-flash"])(
+    "retains superseded default %s",
+    (model) => {
+      expect(MODEL_PRICING[model]).toBeDefined();
+    },
+  );
+});
 
 describe("DEFAULT_PRICING over-estimate invariant", () => {
   it("is at least as expensive as every rate in MODEL_PRICING", () => {
