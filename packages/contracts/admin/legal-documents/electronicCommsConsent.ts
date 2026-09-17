@@ -8,15 +8,15 @@
 
 export const meta = {
   title: "Electronic Communications Consent",
-  version: "1.3.1",
-  effectiveDate: "2026-09-09",
-  contentHash: "75ef92d0",
+  version: "1.4.0",
+  effectiveDate: "2026-09-17",
+  contentHash: "0eb4cd16",
 };
 
 export const content = `# Electronic Communications Consent
 
 **Hollis Health LLC**
-Home Office: 691 S Seguin, New Braunfels, TX 78130
+Home Office: 818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258
 (210) 891-9005 | admin@hollis.health
 
 ---

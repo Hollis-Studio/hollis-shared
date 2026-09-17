@@ -207,7 +207,7 @@ The benefit has no cash value and is not refundable, creditable, or exchangeable
   return `# Exhibit A — Enrollment Summary and Service Schedule
 
 **Hollis Health LLC**
-Home Office: 691 S Seguin, New Braunfels, TX 78130
+Home Office: 818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258
 (210) 891-9005 | admin@hollis.health
 
 ---

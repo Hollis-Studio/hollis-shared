@@ -10,15 +10,15 @@
 
 export const meta = {
   title: "Photo, Video, and Testimonial Release",
-  version: "1.2.1",
-  effectiveDate: "2026-09-09",
-  contentHash: "7d8af97e",
+  version: "1.3.0",
+  effectiveDate: "2026-09-17",
+  contentHash: "a63c032b",
 };
 
 export const content = `# Photo, Video, and Testimonial Release
 
 **Hollis Health LLC**
-Home Office: 691 S Seguin, New Braunfels, TX 78130
+Home Office: 818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258
 (210) 891-9005 | admin@hollis.health
 
 ---
@@ -27,7 +27,7 @@ Home Office: 691 S Seguin, New Braunfels, TX 78130
 
 This Photo, Video, and Testimonial Release ("Release") is entered into as of the date of Releaser's signature below by and between:
 
-**Hollis Health LLC**, a Texas limited liability company, doing business as Hollis Health, with its home office at 691 S Seguin, New Braunfels, TX 78130 ("Company," "we," "us," or "our"); and
+**Hollis Health LLC**, a Texas limited liability company, doing business as Hollis Health, with its home office at 818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258 ("Company," "we," "us," or "our"); and
 
 **Releaser:**
 

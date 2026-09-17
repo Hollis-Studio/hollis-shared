@@ -13,18 +13,18 @@
 
 export const meta = {
   title: "HIPAA Notice of Privacy Practices",
-  version: "1.2.0",
-  effectiveDate: "2026-08-19",
-  contentHash: "a0010a56",
+  version: "1.3.0",
+  effectiveDate: "2026-09-17",
+  contentHash: "6aa28428",
 } as const;
 
 export const content = `# NOTICE OF PRIVACY PRACTICES
 
 **Hollis Health LLC**
-691 S Seguin, New Braunfels, TX 78130
+818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258
 (210) 891-9005 | isaac@hollis.health
 
-**Effective Date:** 2026-08-19
+**Effective Date:** 2026-09-17
 
 ---
 
@@ -153,7 +153,7 @@ To exercise any of these rights, contact:
 
 Isaac D. Landes, Privacy Officer
 Hollis Health LLC
-691 S Seguin, New Braunfels, TX 78130
+818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258
 (210) 891-9005
 isaac@hollis.health
 
@@ -180,7 +180,7 @@ We reserve the right to change this Notice. We reserve the right to make the rev
 Privacy Officer:
 Isaac D. Landes
 Hollis Health LLC
-691 S Seguin, New Braunfels, TX 78130
+818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258
 (210) 891-9005
 isaac@hollis.health
 
