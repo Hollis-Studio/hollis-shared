@@ -1,5 +1,16 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.84 (2026-09-18) — reconcile alpha.82 with alpha.83
+
+Additive only. No new schema.
+
+alpha.82 (AI output locale, below) and alpha.83 (coaching and assigned program
+contracts) were published from two different clones, so neither contains the
+other. alpha.84 is the first version with both: every alpha.82 locale schema
+plus `domain/workouts-assigned-program` and the coaching changes from alpha.83.
+Consumers pinned to alpha.82 or alpha.83 should move to alpha.84 rather than
+from one to the other.
+
 ## 0.2.0-alpha.82 (2026-09-17) — AI output locale
 
 Additive only.
