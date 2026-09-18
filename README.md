@@ -30,3 +30,50 @@ Consumers need an `.npmrc` with the `@hollis-studio` registry and an install tok
 @hollis-studio:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
 ```
+
+## Agent and terminal package management
+
+These packages use **GitHub Packages**, not the npmjs registry. Set
+`NODE_AUTH_TOKEN` to a GitHub credential with `read:packages` for installs and
+`write:packages` for publishing, with access to the Hollis Studio packages.
+Do not put credentials in tracked files or command arguments.
+
+For local agents, the helper also loads the GitHub Packages token from your
+user `~/.npmrc` (or `npm_config_userconfig` / `NPM_CONFIG_USERCONFIG`). An explicit
+`NODE_AUTH_TOKEN` always wins, including in CI. This avoids the repo `.npmrc`
+placeholder overriding a working user-level token. It works without shell
+startup files or aliases:
+
+```sh
+npm run package:auth
+npm run npm:agent -- ci
+npm run package:publish -- --workspace @hollis-studio/contracts --dry-run
+# After release validation and the intended version bump:
+npm run package:publish -- --workspace @hollis-studio/contracts
+```
+
+You can invoke `node /absolute/path/to/hollis-shared/scripts/npm-agent.mjs install`
+from a consumer repository as well; the helper preserves the working directory
+and forwards npm arguments and exit status. Existing terminal sessions can load
+the locally configured credential bridge with `source ~/.zshenv`; new zsh agent
+and terminal shells load it automatically on this workstation.
+
+All four packages currently set `publishConfig.tag` to `alpha`, so bare
+`npm publish` in a package directory also uses the correct prerelease channel.
+When moving to beta, rc, or stable releases, update that field along with the
+version (`latest` for stable), or deliberately override it with `--tag`.
+The `package:publish` helper also passes `--tag alpha` explicitly (override it
+with `--tag beta`, `--tag rc`, or `--tag latest` when appropriate). npm 11.10 can
+misreport `latest` in its notice when only `publishConfig.tag` is used, even
+though the actual registry payload uses `alpha`.
+Never promote an alpha release to `latest` by accident.
+
+Run `npm run check` and the contracts tests before releasing from a tagged,
+green main. Publish lifecycle hooks also build and typecheck the selected package.
+`--dry-run` checks packaging and hooks; it does **not** prove that the registry
+will accept a write or that a version was published. After publishing, verify
+the exact version and tag with `npm run npm:agent -- view <package> dist-tags`.
+
+GitHub Actions already supplies `NODE_AUTH_TOKEN` during installs. A future
+publishing job must explicitly request `packages: write` and supply its
+`GITHUB_TOKEN`; the existing CI workflow intentionally only has read access.

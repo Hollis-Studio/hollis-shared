@@ -13,7 +13,8 @@
     "directory": "packages/utils"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://npm.pkg.github.com",
+    "tag": "alpha"
   },
   "exports": {
     ".": {

@@ -275,23 +275,6 @@ export declare const createExerciseSchema: z.ZodObject<{
     imageUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     metricDefinitionId: z.ZodOptional<z.ZodString>;
     slug: z.ZodOptional<z.ZodString>;
-    aliases: z.ZodOptional<z.ZodArray<z.ZodString>>;
-    movementPattern: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
-        push: "push";
-        squat: "squat";
-        hinge: "hinge";
-        pull: "pull";
-        carry: "carry";
-        rotation: "rotation";
-        lunge: "lunge";
-    }>>>;
-    trackingType: z.ZodOptional<z.ZodEnum<{
-        REPS: "REPS";
-        TIME: "TIME";
-        DISTANCE: "DISTANCE";
-    }>>;
-    muscleGroups: z.ZodOptional<z.ZodArray<z.ZodString>>;
-    primaryMuscle: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     primaryMuscleGroups: z.ZodOptional<z.ZodArray<z.ZodEnum<{
         chest: "chest";
         back: "back";
@@ -342,6 +325,24 @@ export declare const createExerciseSchema: z.ZodObject<{
         lower_back: "lower_back";
         upper_back: "upper_back";
     }>>>;
+    isUnilateral: z.ZodOptional<z.ZodBoolean>;
+    aliases: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    movementPattern: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+        push: "push";
+        squat: "squat";
+        hinge: "hinge";
+        pull: "pull";
+        carry: "carry";
+        rotation: "rotation";
+        lunge: "lunge";
+    }>>>;
+    trackingType: z.ZodOptional<z.ZodEnum<{
+        REPS: "REPS";
+        TIME: "TIME";
+        DISTANCE: "DISTANCE";
+    }>>;
+    muscleGroups: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    primaryMuscle: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     equipment: z.ZodArray<z.ZodEnum<{
         other: "other";
         none: "none";
@@ -375,7 +376,6 @@ export declare const createExerciseSchema: z.ZodObject<{
     videoUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     thumbnailUrl: z.ZodOptional<z.ZodString>;
     isCompound: z.ZodOptional<z.ZodBoolean>;
-    isUnilateral: z.ZodOptional<z.ZodBoolean>;
     mergedIntoId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     createdBy: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     defaultSets: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
@@ -397,23 +397,6 @@ export declare const updateExerciseSchema: z.ZodObject<{
     imageUrl: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
     metricDefinitionId: z.ZodOptional<z.ZodOptional<z.ZodString>>;
     slug: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-    aliases: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodString>>>;
-    movementPattern: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodEnum<{
-        push: "push";
-        squat: "squat";
-        hinge: "hinge";
-        pull: "pull";
-        carry: "carry";
-        rotation: "rotation";
-        lunge: "lunge";
-    }>>>>;
-    trackingType: z.ZodOptional<z.ZodOptional<z.ZodEnum<{
-        REPS: "REPS";
-        TIME: "TIME";
-        DISTANCE: "DISTANCE";
-    }>>>;
-    muscleGroups: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodString>>>;
-    primaryMuscle: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
     primaryMuscleGroups: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodEnum<{
         chest: "chest";
         back: "back";
@@ -464,6 +447,24 @@ export declare const updateExerciseSchema: z.ZodObject<{
         lower_back: "lower_back";
         upper_back: "upper_back";
     }>>>>;
+    isUnilateral: z.ZodOptional<z.ZodOptional<z.ZodBoolean>>;
+    aliases: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodString>>>;
+    movementPattern: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+        push: "push";
+        squat: "squat";
+        hinge: "hinge";
+        pull: "pull";
+        carry: "carry";
+        rotation: "rotation";
+        lunge: "lunge";
+    }>>>>;
+    trackingType: z.ZodOptional<z.ZodOptional<z.ZodEnum<{
+        REPS: "REPS";
+        TIME: "TIME";
+        DISTANCE: "DISTANCE";
+    }>>>;
+    muscleGroups: z.ZodOptional<z.ZodOptional<z.ZodArray<z.ZodString>>>;
+    primaryMuscle: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
     equipment: z.ZodOptional<z.ZodArray<z.ZodEnum<{
         other: "other";
         none: "none";
@@ -497,7 +498,6 @@ export declare const updateExerciseSchema: z.ZodObject<{
     videoUrl: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
     thumbnailUrl: z.ZodOptional<z.ZodOptional<z.ZodString>>;
     isCompound: z.ZodOptional<z.ZodOptional<z.ZodBoolean>>;
-    isUnilateral: z.ZodOptional<z.ZodOptional<z.ZodBoolean>>;
     mergedIntoId: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
     createdBy: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
     defaultSets: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodNumber>>>;

@@ -145,6 +145,8 @@ export * from "./organization.js";
 
 export * from "./appointment-config.js";
 export * from "./coaching.js";
+// Assigned Workouts programs - one programming system for every client type
+export * from "./workouts-assigned-program.js";
 export * from "./documents.js";
 
 // Consent domain - patient consent record types and endpoint constants

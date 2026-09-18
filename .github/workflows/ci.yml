@@ -42,5 +42,8 @@ jobs:
       - name: Build, typecheck, smoke-import
         run: npm run check
 
+      - name: Package authentication helper tests
+        run: npm run test:package-auth
+
       - name: Contracts tests
         run: npm --workspace @hollis-studio/contracts run test
