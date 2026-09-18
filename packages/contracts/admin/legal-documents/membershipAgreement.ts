@@ -84,7 +84,7 @@ function generateMembershipAgreementContent(): string {
   return `# Membership Agreement
 
 **Hollis Health LLC**
-Home Office: 691 S Seguin, New Braunfels, TX 78130
+Home Office: 818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258
 (210) 891-9005 | admin@hollis.health
 
 ---
@@ -93,7 +93,7 @@ Home Office: 691 S Seguin, New Braunfels, TX 78130
 
 This Membership Agreement ("Agreement") is entered into as of the date of Member's electronic or physical signature ("Effective Date") by and between:
 
-**Hollis Health LLC**, a Texas limited liability company, doing business as Hollis Health, with its home office at 691 S Seguin, New Braunfels, TX 78130 ("Company," "we," "us," or "our"); and
+**Hollis Health LLC**, a Texas limited liability company, doing business as Hollis Health, with its home office at 818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258 ("Company," "we," "us," or "our"); and
 
 **Member:**
 
@@ -250,7 +250,7 @@ IF APPLICABLE LAW PROVIDES A THREE (3) BUSINESS DAY RIGHT TO CANCEL THIS AGREEME
 Written notices to Company under this Agreement may be sent to:
 
 **Hollis Health LLC**
-691 S Seguin, New Braunfels, TX 78130
+818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258
 Email: admin@hollis.health
 
 ### 5.3 Program Location
@@ -446,8 +446,8 @@ Title: ______________________________________
 
 export const meta = {
   title: "Membership Agreement",
-  version: "2.4.1",
-  effectiveDate: "2026-09-09",
+  version: "2.6.0",
+  effectiveDate: "2026-09-17",
   /**
    * sha256 of the fully-rendered `content` export, first 8 hex chars.
    * `content` is deterministic at module load (it interpolates
@@ -455,7 +455,7 @@ export const meta = {
    * verifiable — scripts/check-legal-doc-versions.js in hollis-health-app
    * evaluates the built module and compares.
    */
-  contentHash: "25fd9f5a",
+  contentHash: "010481ed",
 };
 
 /**

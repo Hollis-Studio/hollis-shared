@@ -24,6 +24,15 @@
  * deps: zod, domain/muscles | consumers: hollis-workouts server + mobile client
  */
 import { z } from "zod";
+/**
+ * The locale a prose-returning AI request wants its user-facing copy written
+ * in (hollis-workouts#99). Optional on every request body that carries it: an
+ * older client that omits it gets English, exactly as before. System prompts,
+ * validators and parsing stay English on the server; only the copy the athlete
+ * reads changes language, and product names stay verbatim.
+ */
+export declare const AiOutputLocaleSchema: z.ZodString;
+export type AiOutputLocale = z.infer<typeof AiOutputLocaleSchema>;
 /** Equipment types catalogued by the gym-setup wizard. Closed set + `other`. */
 export declare const GYM_EQUIPMENT_TYPES: readonly ["barbell", "dumbbell", "kettlebell", "cable", "machine", "bodyweight", "resistance_band", "squat_rack", "bench", "pull_up_bar", "plate_loaded_machine", "smith_machine", "treadmill", "stationary_bike", "rowing_machine", "elliptical", "stairmaster", "jump_rope", "other"];
 export type GymEquipmentType = (typeof GYM_EQUIPMENT_TYPES)[number];
@@ -1613,6 +1622,7 @@ export declare const SmartBuilderRequestSchema: z.ZodObject<{
             }, z.core.$strip>], "exerciseType">>>;
         }, z.core.$strip>>;
     }, z.core.$strip>>;
+    locale: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type SmartBuilderRequest = z.infer<typeof SmartBuilderRequestSchema>;
 export declare const ExerciseMatchSchema: z.ZodObject<{
@@ -1829,6 +1839,7 @@ export declare const PrescriptionNarrationRequestSchema: z.ZodObject<{
         high: "high";
         medium: "medium";
     }>>;
+    locale: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type PrescriptionNarrationRequest = z.infer<typeof PrescriptionNarrationRequestSchema>;
 export declare const PrescriptionNarrationResponseSchema: z.ZodObject<{
@@ -1875,8 +1886,21 @@ export declare const CrossModalContextRequestSchema: z.ZodObject<{
     suggestedGoEasierPercent: z.ZodNullable<z.ZodNumber>;
     trainingPhase: z.ZodNullable<z.ZodString>;
     recentSessionSummary: z.ZodNullable<z.ZodString>;
+    locale: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type CrossModalContextRequest = z.infer<typeof CrossModalContextRequestSchema>;
+/**
+ * Set INSTEAD of model prose when the server had to fill `reason` itself (the
+ * model omitted it). `reason` still carries the English fallback sentence for
+ * clients that predate this field; a client that knows the code renders its
+ * own localised copy for it and ignores `reason`.
+ */
+export declare const CrossModalReasonCodeSchema: z.ZodEnum<{
+    reduce: "reduce";
+    no_adjustment: "no_adjustment";
+    increase: "increase";
+}>;
+export type CrossModalReasonCode = z.infer<typeof CrossModalReasonCodeSchema>;
 export declare const CrossModalContextResponseSchema: z.ZodObject<{
     contributionPct: z.ZodNumber;
     reason: z.ZodString;
@@ -1885,6 +1909,11 @@ export declare const CrossModalContextResponseSchema: z.ZodObject<{
         high: "high";
         medium: "medium";
     }>;
+    reasonCode: z.ZodOptional<z.ZodEnum<{
+        reduce: "reduce";
+        no_adjustment: "no_adjustment";
+        increase: "increase";
+    }>>;
 }, z.core.$strip>;
 export type CrossModalContextResponse = z.infer<typeof CrossModalContextResponseSchema>;
 export declare const RecognizeEquipmentBodySchema: z.ZodObject<{
@@ -1929,6 +1958,7 @@ export declare const GymSetupChatBodySchema: z.ZodObject<{
     }, z.core.$strip>>;
     currentEquipment: z.ZodArray<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
     gymName: z.ZodOptional<z.ZodString>;
+    locale: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type GymSetupChatBody = z.infer<typeof GymSetupChatBodySchema>;
 export declare const TagExerciseMusclesBodySchema: z.ZodObject<{
@@ -2210,6 +2240,7 @@ export declare const SmartNotificationSnapshotSchema: z.ZodObject<{
         displayName: z.ZodNullable<z.ZodString>;
         weightUnit: z.ZodString;
         distanceUnit: z.ZodString;
+        locale: z.ZodOptional<z.ZodString>;
     }, z.core.$strip>;
     activeProgram: z.ZodNullable<z.ZodObject<{
         id: z.ZodString;
@@ -2341,6 +2372,7 @@ export declare const SmartNotificationPreviewResponseSchema: z.ZodObject<{
             displayName: z.ZodNullable<z.ZodString>;
             weightUnit: z.ZodString;
             distanceUnit: z.ZodString;
+            locale: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>;
         activeProgram: z.ZodNullable<z.ZodObject<{
             id: z.ZodString;
@@ -2446,6 +2478,7 @@ export declare const SmartNotificationSendResponseSchema: z.ZodObject<{
             displayName: z.ZodNullable<z.ZodString>;
             weightUnit: z.ZodString;
             distanceUnit: z.ZodString;
+            locale: z.ZodOptional<z.ZodString>;
         }, z.core.$strip>;
         activeProgram: z.ZodNullable<z.ZodObject<{
             id: z.ZodString;

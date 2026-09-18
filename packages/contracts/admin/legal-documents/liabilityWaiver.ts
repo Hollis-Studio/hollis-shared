@@ -8,15 +8,15 @@
 
 export const meta = {
   title: "Liability Waiver and Assumption of Risk Agreement",
-  version: "1.4.1",
-  effectiveDate: "2026-09-09",
-  contentHash: "17a94bc1",
+  version: "1.5.0",
+  effectiveDate: "2026-09-17",
+  contentHash: "c6481b3d",
 };
 
 export const content = `# Liability Waiver and Assumption of Risk Agreement
 
 **Hollis Health LLC**
-Home Office: 691 S Seguin, New Braunfels, TX 78130
+Home Office: 818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258
 (210) 891-9005 | admin@hollis.health
 
 ---
@@ -29,7 +29,7 @@ READ THIS DOCUMENT CAREFULLY BEFORE SIGNING. IT AFFECTS YOUR LEGAL RIGHTS. BY SI
 
 This Liability Waiver and Assumption of Risk Agreement ("Waiver") is entered into as of the date of Participant's signature below by and between:
 
-**Hollis Health LLC**, a Texas limited liability company, doing business as Hollis Health, with its home office at 691 S Seguin, New Braunfels, TX 78130 ("Company," "we," "us," or "our"); and
+**Hollis Health LLC**, a Texas limited liability company, doing business as Hollis Health, with its home office at 818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258 ("Company," "we," "us," or "our"); and
 
 **Participant:**
 

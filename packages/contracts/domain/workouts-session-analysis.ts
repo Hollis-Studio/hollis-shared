@@ -19,6 +19,7 @@
  * consumers: hollis-workouts server + mobile client
  */
 import { z } from 'zod';
+import { LocaleTagSchema } from './common.js';
 
 /** Bumped when the feature digest changes shape; stored rows carry their own. */
 export const SESSION_ANALYSIS_SCHEMA_VERSION = 1;
@@ -180,6 +181,12 @@ export type SessionAnalysis = z.infer<typeof SessionAnalysisSchema>;
  */
 export const SessionAnalysisRequestSchema = z.object({
   sessionId: z.string().min(1).max(200),
+  /**
+   * Output language for the written analysis (alpha.82, #99). Only consulted
+   * when the analysis is generated: a replayed row keeps the language it was
+   * written in.
+   */
+  locale: LocaleTagSchema.optional(),
 });
 export type SessionAnalysisRequest = z.infer<typeof SessionAnalysisRequestSchema>;
 

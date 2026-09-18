@@ -8,15 +8,15 @@
 
 export const meta = {
   title: "Informed Consent for Health Services",
-  version: "2.1.1",
-  effectiveDate: "2026-09-09",
-  contentHash: "f14bcd01",
+  version: "2.2.0",
+  effectiveDate: "2026-09-17",
+  contentHash: "b6d1d077",
 };
 
 export const content = `# Informed Consent for Health Services
 
 **Hollis Health LLC**
-Home Office: 691 S Seguin, New Braunfels, TX 78130
+Home Office: 818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258
 (210) 891-9005 | admin@hollis.health
 
 ---

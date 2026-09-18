@@ -1,5 +1,44 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.82 (2026-09-17) — AI output locale
+
+Additive only.
+
+### `domain/common.ts`
+
+- **`LocaleTagSchema`** — a loose BCP-47 language-tag shape (`en`, `es-MX`,
+  `zh-Hant`, `es_MX`). Not a closed list on purpose: the Workouts client owns
+  its supported-locale registry, and a new locale must not need a contracts
+  release before the server can be asked to write in it.
+
+### `ai/workout-ai-wire.ts`
+
+- **`AiOutputLocaleSchema`** (= `LocaleTagSchema`) and an optional `locale`
+  on every prose-returning request body: `SmartBuilderRequestSchema`,
+  `GymSetupChatBodySchema`, `PrescriptionNarrationRequestSchema`,
+  `CrossModalContextRequestSchema` (hollis-workouts#99). Omitted means
+  English, exactly as before; system prompts, validators and parsing stay
+  English on the server and only the copy the athlete reads changes language.
+- **`CrossModalReasonCodeSchema`** and an optional `reasonCode` on
+  `CrossModalContextResponseSchema` (`no_adjustment` | `reduce` | `increase`).
+  Set only when the server filled `reason` itself because the model omitted
+  it; `reason` still carries the English fallback sentence for older clients.
+- **`SmartNotificationSnapshotSchema.user.locale`** (optional) — the reader's
+  profile `settings.languageTag`, so server-initiated push copy is written in
+  their language.
+
+### `domain/workouts-session-analysis.ts`, `domain/workouts-conversations.ts`
+
+- Optional `locale` on `SessionAnalysisRequestSchema` and
+  `ConversationAutoReplyBodySchema`. A replayed session analysis keeps the
+  language it was generated in.
+
+### `domain/workouts-user-profile.ts`
+
+- No shape change: `UserSettingsSchema.languageTag` is now documented as the
+  per-user locale the client writes on every resolve, read by Sunday Review
+  deck narratives and smart notifications.
+
 ## 0.2.0-alpha.79 (2026-09-16) — Workouts lifetime seat availability
 
 Additive only.

@@ -26,10 +26,19 @@
 import { z } from "zod";
 import { ProgramExerciseGuidanceSchema } from "../progression/program.js";
 import { MuscleGroupSchema } from "../domain/muscles.js";
+import { LocaleTagSchema } from "../domain/common.js";
 import { PrescriptionActionSchema, PrescriptionDropStepSchema, AiContextDriverInputSchema, AiSetSignalOverrideSchema, } from "../progression/engine.js";
 // ============================================================================
 // Shared vocabulary
 // ============================================================================
+/**
+ * The locale a prose-returning AI request wants its user-facing copy written
+ * in (hollis-workouts#99). Optional on every request body that carries it: an
+ * older client that omits it gets English, exactly as before. System prompts,
+ * validators and parsing stay English on the server; only the copy the athlete
+ * reads changes language, and product names stay verbatim.
+ */
+export const AiOutputLocaleSchema = LocaleTagSchema;
 /** Equipment types catalogued by the gym-setup wizard. Closed set + `other`. */
 export const GYM_EQUIPMENT_TYPES = [
     "barbell",
@@ -722,6 +731,8 @@ export const SmartBuilderRequestSchema = z.object({
     userContext: UserTrainingContextSchema,
     programRef: ProgramRefSchema.optional(),
     currentProgram: SlottedProgramSchema.optional(),
+    /** Output language for every user-facing `message` (alpha.82, #99). */
+    locale: AiOutputLocaleSchema.optional(),
 });
 // ============================================================================
 // Exercise matching
@@ -822,6 +833,8 @@ export const PrescriptionNarrationRequestSchema = z.object({
      * (workouts #39 residue).
      */
     engineConfidence: z.enum(["low", "medium", "high"]).optional(),
+    /** Output language for shortReason / fullNarration (alpha.82, #99). */
+    locale: AiOutputLocaleSchema.optional(),
 });
 export const PrescriptionNarrationResponseSchema = z.object({
     shortReason: z.string().min(1),
@@ -852,8 +865,19 @@ export const CrossModalContextRequestSchema = z.object({
     suggestedGoEasierPercent: z.number().nullable(),
     trainingPhase: z.string().max(50).nullable(),
     recentSessionSummary: z.string().max(4000).nullable(),
+    /** Output language for the banner `reason` (alpha.82, #99). */
+    locale: AiOutputLocaleSchema.optional(),
 });
-export const CrossModalContextResponseSchema = AiContextDriverInputSchema;
+/**
+ * Set INSTEAD of model prose when the server had to fill `reason` itself (the
+ * model omitted it). `reason` still carries the English fallback sentence for
+ * clients that predate this field; a client that knows the code renders its
+ * own localised copy for it and ignores `reason`.
+ */
+export const CrossModalReasonCodeSchema = z.enum(["no_adjustment", "reduce", "increase"]);
+export const CrossModalContextResponseSchema = AiContextDriverInputSchema.extend({
+    reasonCode: CrossModalReasonCodeSchema.optional(),
+});
 // ============================================================================
 // NEW ADDITIONS for alpha.29
 // ============================================================================
@@ -885,6 +909,8 @@ export const GymSetupChatBodySchema = z.object({
     conversationHistory: z.array(GymSetupConversationMessageSchema).max(50),
     currentEquipment: z.array(z.record(z.string(), z.unknown())).max(500),
     gymName: z.string().max(200).optional(),
+    /** Output language for every `message` and question label (alpha.82, #99). */
+    locale: AiOutputLocaleSchema.optional(),
 });
 // --- TagExerciseMusclesBodySchema ---
 export const TagExerciseMusclesBodySchema = z.object({
@@ -1069,6 +1095,12 @@ export const SmartNotificationSnapshotSchema = z.object({
         displayName: z.string().nullable(),
         weightUnit: z.string(),
         distanceUnit: z.string(),
+        /**
+         * The reader's app locale (profile `settings.languageTag`), so a
+         * server-initiated push is written in their language (alpha.82, #99).
+         * Absent for profiles that predate the client writing the tag.
+         */
+        locale: AiOutputLocaleSchema.optional(),
     }),
     activeProgram: SmartNotificationActiveProgramSchema.nullable(),
     recentSessions: z.array(SmartNotificationRecentSessionSchema).max(8),

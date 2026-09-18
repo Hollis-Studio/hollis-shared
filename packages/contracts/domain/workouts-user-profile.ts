@@ -44,6 +44,12 @@ export const UserSettingsSchema = z.object({
   goEasierPercent: z.number().min(0).max(1),
   defaultRestTimerSec: z.number().int().min(0),
   theme: z.string().min(1),
+  /**
+   * BCP-47 tag of the app's active locale, written by the client whenever it
+   * resolves (alpha.82, #99). Server-initiated AI spenders that never see a
+   * request body — Sunday Review deck narratives and smart push copy — read
+   * it to write in the reader's language; absent means English.
+   */
   languageTag: z.string().optional(),
   gender: z.string().optional(),
   appleHealthConnected: z.boolean(),

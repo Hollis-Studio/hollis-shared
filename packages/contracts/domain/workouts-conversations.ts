@@ -16,6 +16,7 @@
  * consumers: hollis-workouts server + mobile client
  */
 import { z } from 'zod';
+import { LocaleTagSchema } from './common.js';
 
 /** ISO week key, e.g. "2026-W34". Matches the weeks/rolling-summary contracts. */
 const weekIsoSchema = z.string().regex(/^\d{4}-W(?:0[1-9]|[1-4]\d|5[0-3])$/);
@@ -103,6 +104,8 @@ export type ConversationAppendBody = z.infer<typeof ConversationAppendBodySchema
  */
 export const ConversationAutoReplyBodySchema = z.object({
   threadId: z.string().min(1),
+  /** Output language for the assistant's reply turn (alpha.82, #99). */
+  locale: LocaleTagSchema.optional(),
 });
 export type ConversationAutoReplyBody = z.infer<typeof ConversationAutoReplyBodySchema>;
 

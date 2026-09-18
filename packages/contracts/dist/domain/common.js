@@ -33,4 +33,21 @@ export const baseDocumentSchema = z.object({
     createdAt: isoTimestampSchema,
     updatedAt: isoTimestampSchema,
 });
+// ============================================================================
+// LOCALE
+// ============================================================================
+/**
+ * A BCP-47 language tag as the Workouts client sends it (`en`, `es-MX`,
+ * `pt-BR`, `zh-Hant`, …). Deliberately a loose shape check, not a closed list:
+ * the app's supported-locale registry lives in the client (`LOCALE_CODES`) and
+ * a server that receives a tag it has no bundle for still prompts the model in
+ * that language — the wire must not need a contracts release per new locale.
+ * Consumers normalise casing (`normalizeLocaleTag`) and fall back to `en`.
+ */
+export const LocaleTagSchema = z
+    .string()
+    .trim()
+    .min(2)
+    .max(35)
+    .regex(/^[A-Za-z]{2,3}(?:[-_][A-Za-z0-9]{2,8})*$/u, "Must be a BCP-47 language tag");
 //# sourceMappingURL=common.js.map
