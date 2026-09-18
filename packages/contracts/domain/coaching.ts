@@ -5,6 +5,7 @@
 import { z } from "zod";
 import { createPaginatedListSchema } from "./pagination.js";
 import { ProgramSchema } from "../progression/program.js";
+import { CanonicalExerciseRecordSchema } from "./exercise-workouts.js";
 import { userIdSchema } from "../schemas/index.js";
 
 export const COACHING_SERVICE = "life_coaching" as const;
@@ -19,8 +20,11 @@ export type CoachingProviderId = z.infer<typeof CoachingProviderIdSchema>;
 export const COACHING_INITIAL_TERM_DAYS = 90;
 export const COACHING_INITIAL_TERM_PRICE_CENTS = 89700;
 export const COACHING_MONTHLY_PRICE_CENTS = 29900;
-export const COACHING_CALLS_PER_SERVICE_WINDOW = 2;
-export const COACHING_INITIAL_TERM_CALLS = 6;
+/** One call per consecutive seven-day window anchored to enrollment. */
+export const COACHING_CALLS_PER_SERVICE_WINDOW = 1;
+export const COACHING_SERVICE_WINDOW_DAYS = 7;
+/** Includes the final partial week, limited to the member's paid-through date. */
+export const COACHING_INITIAL_TERM_CALLS = Math.ceil(COACHING_INITIAL_TERM_DAYS / COACHING_SERVICE_WINDOW_DAYS);
 
 export const COACHING_LEAD_STAGES = [
   "NEW", "CONSULTATION_BOOKED", "ATTENDED", "ELIGIBLE_INVITED", "ENROLLED", "DECLINED", "CLOSED",
@@ -223,10 +227,9 @@ export const CoachingExerciseCatalogQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(100),
   cursor: z.string().min(1).max(200).optional(),
 });
-export const CoachingExerciseCatalogSchema = z.array(z.object({
-  id: z.string().min(1), name: z.string().min(1),
-  modality: z.string().min(1), equipmentType: z.string().min(1),
-})).max(200);
+export const CoachingExerciseCatalogSchema = CanonicalExerciseRecordSchema.pick({
+  id: true, name: true, modality: true, equipmentType: true, trackingMode: true,
+}).partial({ trackingMode: true }).array().max(200);
 
 /** Trusted bridge only: subject must come from Health's verified Identity link. */
 export const CoachingAccountProvisionRequestSchema = z.object({

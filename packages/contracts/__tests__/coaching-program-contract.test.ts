@@ -1,6 +1,7 @@
 import {
   CoachingAccountProvisionRequestSchema,
   CoachingExerciseCatalogQuerySchema,
+  CoachingExerciseCatalogSchema,
   CoachingProgramSnapshotSchema,
 } from "../domain/coaching.js";
 import { GeneratedExerciseSchema } from "../ai/ai-types.js";
@@ -40,6 +41,13 @@ function coachingProgram(overrides: Record<string, unknown> = {}) {
 }
 
 describe("coaching program contract", () => {
+  it("preserves canonical timed tracking and accepts older catalog records", () => {
+    const exercise = { id: "plank", name: "Plank", modality: "weightlifting", equipmentType: "bodyweight" };
+    expect(CoachingExerciseCatalogSchema.parse([{ ...exercise, trackingMode: "timed" }])[0]?.trackingMode).toBe("timed");
+    expect(CoachingExerciseCatalogSchema.safeParse([exercise]).success).toBe(true);
+    expect(CoachingExerciseCatalogSchema.safeParse([{ ...exercise, trackingMode: "invented" }]).success).toBe(false);
+  });
+
   it("round-trips cardio and coach instructions needed by Workouts", () => {
     const parsed = CoachingProgramSnapshotSchema.parse(coachingProgram());
     const exercise = parsed.schedule[0]!.exercises[0]!;

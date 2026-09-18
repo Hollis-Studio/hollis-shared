@@ -7,6 +7,10 @@
     "packages/*"
   ],
   "scripts": {
+    "npm:agent": "node scripts/npm-agent.mjs",
+    "package:auth": "node scripts/npm-agent.mjs whoami --registry=https://npm.pkg.github.com",
+    "package:publish": "node scripts/npm-agent.mjs publish --tag alpha",
+    "test:package-auth": "node --test scripts/npm-agent.test.mjs",
     "clean": "npm run clean --workspaces --if-present",
     "build": "npm --workspace @hollis-studio/contracts run build && npm --workspace @hollis-studio/design-tokens run build && npm --workspace @hollis-studio/utils run build && npm --workspace @hollis-studio/auth-client run build",
     "typecheck": "npm --workspace @hollis-studio/contracts run typecheck && npm --workspace @hollis-studio/design-tokens run typecheck && npm --workspace @hollis-studio/utils run typecheck && npm --workspace @hollis-studio/auth-client run typecheck",
