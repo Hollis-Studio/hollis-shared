@@ -1,71 +1,23 @@
-# Hollis Shared — Agent Guide
+# Hollis Shared
 
-Read `../AGENTS.md` first for the compact company map and board protocol.
+Read `../AGENTS.md` for coordination and shared-checkout rules.
 
-`hollis-shared` owns the published suite boundary: `@hollis-studio/contracts`,
-`design-tokens`, `utils`, and `auth-client`, plus suite-wide documentation.
-It is not an application repository. Public APIs are the package `exports` maps;
-do not create sibling-path, source-path, or undeclared deep-import compatibility
-routes.
+Owns published `@hollis-studio/contracts`, `design-tokens`, `utils`, and
+`auth-client`, plus suite docs. Public boundaries are package `exports` maps;
+no sibling-source imports, undeclared deep imports, or consumer `file:`/Git deps.
 
-## Work in the shared checkout
+For package changes:
+1. Read the package manifest, exports and affected code; search every consumer.
+   Keep compatibility until consumer upgrades can land together.
+2. Validate the affected workspace and exported entrypoints (`smoke:import`).
+   Contracts changes need contract tests; release validation uses `npm run check`.
+3. Before an authorized publish, inspect `npm pack --dry-run --workspace ...`,
+   verify dependency ranges and `npm ls --workspaces --depth=0`, then confirm the
+   actual published version/tag. GitHub Packages prereleases use `--tag alpha`.
+4. Update affected consumer manifests/lockfiles within the authorized scope.
+   Tests, registry publication and installed consumer versions are separate facts.
 
-This checkout is intentionally shared by concurrent agents. Before a command or
-edit, check in announcing your goal and the packages you will touch, register or
-refresh activity, and claim the file/task in the company coordination board
-(`hollis-board`); leave a summary when you finish. Announce even when `status`
-shows no other active agents: unregistered or idle-but-present agents do not
-appear there, and a published-package change is exactly the record later agents
-need. Activity is a ten-minute window used only to freeze a proposal's
-electorate; claims persist until their owner explicitly releases them, leaves,
-or hands them off. Check `git status` first, touch only
-your claimed files, and never reset, clean, stash, checkout, or reformat
-another agent's changes. Treat `node_modules/` and every package's `dist/`
-directory as shared mutable artifacts: avoid `npm install`, `npm ci`, `npm run
-clean`, and full builds while another task may use them unless the board
-explicitly reserves that work.
-
-Use the board for status and ownership rather than duplicating its protocol in
-this file. Coordinate an overlapping change with its owner. The board's voting
-policy applies to additions to shared board documents; ordinary source changes
-follow the user's task authorization and proportionate review.
-
-## Package-change contract
-
-1. Read the affected package's `package.json`, public README, source exports,
-   and root `README.md`. Search sibling consumers before changing a type,
-   schema, runtime export, package version, or dependency.
-2. Keep additions backward compatible until all consumers can bump together.
-   A contracts change can affect Health, Workouts, Identity, and their servers;
-   `auth-client` is staged and does not establish an Identity cutover.
-3. Add an export deliberately: consumers may import only paths declared by the
-   package's `exports` field. Exercise each published entry point with
-   `npm run smoke:import` after a build.
-4. Packages are private GitHub Packages releases under `@hollis-studio`, on
-   the `alpha` dist-tag. Never use `file:` or `git+...hollis-shared` consumer
-   dependencies. A source commit, a successful CI run, npm publication, and a
-   consumer lockfile bump are separate states; report each one precisely.
-5. Before publishing, inspect the selected package's tarball (`npm pack
-   --dry-run --workspace <package>`), run `npm run check` and contracts tests
-   from green main, then verify the exact published version and dist-tag. Do
-   not publish, tag, or alter a consumer manifest unless the task authorizes it.
-
-## Dependency and authentication checks
-
-- Workspace linking can hide an unsatisfied published dependency. `npm ls
-  --workspaces --depth=0` must be clean before a release; reconcile package
-  dependency ranges with the version being published.
-- GitHub Packages needs the scoped registry in `.npmrc` and a `NODE_AUTH_TOKEN`
-  with package read/write scope as appropriate. Keep credentials out of git,
-  command arguments, logs, and test fixtures. Use the repository's npm helper
-  when it is available.
-- CI is a release gate only. Its read-scoped token cannot publish; a green CI
-  result does not prove registry delivery or consumer installation.
-
-## Focused validation
-
-Prefer the smallest check that establishes the changed contract. For package
-code, build/typecheck the affected workspace and smoke-import its public
-exports; run contracts tests for contract changes. State when validation was
-skipped because the shared checkout was actively in use, and do not treat a
-local build as evidence that any app has consumed a release.
+Treat `node_modules/` and `dist/` as shared mutable state; coordinate installs,
+cleans and builds. Inspect existing npm authentication before requesting tokens;
+never put credentials in files, commands or logs that may be exposed. CI's
+read-scoped package token does not authorize publication.
