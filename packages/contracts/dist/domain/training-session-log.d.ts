@@ -70,6 +70,7 @@ export declare const SetTargetSnapshotSchema: z.ZodObject<{
     steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     isWarmup: z.ZodBoolean;
+    loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
     setType: z.ZodOptional<z.ZodEnum<{
         normal: "normal";
         warmup: "warmup";
@@ -143,6 +144,7 @@ export declare const SessionSetSchema: z.ZodObject<{
         steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isWarmup: z.ZodBoolean;
+        loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
         setType: z.ZodOptional<z.ZodEnum<{
             normal: "normal";
             warmup: "warmup";
@@ -271,6 +273,7 @@ export declare const SessionExerciseSchema: z.ZodObject<{
             steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
+            loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
             setType: z.ZodOptional<z.ZodEnum<{
                 normal: "normal";
                 warmup: "warmup";
@@ -300,6 +303,15 @@ export declare const SessionExerciseSchema: z.ZodObject<{
         rightWeightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     }, z.core.$strip>>;
     isFromProgram: z.ZodBoolean;
+    prescribedGoalMode: z.ZodOptional<z.ZodEnum<{
+        maintain: "maintain";
+        progress: "progress";
+        track_only: "track_only";
+    }>>;
+    targetSource: z.ZodOptional<z.ZodEnum<{
+        engine: "engine";
+        "program-template": "program-template";
+    }>>;
     canonicalizationStatus: z.ZodEnum<{
         matched: "matched";
         unmatched: "unmatched";
@@ -372,6 +384,7 @@ export declare const SessionExerciseSchema: z.ZodObject<{
         steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isWarmup: z.ZodBoolean;
+        loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
         setType: z.ZodOptional<z.ZodEnum<{
             normal: "normal";
             warmup: "warmup";
@@ -536,6 +549,7 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
                 steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 isWarmup: z.ZodBoolean;
+                loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
                 setType: z.ZodOptional<z.ZodEnum<{
                     normal: "normal";
                     warmup: "warmup";
@@ -565,6 +579,15 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
             rightWeightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         }, z.core.$strip>>;
         isFromProgram: z.ZodBoolean;
+        prescribedGoalMode: z.ZodOptional<z.ZodEnum<{
+            maintain: "maintain";
+            progress: "progress";
+            track_only: "track_only";
+        }>>;
+        targetSource: z.ZodOptional<z.ZodEnum<{
+            engine: "engine";
+            "program-template": "program-template";
+        }>>;
         canonicalizationStatus: z.ZodEnum<{
             matched: "matched";
             unmatched: "unmatched";
@@ -637,6 +660,7 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
             steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
+            loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
             setType: z.ZodOptional<z.ZodEnum<{
                 normal: "normal";
                 warmup: "warmup";
@@ -785,6 +809,7 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
                 steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 isWarmup: z.ZodBoolean;
+                loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
                 setType: z.ZodOptional<z.ZodEnum<{
                     normal: "normal";
                     warmup: "warmup";
@@ -814,6 +839,15 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
             rightWeightKg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         }, z.core.$strip>>;
         isFromProgram: z.ZodBoolean;
+        prescribedGoalMode: z.ZodOptional<z.ZodEnum<{
+            maintain: "maintain";
+            progress: "progress";
+            track_only: "track_only";
+        }>>;
+        targetSource: z.ZodOptional<z.ZodEnum<{
+            engine: "engine";
+            "program-template": "program-template";
+        }>>;
         canonicalizationStatus: z.ZodEnum<{
             matched: "matched";
             unmatched: "unmatched";
@@ -886,6 +920,7 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
             steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
+            loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
             setType: z.ZodOptional<z.ZodEnum<{
                 normal: "normal";
                 warmup: "warmup";

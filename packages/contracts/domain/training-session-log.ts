@@ -81,6 +81,8 @@ export const SetTargetSnapshotSchema = z.object({
   steps: z.number().min(0).nullable().optional(),
   jumps: z.number().min(0).nullable().optional(),
   isWarmup: z.boolean(),
+  /** An explicit athlete load choice; automatic fatigue may adjust reps, not this load. */
+  loadIsUserOwned: z.boolean().optional(),
   /**
    * Superset stamps, mirroring the same three fields on SessionSetSchema. A
    * merged superset's `originalTargets` spine carries them so a cold resume
@@ -187,6 +189,10 @@ export const SessionExerciseSchema = z
     order: z.number().int().min(0),
     sets: z.array(SessionSetSchema),
     isFromProgram: z.boolean(),
+    /** Program row mode captured when the session starts; stable across reorder and swap. */
+    prescribedGoalMode: z.enum(["track_only", "progress", "maintain"]).optional(),
+    /** Source of the session's initial target plan, retained for resume provenance. */
+    targetSource: z.enum(["engine", "program-template"]).optional(),
     canonicalizationStatus: CanonicalizationStatusSchema,
     cardioData: CardioSessionDataSchema.nullable().default(null),
     stretchData: StretchSessionDataSchema.nullable().default(null),

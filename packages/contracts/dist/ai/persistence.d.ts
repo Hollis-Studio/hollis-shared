@@ -7,7 +7,7 @@
  * consumers: hollis-workouts server + mobile client
  */
 import * as z from 'zod';
-export declare const AI_AUDIT_LOG_SURFACES: readonly ["sunday_review_phase_outlook", "plateau_coaching", "program_critique", "program_edit", "goal_reasoning", "pr_celebration", "anomaly_label", "rest_day_pulse", "smart_program_builder", "smart_gym_setup", "sunday_review_freeform"];
+export declare const AI_AUDIT_LOG_SURFACES: readonly ["sunday_review_phase_outlook", "plateau_coaching", "program_critique", "program_edit", "goal_reasoning", "pr_celebration", "anomaly_label", "rest_day_pulse", "smart_program_builder", "smart_gym_setup", "sunday_review_freeform", "smart_notification"];
 export type AiAuditLogSurface = (typeof AI_AUDIT_LOG_SURFACES)[number];
 export declare const AiAuditLogSurfaceSchema: z.ZodEnum<{
     rest_day_pulse: "rest_day_pulse";
@@ -21,13 +21,15 @@ export declare const AiAuditLogSurfaceSchema: z.ZodEnum<{
     smart_program_builder: "smart_program_builder";
     smart_gym_setup: "smart_gym_setup";
     sunday_review_freeform: "sunday_review_freeform";
+    smart_notification: "smart_notification";
 }>;
-export declare const AI_AUDIT_LOG_MODEL_TIERS: readonly ["flash", "pro", "image"];
+export declare const AI_AUDIT_LOG_MODEL_TIERS: readonly ["flash", "pro", "image", "deterministic"];
 export type AiAuditLogModelTier = (typeof AI_AUDIT_LOG_MODEL_TIERS)[number];
 export declare const AiAuditLogModelTierSchema: z.ZodEnum<{
     flash: "flash";
     pro: "pro";
     image: "image";
+    deterministic: "deterministic";
 }>;
 export declare const AI_AUDIT_LOG_ACTIONS: readonly ["auto_applied", "user_applied", "user_dismissed", "user_overrode"];
 export type AiAuditLogAction = (typeof AI_AUDIT_LOG_ACTIONS)[number];
@@ -50,11 +52,13 @@ export declare const AiAuditLogCreateSchema: z.ZodObject<{
         smart_program_builder: "smart_program_builder";
         smart_gym_setup: "smart_gym_setup";
         sunday_review_freeform: "sunday_review_freeform";
+        smart_notification: "smart_notification";
     }>;
     modelTier: z.ZodEnum<{
         flash: "flash";
         pro: "pro";
         image: "image";
+        deterministic: "deterministic";
     }>;
     snapshotRef: z.ZodOptional<z.ZodString>;
     action: z.ZodEnum<{
@@ -90,11 +94,13 @@ export declare const AiAuditLogEntrySchema: z.ZodObject<{
         smart_program_builder: "smart_program_builder";
         smart_gym_setup: "smart_gym_setup";
         sunday_review_freeform: "sunday_review_freeform";
+        smart_notification: "smart_notification";
     }>;
     modelTier: z.ZodEnum<{
         flash: "flash";
         pro: "pro";
         image: "image";
+        deterministic: "deterministic";
     }>;
     snapshotRef: z.ZodOptional<z.ZodString>;
     persisted: z.ZodBoolean;

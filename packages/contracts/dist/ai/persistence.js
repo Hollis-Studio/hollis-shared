@@ -14,10 +14,10 @@ export const AI_AUDIT_LOG_SURFACES = [
     'sunday_review_phase_outlook', 'plateau_coaching', 'program_critique',
     'program_edit', 'goal_reasoning', 'pr_celebration', 'anomaly_label',
     'rest_day_pulse', 'smart_program_builder', 'smart_gym_setup',
-    'sunday_review_freeform',
+    'sunday_review_freeform', 'smart_notification',
 ];
 export const AiAuditLogSurfaceSchema = z.enum(AI_AUDIT_LOG_SURFACES);
-export const AI_AUDIT_LOG_MODEL_TIERS = ['flash', 'pro', 'image'];
+export const AI_AUDIT_LOG_MODEL_TIERS = ['flash', 'pro', 'image', 'deterministic'];
 export const AiAuditLogModelTierSchema = z.enum(AI_AUDIT_LOG_MODEL_TIERS);
 export const AI_AUDIT_LOG_ACTIONS = [
     'auto_applied', 'user_applied', 'user_dismissed', 'user_overrode',

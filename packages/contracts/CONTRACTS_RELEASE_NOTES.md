@@ -1,5 +1,15 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.87 (2026-09-19) — additive session provenance + AI audit enums
+
+Additive only; every new field is optional and every enum only gains members.
+
+- `domain/training-session-log.ts`: optional `loadIsUserOwned` on set targets,
+  optional `prescribedGoalMode` and `targetSource` on the session (durable load
+  ownership and program-row identity across resume, reorder and swap).
+- `ai/persistence.ts`: `smart_notification` audit channel and `deterministic`
+  model tier, so live notification audit rows stop being quarantined.
+
 ## 0.2.0-alpha.86 (2026-09-19) — tree-shakable package
 
 No schema, type, or runtime API change. Packaging only.
