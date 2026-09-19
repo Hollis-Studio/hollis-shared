@@ -24,6 +24,9 @@ export * from "./app-review.js";
 // Master offer sheet - canonical commercial terms for memberships
 export * from "./offer-sheet.js";
 
+// New physical-product sales availability
+export * from "./commerce.js";
+
 // Appointment domain - statuses, types, booking steps
 export * from "./appointments.js";
 

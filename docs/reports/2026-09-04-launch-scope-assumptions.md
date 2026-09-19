@@ -1,3 +1,5 @@
+> **Update — September 19, 2026:** The day-one retail decision below is superseded. All new physical-product sales, including supplements and membership product bundles/add-ons, are paused. Preserve catalog and fulfillment/refund/history implementations for future reopening; retail checkout is not a launch offering.
+
 # Launch Scope Assumptions — 2026-09-04
 
 **Status:** Active. Supersedes the software-scope assumptions embedded in
