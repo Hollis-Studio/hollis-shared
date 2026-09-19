@@ -11,10 +11,14 @@ routes.
 ## Work in the shared checkout
 
 This checkout is intentionally shared by concurrent agents. Before a command or
-edit, register or refresh activity and claim the file/task in the company
-coordination board (`hollis-board`). Activity is a ten-minute window used only
-to freeze a proposal's electorate; claims persist until their owner explicitly
-releases them, leaves, or hands them off. Check `git status` first, touch only
+edit, check in announcing your goal and the packages you will touch, register or
+refresh activity, and claim the file/task in the company coordination board
+(`hollis-board`); leave a summary when you finish. Announce even when `status`
+shows no other active agents: unregistered or idle-but-present agents do not
+appear there, and a published-package change is exactly the record later agents
+need. Activity is a ten-minute window used only to freeze a proposal's
+electorate; claims persist until their owner explicitly releases them, leaves,
+or hands them off. Check `git status` first, touch only
 your claimed files, and never reset, clean, stash, checkout, or reformat
 another agent's changes. Treat `node_modules/` and every package's `dist/`
 directory as shared mutable artifacts: avoid `npm install`, `npm ci`, `npm run
