@@ -81,7 +81,7 @@ Per the HIPAA-DR-PLAN §4.3: if you need to access a member record and the platf
 ### 4.1 Normal flow
 - Stripe Terminal reader processes card-present payments.
 - Subscription billing runs automatically via Stripe.
-- New charges (add-ons, retail, etc.) are entered in web-admin > Billing. There are no lab pass-through charges — Hollis does not bill for testing.
+- New service charges are entered in web-admin > Billing. Supplements and all other physical products are currently unavailable, including membership bundles and add-ons; do not create new retail charges. Preserve support, refunds, and fulfillment for historical purchases. There are no lab pass-through charges — Hollis does not bill for testing.
 
 ### 4.2 If Stripe Terminal fails
 

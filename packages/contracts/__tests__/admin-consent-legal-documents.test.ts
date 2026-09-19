@@ -68,6 +68,28 @@ describe("admin consent legal document contracts", () => {
     );
   });
 
+  it.each(["ESSENTIALS", "CORE", "CONCIERGE"] as const)(
+    "keeps physical products out of new %s enrollment offers",
+    (tier) => {
+      const agreement = DOCUMENT_REGISTRY.MEMBERSHIP_AGREEMENT;
+      const exhibit = renderEnrollmentSummaryMarkdown(
+        generateEnrollmentSummary(tier, 8, "2026-09-19"),
+        "Jane Member",
+      );
+      expect(agreement.content).toContain(
+        "Supplements and all other physical products are currently unavailable",
+      );
+      expect(agreement.content).not.toContain("supplement purchases");
+      expect(exhibit).toContain(
+        "| Supplements and Other Physical Products | Currently unavailable; not included or available as add-ons |",
+      );
+      expect(exhibit).not.toContain("Included Supplement Allowance");
+      expect(agreement.meta.contentHash).toBe(
+        createHash("sha256").update(agreement.content).digest("hex").slice(0, 8),
+      );
+    },
+  );
+
   it("requires a displayed content hash instead of client legal document text", () => {
     expect(
       SignedDocumentPayloadSchema.safeParse({

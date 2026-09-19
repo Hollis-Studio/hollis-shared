@@ -1,7 +1,7 @@
 {
     "meta": {
-        "version": "3.3.0",
-        "effectiveDate": "2026-09-16",
+        "version": "3.4.0",
+        "effectiveDate": "2026-09-19",
         "status": "active"
     },
     "terms": [
@@ -120,7 +120,7 @@
         "Imaging, CGM sensors, IV therapy, and related services furnished by independent providers",
         "Prescription items and pharmacy charges",
         "Specialist referrals or services outside the scope of the membership program",
-        "Supplements and retail products unless expressly listed as included on the Enrollment Summary and Service Schedule",
+        "Supplements and all other physical products are currently unavailable from Hollis Health and are not included in memberships or available as add-ons",
         "Any other service furnished by an independent third party"
     ]
 }

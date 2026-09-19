@@ -225,7 +225,7 @@ Home Office: 818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258
 | Start Date | ${summary.startDate} |
 | End Date | ${summary.endDate} |
 | Initial Program Location | To be confirmed at enrollment |
-| Included Supplement Allowance / Package | None unless separately listed |
+| Supplements and Other Physical Products | Currently unavailable; not included or available as add-ons |
 | Included Non-Clinical Assessment Allowance | None unless separately listed |
 | Sponsored Third-Party Testing Membership | ${sponsoredTestingValue} |
 | Add-On Services | None unless separately listed |

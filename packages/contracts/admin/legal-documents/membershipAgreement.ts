@@ -142,7 +142,7 @@ The specific commercial and operational details of Member's selected membership 
 - Selected contract term;
 - Monthly rate;
 - Start Date and End Date;
-- Any included supplement allowance or curated supplement package;
+- Confirmation that supplements and all other physical products are currently unavailable from Company and are not included in Membership or available as add-ons;
 - Any included non-clinical screening or assessment allowance;
 - Whether Member's tier includes the Company-sponsored third-party testing program subscription described in Section 2.4;
 - Any add-on services;
@@ -217,7 +217,7 @@ Member agrees to pay the monthly Membership fee corresponding to Member's select
 
 ### 4.2 Card-on-File Authorization
 
-By executing this Agreement, Member authorizes Company to charge the payment method on file, through Stripe or any successor payment processor designated by Company, for all amounts due under this Agreement, including Membership fees, approved add-ons, supplement purchases, late fees, and any other charges expressly authorized by this Agreement or by a separate signed addendum. Member agrees to maintain a valid payment method on file at all times during the term of this Agreement.
+By executing this Agreement, Member authorizes Company to charge the payment method on file, through Stripe or any successor payment processor designated by Company, for all amounts due under this Agreement, including Membership fees, approved service add-ons, late fees, and any other charges expressly authorized by this Agreement or by a separate signed addendum. Member agrees to maintain a valid payment method on file at all times during the term of this Agreement.
 
 ### 4.3 Payment Method Updates
 
@@ -446,8 +446,8 @@ Title: ______________________________________
 
 export const meta = {
   title: "Membership Agreement",
-  version: "2.6.0",
-  effectiveDate: "2026-09-17",
+  version: "2.7.0",
+  effectiveDate: "2026-09-19",
   /**
    * sha256 of the fully-rendered `content` export, first 8 hex chars.
    * `content` is deterministic at module load (it interpolates
@@ -455,7 +455,7 @@ export const meta = {
    * verifiable — scripts/check-legal-doc-versions.js in hollis-health-app
    * evaluates the built module and compares.
    */
-  contentHash: "010481ed",
+  contentHash: "ee78df0f",
 };
 
 /**
