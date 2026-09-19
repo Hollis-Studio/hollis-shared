@@ -7,7 +7,7 @@
  * deps: zod, domain contracts, shared schemas | consumers: server, mobile, web-admin
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { OAUTH_PROVIDERS, UPLOAD_LIMITS } from "../../constants/index.js";
 import {
   APPOINTMENT_STATUSES,

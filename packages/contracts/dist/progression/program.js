@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 export const SetTypeSchema = z.enum(["normal", "warmup", "drop_set", "rest_pause", "superset"]);
 export const ProgressionModeSchema = z.enum(["weight_first", "reps_first", "duration_first"]);
 export const ExerciseGoalModeSchema = z.enum(["progress", "maintain", "track_only"]);

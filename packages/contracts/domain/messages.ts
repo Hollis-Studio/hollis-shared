@@ -11,7 +11,7 @@
  *
  * deps: zod, user.ts | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 
 import { createPaginatedListSchema } from "./pagination.js";
 import type { MessagingRecipientRole } from "./user.js";

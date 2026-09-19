@@ -9,7 +9,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 /** Supported native push token platforms */
 export declare const PUSH_PLATFORMS: readonly ["IOS", "ANDROID"];
 export declare const PushPlatformSchema: z.ZodEnum<{

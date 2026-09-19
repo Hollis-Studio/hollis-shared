@@ -7,7 +7,7 @@
  * Security: All PHI and user data is scoped to an organization.
  * See: server/src/lib/tenantContext.ts for enforcement mechanism.
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Organization lifecycle status.
  * Controls what operations are allowed for the organization.

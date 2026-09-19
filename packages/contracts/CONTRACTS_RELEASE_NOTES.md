@@ -1,5 +1,31 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.86 (2026-09-19) — tree-shakable package
+
+No schema, type, or runtime API change. Packaging only.
+
+- `"sideEffects": false` in `package.json`. Every module in this package is
+  declarations and pure schema construction: no top-level calls that mutate
+  globals, no `z.config`/registry registration, no polyfills, no
+  import-for-effect. Bundlers may now drop modules a consumer does not import.
+- Every source file uses `import * as z from "zod"` instead of
+  `import { z } from "zod"`. The named `z` export is zod's own namespace
+  object, so importing it pins all of zod (including every locale) into the
+  consumer bundle; the namespace form is the tree-shakable style zod's README
+  uses and is API-identical (`z.string()`, `z.infer<>`, `z.ZodType`).
+
+Effect for consumers, measured with `esbuild --bundle --minify --format=esm`
+against the built `dist/index.js` (a bundler that honours `sideEffects`, such
+as webpack/Next.js; Metro does not tree-shake by default):
+
+| Root-barrel entry | alpha.85 | alpha.86 |
+| --- | --- | --- |
+| `CSRF_TOKEN_COOKIE` + `AUTH_ROUTES` | 571,501 B | 2,092 B |
+| `UserAccountSchema` | 571,478 B | 129,149 B |
+
+German, Spanish and French zod locale strings are present in the alpha.85
+bundles and absent from both alpha.86 bundles.
+
 ## 0.2.0-alpha.84 (2026-09-18) — reconcile alpha.82 with alpha.83
 
 Additive only. No new schema.

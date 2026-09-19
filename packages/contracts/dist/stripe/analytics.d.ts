@@ -3,7 +3,7 @@
  *
  * deps: zod | consumers: server routes, web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 /** @deprecated Use MRR (derived from MRRSchema) instead */
 export type MRRContract = MRR;
 export declare const MRRSchema: z.ZodObject<{

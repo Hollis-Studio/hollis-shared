@@ -11,7 +11,7 @@
  * deps: zod | consumers: server/src/routes/consent.ts, web-admin consent pages
  */
 
-import { z } from "zod";
+import * as z from "zod";
 
 // ============================================================================
 // PATIENT CONSENT ENDPOINT CONSTANTS

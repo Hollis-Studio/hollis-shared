@@ -24,7 +24,7 @@
  * deps: zod, domain/muscles | consumers: hollis-workouts server + mobile client
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { ProgramExerciseGuidanceSchema } from "../progression/program.js";
 import { MuscleGroupSchema } from "../domain/muscles.js";
 import { LocaleTagSchema } from "../domain/common.js";

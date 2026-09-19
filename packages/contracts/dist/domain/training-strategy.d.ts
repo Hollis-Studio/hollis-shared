@@ -17,7 +17,7 @@
  * deps: zod, ./common, ./training, ../primitives, ./goal-metrics
  * consumers: mobile app, server, web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 export { VOLUME_LEVEL, VOLUME_LEVEL_LABELS, VOLUME_LEVELS, VolumeLevelSchema, type VolumeLevel } from "../primitives/index.js";
 /** @deprecated Use VolumeLevelSchema (PascalCase) from primitives. Remove after 2026-05-01
  *  @removal-deadline 2026-05-01 */

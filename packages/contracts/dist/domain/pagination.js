@@ -1,7 +1,7 @@
 /**
  * @ai-context Shared pagination types for consistent list responses
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Pagination metadata schema for list payloads.
  * Supports both page-based and offset-based pagination fields for

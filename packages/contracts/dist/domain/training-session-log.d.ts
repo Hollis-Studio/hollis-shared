@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 export declare const PROGRAM_PHASES: readonly ["hypertrophy", "strength", "peaking", "deload", "maintenance"];
 export declare const ProgramPhaseSchema: z.ZodEnum<{
     strength: "strength";

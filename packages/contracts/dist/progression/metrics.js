@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 import { MuscleGroupSchema } from "../domain/muscles.js";
 export const MetricGateRejectReasonSchema = z.enum([
     "reps_out_of_range",

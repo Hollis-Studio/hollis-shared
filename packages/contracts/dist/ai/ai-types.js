@@ -12,7 +12,7 @@
  *
  * deps: admin/admin-types | consumers: server/src/services/ai*, web-admin/services
  */
-import { z } from "zod";
+import * as z from "zod";
 import { AINoteCategorySchema, AINoteSourceTypeSchema } from "../domain/ai-notes.js";
 import { WorkoutSectionTypeSchema } from "../domain/workouts.js";
 import { CardioTargetsSchema, ProgressionModeSchema } from "../progression/program.js";

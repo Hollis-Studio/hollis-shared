@@ -6,7 +6,7 @@
  *
  * deps: zod | consumers: web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Zod schema for validating sleep metric fields before API submission.
  * Validates parsed numeric values (not raw strings from form inputs).

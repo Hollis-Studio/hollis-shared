@@ -6,7 +6,7 @@
  *
  * deps: zod | consumers: server, web-admin, mobile (read-only as needed)
  */
-import { z } from "zod";
+import * as z from "zod";
 import { baseDocumentSchema, isoTimestampSchema } from "./common.js";
 import { createPaginatedListSchema } from "./pagination.js";
 export const RECOVERY_SESSION_MODALITIES = [

@@ -20,7 +20,7 @@
 // Revisit: When adding new user domain concepts. Consider splitting into user/roles.ts,
 // user/profile.ts, user/notifications.ts, and user/onboarding.ts sub-modules.
 
-import { z } from "zod";
+import * as z from "zod";
 
 import {
     injurySchema,

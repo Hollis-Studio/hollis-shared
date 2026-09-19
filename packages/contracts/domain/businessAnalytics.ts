@@ -14,7 +14,7 @@
  * deps: zod | consumers: server/src/services/*, web-admin/services/*
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { emailSchema } from "../schemas/index.js";
 import { createPaginatedListSchema } from "./pagination.js";
 

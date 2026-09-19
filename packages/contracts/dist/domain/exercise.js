@@ -10,7 +10,7 @@
  *
  * deps: zod, common.ts | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 import { baseDocumentSchema, isoDateSchema, isoTimestampSchema, } from "./common.js";
 export { EQUIPMENT_TYPE, EQUIPMENT_TYPE_LABELS, EQUIPMENT_TYPES, EquipmentTypeSchema, } from "./equipment.js";
 export { MUSCLE_GROUP, MUSCLE_GROUP_LABELS, MUSCLE_GROUPS, MuscleGroupSchema, } from "./muscles.js";

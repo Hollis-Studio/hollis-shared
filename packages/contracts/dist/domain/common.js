@@ -7,7 +7,7 @@
  *
  * deps: zod | consumers: all domain modules
  */
-import { z } from "zod";
+import * as z from "zod";
 export const isoTimestampSchema = z
     .string()
     .datetime({ offset: true, message: "Must be ISO 8601 timestamp" });

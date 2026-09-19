@@ -13,7 +13,7 @@
  * deps: zod, domain/user | consumers: web-admin/*, server/src/routes/admin/consent.ts
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { UserTierSchema } from "../domain/user.js";
 
 // ============================================================================

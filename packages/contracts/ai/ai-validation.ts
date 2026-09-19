@@ -12,7 +12,7 @@
  * deps: zod, admin/admin-types, domain/training | consumers: server/src/services/ai*, web-admin/services
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { AI_NOTE_CATEGORIES, aiPermanentNoteSchema } from "../domain/ai-notes.js";
 import {
     STRATEGY_STATUS,

@@ -7,7 +7,7 @@
  *
  * deps: zod | consumers: all domain modules
  */
-import { z } from "zod";
+import * as z from "zod";
 /** ISO date string in format YYYY-MM-DD */
 export type IsoDateString = string;
 /** ISO 8601 timestamp string */

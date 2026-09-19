@@ -7,7 +7,7 @@
  *
  * deps: zod | consumers: web-public/app/products/page.tsx
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Product categories for the Hollis Health store.
  */

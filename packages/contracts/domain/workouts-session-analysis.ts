@@ -18,7 +18,7 @@
  * deps: zod
  * consumers: hollis-workouts server + mobile client
  */
-import { z } from 'zod';
+import * as z from 'zod';
 import { LocaleTagSchema } from './common.js';
 
 /** Bumped when the feature digest changes shape; stored rows carry their own. */

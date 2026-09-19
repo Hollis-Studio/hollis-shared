@@ -7,7 +7,7 @@
  *
  * deps: zod, ./subscription, ./payment, ./order | consumers: server/routes/account, mobile, web-public
  */
-import { z } from "zod";
+import * as z from "zod";
 import { type OrderContract } from "./order.js";
 import type { PaymentMethodContract } from "./payment.js";
 import { type SubscriptionContract } from "./subscription.js";

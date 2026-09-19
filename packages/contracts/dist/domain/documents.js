@@ -8,7 +8,7 @@
  *
  * deps: zod | consumers: server/src/services/*, src/features/documents/*, web-admin/services/*
  */
-import { z } from "zod";
+import * as z from "zod";
 // ============================================================================
 // DOCUMENT CATEGORIES (Domain Constants Pattern)
 // ============================================================================

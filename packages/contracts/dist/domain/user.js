@@ -18,7 +18,7 @@
 // by all three surfaces; decomposition must be coordinated across mobile, web-admin, and server.
 // Revisit: When adding new user domain concepts. Consider splitting into user/roles.ts,
 // user/profile.ts, user/notifications.ts, and user/onboarding.ts sub-modules.
-import { z } from "zod";
+import * as z from "zod";
 import { injurySchema, limitationSchema, medicalConditionSchema, medicationSchema, } from "./clinical.js";
 import offerSheetData from "./offer-sheet.json" with { type: "json" };
 // ============================================================================

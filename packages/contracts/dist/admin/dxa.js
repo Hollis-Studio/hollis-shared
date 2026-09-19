@@ -6,7 +6,7 @@
  *
  * deps: domain/common, domain/documents, domain/metric-codes | consumers: server DXA routes/services, web-admin DXA service/hooks
  */
-import { z } from "zod";
+import * as z from "zod";
 import { isoDateSchema } from "../domain/index.js";
 import { DOCUMENT_CATEGORY, DocumentCategorySchema, } from "../domain/documents.js";
 import { METRIC_BODY_FAT_PERCENTAGE, METRIC_BODY_WEIGHT, METRIC_LEAN_BODY_MASS, } from "../domain/metric-codes.js";

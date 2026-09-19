@@ -6,7 +6,7 @@
  *
  * deps: zod | consumers: health-progress.ts, health-metric-definitions.ts
  */
-import { z } from "zod";
+import * as z from "zod";
 // ============================================================================
 // HEALTH METRIC DIRECTION
 // ============================================================================

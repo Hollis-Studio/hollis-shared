@@ -8,7 +8,7 @@
  * deps: zod | consumers: server/routes/public.router.ts, web-public/components/sections/ContactForm.tsx
  */
 
-import { z } from "zod";
+import * as z from "zod";
 
 // ============================================================================
 // CONTACT FORM TYPES

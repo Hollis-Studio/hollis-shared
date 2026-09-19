@@ -10,7 +10,7 @@
  *
  * deps: zod, common.ts | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 export declare const JOURNAL_MOODS: readonly ["very_negative", "negative", "neutral", "positive", "very_positive"];
 export type JournalMood = z.infer<typeof JournalMoodSchema>;
 export declare const JournalMoodSchema: z.ZodEnum<{

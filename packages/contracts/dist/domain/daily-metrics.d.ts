@@ -10,7 +10,7 @@
  *
  * deps: zod, common.ts | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 /** Tuple of valid sleep data source values — matches Prisma SleepSource enum */
 export declare const SLEEP_SOURCES: readonly ["USER", "ADMIN_ENTERED", "WEARABLE"];
 export type SleepSource = z.infer<typeof SleepSourceSchema>;

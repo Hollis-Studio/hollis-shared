@@ -6,7 +6,7 @@
  *
  * deps: zod | consumers: web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 // ============================================================================
 // SLEEP ENTRY FORM SCHEMA (Web-admin entry form validation)
 // ============================================================================

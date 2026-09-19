@@ -11,7 +11,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 export { getDataPointWeight, SOURCE_WEIGHTS, VERIFICATION_MULTIPLIER } from "./health-progress.js";
 /**
  * @deprecated Post-migration, reference ranges live in MetricDefinition records.

@@ -7,7 +7,7 @@
  *
  * deps: zod | consumers: server/routes/public.router.ts, web-public/components/sections/ContactForm.tsx
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Types of contact form submissions.
  * - CONTACT: General inquiry or consultation request

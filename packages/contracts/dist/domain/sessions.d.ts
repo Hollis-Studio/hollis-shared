@@ -15,7 +15,7 @@
  *
  * deps: zod, user.ts | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 import { type AppointmentType } from "./appointments.js";
 import { type UserTier } from "./user.js";
 /**

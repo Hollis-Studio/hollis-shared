@@ -11,7 +11,7 @@
  * deps: zod, common.ts | consumers: all codebases
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { baseDocumentSchema, isoDateSchema } from "./common.js";
 import { createPaginatedListSchema } from "./pagination.js";
 

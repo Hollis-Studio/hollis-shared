@@ -6,7 +6,7 @@
  *
  * deps: zod | consumers: health-progress.ts, health-metric-definitions.ts
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Improvement direction for a metric:
  * - lower_better: Decreasing value = improvement (e.g., A1C, LDL, body fat)

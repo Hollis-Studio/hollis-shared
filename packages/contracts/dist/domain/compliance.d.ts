@@ -12,7 +12,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 import type { UserTier } from "./user.js";
 /**
  * Granular compliance status levels (replaces binary "compliant/non-compliant").

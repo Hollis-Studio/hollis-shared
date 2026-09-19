@@ -11,7 +11,7 @@
  * deps: zod | consumers: web-admin, server
  */
 
-import { z } from "zod";
+import * as z from "zod";
 
 // ============================================================================
 // ADMIN REALTIME NOTIFICATION KINDS

@@ -9,7 +9,7 @@
  * deps: zod | consumers: server
  */
 
-import { z } from "zod";
+import * as z from "zod";
 
 // ============================================================================
 // PHI RESOURCE TYPES

@@ -9,7 +9,7 @@
  *
  * deps: zod, domain types | consumers: web-admin/*, server/src/routes/admin/*
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Admin compliance status schema.
  */

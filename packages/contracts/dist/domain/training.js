@@ -11,7 +11,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 import { VolumeLevelSchema } from "../primitives/index.js";
 import { MetricCategorySchema, } from "./health-metric-types.js";
 import { MetricDefinitionSummarySchema } from "./metric-definition.js";

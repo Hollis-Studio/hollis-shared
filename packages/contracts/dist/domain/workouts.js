@@ -1,7 +1,7 @@
 /**
  * @ai-context Workout contracts | workout session, plan, and set schemas for training features
  */
-import { z } from "zod";
+import * as z from "zod";
 import { baseDocumentSchema, isoDateSchema, isoTimestampSchema } from "./common.js";
 import { WeightUnitSchema } from "./units.js";
 // ============================================================================

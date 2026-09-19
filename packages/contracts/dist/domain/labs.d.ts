@@ -9,7 +9,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 /** Tuple of valid lab result status values (source of truth). UPPER_CASE to match Prisma LabPanelStatus enum. */
 export declare const LAB_RESULT_STATUSES: readonly ["PRELIMINARY", "FINAL", "CORRECTED", "CANCELLED"];
 export type LabResultStatus = z.infer<typeof LabResultStatusSchema>;

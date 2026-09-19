@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 export declare const CardioIntervalSchema: z.ZodObject<{
     startTimeSec: z.ZodNumber;
     endTimeSec: z.ZodNumber;

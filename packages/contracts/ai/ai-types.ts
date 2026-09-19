@@ -13,7 +13,7 @@
  * deps: admin/admin-types | consumers: server/src/services/ai*, web-admin/services
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { AINoteCategorySchema, AINoteSourceTypeSchema } from "../domain/ai-notes.js";
 import { type StrategyGenerationPhase } from "../domain/training.js";
 import {

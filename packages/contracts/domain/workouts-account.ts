@@ -20,7 +20,7 @@
  * consumers: hollis-workouts server (`server/src/routes/users.ts`) + mobile
  *            client (`src/services/auth/identityApi.ts`)
  */
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Revision of the deletion acknowledgement shape. Bump when a field is added or

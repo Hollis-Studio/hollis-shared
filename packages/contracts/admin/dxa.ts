@@ -7,7 +7,7 @@
  * deps: domain/common, domain/documents, domain/metric-codes | consumers: server DXA routes/services, web-admin DXA service/hooks
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { isoDateSchema } from "../domain/index.js";
 import {
   DOCUMENT_CATEGORY,

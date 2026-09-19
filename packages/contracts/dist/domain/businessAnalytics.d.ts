@@ -13,7 +13,7 @@
  *
  * deps: zod | consumers: server/src/services/*, web-admin/services/*
  */
-import { z } from "zod";
+import * as z from "zod";
 /** Tuple of valid lab order status values (source of truth) */
 export declare const LAB_ORDER_STATUSES: readonly ["ORDERED", "KIT_SENT", "SAMPLE_RECEIVED", "RESULTS_PENDING", "RESULTS_REVIEWED", "RESULTS_PUBLISHED"];
 /** Zod schema for lab order status - derived from tuple */

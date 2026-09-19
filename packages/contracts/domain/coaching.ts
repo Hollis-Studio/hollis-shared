@@ -1,13 +1,18 @@
 /**
- * Life coaching contracts. These are intentionally separate from facility
+ * Health Coaching contracts. These are intentionally separate from facility
  * membership, appointments, and app-store purchase contracts.
  */
-import { z } from "zod";
+import * as z from "zod";
 import { createPaginatedListSchema } from "./pagination.js";
 import { ProgramSchema } from "../progression/program.js";
 import { CanonicalExerciseRecordSchema } from "./exercise-workouts.js";
 import { userIdSchema } from "../schemas/index.js";
 
+/**
+ * Wire/storage identifier for the Health Coaching service. The literal stays
+ * "life_coaching" on purpose: it is persisted on existing rows and sent by
+ * already-shipped clients. The 2026-09 rename is a display-name change only.
+ */
 export const COACHING_SERVICE = "life_coaching" as const;
 
 /**

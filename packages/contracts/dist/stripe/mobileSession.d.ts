@@ -6,7 +6,7 @@
  *
  * deps: zod | consumers: server routes, web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 export declare const MobileSessionBalanceSchema: z.ZodObject<{
     userId: z.ZodString;
     freeAllocationPerMonth: z.ZodNumber;

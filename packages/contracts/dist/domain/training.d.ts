@@ -11,7 +11,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 import { type MetricCategory } from "./health-metric-types.js";
 export declare const STRATEGY_TYPES: readonly ["LINEAR_PROGRESSION", "UNDULATING", "BLOCK", "MESOCYCLE", "DELOAD", "CUSTOM"];
 export declare const StrategyTypeSchema: z.ZodEnum<{

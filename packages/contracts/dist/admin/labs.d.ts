@@ -7,7 +7,7 @@
  *
  * deps: admin-types, domain/labs, domain/businessAnalytics | consumers: web-admin/services/admin/labsService.ts, server/src/routes/admin/labs/*
  */
-import { z } from "zod";
+import * as z from "zod";
 import type { LabMetricSearchResponseFromSchema, PendingMetricsResponseFromSchema } from "./admin-schemas.js";
 /** Parameters for semantic lab metric search */
 export declare const labMetricSearchParamsSchema: z.ZodObject<{

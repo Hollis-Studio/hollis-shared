@@ -6,7 +6,7 @@
  * deps: zod, ../domain/*, ../schemas/* | consumers: server/src/validation/*
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { createLabReportPayloadSchema } from "../admin/admin-schemas.js";
 import { AINoteCategorySchema } from "../domain/ai-notes.js";
 import {

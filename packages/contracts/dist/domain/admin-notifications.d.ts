@@ -10,7 +10,7 @@
  *
  * deps: zod | consumers: web-admin, server
  */
-import { z } from "zod";
+import * as z from "zod";
 export declare const ADMIN_REALTIME_NOTIFICATION_KINDS: readonly ["appointment-booked", "appointment-cancelled", "appointment-modified", "patient-assigned", "lab-review-needed", "new-registration"];
 export declare const adminRealtimeNotificationKindSchema: z.ZodEnum<{
     "appointment-booked": "appointment-booked";

@@ -12,7 +12,7 @@
  * - legal document sync scripts
  * - any future sales or ops tooling
  */
-import { z } from "zod";
+import * as z from "zod";
 import { type UserTier } from "./user.js";
 export declare const OfferSheetStatusSchema: z.ZodEnum<{
     active: "active";

@@ -8,7 +8,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Status of a registered patient account.
  * - pending: Barcode generated, waiting for patient to claim

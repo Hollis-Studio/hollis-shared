@@ -8,7 +8,7 @@
  *
  * deps: zod | consumers: server, web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Admin task types - specific scenarios requiring manual review/intervention.
  *

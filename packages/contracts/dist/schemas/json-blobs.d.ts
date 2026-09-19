@@ -36,7 +36,7 @@
  *
  * deps: zod | consumers: server validation, client validation, type safety
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Schema for generic string array fields.
  * Used by: DailyLog.supplements, JournalEntry.tags, ClinicalNote.tags, PatientDocument.tags

@@ -2,7 +2,7 @@
  * @ai-context Shared appointment configuration between frontend and backend
  * Single source of truth for appointment types, durations, and timezone settings
  */
-import { z } from 'zod';
+import * as z from 'zod';
 import { AppointmentType } from './appointments.js';
 /** Business timezone for Hollis Health (San Antonio, TX - Central Time) */
 export declare const BUSINESS_TIMEZONE = "America/Chicago";

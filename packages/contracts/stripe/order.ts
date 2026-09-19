@@ -4,7 +4,7 @@
  * deps: zod | consumers: server routes, web-admin, web-public
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { emailSchema } from "../schemas/index.js";
 
 // ============================================================================

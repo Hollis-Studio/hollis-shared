@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 export declare const MetricGateRejectReasonSchema: z.ZodEnum<{
     reps_out_of_range: "reps_out_of_range";
     rir_too_high: "rir_too_high";

@@ -7,7 +7,7 @@
  *
  * deps: admin-types, domain/labs, domain/businessAnalytics | consumers: web-admin/services/admin/labsService.ts, server/src/routes/admin/labs/*
  */
-import { z } from "zod";
+import * as z from "zod";
 import { isoDateSchema } from "../domain/index.js";
 import { LabOrderStatusSchema } from "../domain/businessAnalytics.js";
 import { LabMappingStatusSchema, LabMetricCategorySchema, LabMetricDirectionalitySchema, } from "../domain/labs.js";

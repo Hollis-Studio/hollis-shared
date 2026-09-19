@@ -6,7 +6,7 @@
  *
  * deps: zod, domain/user | consumers: server routes, web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 import { MASTER_OFFER_TERMS } from "../domain/offer-sheet.js";
 import { USER_TIERS } from "../domain/user.js";
 import { emailSchema } from "../schemas/index.js";

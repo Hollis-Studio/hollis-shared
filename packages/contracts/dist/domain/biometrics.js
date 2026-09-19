@@ -7,7 +7,7 @@
  *
  * deps: zod, ./clinical, ./common, ./metric-definition | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 import { BiometricSourceSchema } from "./clinical.js";
 import { baseDocumentSchema, isoDateSchema } from "./common.js";
 import { MetricDefinitionSummarySchema } from "./metric-definition.js";

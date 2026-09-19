@@ -1,7 +1,7 @@
 /**
  * @ai-context Shared pagination types for consistent list responses
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Standard pagination parameters accepted by list endpoints.
  */

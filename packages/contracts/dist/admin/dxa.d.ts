@@ -6,7 +6,7 @@
  *
  * deps: domain/common, domain/documents, domain/metric-codes | consumers: server DXA routes/services, web-admin DXA service/hooks
  */
-import { z } from "zod";
+import * as z from "zod";
 export declare const DXA_TRACKED_METRICS: readonly ["body_weight", "body_fat_percentage", "lean_body_mass"];
 export declare const dxaTrackedMetricSchema: z.ZodEnum<{
     body_weight: "body_weight";

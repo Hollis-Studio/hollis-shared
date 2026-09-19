@@ -7,7 +7,7 @@
  * deps: zod, domain/equipment, domain/muscles, domain/units
  * consumers: hollis-workouts server + mobile client
  */
-import { z } from 'zod';
+import * as z from 'zod';
 export declare const WORKOUTS_TRACKING_MODES: readonly ["weightlifting", "cardio", "stretching"];
 /** @deprecated Use WorkoutsModalitySchema */
 export declare const WorkoutsTrackingModeSchema: z.ZodEnum<{

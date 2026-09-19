@@ -18,7 +18,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 export declare const SSE_RESOURCE_TYPES: readonly ["nutrition", "daily-metrics", "daily-summary", "biometrics", "journal", "appointments", "sessions", "user-account", "messages", "exercise-performance", "labs", "plans"];
 export type SSEResourceType = (typeof SSE_RESOURCE_TYPES)[number];
 /** Centralized resource type constants for equality checks */

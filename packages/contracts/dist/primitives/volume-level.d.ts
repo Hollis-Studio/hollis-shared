@@ -8,7 +8,7 @@
  *
  * deps: zod only | consumers: admin/admin-types, domain/training, ai/ai-types
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Volume levels for training phases.
  * Represents training intensity/volume in a periodization scheme.

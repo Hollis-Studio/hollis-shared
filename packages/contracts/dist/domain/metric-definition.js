@@ -7,7 +7,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 import { METRIC_CATEGORIES, MetricCategorySchema, TrendDirectionSchema } from "./health-metric-types.js";
 // Re-export MetricCategory types (canonical source: health-metric-types.ts)
 export { METRIC_CATEGORIES, MetricCategorySchema };

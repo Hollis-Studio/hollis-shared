@@ -9,7 +9,7 @@
  * deps: zod
  * consumers: hollis-workouts server + mobile client
  */
-import { z } from 'zod';
+import * as z from 'zod';
 
 export const InjuryRecordBodySchema = z.object({
   muscleGroup: z.string().min(1).max(64),

@@ -3,7 +3,7 @@
  *
  * deps: zod | consumers: server routes, web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 /** @deprecated Use SetupIntent (derived from SetupIntentSchema) instead */
 export type SetupIntentContract = SetupIntent;
 export declare const SetupIntentSchema: z.ZodObject<{

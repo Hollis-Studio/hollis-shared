@@ -8,7 +8,7 @@
  *
  * deps: zod | consumers: server/src/routes/admin/marketing, web-admin/services/marketing
  */
-import { z } from "zod";
+import * as z from "zod";
 import { createPaginatedListSchema } from "./pagination.js";
 // ============================================================================
 // Marketing Image Record

@@ -11,7 +11,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * OAuth provider types supported for social sign-in.
  * Matches the Prisma OAuthProviderType enum (uppercase values).

@@ -26,7 +26,7 @@
  *
  * deps: zod | consumers: contracts/*
  */
-import { z } from 'zod';
+import * as z from 'zod';
 /**
  * A non-empty readonly tuple of strings, as required by z.enum().
  */

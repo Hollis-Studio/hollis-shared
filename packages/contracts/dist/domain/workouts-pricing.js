@@ -17,7 +17,7 @@
  * deps: zod
  * consumers: hollis-workouts server + mobile client
  */
-import { z } from 'zod';
+import * as z from 'zod';
 // --- LifetimeAvailabilityResponseSchema ---
 export const LifetimeAvailabilityResponseSchema = z.object({
     /** Non-refunded production lifetime purchases recorded so far. */

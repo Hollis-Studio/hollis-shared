@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Body weight validation schema (kilograms).
  * Physiologically reasonable clinical bounds: 20–500 kg.

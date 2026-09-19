@@ -7,7 +7,7 @@
  *
  * deps: zod | consumers: server, web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Billing account status - indicates payment health and collection stage.
  * - GOOD_STANDING: Account is current, no payment issues

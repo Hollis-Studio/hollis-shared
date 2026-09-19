@@ -13,7 +13,7 @@
  * deps: zod | consumers: all codebases
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import type { UserTier } from "./user.js";
 import { UserTierSchema } from "./user.js";
 

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 export declare const MUSCLE_GROUPS: readonly ["chest", "back", "shoulders", "biceps", "triceps", "forearms", "quadriceps", "hamstrings", "glutes", "calves", "core", "traps", "lats", "anterior_deltoids", "lateral_deltoids", "posterior_deltoids", "hip_flexors", "adductors", "abductors", "neck", "obliques", "lower_back", "upper_back"];
 export declare const MuscleGroupSchema: z.ZodEnum<{
     chest: "chest";

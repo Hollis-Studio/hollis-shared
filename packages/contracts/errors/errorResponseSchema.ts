@@ -11,7 +11,7 @@
  * deps: zod | consumers: server/src/lib/AppError, server/src/middleware/errorHandler, src/services/apiClient
  */
 
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * Canonical API error response schema.

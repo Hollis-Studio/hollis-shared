@@ -19,7 +19,7 @@
  * deps: zod | consumers: all codebases
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { baseDocumentSchema, isoDateSchema } from "../domain/common.js";
 import { BiologicalSexSchema, PrimaryGoalSchema } from "../domain/user.js";
 import { passwordSchema } from "../password/index.js";

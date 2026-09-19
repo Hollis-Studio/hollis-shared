@@ -10,7 +10,7 @@
  * deps: zod | consumers: all codebases
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { LAB_ORDER_STATUS, LabOrderStatusSchema } from "./businessAnalytics.js";
 
 // ============================================================================

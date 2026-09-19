@@ -8,7 +8,7 @@
  * See: server/src/lib/tenantContext.ts for enforcement mechanism.
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { SubscriptionStatusSchema } from "../stripe/subscription.js";
 
 // ============================================================================

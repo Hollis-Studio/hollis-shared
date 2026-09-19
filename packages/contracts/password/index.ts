@@ -18,7 +18,7 @@
  * deps: zod, zxcvbn (lazy loaded) | consumers: all codebases
  */
 
-import { z } from "zod";
+import * as z from "zod";
 
 // ============================================================================
 // PASSWORD POLICY CONSTANTS

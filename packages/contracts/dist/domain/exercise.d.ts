@@ -10,7 +10,7 @@
  *
  * deps: zod, common.ts | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 export { EQUIPMENT_TYPE, EQUIPMENT_TYPE_LABELS, EQUIPMENT_TYPES, EquipmentTypeSchema, type EquipmentType, } from "./equipment.js";
 export { MUSCLE_GROUP, MUSCLE_GROUP_LABELS, MUSCLE_GROUPS, MuscleGroupSchema, type MuscleGroup, } from "./muscles.js";
 export declare const EXERCISE_CATEGORIES: readonly ["COMPOUND", "ISOLATION", "CARDIO", "MOBILITY", "PLYOMETRIC"];

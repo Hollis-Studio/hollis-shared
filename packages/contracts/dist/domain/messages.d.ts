@@ -11,7 +11,7 @@
  *
  * deps: zod, user.ts | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 import type { MessagingRecipientRole } from "./user.js";
 /** Canonical max length for message content — all surfaces MUST use this. */
 export declare const MESSAGE_MAX_LENGTH: 5000;

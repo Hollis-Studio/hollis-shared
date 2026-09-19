@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 import { CardioSessionDataSchema } from "./cardio-session.js";
 import { MuscleGroupSchema } from "./muscles.js";

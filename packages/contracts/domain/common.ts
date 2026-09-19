@@ -7,7 +7,7 @@
  *
  * deps: zod | consumers: all domain modules
  */
-import { z } from "zod";
+import * as z from "zod";
 
 // ============================================================================
 // DATE/TIME TYPES

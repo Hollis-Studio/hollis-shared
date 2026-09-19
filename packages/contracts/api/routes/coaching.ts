@@ -1,4 +1,4 @@
-/** Typed API paths for the life-coaching service. */
+/** Typed API paths for the Health Coaching service. */
 export const COACHING_ROUTES = {
   CAPACITY: "/api/coaching/capacity",
   LEADS: "/api/coaching/leads",

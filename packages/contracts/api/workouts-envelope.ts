@@ -32,7 +32,7 @@
  * unexpected body still yields a usable error code rather than a parse failure.
  * Tightening it to this schema would make the client stricter than the servers.
  */
-import { z } from "zod";
+import * as z from "zod";
 
 /**
  * The `err` member of a Workouts failure envelope. `details` is the optional

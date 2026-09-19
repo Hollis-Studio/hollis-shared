@@ -12,7 +12,7 @@
  * deps: zod | consumers: all codebases
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { BiometricSourceSchema } from "./clinical.js";
 import { dailyMetricsSchema } from "./daily-metrics.js";
 import { createPaginatedListSchema } from "./pagination.js";

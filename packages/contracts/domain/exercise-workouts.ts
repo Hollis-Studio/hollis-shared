@@ -7,7 +7,7 @@
  * deps: zod, domain/equipment, domain/muscles, domain/units
  * consumers: hollis-workouts server + mobile client
  */
-import { z } from 'zod';
+import * as z from 'zod';
 import { EquipmentTypeSchema } from './equipment.js';
 import { MuscleGroupSchema } from './muscles.js';
 import { WeightModeSchema } from './units.js';

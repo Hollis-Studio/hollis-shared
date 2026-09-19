@@ -9,7 +9,7 @@
  *
  * deps: zod | consumers: server, web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 import { emailSchema } from "../schemas/index.js";
 import { UserRoleSchema, UserTierSchema } from "./user.js";
 // ============================================================================

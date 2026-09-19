@@ -1,7 +1,7 @@
 /**
  * @ai-context Smart Assist Notes contracts | workout session notes, permanent notes, and aggregated context schemas
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Valid AI note category values for permanent user context.
  */

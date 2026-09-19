@@ -12,7 +12,7 @@
  *
  * deps: admin/admin-types | consumers: server/src/services/ai*, web-admin/services
  */
-import { z } from "zod";
+import * as z from "zod";
 import { type StrategyGenerationPhase } from "../domain/training.js";
 import { type StrategyGenerationActivity as _StrategyGenerationActivity, type TrainingPhaseDraft as _TrainingPhaseDraft, type StrategyDraftContract, type StrategyGoalDraftContract } from "../domain/training-strategy.js";
 import { nutritionPlanGenerationResultSchema } from "./ai-validation.js";

@@ -5,7 +5,7 @@
  * Workouts service delivers it as an immutable snapshot beside a normal
  * Program row. Coaching is one source of an assigned program, not its owner.
  */
-import { z } from "zod";
+import * as z from "zod";
 import { CanonicalExerciseRecordSchema } from "./exercise-workouts.js";
 import {
   CoachingAssignmentStatusSchema,

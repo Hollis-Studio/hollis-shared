@@ -7,7 +7,7 @@
  *
  * deps: zod, ./subscription, ./payment, ./order | consumers: server/routes/account, mobile, web-public
  */
-import { z } from "zod";
+import * as z from "zod";
 import { USER_TIERS } from "../domain/user.js";
 import { emailSchema } from "../schemas/index.js";
 import { FulfillmentStatusSchema, OrderItemSchema, OrderPaymentStatusSchema, ShippingAddressSchema, } from "./order.js";

@@ -43,7 +43,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 import { type BiometricSource } from "./clinical.js";
 import { type HealthMetricDirection } from "./health-metric-types.js";
 export declare const healthProgressQuerySchema: z.ZodObject<{

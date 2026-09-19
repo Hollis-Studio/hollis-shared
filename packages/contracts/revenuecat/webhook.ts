@@ -14,7 +14,7 @@
  * deps: zod
  * consumers: hollis-workouts server (POST /v1/webhooks/revenuecat)
  */
-import { z } from 'zod';
+import * as z from 'zod';
 
 /**
  * Event types this suite's receivers act on today. Deliberately NOT a

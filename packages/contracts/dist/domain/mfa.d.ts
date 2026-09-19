@@ -9,7 +9,7 @@
  *
  * deps: zod | consumers: server, web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Length of TOTP codes from authenticator apps (6 digits)
  */

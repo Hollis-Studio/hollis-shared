@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 export declare const BaselineEntrySchema: z.ZodObject<{
     sessionId: z.ZodString;
     date: z.ZodCoercedDate<unknown>;

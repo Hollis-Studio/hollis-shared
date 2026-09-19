@@ -3,7 +3,7 @@
  *
  * deps: zod | consumers: server routes, web-admin, web-public
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Stripe Checkout Session payment_status values.
  * @see https://stripe.com/docs/api/checkout/sessions/object#checkout_session_object-payment_status

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 import { ProgressionEngineStateSchema } from "./engine.js";
 export const BaselineEntrySchema = z.object({
     sessionId: z.string().min(1),

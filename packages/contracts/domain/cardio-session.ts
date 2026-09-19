@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 export const CardioIntervalSchema = z.object({
   startTimeSec: z.number().min(0),

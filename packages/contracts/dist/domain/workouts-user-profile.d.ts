@@ -6,7 +6,7 @@
  * deps: zod
  * consumers: hollis-workouts server + mobile client
  */
-import { z } from 'zod';
+import * as z from 'zod';
 export declare const UserEntitlementsSchema: z.ZodObject<{
     aiTier: z.ZodOptional<z.ZodEnum<{
         paid: "paid";
@@ -341,9 +341,9 @@ export declare const WorkoutsUserProfileSchema: z.ZodObject<{
 }, z.core.$strip>;
 export type WorkoutsUserProfile = z.infer<typeof WorkoutsUserProfileSchema>;
 export declare const WorkoutsUserProfilePutBodySchema: z.ZodObject<{
+    email: z.ZodOptional<z.ZodString>;
     createdAt: z.ZodCoercedDate<unknown>;
     userId: z.ZodOptional<z.ZodString>;
-    email: z.ZodOptional<z.ZodString>;
     displayName: z.ZodString;
     settings: z.ZodObject<{
         defaultWeightUnit: z.ZodEnum<{

@@ -8,7 +8,7 @@
  *
  * deps: zod | consumers: server/src/services/*, src/features/documents/*, web-admin/services/*
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Canonical document category values (source of truth).
  * These are used as tags when uploading and filtering documents.

@@ -6,7 +6,7 @@
  *
  * deps: zod | consumers: server, web-admin, mobile (read-only as needed)
  */
-import { z } from "zod";
+import * as z from "zod";
 export declare const RECOVERY_SESSION_MODALITIES: readonly ["SAUNA", "ICE_BATH", "RED_LIGHT_THERAPY", "CRYOTHERAPY", "BREATHWORK", "MOBILITY", "OTHER"];
 export declare const RecoverySessionModalitySchema: z.ZodEnum<{
     OTHER: "OTHER";

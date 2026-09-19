@@ -7,7 +7,7 @@
  *
  * deps: zod, ./clinical, ./common, ./metric-definition | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 import { type BiometricSource } from "./clinical.js";
 export declare const BiometricEntryContractSchema: z.ZodObject<{
     id: z.ZodString;

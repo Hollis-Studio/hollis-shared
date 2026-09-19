@@ -7,7 +7,7 @@
  *
  * deps: zod | consumers: server, web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 import { createPaginatedListSchema } from "./pagination.js";
 // ============================================================================
 // BILLING STATUS

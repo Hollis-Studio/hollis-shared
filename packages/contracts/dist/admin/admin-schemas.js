@@ -9,7 +9,7 @@
  *
  * deps: zod, domain types | consumers: web-admin/*, server/src/routes/admin/*
  */
-import { z } from "zod";
+import * as z from "zod";
 import { AccountStatusSchema, ActivityLevelSchema, aiPermanentNoteSchema, SettableAccountStatusSchema, BiologicalSexSchema, FitnessExperienceSchema, GoalDataSourceSchema, LegacyGoalDataSourceSchema, LeadStageSchema, PregnancyStatusSchema, PrimaryGoalSchema, RegistrationStatusSchema, SponsoredPanelStatusSchema, StrategyStatusSchema, StrategyTypeSchema, UserRoleSchema, UserTierSchema, isoDateSchema, isoTimestampSchema, normalizeGoalDataSource, workoutSessionNoteSchema, } from "../domain/index.js";
 import { AdminTaskPrioritySchema, AdminTaskStatusSchema, AdminTaskTypeSchema, } from "../domain/admin-tasks.js";
 import { InjuryRecoveryStatusSchema, LimitationSeveritySchema, MedicalConditionStatusSchema, patientIntakeV1BodySchema, } from "../domain/clinical.js";

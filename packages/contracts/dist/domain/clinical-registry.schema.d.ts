@@ -16,7 +16,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Clinical metric categories for classification and grouping.
  * These align with the existing HEALTH_METRIC_CATEGORIES in training.ts.

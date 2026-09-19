@@ -36,7 +36,7 @@
  *
  * deps: zod | consumers: server validation, client validation, type safety
  */
-import { z } from "zod";
+import * as z from "zod";
 // ============================================================================
 // STRING ARRAY SCHEMAS (Simple JSON Arrays)
 // ============================================================================

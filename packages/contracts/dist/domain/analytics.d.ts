@@ -14,7 +14,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Universal trend direction for metrics.
  * Used across various analytics visualizations.

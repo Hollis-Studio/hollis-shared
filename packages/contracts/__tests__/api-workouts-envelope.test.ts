@@ -11,7 +11,7 @@
  * are ever accidentally unified, or if the Workouts shape drifts.
  */
 
-import { z } from 'zod';
+import * as z from 'zod';
 
 import { unwrapEnvelope } from '../api/response';
 import {

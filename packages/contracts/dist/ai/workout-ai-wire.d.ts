@@ -23,7 +23,7 @@
  *
  * deps: zod, domain/muscles | consumers: hollis-workouts server + mobile client
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * The locale a prose-returning AI request wants its user-facing copy written
  * in (hollis-workouts#99). Optional on every request body that carries it: an

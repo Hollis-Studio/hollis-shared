@@ -8,7 +8,7 @@
  *
  * deps: zod | consumers: server
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Types of PHI resources that can be accessed
  */

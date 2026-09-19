@@ -37,7 +37,7 @@
  *            `server/src/routes/programRotationAdvance.ts`) + mobile client
  *            (`src/schemas/programRotation.ts`, `src/state/programRotation.ts`)
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Revision of the rotation document. Bump when an entry field is added or its
  * meaning changes; the server refuses a body whose version it does not know

@@ -6,7 +6,7 @@
  *
  * deps: zod | consumers: all codebases (mobile, web-admin, server)
  */
-import { z } from "zod";
+import * as z from "zod";
 // ============================================================================
 // UNIT SYSTEM PREFERENCES
 // ============================================================================

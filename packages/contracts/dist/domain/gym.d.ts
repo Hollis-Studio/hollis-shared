@@ -5,7 +5,7 @@
  * deps: zod, domain/equipment, domain/units
  * consumers: hollis-workouts server + mobile client
  */
-import { z } from 'zod';
+import * as z from 'zod';
 export declare const EXERCISE_SELECTION_MODES: readonly ["equipment_based", "exercise"];
 export declare const ExerciseSelectionModeSchema: z.ZodEnum<{
     equipment_based: "equipment_based";

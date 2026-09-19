@@ -13,7 +13,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Valid meal type values for nutrition logging.
  */

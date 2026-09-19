@@ -6,7 +6,7 @@
  *
  * deps: zod, domain/user | consumers: server routes, web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 export declare const SUBSCRIPTION_STATUSES: readonly ["PENDING", "TRIAL", "ACTIVE", "PAUSED", "PAST_DUE", "CANCELED", "TERMINATED", "SUSPENDED"];
 export declare const SubscriptionStatusSchema: z.ZodEnum<{
     ACTIVE: "ACTIVE";

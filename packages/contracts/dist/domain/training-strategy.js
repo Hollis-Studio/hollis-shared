@@ -17,7 +17,7 @@
  * deps: zod, ./common, ./training, ../primitives, ./goal-metrics
  * consumers: mobile app, server, web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 import { VolumeLevelSchema } from "../primitives/index.js";
 import { baseDocumentSchema, isoDateSchema } from "./common.js";
 import { MetricDefinitionSummarySchema } from "./metric-definition.js";

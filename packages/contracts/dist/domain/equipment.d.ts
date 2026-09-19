@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 export declare const EQUIPMENT_TYPES: readonly ["barbell", "dumbbell", "kettlebell", "cable", "machine", "bodyweight", "resistance_band", "squat_rack", "bench", "pull_up_bar", "plate_loaded_machine", "smith_machine", "treadmill", "stationary_bike", "rowing_machine", "elliptical", "stairmaster", "jump_rope", "none", "other"];
 export declare const EquipmentTypeSchema: z.ZodEnum<{
     other: "other";

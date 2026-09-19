@@ -9,7 +9,7 @@
  * deps: zod
  * consumers: hollis-workouts server + mobile client
  */
-import { z } from 'zod';
+import * as z from 'zod';
 export declare const WeekDocumentBodySchema: z.ZodObject<{
     deterministicSnapshot: z.ZodOptional<z.ZodUnknown>;
     aiRetrospective: z.ZodOptional<z.ZodUnknown>;

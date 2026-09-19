@@ -14,7 +14,7 @@
  * deps: zod | consumers: all codebases
  */
 
-import { z } from "zod";
+import * as z from "zod";
 import { foodLogEntrySchema } from "../schemas/json-blobs.js";
 import { isoDateSchema } from "./common.js";
 import { createPaginatedListSchema } from "./pagination.js";

@@ -11,7 +11,7 @@
  *
  * deps: zod, admin/admin-types, domain/training | consumers: server/src/services/ai*, web-admin/services
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * AI note categories for validation (alias for backward compatibility)
  * Note: AI_NOTE_CATEGORIES and AI_NOTE_CATEGORY are already exported via domain module

@@ -6,7 +6,7 @@
  * deps: zod
  * consumers: hollis-workouts server + mobile client
  */
-import { z } from 'zod';
+import * as z from 'zod';
 export declare const AI_AUDIT_LOG_SURFACES: readonly ["sunday_review_phase_outlook", "plateau_coaching", "program_critique", "program_edit", "goal_reasoning", "pr_celebration", "anomaly_label", "rest_day_pulse", "smart_program_builder", "smart_gym_setup", "sunday_review_freeform"];
 export type AiAuditLogSurface = (typeof AI_AUDIT_LOG_SURFACES)[number];
 export declare const AiAuditLogSurfaceSchema: z.ZodEnum<{

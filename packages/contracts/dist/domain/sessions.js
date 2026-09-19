@@ -15,7 +15,7 @@
  *
  * deps: zod, user.ts | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 import { baseDocumentSchema, isoTimestampSchema } from "./common.js";
 import { USER_TIERS } from "./user.js";
 // ============================================================================

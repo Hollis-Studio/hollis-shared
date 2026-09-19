@@ -13,7 +13,7 @@
  * - any future sales or ops tooling
  */
 
-import { z } from "zod";
+import * as z from "zod";
 
 import offerSheetData from "./offer-sheet.json" with { type: "json" };
 import { USER_TIER, type UserTier } from "./user.js";

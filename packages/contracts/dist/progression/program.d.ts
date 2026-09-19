@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 export declare const SetTypeSchema: z.ZodEnum<{
     normal: "normal";
     warmup: "warmup";

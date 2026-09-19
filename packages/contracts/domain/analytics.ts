@@ -15,7 +15,7 @@
  * deps: zod | consumers: all codebases
  */
 
-import { z } from "zod";
+import * as z from "zod";
 
 // ============================================================================
 // TREND INDICATOR

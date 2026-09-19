@@ -3,7 +3,7 @@
  *
  * deps: zod | consumers: server routes, web-admin
  */
-import { z } from "zod";
+import * as z from "zod";
 export const SetupIntentSchema = z.object({
     clientSecret: z.string(),
     customerId: z.string(),

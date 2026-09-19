@@ -18,7 +18,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 import { baseDocumentSchema } from "../domain/common.js";
 export * from "./json-blobs.js";
 export * from "./weight.js";

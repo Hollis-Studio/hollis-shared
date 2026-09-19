@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod";
 
 export const SetTypeSchema = z.enum(["normal", "warmup", "drop_set", "rest_pause", "superset"]);
 export type SetType = z.infer<typeof SetTypeSchema>;

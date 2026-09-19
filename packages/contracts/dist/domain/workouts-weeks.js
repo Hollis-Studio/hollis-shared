@@ -9,7 +9,7 @@
  * deps: zod
  * consumers: hollis-workouts server + mobile client
  */
-import { z } from 'zod';
+import * as z from 'zod';
 export const WeekDocumentBodySchema = z.object({
     deterministicSnapshot: z.unknown().optional(),
     aiRetrospective: z.unknown().optional(),

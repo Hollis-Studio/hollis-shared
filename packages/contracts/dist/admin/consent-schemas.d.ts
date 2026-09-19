@@ -12,7 +12,7 @@
  *
  * deps: zod, domain/user | consumers: web-admin/*, server/src/routes/admin/consent.ts
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * All legal document types that may be signed during the onboarding flow.
  * Maps 1:1 to the ConsentDocumentType Prisma enum.

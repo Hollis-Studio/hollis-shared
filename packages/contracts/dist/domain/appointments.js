@@ -10,7 +10,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 import { baseDocumentSchema, isoTimestampSchema } from "./common.js";
 import { createPaginatedListSchema } from "./pagination.js";
 import { USER_ROLES } from "./user.js";

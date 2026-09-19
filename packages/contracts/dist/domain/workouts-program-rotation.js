@@ -37,7 +37,7 @@
  *            `server/src/routes/programRotationAdvance.ts`) + mobile client
  *            (`src/schemas/programRotation.ts`, `src/state/programRotation.ts`)
  */
-import { z } from "zod";
+import * as z from "zod";
 import { isoDateSchema } from "./common.js";
 /**
  * Revision of the rotation document. Bump when an entry field is added or its

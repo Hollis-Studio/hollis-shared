@@ -12,7 +12,7 @@
  * deps: zod, domain/exercise-workouts
  * consumers: hollis-workouts server + mobile client
  */
-import { z } from 'zod';
+import * as z from 'zod';
 import {
   CanonicalExerciseRecordSchema,
   ExerciseModerationStatusSchema,

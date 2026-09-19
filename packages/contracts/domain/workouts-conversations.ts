@@ -15,7 +15,7 @@
  * deps: zod
  * consumers: hollis-workouts server + mobile client
  */
-import { z } from 'zod';
+import * as z from 'zod';
 import { LocaleTagSchema } from './common.js';
 
 /** ISO week key, e.g. "2026-W34". Matches the weeks/rolling-summary contracts. */

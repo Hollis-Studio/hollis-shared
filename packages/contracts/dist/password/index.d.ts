@@ -17,7 +17,7 @@
  *
  * deps: zod, zxcvbn (lazy loaded) | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 /**
  * Centralized password policy configuration.
  * Change these values to update policy across all codebases.

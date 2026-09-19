@@ -5,7 +5,7 @@
  * deps: zod
  * consumers: hollis-workouts server + mobile client
  */
-import { z } from 'zod';
+import * as z from 'zod';
 export const ConversationRollingSummaryEntrySchema = z.object({
     weekIso: z.string().regex(/^\d{4}-W(?:0[1-9]|[1-4]\d|5[0-3])$/),
     summary: z.string(),

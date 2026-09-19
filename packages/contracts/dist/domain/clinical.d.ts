@@ -9,7 +9,7 @@
  *
  * deps: zod | consumers: all codebases
  */
-import { z } from "zod";
+import * as z from "zod";
 export declare const LIMITATION_SEVERITIES: readonly ["mild", "moderate", "severe"];
 export declare const LimitationSeveritySchema: z.ZodEnum<{
     moderate: "moderate";
