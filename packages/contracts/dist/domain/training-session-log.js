@@ -71,6 +71,8 @@ export const SetTargetSnapshotSchema = z.object({
     /** Original authoring basis, before cross-exercise fatigue and grid rounding. */
     fatigueBasis: z.object({
         schemaVersion: z.literal(1).optional(),
+        /** Capacity context at authoring; absent means a fresh, unfatigued basis. */
+        capacityMultiplier: z.number().finite().min(0.5).max(1).optional(),
         weightKg: z.number().finite().min(0),
         reps: z.number().int().min(0),
         appliedWeightKg: z.number().finite().min(0),

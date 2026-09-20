@@ -56,7 +56,7 @@ describe("progression correction and target persistence", () => {
   });
   it("round trips the exact fatigue authoring basis and rejects nonfinite loads", async () => {
     const { SetTargetSnapshotSchema } = await import("../domain/training-session-log.js");
-    const fatigueBasis = {schemaVersion: 1, weightKg: 100, reps: 10, appliedWeightKg: 90, appliedReps: 10};
+    const fatigueBasis = {schemaVersion: 1, capacityMultiplier: 0.8, weightKg: 100, reps: 10, appliedWeightKg: 90, appliedReps: 10};
     const snapshot = {setNumber: 1, weightKg: 90, reps: 10, rir: 2, isWarmup: false, fatigueBasis};
     expect(SetTargetSnapshotSchema.parse(JSON.parse(JSON.stringify(snapshot))).fatigueBasis).toEqual(fatigueBasis);
     expect(SetTargetSnapshotSchema.safeParse({...snapshot, fatigueBasis: {...fatigueBasis, weightKg: Infinity}}).success).toBe(false);
