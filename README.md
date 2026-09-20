@@ -9,20 +9,34 @@ It is also the canonical home for **suite-wide docs** — vision, architecture, 
 - **Engineering TODO:** [`docs/TODO.md`](./docs/TODO.md)
 
 
-Canonical consumption is through GitHub Packages under the Hollis Studio org. Current published versions:
+Canonical consumption is through GitHub Packages under the Hollis Studio org.
 
-```json
-{
-  "dependencies": {
-    "@hollis-studio/contracts": "0.2.0-alpha.42",
-    "@hollis-studio/design-tokens": "0.2.0-alpha.2",
-    "@hollis-studio/utils": "0.1.0-alpha.1",
-    "@hollis-studio/auth-client": "0.1.0-alpha.3"
-  }
-}
+**This README does not list current versions on purpose** — a hardcoded version
+block lived here and drifted three times (alpha.12, then alpha.42, while later
+releases were live). Read the registry instead:
+
+```sh
+# Release channel for all four packages is the `alpha` dist-tag:
+npm run npm:agent -- view @hollis-studio/contracts dist-tags
+
+# Works for every package, including the three that have NO dist-tags at all
+# (design-tokens, utils, auth-client) and therefore print nothing from `npm view`:
+gh api /orgs/Hollis-Studio/packages/npm/contracts/versions --jq '.[0].name'
+gh api /orgs/Hollis-Studio/packages/npm/design-tokens/versions --jq '.[0].name'
+gh api /orgs/Hollis-Studio/packages/npm/utils/versions --jq '.[0].name'
+gh api /orgs/Hollis-Studio/packages/npm/auth-client/versions --jq '.[0].name'
 ```
 
-> This block drifts — treat the [GitHub Packages page](https://github.com/orgs/Hollis-Studio/packages) as the source of truth, and bump consumers with `npm install @hollis-studio/<pkg>@<version>` rather than hand-editing package.json/package-lock (see `docs/TODO.md`).
+> ⚠️ **Never install without an exact version.** The `contracts` `latest`
+> dist-tag is stuck on an old alpha, so a bare
+> `npm install @hollis-studio/contracts` pulls stale legal-document versions and
+> the old studio address; the other three packages have no dist-tags, so a bare
+> install cannot resolve at all. Bump consumers with
+> `npm install @hollis-studio/<pkg>@<exact-version>` rather than hand-editing
+> `package.json`/`package-lock.json` (see [`docs/TODO.md`](./docs/TODO.md)), and
+> confirm afterwards with `npm ls @hollis-studio/<pkg>`. What is published and
+> what a consumer has installed are separate facts — `docs/README.md` tracks
+> both.
 
 Consumers need an `.npmrc` with the `@hollis-studio` registry and an install token:
 

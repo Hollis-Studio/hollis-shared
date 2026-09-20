@@ -56,30 +56,65 @@ throughout Section 3.
 | `SENTRY_DSN` | Warns but does not crash if absent in prod |
 | `JWT_PRIVATE_KEY`, `JWT_KEY_ID`, etc. | Pre-existing; no change |
 
-### Still OPEN — owners + next steps
+### ✅ SHIPPED — closed since this table was written (verified live 2026-09-20)
+
+Seven of the original "Still OPEN" rows were infrastructure items that the
+Identity deployment closed. They are listed here rather than deleted so nobody
+re-opens them.
+
+| Item | Evidence |
+|---|---|
+| Run `prisma migrate deploy` against target DB | `hollis-identity/prisma/migrations/` holds four migrations (`20260519000000_initial` → `20260812000000_shared_rate_limit_counter`); the service serves live traffic against the shared RDS instance, which it could not do unapplied. |
+| CI/CD: no `.github/workflows/` directory | `hollis-identity/.github/workflows/` now holds `deploy.yml`, `checks.yml` and `ci.yml`. |
+| Terraform module + ECS service for identity-api | ECS service `hollis-identity-prod` in cluster `hollis-prod-cluster`, 1/1 running on task definition `:22`, managed from `hollis-identity/infrastructure`. |
+| DNS record `identity.hollis.health` | Resolves to the `hollis-prod-alb` addresses; ALB 443 listener rule priority 150 routes the host to target group `hollis-identity-prod` (port 4001). |
+| ACM cert for `identity.hollis.health` | `https://identity.hollis.health/health` returns **200 with a clean TLS verification**. |
+| SES domain verification for `hollis.health` (sandbox exit) | `aws sesv2 get-account` → `ProductionAccessEnabled: true`, 50,000/day quota. Domain identity verified, DKIM `SUCCESS` and signing, custom MAIL FROM `mail.hollis.health` `SUCCESS`. |
+| ECR image push pipeline | `deploy.yml` builds and pushes; task definition `:22` (registered 2026-09-19) runs a commit-SHA-tagged image from ECR repo `hollis-identity-prod`. |
+
+### 🔴 Still genuinely OPEN — owners + next steps
+
+Re-verified against current source on 2026-09-20. Every row below was confirmed
+still open at the cited location.
 
 | Item | Owner | Next step |
 |---|---|---|
-| Run `prisma migrate deploy` against target DB | Infra/Deploy | Block staging deploy on this |
-| CI/CD: no `.github/workflows/` directory | DevOps | Create lint → test → build → push pipeline |
-| Terraform module + ECS service for identity-api | Infra | Author module; plan against staging AWS account |
-| DNS record `identity.hollis.health` | Infra | Create after ECS service is up |
-| ACM cert for `identity.hollis.health` | Infra | Request + validate alongside DNS |
-| SES domain verification for `hollis.health` (sandbox exit) | Infra/Business | Submit production-access request to AWS |
-| ECR image push pipeline | DevOps | Wire into CI/CD workflow |
-| `ClinicMembership`, `StudioSubscription`, `ConsentGrant`, `ServiceAccount` Prisma models | Backend | Deferred; add when respective product domains are ready |
-| WebAuthn routes (`src/routes/mfa.ts:749-766`) | Backend | Still stub; implement or gate behind feature flag |
-| Key rotation: single-kid JWKS, no dual-key support | Backend/Security | Design dual-kid rotation; update auth-client JWKS cache |
-| Logout webhook (`authService.ts:435` TODO) | Backend | Implement or explicitly defer with a documented decision |
-| `onboardingCompleted` ownership (Identity vs. app DB) | Product/Backend | Make explicit decision; document in Open Decisions below |
-| Feature-flag-gated Health cutover + 7-day soak | Backend/Health team | Wire flag; plan soak window |
-| Account-lockout enforcement: full route-level DB-backed tests | QA/Backend | Expand from smoke coverage to route-level tests |
+| **Workouts' local verify path bypasses revocation entirely** | Backend/Security | `packages/auth-client/index.ts` — when `jwksSecret` is supplied, `verifyToken` returns `verifyTokenLocally(...)`, which checks signature (HS256-pinned), `exp`, audience and claim shape but **never consults the Identity token denylist**. A revoked or logged-out access token stays valid on `hollis-workouts/server` until it expires. Decide: accept the ≤15-min window as the documented security posture, or add a denylist check / shorten the access TTL. **This is the highest-impact row in this table.** |
+| **Refresh-token rotation: no suite-wide decision** | Backend/Security | Identity uses a **stable** refresh token; `hollis-health-app/server` **rotates** transactionally. Two different postures across one suite, neither written down. Pick one and document it here before the Health cutover, or the cutover silently changes Health's behaviour. |
+| Logout webhook | Backend | `hollis-identity/src/services/authService.ts:535` — `TODO(W6h): emit user.logout webhook for consumer apps to do their own device/cache cleanup`. Still absent. Implement, or record an explicit "not doing this" decision — it is the mechanism that would have made the row above less severe. |
+| `onboardingCompleted` ownership (Identity vs. app DB) | Product/Backend | Still undecided and now actively papered over: `authService.ts:431` and `:675` both hardcode `onboardingCompleted: false` with `TODO(W6f): add onboardingCompleted to User model when app-specific fields are added`. Any consumer trusting that field from Identity reads a constant. |
+| WebAuthn routes | Backend | `hollis-identity/src/routes/mfa.ts:753-766` — the four routes (`register/start`, `register/finish`, `auth/start`, `auth/finish`) are still comment-only stubs under `TODO(W6h)`, blocked on choosing a library (e.g. `@simplewebauthn/server`) and on a `WebAuthnChallenge` Prisma model for multi-instance safety. Implement or gate behind a feature flag so nothing advertises WebAuthn support. |
+| Key rotation: single-kid JWKS, no dual-key support | Backend/Security | `hollis-identity/src/lib/jwtKeys.ts:111` publishes one `kid` from `env.JWT_KEY_ID`. Design dual-kid rotation and update the auth-client JWKS cache. Lower urgency while production verification is HS256 shared-secret rather than RS256/JWKS — but it blocks ever moving to JWKS. |
+| Feature-flag-gated Health cutover + 7-day soak (W6g) | Backend/Health team | `hollis-health-app/server` still issues its own JWTs. `IDENTITY_SERVICE_URL` and `IDENTITY_JWT_SECRET` are already on the prod task definition, so the wiring is half-present with no flag and no soak plan. **Do not attempt this near the 2026-10-17 clinic opening.** |
+| `ClinicMembership`, `StudioSubscription`, `ConsentGrant`, `ServiceAccount` Prisma models | Backend | Deliberately deferred; add when the respective product domains are ready. Not a blocker. |
+| Account-lockout enforcement: full route-level DB-backed tests | QA/Backend | Expand from smoke coverage to route-level tests. |
 
 ---
 
 ## Current State
 
-Workouts is **not** on shared auth yet.
+Workouts mobile is **not** on shared auth yet — it still uses Firebase Auth.
+
+> ⚠️ **Status note 2026-09-20 — the table below is a 2026-05-20 snapshot and is
+> stale in three places. Trust this note over the table:**
+>
+> - **Identity is deployed**, not "migration SQL generated (not yet applied)".
+>   `hollis-identity-prod` runs 1/1 in `hollis-prod-cluster` at
+>   `identity.hollis.health` with its four migrations applied, CI/CD workflows
+>   in place, and SES out of sandbox. See the SHIPPED table above.
+> - **The Workouts backend is neither a sibling repo nor skeletal.** The
+>   standalone `hollis-workouts-server` repo was merged into `hollis-workouts`
+>   on 2026-05-30 and lives at `hollis-workouts/server`; it is deployed as ECS
+>   service `hollis-workouts-server` at `workouts-api.hollis.health` with ~32
+>   route modules, and its packages are normalized to `@hollis-studio/*` with no
+>   `file:` deps remaining.
+> - **Production verification is HS256, not RS256/JWKS.**
+>   `hollis-workouts/server` verifies locally via `@hollis-studio/auth-client`
+>   with a shared secret; the JWKS fetch/cache path is still deferred
+>   (`TODO(W6h)`). Note the revocation consequence in the Still OPEN table.
+>
+> What is genuinely unchanged: **Workouts mobile still authenticates against
+> Firebase.** That is the remaining cutover.
 
 | Area                    | Current state                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Gap                                                                                                                                                                                                         |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -395,3 +430,12 @@ The next useful milestone is **shared-auth readiness in staging**:
 
 Once that works, Workouts mobile can start replacing Firebase Auth behind a
 feature flag without guessing at the final auth shape.
+
+---
+
+Last reviewed: 2026-09-20 (the "Still OPEN" table was split into 7 shipped
+infrastructure rows and 9 genuinely open rows, each re-verified in current
+source; two previously unrecorded items added — the refresh-rotation decision
+and the local-verify revocation bypass. Sections other than "Current State" and
+the OPEN/SHIPPED tables still carry their 2026-05-20 dates and were not
+re-verified.)

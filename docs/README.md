@@ -1,48 +1,102 @@
 # Hollis Suite — Docs
 
-Canonical home for cross-suite docs: vision, architecture, research, and dated phase reports. Per-app docs (Workouts/Strength, Health, etc.) live inside each app repo. Anything **suite-wide** lives here.
+Canonical home for cross-suite docs: vision, architecture, clinic operations SOPs, research, and dated phase reports. Per-app docs live inside each app repo. Anything **suite-wide** lives here.
 
-> **Start here:** [`vision/2026-05-18-suite-vision.md`](./vision/2026-05-18-suite-vision.md) — the canonical long-term vision (2026-05-18).
+> **Start here:** [`vision/2026-05-19-suite-vision.md`](./vision/2026-05-19-suite-vision.md) — the canonical long-term vision.
+> The older [`vision/2026-05-18-suite-vision.md`](./vision/2026-05-18-suite-vision.md) is **superseded**; it is kept only for the audit trail.
 >
-> **The sharpened thesis (read first if you read nothing else):** Hollis is _"the only consumer fitness app that a clinician will trust."_ The six-app consumer suite is the long-term direction, but the near-term bet is **Strength + external-data integration + a Compass intelligence service + B2B trainer/clinician fleet sales**, with Phase 4 native apps explicitly gated on the wedge funding them. See the "Strategic refinement" and "Suite leverage" sections of the vision doc.
+> **The thesis:** Hollis is _"the only consumer fitness app that a clinician will trust."_ The 2026-05-19 revision scoped the six-app idea down to **one company, two business units, four apps, one shared intelligence layer (Compass)**, with the remaining apps gated on wedge revenue. The near-term bet is **Strength + external-data integration + a Compass intelligence service + B2B trainer/clinician fleet sales**.
 >
-> All other docs in this folder should be consistent with the vision; if they aren't, the vision wins or the conflict gets resolved before the doc is updated.
+> **If you are opening the clinic, the vision is not your doc.** Go straight to [`operations/`](./operations/) — [`day-1-clinic-runbook.md`](./operations/day-1-clinic-runbook.md) and [`client-acquisition-flow.md`](./operations/client-acquisition-flow.md) are the two that run the business.
+>
+> All other docs in this folder should be consistent with the vision; if they aren't, the vision wins on *strategy* and current code/live infrastructure wins on *status*.
 
 ---
 
-## Current State — 2026-05-19
+## Current State — 2026-09-20
 
-The shared package distribution cutover is complete. `hollis-shared` publishes private GitHub Packages under the `@hollis-studio` scope:
+Every claim in this section was verified against the registry, the live AWS
+account, or current source on 2026-09-20. **Anything status-shaped in this folder
+has drifted before — re-verify before you act on it.**
 
-- `@hollis-studio/contracts@0.2.0-alpha.10`
-- `@hollis-studio/design-tokens@0.2.0-alpha.2`
-- `@hollis-studio/utils@0.1.0-alpha.1`
-- `@hollis-studio/auth-client@0.1.0-alpha.3`
+### Shared packages
 
-Health and Workouts consume `@hollis-studio/contracts`, `@hollis-studio/design-tokens`,
-and `@hollis-studio/utils` through semver dependencies from GitHub Packages.
-Identity consumes `@hollis-studio/contracts`. Workouts Server is still on
-temporary `@hollis/*` local file dependencies and must be normalized to
-`@hollis-studio/*` before cutover. Sibling `file:../hollis-shared` refs,
-`git+...#tag&path=...` refs, and Workouts vendored package copies are historical only.
+The GitHub Packages cutover is complete. No consumer uses a `file:`,
+`git+`, or vendored copy of a shared package (verified: zero `file:`/`git+`
+`@hollis*` deps across all four repos).
 
-Local installs need an npm token for `@hollis-studio:registry=https://npm.pkg.github.com`; CI and Docker builds should provide `NODE_AUTH_TOKEN` or a BuildKit npmrc secret.
+| Package | Published | Notes |
+|---|---|---|
+| `@hollis-studio/contracts` | `0.2.0-alpha.87` (75 versions) | Ships fast; check before assuming. |
+| `@hollis-studio/design-tokens` | `0.2.0-alpha.2` | One version ever published. |
+| `@hollis-studio/utils` | `0.1.0-alpha.1` | One version ever published. |
+| `@hollis-studio/auth-client` | `0.1.0-alpha.3` | One version published; the workspace is ahead of the registry. |
 
-Identity Service status: the sibling `hollis-identity` repo is locally hardened
-with RS256/JWKS, PostgreSQL-backed token revocation, SES password-reset email,
-and Terraform IaC, but it is not deployed and Health/Workouts have not cut over.
-`@hollis-studio/auth-client` still needs JWKS fetch/cache, explicit `getMe`/
-revocation/session surface decisions, optional consumer cookie helpers, and integration tests before it
-becomes the production verification path for Health or Workouts.
+Check, don't trust the table — the `alpha` dist-tag is the release channel:
+
+```sh
+npm run npm:agent -- view @hollis-studio/contracts dist-tags
+# Works for any package, including ones with no dist-tags at all:
+gh api /orgs/Hollis-Studio/packages/npm/contracts/versions --jq '.[0].name'
+```
+
+> ⚠️ **Dist-tag traps.** `contracts` `latest` is stuck on `0.2.0-alpha.54` and
+> `next` on `0.2.0-alpha.72` — a bare `npm install @hollis-studio/contracts`
+> resolves to `latest` and silently installs **stale legal-document versions and
+> the old studio address**. `design-tokens`, `utils`, and `auth-client` have **no
+> dist-tags at all**, so `npm view` on them prints nothing and a bare install
+> fails to resolve. Always install an exact version. See [`TODO.md`](./TODO.md).
+
+Installed consumer versions are a separate fact from what is published:
+
+| Consumer | contracts | Other |
+|---|---|---|
+| `hollis-health-app` (mobile, `server`, `web-admin`, `web-public`) | `0.2.0-alpha.85` | `design-tokens@alpha.2`, `utils@alpha.1`, `auth-client@alpha.3` (server) |
+| `hollis-workouts` (mobile, `server`) | `0.2.0-alpha.87` | `utils@alpha.1`, `auth-client@alpha.3` (server) |
+| `hollis-identity` | `0.2.0-alpha.83` | — |
+
+Local installs and CI/Docker builds need `NODE_AUTH_TOKEN` for
+`@hollis-studio:registry=https://npm.pkg.github.com`. See the repo
+[`README.md`](../README.md) for the token bridge and publish helpers.
+
+### Identity service
+
+`hollis-identity` **is deployed** — ECS service `hollis-identity-prod` in cluster
+`hollis-prod-cluster`, routed at `identity.hollis.health`, running 1 task at 0.25
+vCPU. Its Prisma migrations are applied. `hollis-workouts/server` verifies
+tokens through `@hollis-studio/auth-client`; `hollis-health-app/server` has
+`IDENTITY_SERVICE_URL` wired in prod but **has not cut over** — it still issues
+its own JWTs. Remaining auth work is tracked in
+[`architecture/shared-auth-migration-checklist.md`](./architecture/shared-auth-migration-checklist.md).
+
+### Health services
+
+Health is **live, not parked**. The 2026-06-22 cost scale-down has been largely
+reversed: `hollis-prod-api` and `hollis-prod-web-admin` both run 1/1 and both
+Synthetics canaries are running. Container Insights is still disabled and 3 of
+the 7 muted alarm actions are still muted. See
+[`operations/aws-cost-scaledown-runbook.md`](./operations/aws-cost-scaledown-runbook.md).
 
 ---
 
 ## Reading order
 
-1. **[Vision](./vision/2026-05-18-suite-vision.md)** — what Hollis is, what each of the six apps is, the shared Compass layer, and the build order.
-2. **[Architecture](./architecture/)** — start with [`suite-strategy.md`](./architecture/suite-strategy.md) (end-state), then [`suite-infrastructure-migration.md`](./architecture/suite-infrastructure-migration.md) (sequencing). [`aws-infrastructure.md`](./architecture/aws-infrastructure.md) is the live deployed-AWS inventory (services, routing, separation, cost). `shared-auth-migration-checklist.md` and `vendor-hollis-interim.md` cover specific workstreams.
-3. **[Research](./research/)** — audits and reconciliation work that fed the architecture decisions.
-4. **[Reports](./reports/)** — dated phase snapshots; treat as historical state, not current truth.
+1. **[Operations](./operations/)** — the clinic SOPs. Start with
+   [`day-1-clinic-runbook.md`](./operations/day-1-clinic-runbook.md), then
+   [`client-acquisition-flow.md`](./operations/client-acquisition-flow.md).
+2. **[Vision](./vision/2026-05-19-suite-vision.md)** — what Hollis is, the four
+   apps, the shared Compass layer, and the build order.
+3. **[Architecture](./architecture/)** — start with
+   [`suite-strategy.md`](./architecture/suite-strategy.md) (end-state), then
+   [`suite-infrastructure-migration.md`](./architecture/suite-infrastructure-migration.md)
+   (sequencing). [`aws-infrastructure.md`](./architecture/aws-infrastructure.md)
+   is the deployed-AWS inventory.
+   [`shared-auth-migration-checklist.md`](./architecture/shared-auth-migration-checklist.md)
+   and [`vendor-hollis-interim.md`](./architecture/vendor-hollis-interim.md)
+   cover specific workstreams.
+4. **[Engineering TODO](./TODO.md)** — open cross-repo release/publishing debt.
+5. **[Research](./research/)** — audits that fed the architecture decisions.
+6. **[Reports](./reports/)** — dated snapshots; historical state, not current truth.
 
 ---
 
@@ -51,44 +105,40 @@ becomes the production verification path for Health or Workouts.
 ```
 docs/
 ├── README.md                                   ← you are here
+├── TODO.md                                      Cross-repo publishing/release debt
+├── operations/                                  Clinic SOPs — day-1 and ongoing
+│   ├── day-1-clinic-runbook.md                  Master day-1 checklist: opening, check-in, outages, payment fallbacks
+│   ├── client-acquisition-flow.md               Lead → first visit: the canonical funnel SOP + E2E test plan + launch gaps
+│   ├── walk-in-and-phone-sop.md                 Triage scripts for walk-ins and inbound phone; emergency redirect
+│   ├── after-hours-messaging-sop.md             Response SLA, auto-reply text, emergency redirect, no on-call
+│   ├── no-show-cancellation-policy.md           Patient-facing policy + manual Stripe fee workflow
+│   ├── biomarker-panel-program-sop.md           Hollis-sponsored Function Health panel: who pays, how results arrive
+│   ├── imaging-and-referrals-sop.md             Member-requested referrals only; imaging-order half removed 2026-08-19
+│   ├── breach-notification-runbook.md           HIPAA 60-day rule, HHS steps, patient letter template, counsel triggers
+│   ├── baa-tracker.md                           Vendor BAA status + next-step owner for each gap
+│   ├── hipaa-npp-content.md                     Full NPP text behind ConsentDocumentType.HIPAA_NPP
+│   ├── roi-form-template.md                     HIPAA Release of Information form template
+│   ├── aws-cost-scaledown-runbook.md            2026-06-22 park + the reverse commands (partly reversed already)
+│   ├── labs-manual-workflow.md                  ⛔ SUPERSEDED — do not follow
+│   └── prescribing-workflow-sop.md              ⛔ SUPERSEDED — do not follow
 ├── vision/
-│   └── 2026-05-18-suite-vision.md              Canonical north star
+│   ├── 2026-05-19-suite-vision.md               Canonical north star
+│   └── 2026-05-18-suite-vision.md               Superseded; kept for the audit trail
 ├── architecture/                                Living suite architecture
-│   ├── suite-strategy.md                       End-state architecture: apps, stacks, services
-│   ├── suite-infrastructure-migration.md       Shared packages, identity, Workouts backend cutover
-│   ├── aws-infrastructure.md                   Live AWS inventory: services, routing, RDS, separation, cost
-│   ├── shared-auth-migration-checklist.md      Identity contracts, auth-client, Health extraction
-│   └── vendor-hollis-interim.md                Historical Workouts vendoring incident
+│   ├── suite-strategy.md                        End-state architecture: apps, stacks, services
+│   ├── suite-infrastructure-migration.md        Shared packages, identity, Workouts backend cutover
+│   ├── aws-infrastructure.md                    AWS inventory: services, routing, RDS, separation, cost
+│   ├── shared-auth-migration-checklist.md       Identity contracts, auth-client, Health extraction
+│   ├── 2026-08-17-machine-data-acquisition.md   Gym-machine data acquisition options
+│   └── vendor-hollis-interim.md                 Historical Workouts vendoring incident
 ├── research/
-│   └── 2026-05-12-suite-adoption/              Suite adoption audits (6 files)
-│       ├── 01-type-collision-audit.md
-│       ├── 02-design-tokens-audit.md
-│       ├── 03-errors-and-primitives-audit.md
-│       ├── 04-schema-parity-audit.md
-│       ├── 05-reconciliation-decisions.md
-│       └── 06-steps-2-3-adoption-report.md
-├── reports/                                     Dated phase snapshots
-│   ├── 2026-05-12-extraction-triage.md
-│   ├── 2026-05-12-legacy-contract-alias-audit.md
-│   ├── 2026-05-12-phase-d-baseline.md
-│   ├── 2026-05-12-phase-d-public-export-candidates.md
-│   ├── 2026-05-12-phase-i-prime-followup-report.md
-│   ├── 2026-05-12-phase-i-prime-report.md
-│   ├── 2026-05-12-shared-extraction-phase-gh-report.md
-│   └── 2026-05-13-shared-deps-distribution.md
-└── operations/                                  Clinic operational SOPs (day-1 and ongoing)
-    ├── day-1-clinic-runbook.md                  Master day-1 checklist; opening, check-in, outages, payment fallbacks
-    ├── walk-in-and-phone-sop.md                 Triage scripts for walk-ins and phone calls; emergency redirect
-    ├── no-show-cancellation-policy.md           Patient-facing policy + manual Stripe fee workflow
-    ├── after-hours-messaging-sop.md             Response SLA, auto-reply text, emergency redirect, no on-call
-    ├── prescribing-workflow-sop.md              Paper Rx process + legal disclaimer (no e-prescribing at launch)
-    ├── imaging-and-referrals-sop.md             Referral letter template + chart tag tracking for imaging/referrals
-    ├── labs-manual-workflow.md                  Specimen handoff → external lab → PDF upload pipeline
-    ├── breach-notification-runbook.md           HIPAA 60-day rule, HHS steps, patient letter template, counsel triggers
-    ├── baa-tracker.md                           Vendor BAA status table; next-step owner for each unsigned BAA
-    ├── hipaa-npp-content.md                     Full NPP text for ConsentDocumentType.HIPAA_NPP (attorney review required)
-    ├── roi-form-template.md                     HIPAA-compliant Release of Information form template
-    └── aws-cost-scaledown-runbook.md           Pre-launch parked AWS state + exact relaunch/reverse commands
+│   └── 2026-05-12-suite-adoption/               Suite adoption audits (6 files)
+└── reports/                                     Dated phase snapshots (frozen)
+    ├── 2026-05-12-*  (7 files)                  Extraction/phase-D/phase-I-prime audits
+    ├── 2026-05-13-shared-deps-distribution.md
+    ├── 2026-05-20-launch-readiness-snapshot.md
+    ├── 2026-08-19-business-model-change.md      Tavie/WHH exit, in-house booking, sponsored panel
+    └── 2026-09-04-launch-scope-assumptions.md   Launch scope reduction assumptions
 ```
 
 ---
@@ -97,12 +147,12 @@ docs/
 
 Anything app-specific stays inside the app repo:
 
-| Topic                                                                                                     | Lives in                                                                                          |
-| --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Workouts/Strength product spec, AI integration spec, runbooks, app-distro, mass-market punch list         | [`hollis-studio/Hollis-Workouts`](https://github.com/hollis-studio/Hollis-Workouts) `docs/`       |
-| Health product/clinical spec, security, audits, polish-scope, admin/trainer plans, numbered docs taxonomy | [`hollis-studio/hollis-health-app`](https://github.com/hollis-studio/hollis-health-app) `docs/`   |
-| Identity service ops, runbooks                                                                            | [`hollis-studio/hollis-identity`](https://github.com/hollis-studio/hollis-identity)               |
-| Workouts server ops, runbooks                                                                             | [`hollis-studio/hollis-workouts-server`](https://github.com/hollis-studio/hollis-workouts-server) |
+| Topic | Lives in |
+| --- | --- |
+| Workouts/Strength product spec, AI integration spec, runbooks, app-distro, mass-market punch list | [`Hollis-Studio/Hollis-Workouts`](https://github.com/Hollis-Studio/Hollis-Workouts) `docs/` |
+| Workouts server (API) ops and runbooks | [`Hollis-Studio/Hollis-Workouts`](https://github.com/Hollis-Studio/Hollis-Workouts) `server/` — **the standalone `hollis-workouts-server` repo was merged into `hollis-workouts` on 2026-05-30 and no longer exists** |
+| Health product/clinical spec, security, audits, polish-scope, admin/trainer plans, numbered docs taxonomy | [`Hollis-Studio/hollis-health-app`](https://github.com/Hollis-Studio/hollis-health-app) `docs/` |
+| Identity service ops, runbooks, secrets | [`Hollis-Studio/hollis-identity`](https://github.com/Hollis-Studio/hollis-identity) `docs/` |
 
 When a piece of work touches more than one app, the doc belongs here, not in any single app repo.
 
@@ -112,16 +162,23 @@ When a piece of work touches more than one app, the doc belongs here, not in any
 
 Use these when linking to suite docs from outside the `hollis-shared` checkout:
 
-- Vision: <https://github.com/hollis-studio/hollis-shared/blob/main/docs/vision/2026-05-18-suite-vision.md>
-- Architecture: <https://github.com/hollis-studio/hollis-shared/tree/main/docs/architecture>
-- Research — suite adoption: <https://github.com/hollis-studio/hollis-shared/tree/main/docs/research/2026-05-12-suite-adoption>
-- Reports: <https://github.com/hollis-studio/hollis-shared/tree/main/docs/reports>
+- Vision: <https://github.com/Hollis-Studio/hollis-shared/blob/main/docs/vision/2026-05-19-suite-vision.md>
+- Operations SOPs: <https://github.com/Hollis-Studio/hollis-shared/tree/main/docs/operations>
+- Architecture: <https://github.com/Hollis-Studio/hollis-shared/tree/main/docs/architecture>
+- Research — suite adoption: <https://github.com/Hollis-Studio/hollis-shared/tree/main/docs/research/2026-05-12-suite-adoption>
+- Reports: <https://github.com/Hollis-Studio/hollis-shared/tree/main/docs/reports>
 
 ---
 
 ## Conventions
 
 - **Dates in filenames:** `YYYY-MM-DD-` prefix for any dated artifact (reports, phase snapshots, vision revisions).
-- **Living docs:** files under `architecture/` are living — edit in place rather than dating each revision.
+- **Living docs:** files under `architecture/` and `operations/` are living — edit in place rather than dating each revision, and update the "Last reviewed" line at the bottom.
 - **Reports are frozen:** anything in `reports/` is a historical snapshot. Don't edit; supersede with a new dated report.
-- **Vision revisions:** if/when the vision is updated, save a new dated file under `vision/` and update this README's "Start here" pointer. Keep older revisions for the audit trail.
+- **Vision revisions:** save a new dated file under `vision/` and update this README's "Start here" pointer. Keep older revisions for the audit trail.
+- **Status claims carry a date.** Any sentence about what is deployed, published, signed, or applied gets a `(verified YYYY-MM-DD)` marker or an inline dated note. Undated status text in this folder has repeatedly been months stale.
+- **Superseded SOPs are not deleted.** Retitle with `— SUPERSEDED`, add a ⛔ banner pointing at the replacement, and leave the file so an audit can find the closure.
+
+---
+
+Last reviewed: 2026-09-20 (full accuracy pass — package versions, dist-tag traps, identity deployed, Health unparked, `operations/` added to the index, superseded vision pointer fixed).

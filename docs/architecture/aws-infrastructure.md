@@ -24,18 +24,28 @@
 ## 2. Compute — ECS Fargate
 
 One cluster, `hollis-prod-cluster`, fronts every backend. All services are
-Fargate (no EC2). Task sizes and the routing host are below; **runtime desired
-counts reflect the 2026-06-22 pre-launch scale-down** (see the runbook).
+Fargate (no EC2). **The 2026-06-22 pre-launch scale-down has been reversed for
+Health — nothing here is parked any more** (desired counts verified live
+2026-09-20).
 
-| Service | Task size | Routed host | Normal / parked desired count |
-|---|---|---|---|
-| `hollis-prod-api` (Health API) | 0.5 vCPU / 1 GB | `api.hollis.health` (ALB default) | 1 / **0 (parked)** |
-| `hollis-prod-web-admin` | 0.5 vCPU / 1 GB | `admin.hollis.health` | 1 / **0 (parked)** |
-| `hollis-identity-prod` | 0.25 vCPU / 1 GB* | `identity.hollis.health` | 2 / **1** |
-| `hollis-workouts-server` | 0.25 vCPU / 0.5 GB | `workouts-api.hollis.health` | 1 / **1** |
+| Service | Task size | Routed host | Desired / running (2026-09-20) | Task def |
+|---|---|---|---|---|
+| `hollis-prod-api` (Health API) | 0.5 vCPU / 1 GB | `api.hollis.health` (ALB default) | 1 / 1 | `:443` |
+| `hollis-prod-web-admin` | 0.5 vCPU / 1 GB | `admin.hollis.health` | 1 / 1 | `:205` |
+| `hollis-identity-prod` | 0.25 vCPU / 1 GB* | `identity.hollis.health` | 1 / 1 | `:22` |
+| `hollis-workouts-server` | 0.25 vCPU / 0.5 GB | `workouts-api.hollis.health` | 1 / 1 | `:150` |
 
-\* identity was downsized from 0.5→0.25 vCPU on 2026-06-22 (task-def revision 12);
-revision 11 is the 0.5 vCPU version to restore for launch.
+\* Identity is the one service still in its parked configuration: downsized
+0.5→0.25 vCPU and 2→1 task on 2026-06-22. **Do not "restore" it by pinning
+task-definition revision 11** — that revision carries a June 2026 image and
+pinning it would roll the service back three months of code. See
+[`../operations/aws-cost-scaledown-runbook.md`](../operations/aws-cost-scaledown-runbook.md)
+§5 step 2 for the derive-the-current-revision procedure.
+
+Also still in the parked configuration cluster-wide: **Container Insights is
+`disabled`**, and 3 of the 7 alarm actions muted on 2026-06-22 are still muted
+(`web-admin-down`, `canary-admin-failed`, `alb-5xx-spike`). Both Synthetics
+canaries are `RUNNING` again.
 
 **ECR repositories (6):** `hollis-prod-api`, `hollis-prod-web-admin`,
 `hollis-identity-prod`, `hollis-workouts-server`, `hollis-dev-api`,
@@ -141,6 +151,17 @@ projected)**. June's spike was almost entirely CloudWatch. Drivers at full scale
 | ELB | ~16 | the single ALB (fixed) |
 | Secrets / KMS / ECR / S3 / R53 | ~14 | overhead |
 
-After the 2026-06-22 scale-down (Workouts + Identity only), run-rate is **~$85–90/mo**.
-See [`../operations/aws-cost-scaledown-runbook.md`](../operations/aws-cost-scaledown-runbook.md)
-for exactly what changed and how to reverse it for the Health launch.
+The 2026-06-22 scale-down (Workouts + Identity only) took run-rate to
+**~$85–90/mo**. **That saving is gone: Health relaunched, so the cost table above
+is the current shape again** — 4 services running and both canaries back. The
+only savings still in effect are Container Insights (`disabled`, ~$25/mo) and
+Identity at 1 task / 0.25 vCPU (~$27/mo). Expect roughly **~$250–270/mo**, and
+read the real number off Cost Explorer rather than this table. See
+[`../operations/aws-cost-scaledown-runbook.md`](../operations/aws-cost-scaledown-runbook.md)
+for exactly what changed and what remains parked.
+
+---
+
+Last reviewed: 2026-09-20 (compute table, cost note and the parked/relaunch
+status verified live via AWS CLI; the rest of the document still carries its
+2026-06-22 capture date and has not been re-verified).

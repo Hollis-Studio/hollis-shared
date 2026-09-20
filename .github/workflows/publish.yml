@@ -1,0 +1,276 @@
+# Publish for hollis-shared — the gate that was missing.
+#
+# Before this workflow, every @hollis-studio/* release was `npm publish` from a
+# laptop: no green-CI requirement, no tag/version agreement, no check that the
+# packed tarball actually contains the legal text the source declares, and one
+# mistyped `--tag` away from moving `latest` (which is how contracts' `latest`
+# ended up stuck on 0.2.0-alpha.54 — stale legal documents and the old studio
+# address for every consumer resolving a floating range).
+#
+# Triggers:
+#   * push of a `<package>-v<version>` tag (e.g. contracts-v0.2.0-alpha.88)
+#     — runs the full gate and then publishes for real.
+#   * workflow_dispatch — same gate, but `dry_run` defaults to true, so a
+#     manual run is a rehearsal unless someone explicitly sets it to false.
+#
+# The publish step always passes `--tag alpha` and publishes the exact tarball
+# that was verified. `latest` is read before and after and asserted unchanged.
+
+name: Publish
+
+on:
+  push:
+    tags:
+      - "contracts-v*"
+      - "design-tokens-v*"
+      - "utils-v*"
+      - "auth-client-v*"
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package to publish
+        required: true
+        type: choice
+        options:
+          - contracts
+          - design-tokens
+          - utils
+          - auth-client
+      dry_run:
+        description: Rehearse only (npm publish --dry-run). Uncheck to publish for real.
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  # GitHub Packages publication needs write here; CI's read-scoped token cannot
+  # publish, which is deliberate — only this workflow gets the write scope.
+  packages: write
+
+env:
+  NODE_VERSION: 22
+  REGISTRY: https://npm.pkg.github.com
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Gate, verify and publish
+    # GitHub-hosted rather than the Blacksmith runner CI uses: this is the only
+    # job in the repo that holds a package-write credential.
+    runs-on: ubuntu-latest
+    # Empty until someone adds protection rules; add a required reviewer here to
+    # make every real publish need an explicit approval click.
+    environment: publish-alpha
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Setup Node
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          registry-url: ${{ env.REGISTRY }}
+          scope: "@hollis-studio"
+
+      # ---------------------------------------------------------------------
+      # Resolve the target package and assert the tag agrees with the manifest
+      # ---------------------------------------------------------------------
+      - name: Resolve target package and version
+        id: target
+        env:
+          EVENT: ${{ github.event_name }}
+          TAG: ${{ github.ref_name }}
+          INPUT_PACKAGE: ${{ inputs.package }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            dir="$INPUT_PACKAGE"
+            tag_version=""
+          else
+            # Tag shape: <package-dir>-v<version>, e.g. contracts-v0.2.0-alpha.88
+            dir="${TAG%%-v*}"
+            tag_version="${TAG#*-v}"
+            if [ "$dir" = "$TAG" ] || [ -z "$tag_version" ]; then
+              echo "::error::Tag '$TAG' is not <package>-v<version>"
+              exit 1
+            fi
+          fi
+
+          manifest="packages/$dir/package.json"
+          if [ ! -f "$manifest" ]; then
+            echo "::error::No such package directory: packages/$dir"
+            exit 1
+          fi
+          name="$(node -p "require('./$manifest').name")"
+          version="$(node -p "require('./$manifest').version")"
+
+          if [ -n "$tag_version" ] && [ "$tag_version" != "$version" ]; then
+            echo "::error::Tag '$TAG' says version $tag_version but $manifest says $version"
+            exit 1
+          fi
+
+          # Only prereleases belong on the alpha tag. A plain 1.2.3 version
+          # would be a release and needs a deliberate, different process.
+          case "$version" in
+            *-alpha.*) ;;
+            *)
+              echo "::error::$name@$version is not an -alpha prerelease; this workflow only publishes the alpha dist-tag"
+              exit 1
+              ;;
+          esac
+
+          {
+            echo "dir=$dir"
+            echo "name=$name"
+            echo "version=$version"
+          } >> "$GITHUB_OUTPUT"
+          echo "Target: $name@$version (packages/$dir)"
+
+      - name: Resolve dry-run mode
+        id: mode
+        env:
+          EVENT: ${{ github.event_name }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          # Default to a rehearsal for manual runs; a pushed tag is an explicit
+          # release instruction and publishes for real.
+          if [ "$EVENT" = "workflow_dispatch" ] && [ "$INPUT_DRY_RUN" = "false" ]; then
+            echo "dry_run=false" >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT" = "workflow_dispatch" ]; then
+            echo "dry_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "dry_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ---------------------------------------------------------------------
+      # The same gate ci.yml runs — publishing never bypasses it
+      # ---------------------------------------------------------------------
+      - name: Install dependencies
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build, typecheck, smoke-import
+        run: npm run check
+
+      - name: Package authentication helper tests
+        run: npm run test:package-auth
+
+      - name: Contracts tests
+        run: npm --workspace @hollis-studio/contracts run test
+
+      # ---------------------------------------------------------------------
+      # Verify the artefact, not the working tree
+      # ---------------------------------------------------------------------
+      - name: Pack tarballs
+        id: pack
+        env:
+          NAME: ${{ steps.target.outputs.name }}
+        run: |
+          set -euo pipefail
+          mkdir -p .publish-pack
+          # Contracts is always packed: its tarball carries the six signed legal
+          # documents, and that is what the next step verifies.
+          npm pack --workspace @hollis-studio/contracts --pack-destination .publish-pack
+          contracts_tarball="$(ls .publish-pack/hollis-studio-contracts-*.tgz)"
+          if [ "$NAME" = "@hollis-studio/contracts" ]; then
+            target_tarball="$contracts_tarball"
+          else
+            npm pack --workspace "$NAME" --pack-destination .publish-pack
+            target_tarball="$(ls .publish-pack/*.tgz | grep -v hollis-studio-contracts- | head -1)"
+          fi
+          echo "contracts_tarball=$contracts_tarball" >> "$GITHUB_OUTPUT"
+          echo "target_tarball=$target_tarball" >> "$GITHUB_OUTPUT"
+          echo "Packed target: $target_tarball"
+
+      - name: Verify legal document hashes in the packed contracts tarball
+        env:
+          TARBALL: ${{ steps.pack.outputs.contracts_tarball }}
+        # npm pack ships whatever is already in dist and does NOT run
+        # prepublishOnly, so this reads the six documents out of the tarball and
+        # compares each version + contentHash against the source modules.
+        run: node scripts/verify-packed-legal-docs.mjs "$TARBALL"
+
+      - name: Record dist-tags before publishing
+        id: before
+        env:
+          NAME: ${{ steps.target.outputs.name }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # `npm view <pkg> dist-tags` prints nothing for a package with no
+          # `latest`, so the spec has to name a tag that exists.
+          latest="$(npm view "$NAME@alpha" dist-tags.latest --registry="$REGISTRY" 2>/dev/null || true)"
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+          echo "latest before publish: '${latest:-<none>}'"
+
+      - name: Dist-tag health report
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Informational: contracts' `latest` is already stale, and moving a
+        # dist-tag is a separate authorized action, so this must not block.
+        continue-on-error: true
+        run: node scripts/dist-tag-health.mjs
+
+      # ---------------------------------------------------------------------
+      # Publish — alpha dist-tag only, from the verified tarball
+      # ---------------------------------------------------------------------
+      - name: Publish (dry run)
+        if: steps.mode.outputs.dry_run == 'true'
+        env:
+          TARBALL: ${{ steps.pack.outputs.target_tarball }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm publish "$TARBALL" --tag alpha --registry="$REGISTRY" --dry-run
+
+      - name: Publish
+        if: steps.mode.outputs.dry_run == 'false'
+        env:
+          TARBALL: ${{ steps.pack.outputs.target_tarball }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # --tag alpha is the only dist-tag this workflow ever writes. Publishing
+        # the tarball (not the workspace) guarantees the published bytes are the
+        # bytes the legal-document verification just read.
+        run: npm publish "$TARBALL" --tag alpha --registry="$REGISTRY"
+
+      - name: Assert latest was not moved
+        if: steps.mode.outputs.dry_run == 'false'
+        env:
+          NAME: ${{ steps.target.outputs.name }}
+          VERSION: ${{ steps.target.outputs.version }}
+          BEFORE: ${{ steps.before.outputs.latest }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          after="$(npm view "$NAME@alpha" dist-tags.latest --registry="$REGISTRY" 2>/dev/null || true)"
+          alpha="$(npm view "$NAME@alpha" version --registry="$REGISTRY")"
+          echo "alpha  -> $alpha"
+          echo "latest -> '${after:-<none>}' (was '${BEFORE:-<none>}')"
+          if [ "$alpha" != "$VERSION" ]; then
+            echo "::error::alpha points at $alpha, expected $VERSION"
+            exit 1
+          fi
+          if [ "$after" != "$BEFORE" ]; then
+            echo "::error::'latest' moved from '${BEFORE:-<none>}' to '${after:-<none>}'; this workflow must never touch latest"
+            exit 1
+          fi
+
+      - name: Summary
+        if: always()
+        env:
+          NAME: ${{ steps.target.outputs.name }}
+          VERSION: ${{ steps.target.outputs.version }}
+          DRY_RUN: ${{ steps.mode.outputs.dry_run }}
+        run: |
+          {
+            echo "### ${NAME:-unknown}@${VERSION:-unknown}"
+            echo ""
+            echo "- dry run: \`${DRY_RUN:-unknown}\`"
+            echo "- dist-tag written: \`alpha\` only"
+            echo "- \`latest\`: untouched"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -20,7 +20,13 @@ Published to the GitHub Package Registry (`npm.pkg.github.com`).
 npm install @hollis-studio/auth-client
 ```
 
-Peer dependency: `zod@4.3.6`
+Peer dependencies: `@hollis-studio/contracts@^0.2.0-alpha.85`, `zod@4.3.6`
+
+Contracts is a peer, not a dependency, because this package re-exports contracts
+values (`AudienceSchema`, `AUDIENCES`, `validateAudience`) and parses tokens with
+`AccessTokenClaimsSchema`. A plain dependency lets npm install a second nested
+copy of contracts next to the consumer's own pin, so the middleware would be
+validating against a different schema instance than the app it protects.
 
 ## API
 
@@ -116,7 +122,7 @@ const claims = await auth.verifyToken(rawToken);
 
 | Package | Role |
 |---|---|
-| `@hollis-studio/contracts` | `AccessTokenClaimsSchema`, `APP_ERROR_CODES`, `AppError`, `Audience` types |
+| `@hollis-studio/contracts` (peer) | `AccessTokenClaimsSchema`, `APP_ERROR_CODES`, `AppError`, `Audience` types |
 | `jsonwebtoken` | Local JWT signature verification (fast path) |
 | `zod` (peer) | Used by contracts for schema parsing |
 
@@ -127,3 +133,30 @@ Failures propagate `AppError` objects with the following codes from `APP_ERROR_C
 - `AUTH_REQUIRED` — missing/malformed header, failed signature, schema mismatch, remote rejection
 - `FORBIDDEN` — token valid but does not include the required audience
 - `INTERNAL_ERROR` — Identity Service unreachable (network error on remote path)
+
+## Changelog
+
+### 0.1.0-alpha.4 — unpublished
+
+Two fixes that have been sitting in source, unpublished, since 2026-05-26. The
+published 0.1.0-alpha.3 tarball does **not** contain either; consumers pinned to
+alpha.3 (`hollis-health-app/server`, `hollis-workouts/server`) still run the
+alpha.3 behaviour until this version is published and those pins are bumped.
+
+- **Algorithm pin now ships.** `verifyTokenLocally` calls
+  `jwt.verify(token, secret, { algorithms: ["HS256"] })`. Commit `8dcd63a`
+  ("Verify-alg pin confirmed. Source only — no npm republish.") landed the pin
+  in source without a version bump, so the published dist still calls
+  `jwt.verify(token, secret)` with no algorithm restriction — it accepts any
+  algorithm `jsonwebtoken` supports for the supplied key material instead of
+  only the HS256 the README and Workouts production model document.
+- **Contracts is a peer dependency with an explicit range.** It was
+  `"@hollis-studio/contracts": "*"`, which resolves off the registry's `latest`
+  dist-tag — stuck at `0.2.0-alpha.54`, with the superseded studio address and
+  older legal-document text. It is now
+  `peerDependencies: { "@hollis-studio/contracts": "^0.2.0-alpha.85" }` plus a
+  devDependency of the same range for local build/typecheck. The floor is the
+  oldest contracts version any current consumer installs; the `<0.3.0` ceiling
+  is the caret's, since the audience/claims contract is `0.2.x`.
+
+No API surface change.

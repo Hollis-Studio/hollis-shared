@@ -1,8 +1,22 @@
 # HIPAA Notice of Privacy Practices — Full Text
 
-**Purpose:** Provide the complete text of Hollis Health's HIPAA Notice of Privacy Practices (NPP) for use in the consent system. This text is designed to be stored as a consent record. Note: the `ConsentDocumentType` enum (server/prisma/schema.prisma) does not currently include `HIPAA_NPP`; the closest existing value is `INFORMED_CONSENT`, or a new enum value must be added before implementing. Patients must acknowledge receipt of the NPP before or at the time of first service.
+**Purpose:** Provide the complete text of Hollis Health's HIPAA Notice of Privacy Practices (NPP). Patients must acknowledge receipt of the NPP before or at the time of first service.
 
-**Developer note:** Paste this content into the NPP consent document record. Use the same token-replacement pattern as the Membership Agreement. The NPP is not a negotiated document — patients acknowledge receipt, not agreement to terms.
+> **Status note 2026-09-20 — this file is now reference text, not a build task.**
+> The original header said the `ConsentDocumentType` enum did not include
+> `HIPAA_NPP` and that `INFORMED_CONSENT` was the closest value. **That is no
+> longer true.** `HIPAA_NPP` exists at
+> `hollis-health-app/server/prisma/schema.prisma:357`, the document ships as its
+> own module in published `@hollis-studio/contracts` (`admin/legal-documents/hipaaNpp`,
+> and `HIPAA_NPP` leads `ALL_CONSENT_DOCS`), and `ConsultationFlowModal` collects
+> the acknowledgment at its `sign-npp` step. Do **not** map the NPP onto
+> `INFORMED_CONSENT`.
+>
+> ⚠️ **The shipped text lives in contracts, not here.** This file is the
+> human-readable copy for counsel review. Editing it changes nothing in the
+> product, and editing the contracts copy requires bumping that document's
+> `version` **and** `contentHash` in the same change — otherwise every existing
+> `ConsentRecord` becomes ambiguous about which text was signed.
 
 **Attorney review required before final publication.** The language below follows HHS model NPP guidance (45 CFR §164.520) and is drafted for Hollis Health's specific operations. It is not a substitute for legal counsel review.
 
@@ -172,4 +186,7 @@ isaac@hollis.health
 
 ---
 
-Last reviewed: 2026-05-19
+Last reviewed: 2026-09-20 (header corrected — `HIPAA_NPP` shipped; the legal text
+itself is unchanged and **still awaits counsel review**)
+
+Prior review: 2026-05-19

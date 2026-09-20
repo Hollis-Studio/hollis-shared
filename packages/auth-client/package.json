@@ -1,6 +1,7 @@
 {
+  "_comment_DEP_001": "RESOLVED: contracts was a `*` dependency, which resolves off the `latest` dist-tag (stuck at 0.2.0-alpha.54) for anyone installing the published tarball — stale legal-doc text and a stale clinic address. Decision: contracts is a PEER dependency (plus a devDependency for local build/typecheck), because auth-client re-exports contracts values (AudienceSchema, AUDIENCES, validateAudience) and parses with AccessTokenClaimsSchema; a normal dependency would let npm install a second nested copy alongside the consumer's own pin. Floor 0.2.0-alpha.85 is the oldest contracts version any current auth-client consumer installs (hollis-health-app/server); ceiling <0.3.0 because the audience/claims contract is 0.2.x. Reviewed: 2026-09-20",
   "name": "@hollis-studio/auth-client",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -30,15 +31,16 @@
     "prepublishOnly": "npm run build && npm run typecheck"
   },
   "dependencies": {
-    "@hollis-studio/contracts": "*",
     "jsonwebtoken": "^9.0.0"
   },
   "devDependencies": {
+    "@hollis-studio/contracts": "^0.2.0-alpha.85",
     "@types/jsonwebtoken": "^9.0.0",
     "@types/node": "22.10.2",
     "typescript": "5.9.2"
   },
   "peerDependencies": {
+    "@hollis-studio/contracts": "^0.2.0-alpha.85",
     "zod": "4.3.6"
   }
 }

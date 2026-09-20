@@ -20,6 +20,34 @@ const VALID_SIGNATURE =
 const VALID_SHA_256 =
   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
+/** The contentHash convention: first 8 hex chars of sha256 over the raw markdown. */
+const contentHashOf = (content: string): string =>
+  createHash("sha256").update(content).digest("hex").slice(0, 8);
+
+/**
+ * Frozen (version, contentHash) fingerprint of every document in
+ * DOCUMENT_REGISTRY. This table is the legal hash guard: a ConsentRecord stores
+ * `documentVersion` + `displayedContentHash`, so if the text of a signed
+ * document changes without BOTH being bumped, already-signed records silently
+ * point at text that no longer exists and consent becomes unprovable.
+ *
+ * Editing any legal text therefore has to touch three places in one commit:
+ * the document module's `content`, its `meta.version` + `meta.contentHash`, and
+ * this table. A text edit alone fails on the computed-hash assertion; a text +
+ * hash edit that forgets the version bump fails here.
+ */
+const EXPECTED_DOCUMENT_FINGERPRINTS = {
+  MEMBERSHIP_AGREEMENT: { version: "2.7.0", contentHash: "ee78df0f" },
+  LIABILITY_WAIVER: { version: "1.5.0", contentHash: "c6481b3d" },
+  INFORMED_CONSENT: { version: "2.2.0", contentHash: "b6d1d077" },
+  ELECTRONIC_COMMS_CONSENT: { version: "1.4.0", contentHash: "0eb4cd16" },
+  PHOTO_VIDEO_RELEASE: { version: "1.3.0", contentHash: "a63c032b" },
+  HIPAA_NPP: { version: "1.3.0", contentHash: "6aa28428" },
+} as const satisfies Record<
+  keyof typeof DOCUMENT_REGISTRY,
+  { version: string; contentHash: string }
+>;
+
 describe("admin consent legal document contracts", () => {
   it("exports consent records as a PHI resource in the typed contract", () => {
     expect(PHI_RESOURCE.CONSENT_RECORD).toBe("consent_record");
@@ -40,6 +68,37 @@ describe("admin consent legal document contracts", () => {
       ...OPTIONAL_CONSENT_DOCS,
     ]);
   });
+
+  it("fingerprints every document in the registry, not just one", () => {
+    // Guards the guard: a document added to the registry without a fingerprint
+    // would otherwise be silently exempt from the hash checks below.
+    expect(Object.keys(EXPECTED_DOCUMENT_FINGERPRINTS).sort()).toEqual(
+      Object.keys(DOCUMENT_REGISTRY).sort(),
+    );
+  });
+
+  it.each(Object.keys(DOCUMENT_REGISTRY) as (keyof typeof DOCUMENT_REGISTRY)[])(
+    "%s declares a contentHash matching its own text",
+    (documentType) => {
+      const doc = DOCUMENT_REGISTRY[documentType];
+      expect(doc.meta.contentHash).toBe(contentHashOf(doc.content));
+    },
+  );
+
+  it.each(Object.keys(DOCUMENT_REGISTRY) as (keyof typeof DOCUMENT_REGISTRY)[])(
+    "%s text change is accompanied by a version bump",
+    (documentType) => {
+      const doc = DOCUMENT_REGISTRY[documentType];
+      const expected = EXPECTED_DOCUMENT_FINGERPRINTS[documentType];
+      expect({
+        version: doc.meta.version,
+        contentHash: doc.meta.contentHash,
+      }).toEqual(expected);
+      // Bumping the table's hash without bumping its version would still leave
+      // signed ConsentRecords pointing at the old version string.
+      expect(contentHashOf(doc.content)).toBe(expected.contentHash);
+    },
+  );
 
   it("renders canonical signed legal text from shared contracts", () => {
     const summary = generateEnrollmentSummary("CORE", 8, "2026-04-01");

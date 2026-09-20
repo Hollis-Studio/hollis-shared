@@ -134,7 +134,7 @@ health-app    api         (Next.js)    strength      studio-    dashboard
 | Clinic API                 | `hollis-health-app/server` | Express 5 / Prisma 7 / Postgres / Redis / Vertex AI Gemini | Hollis Health (Isaac)                |
 | Clinic admin web           | `hollis-health-app/web-admin` | Next.js                                                  | Hollis Health (Isaac)                |
 | Strength mobile app        | `hollis-workouts` → rebrand to `hollis-strength` post-launch | React Native / Expo SDK 54 | Hollis Studio (Samuel)          |
-| Studio API server          | `hollis-workouts-server` → rename to `hollis-studio-server` once second app lands | Express 5 / Prisma 7 / Postgres | Hollis Studio (Samuel) |
+| Studio API server          | `hollis-workouts/server` (was a standalone `hollis-workouts-server` repo; **merged into `hollis-workouts` 2026-05-30**) | Express 5 / Prisma 7 / Postgres | Hollis Studio (Samuel) |
 | Web dashboard              | `hollis-dashboard` (NEW) | Next.js 16 / Tailwind                                          | Hollis Studio (Samuel)               |
 | Identity service           | `hollis-identity`     | Express / Prisma / Postgres / RS256 JWTs                         | Shared (operated under LLC)          |
 | Compass engine             | `hollis-compass` (NEW) | Express / Prisma / Postgres / SQS / Anthropic Claude API        | Shared (operated under LLC)          |
@@ -232,7 +232,18 @@ Data stores summary:
   SQS                  snapshot-queue, wearable-poll-queue, etl-queue, notification-queue
 ```
 
-### 4.2 hollis-identity (existing repo, deploy pending)
+### 4.2 hollis-identity (existing repo, ~~deploy pending~~ **DEPLOYED**)
+
+> **Status note 2026-09-20:** no longer deploy-pending. `hollis-identity-prod`
+> runs in ECS cluster `hollis-prod-cluster` (1 task, 0.25 vCPU, task definition
+> `:22`), routed at `identity.hollis.health` via the ALB, with its Prisma
+> migrations applied. `hollis-workouts/server` verifies tokens through
+> `@hollis-studio/auth-client`; `hollis-health-app/server` has not cut over and
+> still issues its own JWTs. Production verification is the **HS256 shared-secret**
+> path, not the RS256/JWKS path this section assumes — the JWKS fetch/cache path
+> is still deferred (`packages/auth-client/index.ts`, `TODO(W6h)`). The new
+> `ClinicMembership` / `StudioSubscription` / `ConsentGrant` / `ServiceAccount`
+> tables below are still unbuilt. Strategy unchanged.
 
 - **Hostname:** `identity.hollis.health`
 - **Owns:** user credentials, password hashes, MFA state, refresh tokens, token denylist, account lockout, OAuth account links, identity audit log. **New:** `ClinicMembership`, `StudioSubscription`, `TrainerClient`, `ConsentGrant`, `ServiceAccount`, `Clinic`/`ClinicLocation` tables (see §7).
@@ -254,10 +265,17 @@ Data stores summary:
 
 ### 4.4 studio-api (promote from `hollis-workouts-server`)
 
+> **Status note 2026-09-20:** the standalone `hollis-workouts-server` repo
+> **no longer exists** — it was merged into `hollis-workouts` on 2026-05-30 and
+> now lives at `hollis-workouts/server`. It is deployed as ECS service
+> `hollis-workouts-server` (1 task, task definition `:150`) at
+> `workouts-api.hollis.health`. Read every `hollis-workouts-server` reference in
+> this document as `hollis-workouts/server`. Strategy unchanged.
+
 - **Hostname:** `api.strength.hollis.health` initially; rename to `api.studio.hollis.health` when Nutrition lands.
 - **Verdict from 2026-05-19 promotion audit: promote, do not rebuild.** The scaffold is already suite-generic (auth middleware, error handling, rate limiting, Docker, Prisma singleton, env validation). What's Workouts-specific is ~4 string changes + a Postgres schema namespacing decision. A rebuild would reproduce 95% of this infrastructure before writing a single Workouts route.
 - **Deployment model:** **Single server, single Postgres, multiple Postgres schemas** (`CREATE SCHEMA workouts; CREATE SCHEMA nutrition;`) rather than microservices. One ECS service to operate, hard DB-level isolation, shared auth + rate limiter, cross-app queries possible without network hops when Compass needs to join.
-- **Critical remaining work (W5c):** all 12 CRUD route handlers are stubbed (`TODO(W5c)`). Estimated 1.5-2 weeks for a 2-person team with AI assistance. Plus: Redis-backed rate limiter (for multi-instance), multi-audience support in auth middleware, Firestore → Postgres ETL script, mobile client cutover (SQLite + REST replacing Firebase sync).
+- ~~**Critical remaining work (W5c):** all 12 CRUD route handlers are stubbed (`TODO(W5c)`). Estimated 1.5-2 weeks for a 2-person team with AI assistance.~~ **DONE — status note 2026-09-20:** zero `TODO(W5c)` markers remain anywhere in `hollis-workouts/server/src`, and the service ships ~32 route modules (sessions, programs, weeks, exercises, gyms, coaching, injuries, progression/cardio baselines, AI, webhooks, …). The W5c CRUD work is closed. Still outstanding from this bullet: Redis-backed rate limiter (for multi-instance), multi-audience support in auth middleware, Firestore → Postgres ETL, mobile client cutover (SQLite + REST replacing Firebase sync).
 - **JWT audiences accepted:** `hollis-workouts` (today; → `hollis-strength` on rebrand), `service:clinic-workouts-read` (inbound from clinic-api), `service:compass-read` (inbound from compass-engine).
 
 ### 4.5 compass-engine (new repo)

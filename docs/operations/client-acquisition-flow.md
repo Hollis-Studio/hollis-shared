@@ -280,9 +280,82 @@ All tiers include recovery modality access (infrared sauna, cold plunge, red lig
 
 ## 11. Gaps Before Launch
 
-Status snapshot as of **2026-05-20** (post 7-fix engineering batch). See [`../reports/2026-05-20-launch-readiness-snapshot.md`](../reports/2026-05-20-launch-readiness-snapshot.md) for the full audit and fix log.
+**Re-verified 2026-09-20** against the live prod task definition
+(`hollis-prod-api:443`), live AWS (`rds`, `ses`), public DNS, git history, the
+published `@hollis-studio/contracts@0.2.0-alpha.87` tarball, and current source.
+Clinic opens **2026-10-17**. See
+[`../reports/2026-05-20-launch-readiness-snapshot.md`](../reports/2026-05-20-launch-readiness-snapshot.md)
+for the original audit and fix log.
 
-### ✅ Closed in 2026-05-20 batch (no further engineering work)
+### 🔴 The actual blockers — 6 items, all owner actions
+
+Everything below this heading is either closed or non-blocking. These six are
+the list.
+
+| # | Blocker | Evidence (2026-09-20) | What closing it takes |
+|---|---|---|---|
+| 1 | **Sentry BAA is unsigned** | Sentry is in prod (`SENTRY_DSN` secret on `hollis-prod-api:443`, `SENTRY_ENVIRONMENT=prod`). PHI scrubbing **is** wired everywhere (see below), which reduces but does not eliminate the exposure. | Isaac: confirm the Sentry plan tier and request a HIPAA BAA, **or** accept the residual risk in writing. See [`baa-tracker.md`](./baa-tracker.md). |
+| 2 | **RDS is single-AZ** | `aws rds describe-db-instances` → `MultiAZ: false` on `hollis-prod-postgres` (`db.t3.micro`, 50 GiB, encrypted, 30-day PITR). | Isaac: decide. Multi-AZ roughly doubles the RDS line (~$20 → ~$40/mo) and removes the single-AZ outage exposure for every clinical record. A one-AZ failure today means the clinic has no charts. |
+| 3 | **No DMARC record** | `dig +short TXT _dmarc.hollis.health` → empty. | Isaac: add a DMARC TXT record (start at `p=none` with an rua address, tighten later). DKIM and SPF already pass — see the deliverability note below. |
+| 4 | **No 24h consultation reminder — at all** | No cron job references `LeadPipeline.consultationDate`; the 11 registered jobs in `server/src/jobs/` cover password-reset cleanup, S3 orphans, audit archival/verify, PHI hard-delete, snapshots, delinquency, grace period, disputes and email retry — none reminds a lead. | Either accept that Isaac sends every consultation reminder by hand (workable at low volume, and this SOP §12.3 already says so), or build it. **Decide before launch, don't discover it.** |
+| 5 | **No after-hours auto-reply mechanism** | `web-admin` settings has three tabs — `profile`, `availability`, `security` (`app/(admin)/settings/page.tsx:20`). There is **no Messaging tab**, and a suite-wide search for `after-hours`/`autoReply` in `web-admin` and `server/src` returns nothing. | [`after-hours-messaging-sop.md`](./after-hours-messaging-sop.md) specifies auto-reply text that nothing sends. Either build the setting or rewrite that SOP to say the reply is manual. |
+| 6 | **Stripe Terminal not provisioned** | `ENABLE_STRIPE_TERMINAL` and `STRIPE_TERMINAL_LOCATION_ID` are **absent from the prod task definition entirely** — not set to empty, just not there. | Isaac: create a Stripe Terminal Location in the Dashboard, put its ID in prod env, set the flag, redeploy. Blocks the **first card-present transaction**, not signup — the `ConsultationFlowModal` uses a `SetupIntent` and keys cards in. |
+
+**Deliverability, stated precisely** (the old wording was wrong): SES is out of
+sandbox (`ProductionAccess: true`, 50k/day), the `hollis.health` domain identity
+is verified, DKIM is `SUCCESS` and signing, and the custom MAIL FROM domain
+`mail.hollis.health` publishes `v=spf1 include:amazonses.com -all`. The apex
+`hollis.health` SPF record is `v=spf1 include:_spf.google.com ~all` — that is
+**correct as-is** and governs Google Workspace mail; do **not** bolt
+`include:amazonses.com` onto it, because SES authenticates on the MAIL FROM
+domain instead. So SPF and DKIM both pass and both align. The only DNS gap is
+blocker 3. (One caveat: `BehaviorOnMxFailure: USE_DEFAULT_VALUE` means that if
+the `mail.hollis.health` MX lookup ever fails, SES falls back to an
+`amazonses.com` envelope domain — SPF still passes but SPF *alignment* breaks,
+leaving DKIM as the only aligned signal. That is survivable under `p=none`.)
+
+**Sentry PHI scrubbing — the call sites verified on 2026-09-20.** Every
+initializer routes events through `sanitizeSentryEvent` / `sanitizeSentryLog`
+from `@hollis-studio/contracts`, with `sendDefaultPii: false`:
+
+- `hollis-health-app/server/src/index.ts:35` — `beforeSend`, `beforeSendTransaction`, `beforeSendLog`, **plus** `googleGenAIIntegration({ recordInputs: false, recordOutputs: false })` so Vertex AI prompts/responses never reach Sentry
+- `hollis-health-app/web-admin/instrumentation-client.ts:17` and `web-admin/sentry.server.config.ts:14` / `sentry.edge.config.ts:14`
+- `hollis-health-app/web-public/instrumentation-client.ts:19` and `web-public/sentry.server.config.ts:9` / `sentry.edge.config.ts:9`
+- `hollis-health-app/app/_layout.tsx:115` — also `beforeBreadcrumb`, which is the only thing covering SDK-assembled breadcrumbs (the static `check:phi-logging` scanner cannot see them)
+- `hollis-identity/src/index.ts:26`
+- `hollis-workouts/server/src/lib/sentry.ts:63`
+
+This is real, defence-in-depth scrubbing. It is **not** a substitute for a BAA,
+because a scrubber can only remove fields it knows about.
+
+### ✅ Closed since the 2026-05-20 snapshot — verified 2026-09-20, do not re-litigate
+
+| Item | Verification |
+|---|---|
+| **Stripe prod keys → Secrets Manager** | `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET` and `STRIPE_DATA_REF_SECRET` are all `secrets` (Secrets Manager refs), not env values, on `hollis-prod-api:443`. The 11 tier/coaching price IDs (9 membership + 2 coaching) are plain env vars; they were confirmed resolvable against live Stripe on 2026-09-15 — not re-checked on 2026-09-20, so re-verify against the Stripe Dashboard if a signup fails. |
+| **`SENTRY_DSN` → Secrets Manager** | Present as a Secrets Manager `secret` on `hollis-prod-api:443`, with `SENTRY_ENVIRONMENT=prod`. Prod crashes are no longer silent. |
+| **`server/.env` in git history / rotate the Gemini key** | **Never happened.** `git log --all -- server/.env` and `git log --all -- .env` both return **0 commits** in `hollis-health-app`; the only tracked `*.env` path ever added is `ios/.xcode.env`. Prod does not use a Gemini API key at all — Vertex AI authenticates via the `GCP_SA_KEY_JSON` secret (ADC), with `GOOGLE_CLOUD_PROJECT=hollis-health-app-473921`. **Separate, real, and still open:** the prod RDS password and `PASSWORD_PEPPER` *are* in git history via committed Terraform plan archives and have not been rotated — that is tracked in `hollis-health-app`, not here. |
+| **`ENABLE_AUDIT_CHAIN_VERIFY=true` in prod** | Set on `hollis-prod-api:443`, with `AUDIT_CHAIN_VERIFY_START_AT=2026-09-15T22:44:05Z` and `ENABLE_AUDIT_LOG_ARCHIVAL=true`. |
+| **`SERVER_PUBLIC_URL` in prod** | Set on `hollis-prod-api:443`. CAN-SPAM unsubscribe links no longer fall back to `FRONTEND_URL`. |
+| **`PHONE_CALL` / `WALK_IN` in a published enum** | In the published alpha.87 tarball: `dist/public/contact.js` → `LEAD_SOURCES = ["PHONE_CALL", "WALK_IN", "WEBSITE", "REFERRAL", "SOCIAL_MEDIA", "GOOGLE", "OTHER"]`. No longer local-only. |
+| **`HIPAA_NPP` consent type** | `HIPAA_NPP` at `server/prisma/schema.prisma:357`; `ALL_CONSENT_DOCS` in published alpha.87 `dist/admin/legal-documents/index.d.ts:75` leads with it; `hipaaNpp` ships as its own module; `ConsultationFlowModal` collects it at the `sign-npp` step (§5.3 step 5). Satisfies 45 CFR §164.520. |
+| **BAA with White Horse Holistic Health** | Closed 2026-08-19 by the relationship ending, not by signing. No data ever flowed. See [`baa-tracker.md`](./baa-tracker.md). |
+| **Republish `@hollis-studio/contracts`** | Done many times over — published channel is now `0.2.0-alpha.87` and the admin routes/fields are in it. ⚠️ **But pin exact versions:** the `latest` dist-tag is stuck on an old alpha with superseded legal-document versions. See [`../TODO.md`](../TODO.md). |
+| **Health services parked in AWS** | Unparked. `hollis-prod-api` and `hollis-prod-web-admin` both 1/1, both canaries running. Residual park items (Container Insights, 3 muted alarm actions, Identity still at 1×0.25 vCPU) are tracked in [`aws-cost-scaledown-runbook.md`](./aws-cost-scaledown-runbook.md). |
+
+**Prisma migrations to prod — closed, with one honest caveat.** Both named
+migrations exist and are committed:
+`server/prisma/migrations/20260520000000_phi_access_log_rls/` is present with a
+clean `git status`, the newest Health migration is
+`20260918210000_workouts_plan_builder`, and `hollis-identity` has four applied
+migrations (its service could not be serving traffic otherwise). The
+2026-09-20 debts re-verification recorded all migrations deployed. **Caveat:**
+nothing outside the VPC can read `_prisma_migrations`, so "every row is applied"
+is inference, not direct evidence. If you want certainty, run a one-off read-only
+Fargate task (see the prod ad-hoc query pattern in the Health repo runbooks)
+rather than assuming.
+
+### ✅ Closed in the 2026-05-20 batch (no further engineering work)
 - Manual card entry in `ConsultationFlowModal` payment step — confirmed: Stripe Payment Element renders in `setup` mode, always available regardless of Terminal connectivity.
 - `LeadPipeline.consultationDate` admin UI — date picker added to `/leads` rows, auto-opens when stage transitions to `CONSULTATION_BOOKED`.
 - "Create lead manually" admin UI — `CreateLeadModal` + `POST /api/admin/leads` for phone/walk-in leads.
@@ -293,34 +366,17 @@ Status snapshot as of **2026-05-20** (post 7-fix engineering batch). See [`../re
 - Notification permission proactively requested in patient-app onboarding (new step before `complete`).
 - `location` field surfaced in `NewAppointmentModal`. *(The WHH auto-suggest shipped with it is now wrong and must be removed — tracked in the admin dashboard alignment plan.)*
 
-### 🔴 P0 — owner/ops actions still required (no code work)
-1. ~~**BAA with White Horse Holistic Health**~~ — **closed 2026-08-19, not by signing.** The WHH relationship ended; no data ever flowed and none will. See [`baa-tracker.md`](./baa-tracker.md).
-2. **BAA with Sentry** — error payloads visible to Sentry even with PHI scrubbing.
-3. ~~**`HIPAA_NPP` consent type**~~ — **CLOSED / SHIPPED.** `ConsentDocumentType.HIPAA_NPP` exists, `HIPAA_NPP` is in `REQUIRED_CONSENT_DOCS`, the document ships as `@hollis-studio/contracts/admin/legal-documents/hipaaNpp.ts` (v1.2.0), and `ConsultationFlowModal` collects the acknowledgment at the `sign-npp` step (§5.3 step 5) — satisfying 45 CFR §164.520.
-4. **Apply pending Prisma migrations to prod** — `20260520000000_phi_access_log_rls` (then `ALTER ROLE <app_service> BYPASSRLS;`) and `hollis-identity` initial migration.
-5. **Stripe prod keys → AWS Secrets Manager** — currently only test keys in `server/.env`.
-6. **`SENTRY_DSN` → AWS Secrets Manager** — blank in all environments today; prod crashes will be silent.
-7. **Rotate Gemini API key** if `server/.env` is in git history (`server/.env:45` and `.env:62` both contain it). Verify with `git log --all -- server/.env`.
-8. **Confirm `RDS Multi-AZ` is applied** — tfvars value was ambiguous in the audit; verify with `terraform plan`.
-
-### 🟠 P0 — engineering follow-ups from 2026-05-20 batch
-1. **Republish `@hollis-studio/contracts`** to propagate the new admin routes (`subscriptions.retryForUser`, `leads.update`, `leads.CREATE`) and the `convertedUserId` field on `adminLeadStageUpdateBodySchema`. Local dist is rebuilt and synced into all `node_modules/` for now, but a fresh `npm install` would clobber it. After republish, clean up the TODO workarounds in `web-admin/services/admin/leadsService.ts`, `web-admin/services/billingService.ts`, and `server/src/routes/admin/leads.ts`.
-2. **Set `SERVER_PUBLIC_URL=https://api.hollis.health`** (or equivalent) in prod env — without it, the CAN-SPAM unsubscribe links built by `lib/urls.ts` fall back to `FRONTEND_URL` which may not be the API origin.
-3. **Add `PHONE_CALL` and `WALK_IN`** to a published `LeadSourceSchema` enum on next contracts bump (currently only in local server Zod schema).
-
-### 🟡 P1 — desirable but not blocking
-1. **24h lead-reminder email cron** — no equivalent of `appointmentReminders.ts` exists for `LeadPipeline.consultationDate`. Today: Isaac sends consultation reminders manually.
-2. **Email templates** for: (a) `CONSULTATION_BOOKED` confirmation, (b) 24h-before reminder, (c) post-signup welcome with app download links. (`INQUIRY` confirmation already exists.)
+### 🟡 P1 — desirable but not blocking (re-verified 2026-09-20)
+1. **Promote 4 lead/billing fields into published contracts.** The contracts republish landed, but `TODO(contracts)` workarounds remain where the server sends fields the published schema does not declare: `server/src/routes/admin/leads.ts:146`, `web-admin/services/admin/leadsService.ts:66`, `web-admin/services/billingService.ts:72` and `:237`. Harmless today (the client tolerates the extras); tidy on the next contracts bump.
+2. **Email templates** for: (a) 24h-before consultation reminder, (b) post-signup welcome with app download links. `INQUIRY` and `CONSULTATION_BOOKED` confirmations already exist in `server/src/services/emailService.ts`.
 3. **Pre-fill patient-app intake from `ClinicalProfile`** so members aren't asked the same intake questions twice. (Today: the intake-step filter correctly skips them if `intake.isComplete === true` server-side — verify the in-clinic wizard sets that flag.)
 4. **"Convert lead to registration" pre-fill** — clicking a lead row should open `ConsultationFlowModal` pre-populated with name/email/phone/tier from the lead, eliminating re-typing.
 5. **Lead detail/edit page** — today coordinator can update stage + consultationDate inline, but cannot edit name/phone/email/notes after creation.
 6. **Add a step inside `ConsultationFlowModal` to book the first `TRAINING_SESSION`** so it happens inside the wizard instead of as a separate flow on the patient detail page.
 7. **CloudWatch alarm** on the log line `"Orphaned Stripe subscription canceled successfully"` (already emitted by `subscriptionService.ts`) to catch any future orphaned-state escapes.
-8. **Stripe Terminal provisioning** — `ENABLE_STRIPE_TERMINAL=false` and `STRIPE_TERMINAL_LOCATION_ID=` empty. Create a Stripe Terminal Location in Dashboard, paste its ID into prod env, set the enable flag, redeploy. Required before first card-present transaction.
-9. **`ENABLE_AUDIT_CHAIN_VERIFY=true`** in prod env — the daily 04:00 UTC audit-chain verify cron exists but is gated behind this flag.
-10. **PagerDuty endpoint** + CloudWatch canary S3 bucket — both blank in `prod/terraform.tfvars`.
-11. **DMARC DNS record** — DKIM and SPF are in Terraform; DMARC is missing. Major ISPs increasingly route to spam without it.
-12. **Re-run pre-commit suite against current HEAD** — the green 59/59 report is 8 days stale (pre-batch).
+8. **Container Insights + 3 muted alarm actions.** Health is live again but `web-admin-down`, `canary-admin-failed` and `alb-5xx-spike` still have actions disabled, and Container Insights is still off. Tracked with the exact commands in [`aws-cost-scaledown-runbook.md`](./aws-cost-scaledown-runbook.md) §4–5. Note that enabling an alarm action is not the same as alarm *delivery* — confirm the SNS topic has a confirmed subscriber.
+9. **PagerDuty endpoint** — **deliberately deferred, not an oversight.** `infrastructure/terraform/environments/prod/terraform.tfvars:96` documents it as intentionally unwired because there is no on-call rotation for a solo operator, and lists the three edits needed to enable it. Revisit when someone else is on call.
+10. **Re-run the pre-commit suite against current `main`.** The 59/59 green report is now four months old, and `hollis-health-app` CI has been paused since 2026-09-04.
 
 ### 🟢 P2 — post-launch
 - UTM / ad attribution (skip until paid ads start).
@@ -330,7 +386,7 @@ Status snapshot as of **2026-05-20** (post 7-fix engineering batch). See [`../re
 - Self-serve online checkout on `web-public` for prospects who want to skip the in-person intro.
 - Sleep-screening appointment type auto-creating downstream records. (Lab and DXA appointment types are dormant — Hollis performs neither.)
 - Per-appointment deep-linking from push notifications (today: deep-links to appointments tab list).
-- Identity Service consumption (the standalone service exists but `hollis-health-app/server` doesn't consume it yet).
+- **Identity Service cutover for Health.** The service is **deployed** (`hollis-identity-prod`, 1/1, routed at `identity.hollis.health`) and `hollis-workouts/server` verifies through it, but `hollis-health-app/server` still issues its own JWTs — `IDENTITY_SERVICE_URL` and `IDENTITY_JWT_SECRET` are wired on the prod task definition without the auth path being switched over. Deliberately post-launch: do not attempt an auth cutover near the clinic opening. See [`../architecture/shared-auth-migration-checklist.md`](../architecture/shared-auth-migration-checklist.md).
 
 ---
 
@@ -412,6 +468,8 @@ Run this full sequence in a staging environment with Stripe in test mode before 
 
 ---
 
-Last reviewed: 2026-08-19 (partner-clinician exit + sponsored biomarker panel — see [`../reports/2026-08-19-business-model-change.md`](../reports/2026-08-19-business-model-change.md))
+Last reviewed: 2026-09-20 (§11 re-verified against live prod/AWS/DNS/registry and rewritten: 5 of the 8 P0 owner items were already closed; the real blocker list is now 6 items)
+
+Prior review: 2026-08-19 (partner-clinician exit + sponsored biomarker panel — see [`../reports/2026-08-19-business-model-change.md`](../reports/2026-08-19-business-model-change.md))
 
 Prior review: 2026-05-20 (post 7-fix engineering batch — see [`../reports/2026-05-20-launch-readiness-snapshot.md`](../reports/2026-05-20-launch-readiness-snapshot.md))
