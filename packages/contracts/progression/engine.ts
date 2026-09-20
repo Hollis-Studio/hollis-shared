@@ -265,6 +265,8 @@ const ProgressionEngineStateObjectSchema = z.object({
    * own history; the engine falls back to population constants when missing.
    */
   personalization: ProgressionPersonalizationSchema.optional(),
+  /** Per-session evidence deletion clocks; retain across history pruning and sync. */
+  historyTombstones: z.record(z.string().min(1), z.number().int().min(0)).optional(),
   schemaVersion: z.number().int().min(1),
 });
 

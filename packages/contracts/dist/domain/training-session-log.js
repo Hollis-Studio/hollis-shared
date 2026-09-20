@@ -68,6 +68,14 @@ export const SetTargetSnapshotSchema = z.object({
     isWarmup: z.boolean(),
     /** An explicit athlete load choice; automatic fatigue may adjust reps, not this load. */
     loadIsUserOwned: z.boolean().optional(),
+    /** Original authoring basis, before cross-exercise fatigue and grid rounding. */
+    fatigueBasis: z.object({
+        schemaVersion: z.literal(1).optional(),
+        weightKg: z.number().finite().min(0),
+        reps: z.number().int().min(0),
+        appliedWeightKg: z.number().finite().min(0),
+        appliedReps: z.number().int().min(0),
+    }).optional(),
     /**
      * Superset stamps, mirroring the same three fields on SessionSetSchema. A
      * merged superset's `originalTargets` spine carries them so a cold resume

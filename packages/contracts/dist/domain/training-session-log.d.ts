@@ -71,6 +71,13 @@ export declare const SetTargetSnapshotSchema: z.ZodObject<{
     jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     isWarmup: z.ZodBoolean;
     loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+    fatigueBasis: z.ZodOptional<z.ZodObject<{
+        schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+        weightKg: z.ZodNumber;
+        reps: z.ZodNumber;
+        appliedWeightKg: z.ZodNumber;
+        appliedReps: z.ZodNumber;
+    }, z.core.$strip>>;
     setType: z.ZodOptional<z.ZodEnum<{
         normal: "normal";
         warmup: "warmup";
@@ -145,6 +152,13 @@ export declare const SessionSetSchema: z.ZodObject<{
         jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isWarmup: z.ZodBoolean;
         loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+        fatigueBasis: z.ZodOptional<z.ZodObject<{
+            schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+            weightKg: z.ZodNumber;
+            reps: z.ZodNumber;
+            appliedWeightKg: z.ZodNumber;
+            appliedReps: z.ZodNumber;
+        }, z.core.$strip>>;
         setType: z.ZodOptional<z.ZodEnum<{
             normal: "normal";
             warmup: "warmup";
@@ -274,6 +288,13 @@ export declare const SessionExerciseSchema: z.ZodObject<{
             jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
             loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+            fatigueBasis: z.ZodOptional<z.ZodObject<{
+                schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+                weightKg: z.ZodNumber;
+                reps: z.ZodNumber;
+                appliedWeightKg: z.ZodNumber;
+                appliedReps: z.ZodNumber;
+            }, z.core.$strip>>;
             setType: z.ZodOptional<z.ZodEnum<{
                 normal: "normal";
                 warmup: "warmup";
@@ -385,6 +406,13 @@ export declare const SessionExerciseSchema: z.ZodObject<{
         jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isWarmup: z.ZodBoolean;
         loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+        fatigueBasis: z.ZodOptional<z.ZodObject<{
+            schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+            weightKg: z.ZodNumber;
+            reps: z.ZodNumber;
+            appliedWeightKg: z.ZodNumber;
+            appliedReps: z.ZodNumber;
+        }, z.core.$strip>>;
         setType: z.ZodOptional<z.ZodEnum<{
             normal: "normal";
             warmup: "warmup";
@@ -550,6 +578,13 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
                 jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 isWarmup: z.ZodBoolean;
                 loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+                fatigueBasis: z.ZodOptional<z.ZodObject<{
+                    schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+                    weightKg: z.ZodNumber;
+                    reps: z.ZodNumber;
+                    appliedWeightKg: z.ZodNumber;
+                    appliedReps: z.ZodNumber;
+                }, z.core.$strip>>;
                 setType: z.ZodOptional<z.ZodEnum<{
                     normal: "normal";
                     warmup: "warmup";
@@ -661,6 +696,13 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
             jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
             loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+            fatigueBasis: z.ZodOptional<z.ZodObject<{
+                schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+                weightKg: z.ZodNumber;
+                reps: z.ZodNumber;
+                appliedWeightKg: z.ZodNumber;
+                appliedReps: z.ZodNumber;
+            }, z.core.$strip>>;
             setType: z.ZodOptional<z.ZodEnum<{
                 normal: "normal";
                 warmup: "warmup";
@@ -810,6 +852,13 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
                 jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 isWarmup: z.ZodBoolean;
                 loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+                fatigueBasis: z.ZodOptional<z.ZodObject<{
+                    schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+                    weightKg: z.ZodNumber;
+                    reps: z.ZodNumber;
+                    appliedWeightKg: z.ZodNumber;
+                    appliedReps: z.ZodNumber;
+                }, z.core.$strip>>;
                 setType: z.ZodOptional<z.ZodEnum<{
                     normal: "normal";
                     warmup: "warmup";
@@ -921,6 +970,13 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
             jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
             loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+            fatigueBasis: z.ZodOptional<z.ZodObject<{
+                schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+                weightKg: z.ZodNumber;
+                reps: z.ZodNumber;
+                appliedWeightKg: z.ZodNumber;
+                appliedReps: z.ZodNumber;
+            }, z.core.$strip>>;
             setType: z.ZodOptional<z.ZodEnum<{
                 normal: "normal";
                 warmup: "warmup";

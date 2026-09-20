@@ -2,6 +2,8 @@ import * as z from "zod";
 import { ProgressionEngineStateSchema } from "./engine.js";
 export const BaselineEntrySchema = z.object({
     sessionId: z.string().min(1),
+    /** Correction clock; performance date alone cannot supersede a deletion. */
+    revisedAt: z.number().int().min(0).optional(),
     date: z.coerce.date(),
     weightKg: z.number().min(0),
     reps: z.number().int().min(0),
@@ -53,6 +55,8 @@ export const ProgressionBaselineSchema = z.object({
 });
 export const CardioBaselineEntrySchema = z.object({
     sessionId: z.string().min(1),
+    /** Correction clock; performance date alone cannot supersede a deletion. */
+    revisedAt: z.number().int().min(0).optional(),
     date: z.coerce.date(),
     durationSeconds: z.number().min(1),
     distanceKm: z.number().min(0).nullable(),

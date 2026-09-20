@@ -1,6 +1,7 @@
 import * as z from "zod";
 export declare const BaselineEntrySchema: z.ZodObject<{
     sessionId: z.ZodString;
+    revisedAt: z.ZodOptional<z.ZodNumber>;
     date: z.ZodCoercedDate<unknown>;
     weightKg: z.ZodNumber;
     reps: z.ZodNumber;
@@ -35,6 +36,7 @@ export declare const ProgressionBaselineSchema: z.ZodObject<{
     lastUpdated: z.ZodCoercedDate<unknown>;
     history: z.ZodArray<z.ZodObject<{
         sessionId: z.ZodString;
+        revisedAt: z.ZodOptional<z.ZodNumber>;
         date: z.ZodCoercedDate<unknown>;
         weightKg: z.ZodNumber;
         reps: z.ZodNumber;
@@ -240,6 +242,7 @@ export declare const ProgressionBaselineSchema: z.ZodObject<{
             sampleSize: z.ZodNumber;
             updatedAt: z.ZodNullable<z.ZodCoercedDate<unknown>>;
         }, z.core.$strip>>;
+        historyTombstones: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodNumber>>;
         schemaVersion: z.ZodNumber;
     }, z.core.$strip>>>;
     phaseExitE1RM_Kg: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
@@ -262,6 +265,7 @@ export declare const ProgressionBaselineSchema: z.ZodObject<{
 }, z.core.$strip>;
 export declare const CardioBaselineEntrySchema: z.ZodObject<{
     sessionId: z.ZodString;
+    revisedAt: z.ZodOptional<z.ZodNumber>;
     date: z.ZodCoercedDate<unknown>;
     durationSeconds: z.ZodNumber;
     distanceKm: z.ZodNullable<z.ZodNumber>;
@@ -301,6 +305,7 @@ export declare const CardioBaselineSchema: z.ZodObject<{
     lastUpdated: z.ZodCoercedDate<unknown>;
     history: z.ZodArray<z.ZodObject<{
         sessionId: z.ZodString;
+        revisedAt: z.ZodOptional<z.ZodNumber>;
         date: z.ZodCoercedDate<unknown>;
         durationSeconds: z.ZodNumber;
         distanceKm: z.ZodNullable<z.ZodNumber>;
@@ -497,6 +502,7 @@ export declare const CardioBaselineSchema: z.ZodObject<{
             sampleSize: z.ZodNumber;
             updatedAt: z.ZodNullable<z.ZodCoercedDate<unknown>>;
         }, z.core.$strip>>;
+        historyTombstones: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodNumber>>;
         schemaVersion: z.ZodNumber;
     }, z.core.$strip>>>;
 }, z.core.$strip>;

@@ -50,7 +50,7 @@
     "prepublishOnly": "npm run build && npm run typecheck"
   },
   "dependencies": {
-    "@hollis-studio/contracts": "0.2.0-alpha.87"
+    "@hollis-studio/contracts": "0.2.0-alpha.88"
   },
   "devDependencies": {
     "typescript": "5.9.2"
