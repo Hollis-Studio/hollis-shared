@@ -2,12 +2,17 @@
 /**
  * Read-only dist-tag health report for the four published @hollis-studio packages.
  *
- * Every prerelease in this repo is published with `--tag alpha`; `latest` is
- * never meant to move. It did once: `@hollis-studio/contracts` has a `latest`
- * pointing at 0.2.0-alpha.54 (old studio address, superseded legal-document
- * text). Any consumer with a floating range — `*`, `latest`, or an npx/CI
- * install with no pin — silently resolves off `latest`, so a stale `latest` is
- * a correctness bug, not cosmetics.
+ * Every release in this repo is an `-alpha.N` prerelease published with
+ * `--tag alpha`, and `latest` is moved to the same version deliberately —
+ * every consumer pins an exact version, so `latest` is a discoverability tag
+ * here, not a stability promise. See THE DIST-TAG RULE in
+ * `.github/workflows/publish.yml`.
+ *
+ * A `latest` that lags `alpha` is therefore a bug, not the intended state:
+ * a bare `npm install @hollis-studio/contracts` resolves `latest` and can
+ * install superseded legal-document text and the pre-rename studio address,
+ * and a package with no `latest` at all cannot be inspected with a bare
+ * `npm view` (three of the four are in that state).
  *
  * Reports per package: the workspace version, the `alpha` tag, and every other
  * dist-tag. Flags a non-alpha tag that points at a version OLDER than `alpha`.
@@ -132,9 +137,21 @@ for (const pkg of PACKAGES) {
     if (alpha && compareVersions(version, alpha) < 0) {
       problems.push(
         `${pkg.name}: '${tag}' -> ${version} is OLDER than 'alpha' -> ${alpha}; ` +
-          `floating ranges resolve off ${tag === "latest" ? "'latest'" : `'${tag}'`}`,
+          `floating ranges resolve off ${tag === "latest" ? "'latest'" : `'${tag}'`}. ` +
+          `Fix: npm dist-tag add ${pkg.name}@${alpha} ${tag}`,
       );
     }
+  }
+  // The dist-tag rule is alpha === latest (see publish.yml). A package with no
+  // `latest` at all is the worse case: the bare spec resolves through `latest`,
+  // so `npm view <pkg>` and `npm view <pkg> versions` print NOTHING and the
+  // package looks unpublished or unreadable.
+  if (alpha && !("latest" in tags)) {
+    problems.push(
+      `${pkg.name}: no 'latest' dist-tag — a bare 'npm view ${pkg.name}' prints ` +
+        `nothing and a bare install cannot resolve. ` +
+        `Fix: npm dist-tag add ${pkg.name}@${alpha} latest`,
+    );
   }
   if (alpha && compareVersions(local, alpha) > 0) {
     // Not a tag fault: source is ahead of the registry and awaiting a publish.
@@ -162,11 +179,14 @@ if (asJson) {
     console.error(`\n${problems.length} dist-tag problem(s):`);
     for (const problem of problems) console.error(`  - ${problem}`);
     console.error(
-      "\nMoving a tag is a deliberate, separately authorized action: " +
-        "npm dist-tag add <pkg>@<version> <tag>",
+      "\nMoving a tag is a deliberate, separately authorized action. " +
+        "New publishes set both tags automatically (.github/workflows/publish.yml); " +
+        "these are pre-existing versions that need a one-off fix.",
     );
   } else {
-    console.log("\nAll four packages: alpha is the newest tag. No stale tags.");
+    console.log(
+      "\nAll four packages: 'alpha' and 'latest' agree on the newest version.",
+    );
   }
 }
 

@@ -26,8 +26,9 @@ throughout Section 3.
   added `EmailVerificationToken` and `AuthAuditLog` models;
   added `AuthAuditEventType` enum.
 - `prisma/migrations/20260519000000_initial/migration.sql` created — full
-  initial schema (all tables, enums, indexes, FKs). **Not yet applied**; owner
-  must run `prisma migrate deploy` against the target DB.
+  initial schema (all tables, enums, indexes, FKs). (Was "**Not yet applied**"
+  when written on 2026-05-20; it and the three later migrations have since been
+  applied to production — see the SHIPPED table below.)
 - `prisma/migrations/migration_lock.toml` created.
 - `src/services/emailVerificationService.ts` — token create/consume implemented.
 - `src/services/authAuditService.ts` — `writeAuditLog()` and `extractIp()` implemented.
@@ -66,11 +67,11 @@ re-opens them.
 |---|---|
 | Run `prisma migrate deploy` against target DB | `hollis-identity/prisma/migrations/` holds four migrations (`20260519000000_initial` → `20260812000000_shared_rate_limit_counter`); the service serves live traffic against the shared RDS instance, which it could not do unapplied. |
 | CI/CD: no `.github/workflows/` directory | `hollis-identity/.github/workflows/` now holds `deploy.yml`, `checks.yml` and `ci.yml`. |
-| Terraform module + ECS service for identity-api | ECS service `hollis-identity-prod` in cluster `hollis-prod-cluster`, 1/1 running on task definition `:22`, managed from `hollis-identity/infrastructure`. |
+| Terraform module + ECS service for identity-api | ECS service `hollis-identity-prod` in cluster `hollis-prod-cluster`, 1/1 running on task definition `:25` (re-verified 2026-09-20), managed from `hollis-identity/infrastructure`. |
 | DNS record `identity.hollis.health` | Resolves to the `hollis-prod-alb` addresses; ALB 443 listener rule priority 150 routes the host to target group `hollis-identity-prod` (port 4001). |
 | ACM cert for `identity.hollis.health` | `https://identity.hollis.health/health` returns **200 with a clean TLS verification**. |
 | SES domain verification for `hollis.health` (sandbox exit) | `aws sesv2 get-account` → `ProductionAccessEnabled: true`, 50,000/day quota. Domain identity verified, DKIM `SUCCESS` and signing, custom MAIL FROM `mail.hollis.health` `SUCCESS`. |
-| ECR image push pipeline | `deploy.yml` builds and pushes; task definition `:22` (registered 2026-09-19) runs a commit-SHA-tagged image from ECR repo `hollis-identity-prod`. |
+| ECR image push pipeline | `deploy.yml` builds and pushes; task definition `:25` runs a commit-SHA-tagged image from ECR repo `hollis-identity-prod`. |
 
 ### 🔴 Still genuinely OPEN — owners + next steps
 
@@ -237,39 +238,82 @@ The migration is complete only when all of these are true:
   `unhandledRejection`/`uncaughtException` global handlers.
 - [x] Initial Prisma migration SQL generated
   (`prisma/migrations/20260519000000_initial/migration.sql` +
-  `migration_lock.toml`). **Schema is finalized locally.**
+  `migration_lock.toml`), and applied — along with three later migrations — to
+  the production database.
+
+**SHIPPED SINCE — corrected 2026-09-20.** The three rows that used to sit here
+("migration not applied", "no `.github/workflows/` directory", "staging
+infrastructure not deployed") were **materially false**. Identity has been in
+production for months; leaving them as open work sent at least one reader
+looking for a deploy that had already happened. Re-verified against live AWS
+and the repo on 2026-09-20:
+
+- [x] **Migrations applied.** `prisma/migrations/` holds four
+  (`20260519000000_initial`, `20260527000000_add_user_display_name`,
+  `20260618000000_user_onboarding_reset`,
+  `20260812000000_shared_rate_limit_counter`). The service serves live traffic
+  against the shared RDS instance, which it could not do unapplied.
+- [x] **CI/CD exists.** `hollis-identity/.github/workflows/` holds `ci.yml`,
+  `checks.yml` and `deploy.yml`; `deploy.yml` builds and pushes a
+  commit-SHA-tagged image to ECR.
+- [x] **Production infrastructure deployed**, not staging-pending. ECS service
+  `hollis-identity-prod` in cluster `hollis-prod-cluster` runs **1/1 on task
+  definition `:25`**, built from the current repo HEAD. `identity.hollis.health`
+  resolves via `hollis-prod-alb` (listener rule priority 150 → target group
+  `hollis-identity-prod`, port 4001) with a valid ACM cert;
+  `https://identity.hollis.health/health` returns 200. Secrets live in
+  Secrets Manager (`hollis-identity-prod/app`, `/database`). SES is out of the
+  sandbox (`ProductionAccessEnabled: true`, 50,000/day, DKIM + custom MAIL FROM
+  verified).
+- [x] **Alarms live.** Six CloudWatch alarms, all `OK` as of 2026-09-20:
+  `hollis-prod-identity-{cpu-high, latency-high, memory-high,
+  no-healthy-hosts, target-5xx, task-count-low}`.
+
+There is **no staging environment**; prod is the only deployed environment.
+Rows below that used to say "blocked on staging deploy" are not blocked — they
+are simply unstarted.
 
 **IN PROGRESS:**
 
-- [ ] Run `prisma migrate deploy` against target DB — migration file exists but
-  has NOT been applied. **Blocks staging deploy.** Owner: Infra.
 - [ ] Full route-level DB-backed tests — account-lockout enforcement has smoke
   coverage only; needs expansion to route-level tests. Owner: Backend/QA.
+  (The local suite is 74 tests / 19 suites and passes; none of it is DB-backed.)
 - [ ] Validate every shared route contract against `@hollis-studio/contracts`.
-  Owner: Backend.
+  Owner: Backend. (Identity is on `0.2.0-alpha.89`, the published head, as of
+  2026-09-20.)
 
 **OPEN / NOT STARTED:**
 
-- [ ] Deploy staging infrastructure: ECS Fargate service, RDS Postgres, ALB,
-  DNS `identity.hollis.health`, ACM cert, Secrets Manager, logs, metrics,
-  alarms, SES sender/domain verification (sandbox exit required), backup/restore
-  policy. Owner: Infra. Next: author Terraform module; plan against staging AWS
-  account.
-- [ ] CI/CD pipeline: no `.github/workflows/` directory. Owner: DevOps.
-  Next: lint → test → build → ECR push workflow.
-- [ ] WebAuthn routes: `src/routes/mfa.ts:749-766` are still stubs. Owner:
-  Backend. Next: implement or gate behind a named feature flag.
+- [ ] WebAuthn routes: `src/routes/mfa.ts:753-766` are still comment-only stubs
+  under `TODO(W6h)` — `register/start`, `register/finish`, `auth/start`,
+  `auth/finish`. Owner: Backend. Next: choose a library (e.g.
+  `@simplewebauthn/server`), add a `WebAuthnChallenge` Prisma model for
+  multi-instance safety, or gate behind a named feature flag so nothing
+  advertises WebAuthn support. **Genuinely open.**
 - [ ] Key rotation: JWKS currently single-kid; no dual-key overlap support.
-  Owner: Backend/Security. Next: design dual-kid rotation scheme; update
-  auth-client JWKS cache to handle multiple kids.
-- [ ] Logout webhook: `authService.ts:435` TODO unresolved. Owner: Backend.
-  Next: implement or document explicit deferral.
+  `src/lib/jwtKeys.ts:111` publishes one `kid` from `env.JWT_KEY_ID`. Owner:
+  Backend/Security. Next: design dual-kid rotation; update the auth-client JWKS
+  cache to handle multiple kids. Lower urgency while production verification is
+  HS256 shared-secret rather than RS256/JWKS — but it blocks ever moving to
+  JWKS. **Genuinely open.**
+- [ ] Logout webhook: `src/services/authService.ts:535` —
+  `TODO(W6h): emit user.logout webhook`. Owner: Backend. Next: implement, or
+  record an explicit "not doing this" decision. It is the mechanism that would
+  reduce the severity of Workouts' local-verify revocation gap. **Genuinely
+  open.**
 - [ ] `ClinicMembership`, `StudioSubscription`, `ConsentGrant`,
   `ServiceAccount` Prisma models — deferred. Owner: Backend.
   Next: add when respective product domains are ready.
-- [ ] Staging security review: token TTLs, refresh rotation, MFA bypass rules,
-  account enumeration, brute-force protection, audit retention. Owner:
-  Security/Backend. Blocked on staging deploy.
+- [ ] Production security review: token TTLs, refresh rotation, MFA bypass
+  rules, account enumeration, brute-force protection, audit retention. Owner:
+  Security/Backend. Not blocked — it was never done, and the environment it
+  would review is already live.
+- [ ] Secrets single-copy risk: `PASSWORD_PEPPER`, `JWT_SECRET` and
+  `ENCRYPTION_KEY` exist only in Terraform state and one Secrets Manager
+  version, with no copy outside AWS. Owner: Infra/Isaac. Terraform lifecycle
+  guards landed 2026-09-20 and close the in-state accidents only; the offline
+  break-glass envelope is still unexecuted. See
+  `hollis-identity/docs/SECRETS-ESCROW.md`.
 
 **OPEN DECISIONS (Identity-specific):**
 

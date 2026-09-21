@@ -2,19 +2,59 @@
 #
 # Before this workflow, every @hollis-studio/* release was `npm publish` from a
 # laptop: no green-CI requirement, no tag/version agreement, no check that the
-# packed tarball actually contains the legal text the source declares, and one
-# mistyped `--tag` away from moving `latest` (which is how contracts' `latest`
-# ended up stuck on 0.2.0-alpha.54 — stale legal documents and the old studio
-# address for every consumer resolving a floating range).
+# packed tarball actually contains the legal text the source declares, and no
+# check that what the registry then served matched what was built. contracts
+# 0.2.0-alpha.88 and .89 were both published that way. It is also how the
+# dist-tags drifted: `latest` sat on 0.2.0-alpha.54 for months, and is still
+# behind (0.2.0-alpha.87 against an `alpha` of 0.2.0-alpha.89).
 #
 # Triggers:
-#   * push of a `<package>-v<version>` tag (e.g. contracts-v0.2.0-alpha.88)
-#     — runs the full gate and then publishes for real.
+#   * push of a `<package>-v<version>` tag (e.g. contracts-v0.2.0-alpha.90)
+#     — runs the full gate and then publishes for real. Every package has a
+#     pattern; the tag's version must equal the workspace manifest's version.
 #   * workflow_dispatch — same gate, but `dry_run` defaults to true, so a
 #     manual run is a rehearsal unless someone explicitly sets it to false.
 #
-# The publish step always passes `--tag alpha` and publishes the exact tarball
-# that was verified. `latest` is read before and after and asserted unchanged.
+# ---------------------------------------------------------------------------
+# THE DIST-TAG RULE (deliberate, and the reason this workflow writes `latest`)
+# ---------------------------------------------------------------------------
+# Every release here is an `-alpha.N` prerelease, and every consumer in the
+# suite pins an EXACT version — `"@hollis-studio/contracts": "0.2.0-alpha.89"`,
+# never a range. So no consumer install is steered by a dist-tag at all, and
+# the usual "never move latest, prereleases are opt-in" convention buys nothing
+# here. What it costs is real:
+#
+#   * `npm view @hollis-studio/utils versions` prints NOTHING for a package
+#     with no `latest`, because the bare spec resolves through `latest` first.
+#     Three of the four packages are in that state, and every registry check
+#     against them has been misread as an auth failure at least once.
+#   * a bare `npm install @hollis-studio/contracts` resolves `latest` and
+#     installs months-old legal-document text and the pre-rename studio
+#     address, silently.
+#
+# Therefore, for these packages, BOTH tags move to the version just published:
+#
+#   alpha  -> the version just published   (written by `npm publish --tag alpha`)
+#   latest -> the same version             (written by `npm dist-tag add`)
+#
+# `latest` is not a stability signal for @hollis-studio/*; it means "the newest
+# thing this repo shipped". Stability is expressed by consumers pinning exact
+# versions, which they all do. If a non-prerelease 1.0.0 line is ever started,
+# revisit this rule before publishing it — a 1.x release would need `latest` to
+# stop tracking the alpha channel.
+#
+# Both moves are asserted after the fact, so a publish that half-lands is a red
+# run rather than a silently inconsistent registry.
+#
+# ---------------------------------------------------------------------------
+# POST-PUBLISH VERIFICATION
+# ---------------------------------------------------------------------------
+# The legal-document hash guard runs twice: once on the locally packed tarball
+# (before publish, so a bad build never ships) and once on the tarball
+# DOWNLOADED BACK from the registry (after publish). The second run is not
+# redundant — contracts alpha.57 through .62 all published tarballs whose legal
+# documents regressed relative to the local build, and only a check that reads
+# the registry's bytes can catch that class.
 
 name: Publish
 
@@ -206,15 +246,19 @@ jobs:
           set -euo pipefail
           # `npm view <pkg> dist-tags` prints nothing for a package with no
           # `latest`, so the spec has to name a tag that exists.
+          alpha="$(npm view "$NAME@alpha" dist-tags.alpha --registry="$REGISTRY" 2>/dev/null || true)"
           latest="$(npm view "$NAME@alpha" dist-tags.latest --registry="$REGISTRY" 2>/dev/null || true)"
-          echo "latest=$latest" >> "$GITHUB_OUTPUT"
-          echo "latest before publish: '${latest:-<none>}'"
+          {
+            echo "alpha=$alpha"
+            echo "latest=$latest"
+          } >> "$GITHUB_OUTPUT"
+          echo "before publish: alpha='${alpha:-<none>}' latest='${latest:-<none>}'"
 
-      - name: Dist-tag health report
+      - name: Dist-tag health report (before)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # Informational: contracts' `latest` is already stale, and moving a
-        # dist-tag is a separate authorized action, so this must not block.
+        # Informational baseline. Several packages have stale or missing tags
+        # that this run is not responsible for, so it must not block.
         continue-on-error: true
         run: node scripts/dist-tag-health.mjs
 
@@ -233,32 +277,115 @@ jobs:
         env:
           TARBALL: ${{ steps.pack.outputs.target_tarball }}
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # --tag alpha is the only dist-tag this workflow ever writes. Publishing
-        # the tarball (not the workspace) guarantees the published bytes are the
-        # bytes the legal-document verification just read.
+        # Publishing the tarball (not the workspace) guarantees the published
+        # bytes are the bytes the legal-document verification just read.
+        # `--tag alpha` writes the alpha channel; `latest` is moved deliberately
+        # two steps below. See THE DIST-TAG RULE at the top of this file.
         run: npm publish "$TARBALL" --tag alpha --registry="$REGISTRY"
 
-      - name: Assert latest was not moved
+      # ---------------------------------------------------------------------
+      # Verify what the REGISTRY now serves, not what we built
+      # ---------------------------------------------------------------------
+      - name: Verify legal document hashes in the PUBLISHED tarball
         if: steps.mode.outputs.dry_run == 'false'
         env:
           NAME: ${{ steps.target.outputs.name }}
           VERSION: ${{ steps.target.outputs.version }}
-          BEFORE: ${{ steps.before.outputs.latest }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Downloads the tarball back out of GitHub Packages and re-runs the same
+        # source-vs-tarball comparison against the bytes a consumer would
+        # actually install. contracts alpha.57-.62 published tarballs whose
+        # legal documents disagreed with the local build; a pre-publish check
+        # alone cannot see that.
+        #
+        # For a contracts release this reads the version just pushed. For any
+        # other package there is no new contracts tarball, so it re-checks
+        # whatever contracts version the `alpha` tag currently serves — but only
+        # when that equals the workspace's contracts version, since source being
+        # legitimately ahead of the registry is not a failure.
+        run: |
+          set -euo pipefail
+          workspace_contracts="$(node -p "require('./packages/contracts/package.json').version")"
+
+          if [ "$NAME" = "@hollis-studio/contracts" ]; then
+            spec="@hollis-studio/contracts@$VERSION"
+          else
+            published="$(npm view "@hollis-studio/contracts@alpha" version --registry="$REGISTRY" 2>/dev/null || true)"
+            if [ "$published" != "$workspace_contracts" ]; then
+              echo "::notice::Skipping published-contracts check: registry alpha is '${published:-<none>}', workspace source is $workspace_contracts. Source is ahead of the registry, so there is nothing comparable to verify."
+              exit 0
+            fi
+            spec="@hollis-studio/contracts@$published"
+          fi
+
+          rm -rf .published-pack && mkdir -p .published-pack
+          # GitHub Packages can take a few seconds to serve a just-published
+          # version; retry rather than failing a good publish on propagation.
+          for attempt in 1 2 3 4 5; do
+            if npm pack "$spec" --pack-destination .published-pack --registry="$REGISTRY" --ignore-scripts; then
+              break
+            fi
+            if [ "$attempt" = "5" ]; then
+              echo "::error::Could not download $spec from $REGISTRY after 5 attempts"
+              exit 1
+            fi
+            echo "download attempt $attempt failed; retrying in 10s"
+            sleep 10
+          done
+
+          downloaded="$(ls .published-pack/*.tgz | head -1)"
+          echo "Verifying published tarball: $spec -> $downloaded"
+          node scripts/verify-packed-legal-docs.mjs "$downloaded"
+
+      # ---------------------------------------------------------------------
+      # Dist-tags: alpha AND latest, both deliberate
+      # ---------------------------------------------------------------------
+      - name: Move latest to the published version
+        if: steps.mode.outputs.dry_run == 'false'
+        env:
+          NAME: ${{ steps.target.outputs.name }}
+          VERSION: ${{ steps.target.outputs.version }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # `npm publish --tag alpha` already set `alpha`. `latest` has to be set
+        # explicitly, because npm only writes `latest` when you publish WITHOUT
+        # a --tag. Consumers all pin exact versions, so `latest` here is a
+        # discoverability tag, not a stability promise — a package with no
+        # `latest` cannot even be inspected with a bare `npm view`.
+        run: npm dist-tag add "$NAME@$VERSION" latest --registry="$REGISTRY"
+
+      - name: Assert both dist-tags point at the published version
+        if: steps.mode.outputs.dry_run == 'false'
+        env:
+          NAME: ${{ steps.target.outputs.name }}
+          VERSION: ${{ steps.target.outputs.version }}
+          BEFORE_ALPHA: ${{ steps.before.outputs.alpha }}
+          BEFORE_LATEST: ${{ steps.before.outputs.latest }}
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          after="$(npm view "$NAME@alpha" dist-tags.latest --registry="$REGISTRY" 2>/dev/null || true)"
-          alpha="$(npm view "$NAME@alpha" version --registry="$REGISTRY")"
-          echo "alpha  -> $alpha"
-          echo "latest -> '${after:-<none>}' (was '${BEFORE:-<none>}')"
+          alpha="$(npm view "$NAME@alpha" dist-tags.alpha --registry="$REGISTRY" 2>/dev/null || true)"
+          latest="$(npm view "$NAME@alpha" dist-tags.latest --registry="$REGISTRY" 2>/dev/null || true)"
+          echo "alpha  -> '${alpha:-<none>}' (was '${BEFORE_ALPHA:-<none>}')"
+          echo "latest -> '${latest:-<none>}' (was '${BEFORE_LATEST:-<none>}')"
+          failed=0
           if [ "$alpha" != "$VERSION" ]; then
-            echo "::error::alpha points at $alpha, expected $VERSION"
-            exit 1
+            echo "::error::'alpha' points at '${alpha:-<none>}', expected $VERSION"
+            failed=1
           fi
-          if [ "$after" != "$BEFORE" ]; then
-            echo "::error::'latest' moved from '${BEFORE:-<none>}' to '${after:-<none>}'; this workflow must never touch latest"
-            exit 1
+          if [ "$latest" != "$VERSION" ]; then
+            echo "::error::'latest' points at '${latest:-<none>}', expected $VERSION — the registry is now inconsistent; fix with: npm dist-tag add $NAME@$VERSION latest"
+            failed=1
           fi
+          [ "$failed" = "0" ]
+
+      - name: Dist-tag health report (after)
+        if: steps.mode.outputs.dry_run == 'false'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Informational: flags any OTHER package whose tags are still stale.
+        # Those are separate, separately authorized `npm dist-tag add` calls.
+        continue-on-error: true
+        run: node scripts/dist-tag-health.mjs
 
       - name: Summary
         if: always()
@@ -271,6 +398,6 @@ jobs:
             echo "### ${NAME:-unknown}@${VERSION:-unknown}"
             echo ""
             echo "- dry run: \`${DRY_RUN:-unknown}\`"
-            echo "- dist-tag written: \`alpha\` only"
-            echo "- \`latest\`: untouched"
+            echo "- dist-tags written: \`alpha\` and \`latest\`, both -> \`${VERSION:-unknown}\`"
+            echo "- legal-document hashes verified in the packed tarball **and** in the tarball downloaded back from the registry"
           } >> "$GITHUB_STEP_SUMMARY"

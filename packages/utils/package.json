@@ -1,6 +1,8 @@
 {
+  "_comment_DEP_002": "RESOLVED: the PUBLISHED utils@0.1.0-alpha.1 declares \"@hollis-studio/contracts\": \"*\", which resolves off the `latest` dist-tag — for months that was 0.2.0-alpha.54, so anyone installing the published tarball got a second, months-old nested copy of contracts beside their own exact pin. Decision: mirror auth-client's DEP_001 resolution exactly — contracts is a PEER dependency (plus a devDependency for local build/typecheck), because unitConversions.ts imports the runtime value UNIT_CONVERSION from contracts and a normal dependency lets npm nest a second copy. Floor 0.2.0-alpha.85 is the oldest contracts version any current utils consumer installs (hollis-health-app root/server/web-admin/web-public; hollis-workouts is on alpha.89); ceiling <0.3.0 because UNIT_CONVERSION lives in the 0.2.x contract. No zod peer: utils does not import zod. Reviewed: 2026-09-20",
   "name": "@hollis-studio/utils",
-  "version": "0.1.0-alpha.1",
+  "_comment_VERSION_001": "Jumps 0.1.0-alpha.1 -> .4, skipping .2 and .3 on purpose: git tags utils-v0.1.0-alpha.2 and utils-v0.1.0-alpha.3 already exist on origin from the pre-workflow tagging era and were never published (the registry has only 0.1.0-alpha.1). .github/workflows/publish.yml triggers on a tag PUSH, so reusing either number would leave a release that can never be published by tag. alpha.4 is the first free number. Same trap applies to design-tokens: design-tokens-v0.2.0-alpha.2 is taken, so its next release must be 0.2.0-alpha.3 or later.",
+  "version": "0.1.0-alpha.4",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -49,10 +51,11 @@
     "build": "npm run clean && tsc",
     "prepublishOnly": "npm run build && npm run typecheck"
   },
-  "dependencies": {
-    "@hollis-studio/contracts": "0.2.0-alpha.89"
-  },
   "devDependencies": {
+    "@hollis-studio/contracts": "^0.2.0-alpha.85",
     "typescript": "5.9.2"
+  },
+  "peerDependencies": {
+    "@hollis-studio/contracts": "^0.2.0-alpha.85"
   }
 }
