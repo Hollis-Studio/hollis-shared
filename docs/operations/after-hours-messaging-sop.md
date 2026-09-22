@@ -1,6 +1,6 @@
 # After-Hours Messaging SOP
 
-**Purpose:** Define how patient messages and calls are handled outside of clinic hours, including response SLA, auto-reply text, and emergency escalation. Applies from day 1.
+**Purpose:** Define the manual day-one process for messages and calls received outside clinic hours, including response targets and emergency redirect language.
 
 **Related docs:**
 - [`walk-in-and-phone-sop.md`](./walk-in-and-phone-sop.md)
@@ -25,13 +25,13 @@
 | Voicemail (clinic phone) | 2 hours | Next business day by noon |
 | Text message | 2 hours | Next business day by noon |
 
-**Clinical urgency exception:** If a message received after hours describes a new or worsening urgent symptom (not an emergency — emergencies go to 911), Isaac will use his clinical judgment about whether a same-day response is warranted. There is no on-call coverage obligation for non-emergency after-hours concerns under the Hollis membership model.
+There is no after-hours triage or same-day response promise. Isaac is the care coordinator, not a clinician. Medical questions go to the member's own licensed provider; emergencies go to 911 or the nearest emergency room.
 
 DO NOT set an expectation of after-hours clinical availability unless you intend to fulfill it consistently.
 
 ---
 
-## 3. After-Hours Auto-Reply
+## 3. Current Channel Handling
 
 ### 3.1 Voicemail greeting (clinic phone)
 
@@ -39,9 +39,11 @@ Record this as your outgoing voicemail message:
 
 > "You've reached Hollis Health. Our clinic is currently closed. If this is a medical emergency, please hang up and call 911 or go to your nearest emergency room. For non-urgent matters, please leave your name, number, and a brief message and I'll return your call on the next business day. You can also message me through the Hollis app or at isaac@hollis.health. Thank you."
 
-### 3.2 Secure messaging / app auto-reply
+### 3.2 Secure messaging / app
 
-Configure this text as the auto-reply for messages received outside clinic hours (Note: as of 2026-05-19, the web-admin Settings page has Profile, Availability, and Security tabs only — no Messaging tab exists yet; this configuration is pending platform implementation):
+The app has no after-hours auto-reply setting. Messages remain queued for manual review on the next business day. Do not tell members that an automatic acknowledgment was sent.
+
+When replying manually, use this language when it fits the message:
 
 > "Thank you for your message. Hollis Health clinic is currently closed. I'll respond on the next business day by noon.
 >
@@ -51,17 +53,15 @@ Configure this text as the auto-reply for messages received outside clinic hours
 >
 > — Isaac, Hollis Health"
 
-### 3.3 Email auto-reply
+### 3.3 Email
 
-Set an out-of-office reply on `isaac@hollis.health` during non-clinic hours with the same language as §3.2, adapted for email format.
-
-**Note:** Until automated auto-reply is set up in the messaging platform, manually set a Gmail vacation responder or equivalent each evening before closing.
+This SOP relies on manual review and does not assume an active email autoresponder. Messages to `isaac@hollis.health` remain queued for review on the next business day. A verified out-of-office response may be enabled for a planned extended closure, but staff must not claim it is active without checking the mailbox setting.
 
 ---
 
 ## 4. On-Call Coverage — Current State
 
-**There is no on-call coverage.** Isaac is the sole clinician. There is no coverage arrangement with another provider for after-hours clinical calls.
+**There is no on-call clinical coverage.** Hollis has no employed clinician and Isaac is not a medical provider. There is no coverage arrangement with another provider for after-hours clinical calls.
 
 This means:
 - Patients must be informed at enrollment that Hollis Health does not provide after-hours on-call clinical coverage.
@@ -95,10 +95,10 @@ When you review messages the next business day:
 
 For any planned closure longer than a single weekend:
 - Update the voicemail greeting with the specific return date.
-- Update the app and email auto-reply with the specific return date.
+- If a verified channel supports an out-of-office response, update it with the specific return date; otherwise use the door notice and direct member notifications below.
 - Post a notice on the clinic door at least 2 days in advance.
 - If patients have appointments scheduled during the closure, notify them individually at least 5 business days in advance and offer to reschedule.
 
 ---
 
-Last reviewed: 2026-05-19
+Last reviewed: 2026-09-21

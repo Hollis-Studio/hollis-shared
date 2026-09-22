@@ -115,8 +115,8 @@ Per the HIPAA-DR-PLAN §4.3: if you need to access a member record and the platf
 - [ ] Any member-shared biomarker reports received today uploaded against a logged consent (see [`biomarker-panel-program-sop.md`](./biomarker-panel-program-sop.md) §4).
 - [ ] Stripe Terminal powered down.
 - [ ] Clinic locked.
-- [ ] After-hours auto-reply active (see [`after-hours-messaging-sop.md`](./after-hours-messaging-sop.md)).
+- [ ] App, email, and voicemail queues reviewed; members know replies resume next business day. No app or nightly email auto-reply is assumed (see [`after-hours-messaging-sop.md`](./after-hours-messaging-sop.md)).
 
 ---
 
-Last reviewed: 2026-05-19
+Last reviewed: 2026-09-21

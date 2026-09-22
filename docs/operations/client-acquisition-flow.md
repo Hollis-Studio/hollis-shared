@@ -294,11 +294,11 @@ the list.
 
 | # | Blocker | Evidence (2026-09-20) | What closing it takes |
 |---|---|---|---|
-| 1 | **Sentry BAA is unsigned** | Sentry is in prod (`SENTRY_DSN` secret on `hollis-prod-api:443`, `SENTRY_ENVIRONMENT=prod`). PHI scrubbing **is** wired everywhere (see below), which reduces but does not eliminate the exposure. | Isaac: confirm the Sentry plan tier and request a HIPAA BAA, **or** accept the residual risk in writing. See [`baa-tracker.md`](./baa-tracker.md). |
-| 2 | **RDS is single-AZ** | `aws rds describe-db-instances` → `MultiAZ: false` on `hollis-prod-postgres` (`db.t3.micro`, 50 GiB, encrypted, 30-day PITR). | Isaac: decide. Multi-AZ roughly doubles the RDS line (~$20 → ~$40/mo) and removes the single-AZ outage exposure for every clinical record. A one-AZ failure today means the clinic has no charts. |
-| 3 | **No DMARC record** | `dig +short TXT _dmarc.hollis.health` → empty. | Isaac: add a DMARC TXT record (start at `p=none` with an rua address, tighten later). DKIM and SPF already pass — see the deliverability note below. |
+| 1 | ~~Sentry BAA is unsigned~~ — **resolved by exclusion 2026-09-21** | The owner kept the free (no-BAA) plan and excluded Health runtime reporting instead: every Health initializer (mobile, API, web-admin, web-public) is `enabled: false` with zero sampling and drop-all hooks. The Health ingestion key stays enabled, so already-installed mobile builds and any not-yet-replaced deployment can still send until updated. See [`baa-tracker.md`](./baa-tracker.md). | Engineering: verify each replaced deployment and the next store builds. Isaac: revisit before any runtime re-enable. |
+| 2 | **RDS single-AZ risk accepted 2026-09-20** | `hollis-prod-postgres` remains `MultiAZ: false` (`db.t3.micro`, 50 GiB, encrypted, 30-day PITR); the owner accepted the lower-cost single-AZ posture with the existing disaster-recovery process. | Keep the documented backup/restore checks current and revisit Multi-AZ when availability requirements or budget change. |
+| 3 | ~~No DMARC record~~ — **closed 2026-09-21** | A targeted Terraform apply added authoritative `_dmarc.hollis.health` TXT `v=DMARC1; p=none`; post-apply authoritative DNS verification matched. No reporting mailbox (`rua`) was invented. | Monitor deliverability and tighten policy only after reviewing legitimate senders. |
 | 4 | ~~No 24h consultation reminder~~ — **built 2026-09-20 (health-app v3.8.148)** | `server/src/jobs/consultationReminderJob.ts` runs every 15 min and emails leads whose `LeadPipeline.consultationDate` is 2–24h out (idempotent, suppression-list aware, watched by the job watchdog). Email only: leads have no app account for push and no SMS provider exists. | Do one real end-to-end send with a test lead before relying on it. |
-| 5 | **No after-hours auto-reply mechanism** | `web-admin` settings has three tabs — `profile`, `availability`, `security` (`app/(admin)/settings/page.tsx:20`). There is **no Messaging tab**, and a suite-wide search for `after-hours`/`autoReply` in `web-admin` and `server/src` returns nothing. | [`after-hours-messaging-sop.md`](./after-hours-messaging-sop.md) specifies auto-reply text that nothing sends. Either build the setting or rewrite that SOP to say the reply is manual. |
+| 5 | ~~After-hours SOP claimed nonexistent automation~~ — **corrected 2026-09-21** | `web-admin` has no Messaging tab or auto-reply implementation. The SOP now states the actual day-one process: voicemail plus manual review of app and email queues on the next business day. Isaac is identified as care coordinator, not clinician. | Verify the posted hours and voicemail greeting before opening; no new automation or staffing is assumed. |
 | 6 | **Stripe Terminal not provisioned** | `ENABLE_STRIPE_TERMINAL` and `STRIPE_TERMINAL_LOCATION_ID` are **absent from the prod task definition entirely** — not set to empty, just not there. | Isaac: create a Stripe Terminal Location in the Dashboard, put its ID in prod env, set the flag, redeploy. Blocks the **first card-present transaction**, not signup — the `ConsultationFlowModal` uses a `SetupIntent` and keys cards in. |
 
 **Deliverability, stated precisely** (the old wording was wrong): SES is out of
@@ -314,7 +314,8 @@ the `mail.hollis.health` MX lookup ever fails, SES falls back to an
 `amazonses.com` envelope domain — SPF still passes but SPF *alignment* breaks,
 leaving DKIM as the only aligned signal. That is survivable under `p=none`.)
 
-**Sentry PHI scrubbing — the call sites verified on 2026-09-20.** Every
+**Sentry PHI scrubbing — historical (verified 2026-09-20; Health runtime
+reporting has since been disabled, see blocker 1).** Every
 initializer routes events through `sanitizeSentryEvent` / `sanitizeSentryLog`
 from `@hollis-studio/contracts`, with `sendDefaultPii: false`:
 
@@ -333,7 +334,7 @@ because a scrubber can only remove fields it knows about.
 | Item | Verification |
 |---|---|
 | **Stripe prod keys → Secrets Manager** | `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET` and `STRIPE_DATA_REF_SECRET` are all `secrets` (Secrets Manager refs), not env values, on `hollis-prod-api:443`. The 11 tier/coaching price IDs (9 membership + 2 coaching) are plain env vars; they were confirmed resolvable against live Stripe on 2026-09-15 — not re-checked on 2026-09-20, so re-verify against the Stripe Dashboard if a signup fails. |
-| **`SENTRY_DSN` → Secrets Manager** | Present as a Secrets Manager `secret` on `hollis-prod-api:443`, with `SENTRY_ENVIRONMENT=prod`. Prod crashes are no longer silent. |
+| **`SENTRY_DSN` → Secrets Manager** | Present as a Secrets Manager `secret` on `hollis-prod-api:443`. Superseded 2026-09-21: Health runtime Sentry is disabled in source (blocker 1), so the secret is inert once the replacement API is deployed; crash visibility is CloudWatch logs and alarms. |
 | **`server/.env` in git history / rotate the Gemini key** | **Never happened.** `git log --all -- server/.env` and `git log --all -- .env` both return **0 commits** in `hollis-health-app`; the only tracked `*.env` path ever added is `ios/.xcode.env`. Prod does not use a Gemini API key at all — Vertex AI authenticates via the `GCP_SA_KEY_JSON` secret (ADC), with `GOOGLE_CLOUD_PROJECT=hollis-health-app-473921`. **Separate, real, and still open:** the prod RDS password and `PASSWORD_PEPPER` *are* in git history via committed Terraform plan archives and have not been rotated — that is tracked in `hollis-health-app`, not here. |
 | **`ENABLE_AUDIT_CHAIN_VERIFY=true` in prod** | Set on `hollis-prod-api:443`, with `AUDIT_CHAIN_VERIFY_START_AT=2026-09-15T22:44:05Z` and `ENABLE_AUDIT_LOG_ARCHIVAL=true`. |
 | **`SERVER_PUBLIC_URL` in prod** | Set on `hollis-prod-api:443`. CAN-SPAM unsubscribe links no longer fall back to `FRONTEND_URL`. |

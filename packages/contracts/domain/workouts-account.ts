@@ -10,6 +10,18 @@
  *   Workouts server  `DELETE /v1/users/me`  → hard-deletes the Workouts-owned
  *                                             training data for that user.
  *
+ * Identity deletion requires fresh re-authentication: the client first calls
+ * `POST /auth/account/deletion-authorization` with a proof (`{ method:
+ * "password", currentPassword }`, `{ method: "mfa" }`, or `{ method: "oauth",
+ * provider, idToken, nonce? }`) and receives a 10-minute `{ authorization }`
+ * grant, then sends `DELETE /auth/account` with body `{ authorization }`. A
+ * missing/invalid proof or grant answers 401 `REAUTHENTICATION_REQUIRED`.
+ * Legacy window: a body-less `DELETE /auth/account` (shipped Workouts builds)
+ * is still accepted on the access token alone until 2026-12-31T00:00Z
+ * (Identity env `IDENTITY_LEGACY_ACCOUNT_DELETE_UNTIL`); new clients must not
+ * rely on it. Obtain the grant BEFORE deleting Workouts data so a failed
+ * re-auth cannot leave data deleted with the login still live.
+ *
  * The mobile "Delete Account" flow calls BOTH, in that order, and reports a
  * different message depending on which half failed. So these acknowledgements
  * must never share a name: everything here carries the `Workouts` prefix, the
