@@ -25,6 +25,10 @@ export const BaselineEntrySchema = z.object({
     rir: z.number().int().min(0).max(10).nullable(),
     capacityMultiplier: z.number().finite().min(0.65).max(1),
     bodyWeightKg: z.number().finite().min(0).nullable(),
+    // The winning set's prescription. Lets a replay credit a blank-RIR set
+    // (met ⇒ planned reserve, short ⇒ a miss) instead of lower-bound only.
+    prescribedReps: z.number().int().min(0).nullable().optional(),
+    prescribedRir: z.number().int().min(0).max(10).nullable().optional(),
   }).optional(),
 });
 

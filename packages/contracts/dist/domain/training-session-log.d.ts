@@ -53,6 +53,15 @@ export declare const PerceivedEffortSchema: z.ZodEnum<{
     hard: "hard";
 }>;
 export type PerceivedEffort = z.infer<typeof PerceivedEffortSchema>;
+/** Original authoring basis of a target row, before cross-exercise fatigue and grid rounding. */
+export declare const SetTargetFatigueBasisSchema: z.ZodObject<{
+    schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+    capacityMultiplier: z.ZodOptional<z.ZodNumber>;
+    weightKg: z.ZodNumber;
+    reps: z.ZodNumber;
+    appliedWeightKg: z.ZodNumber;
+    appliedReps: z.ZodNumber;
+}, z.core.$strip>;
 /**
  * A snapshot of the prescription a set was judged against. Persisted on the set
  * (the target the user actually faced after live adaptation) and on the exercise
@@ -78,6 +87,27 @@ export declare const SetTargetSnapshotSchema: z.ZodObject<{
         reps: z.ZodNumber;
         appliedWeightKg: z.ZodNumber;
         appliedReps: z.ZodNumber;
+    }, z.core.$strip>>;
+    chosenLoadBasis: z.ZodOptional<z.ZodObject<{
+        row: z.ZodObject<{
+            weightKg: z.ZodNullable<z.ZodNumber>;
+            reps: z.ZodNumber;
+            rir: z.ZodNumber;
+            loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+            fatigueBasis: z.ZodOptional<z.ZodObject<{
+                schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+                capacityMultiplier: z.ZodOptional<z.ZodNumber>;
+                weightKg: z.ZodNumber;
+                reps: z.ZodNumber;
+                appliedWeightKg: z.ZodNumber;
+                appliedReps: z.ZodNumber;
+            }, z.core.$strip>>;
+        }, z.core.$strip>;
+        applied: z.ZodObject<{
+            weightKg: z.ZodNumber;
+            reps: z.ZodNumber;
+            rir: z.ZodNumber;
+        }, z.core.$strip>;
     }, z.core.$strip>>;
     setType: z.ZodOptional<z.ZodEnum<{
         normal: "normal";
@@ -160,6 +190,27 @@ export declare const SessionSetSchema: z.ZodObject<{
             reps: z.ZodNumber;
             appliedWeightKg: z.ZodNumber;
             appliedReps: z.ZodNumber;
+        }, z.core.$strip>>;
+        chosenLoadBasis: z.ZodOptional<z.ZodObject<{
+            row: z.ZodObject<{
+                weightKg: z.ZodNullable<z.ZodNumber>;
+                reps: z.ZodNumber;
+                rir: z.ZodNumber;
+                loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+                fatigueBasis: z.ZodOptional<z.ZodObject<{
+                    schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+                    capacityMultiplier: z.ZodOptional<z.ZodNumber>;
+                    weightKg: z.ZodNumber;
+                    reps: z.ZodNumber;
+                    appliedWeightKg: z.ZodNumber;
+                    appliedReps: z.ZodNumber;
+                }, z.core.$strip>>;
+            }, z.core.$strip>;
+            applied: z.ZodObject<{
+                weightKg: z.ZodNumber;
+                reps: z.ZodNumber;
+                rir: z.ZodNumber;
+            }, z.core.$strip>;
         }, z.core.$strip>>;
         setType: z.ZodOptional<z.ZodEnum<{
             normal: "normal";
@@ -298,6 +349,27 @@ export declare const SessionExerciseSchema: z.ZodObject<{
                 appliedWeightKg: z.ZodNumber;
                 appliedReps: z.ZodNumber;
             }, z.core.$strip>>;
+            chosenLoadBasis: z.ZodOptional<z.ZodObject<{
+                row: z.ZodObject<{
+                    weightKg: z.ZodNullable<z.ZodNumber>;
+                    reps: z.ZodNumber;
+                    rir: z.ZodNumber;
+                    loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+                    fatigueBasis: z.ZodOptional<z.ZodObject<{
+                        schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+                        capacityMultiplier: z.ZodOptional<z.ZodNumber>;
+                        weightKg: z.ZodNumber;
+                        reps: z.ZodNumber;
+                        appliedWeightKg: z.ZodNumber;
+                        appliedReps: z.ZodNumber;
+                    }, z.core.$strip>>;
+                }, z.core.$strip>;
+                applied: z.ZodObject<{
+                    weightKg: z.ZodNumber;
+                    reps: z.ZodNumber;
+                    rir: z.ZodNumber;
+                }, z.core.$strip>;
+            }, z.core.$strip>>;
             setType: z.ZodOptional<z.ZodEnum<{
                 normal: "normal";
                 warmup: "warmup";
@@ -416,6 +488,27 @@ export declare const SessionExerciseSchema: z.ZodObject<{
             reps: z.ZodNumber;
             appliedWeightKg: z.ZodNumber;
             appliedReps: z.ZodNumber;
+        }, z.core.$strip>>;
+        chosenLoadBasis: z.ZodOptional<z.ZodObject<{
+            row: z.ZodObject<{
+                weightKg: z.ZodNullable<z.ZodNumber>;
+                reps: z.ZodNumber;
+                rir: z.ZodNumber;
+                loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+                fatigueBasis: z.ZodOptional<z.ZodObject<{
+                    schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+                    capacityMultiplier: z.ZodOptional<z.ZodNumber>;
+                    weightKg: z.ZodNumber;
+                    reps: z.ZodNumber;
+                    appliedWeightKg: z.ZodNumber;
+                    appliedReps: z.ZodNumber;
+                }, z.core.$strip>>;
+            }, z.core.$strip>;
+            applied: z.ZodObject<{
+                weightKg: z.ZodNumber;
+                reps: z.ZodNumber;
+                rir: z.ZodNumber;
+            }, z.core.$strip>;
         }, z.core.$strip>>;
         setType: z.ZodOptional<z.ZodEnum<{
             normal: "normal";
@@ -590,6 +683,27 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
                     appliedWeightKg: z.ZodNumber;
                     appliedReps: z.ZodNumber;
                 }, z.core.$strip>>;
+                chosenLoadBasis: z.ZodOptional<z.ZodObject<{
+                    row: z.ZodObject<{
+                        weightKg: z.ZodNullable<z.ZodNumber>;
+                        reps: z.ZodNumber;
+                        rir: z.ZodNumber;
+                        loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+                        fatigueBasis: z.ZodOptional<z.ZodObject<{
+                            schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+                            capacityMultiplier: z.ZodOptional<z.ZodNumber>;
+                            weightKg: z.ZodNumber;
+                            reps: z.ZodNumber;
+                            appliedWeightKg: z.ZodNumber;
+                            appliedReps: z.ZodNumber;
+                        }, z.core.$strip>>;
+                    }, z.core.$strip>;
+                    applied: z.ZodObject<{
+                        weightKg: z.ZodNumber;
+                        reps: z.ZodNumber;
+                        rir: z.ZodNumber;
+                    }, z.core.$strip>;
+                }, z.core.$strip>>;
                 setType: z.ZodOptional<z.ZodEnum<{
                     normal: "normal";
                     warmup: "warmup";
@@ -708,6 +822,27 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
                 reps: z.ZodNumber;
                 appliedWeightKg: z.ZodNumber;
                 appliedReps: z.ZodNumber;
+            }, z.core.$strip>>;
+            chosenLoadBasis: z.ZodOptional<z.ZodObject<{
+                row: z.ZodObject<{
+                    weightKg: z.ZodNullable<z.ZodNumber>;
+                    reps: z.ZodNumber;
+                    rir: z.ZodNumber;
+                    loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+                    fatigueBasis: z.ZodOptional<z.ZodObject<{
+                        schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+                        capacityMultiplier: z.ZodOptional<z.ZodNumber>;
+                        weightKg: z.ZodNumber;
+                        reps: z.ZodNumber;
+                        appliedWeightKg: z.ZodNumber;
+                        appliedReps: z.ZodNumber;
+                    }, z.core.$strip>>;
+                }, z.core.$strip>;
+                applied: z.ZodObject<{
+                    weightKg: z.ZodNumber;
+                    reps: z.ZodNumber;
+                    rir: z.ZodNumber;
+                }, z.core.$strip>;
             }, z.core.$strip>>;
             setType: z.ZodOptional<z.ZodEnum<{
                 normal: "normal";
@@ -866,6 +1001,27 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
                     appliedWeightKg: z.ZodNumber;
                     appliedReps: z.ZodNumber;
                 }, z.core.$strip>>;
+                chosenLoadBasis: z.ZodOptional<z.ZodObject<{
+                    row: z.ZodObject<{
+                        weightKg: z.ZodNullable<z.ZodNumber>;
+                        reps: z.ZodNumber;
+                        rir: z.ZodNumber;
+                        loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+                        fatigueBasis: z.ZodOptional<z.ZodObject<{
+                            schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+                            capacityMultiplier: z.ZodOptional<z.ZodNumber>;
+                            weightKg: z.ZodNumber;
+                            reps: z.ZodNumber;
+                            appliedWeightKg: z.ZodNumber;
+                            appliedReps: z.ZodNumber;
+                        }, z.core.$strip>>;
+                    }, z.core.$strip>;
+                    applied: z.ZodObject<{
+                        weightKg: z.ZodNumber;
+                        reps: z.ZodNumber;
+                        rir: z.ZodNumber;
+                    }, z.core.$strip>;
+                }, z.core.$strip>>;
                 setType: z.ZodOptional<z.ZodEnum<{
                     normal: "normal";
                     warmup: "warmup";
@@ -984,6 +1140,27 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
                 reps: z.ZodNumber;
                 appliedWeightKg: z.ZodNumber;
                 appliedReps: z.ZodNumber;
+            }, z.core.$strip>>;
+            chosenLoadBasis: z.ZodOptional<z.ZodObject<{
+                row: z.ZodObject<{
+                    weightKg: z.ZodNullable<z.ZodNumber>;
+                    reps: z.ZodNumber;
+                    rir: z.ZodNumber;
+                    loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
+                    fatigueBasis: z.ZodOptional<z.ZodObject<{
+                        schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
+                        capacityMultiplier: z.ZodOptional<z.ZodNumber>;
+                        weightKg: z.ZodNumber;
+                        reps: z.ZodNumber;
+                        appliedWeightKg: z.ZodNumber;
+                        appliedReps: z.ZodNumber;
+                    }, z.core.$strip>>;
+                }, z.core.$strip>;
+                applied: z.ZodObject<{
+                    weightKg: z.ZodNumber;
+                    reps: z.ZodNumber;
+                    rir: z.ZodNumber;
+                }, z.core.$strip>;
             }, z.core.$strip>>;
             setType: z.ZodOptional<z.ZodEnum<{
                 normal: "normal";

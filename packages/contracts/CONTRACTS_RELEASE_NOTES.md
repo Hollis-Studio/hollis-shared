@@ -1,5 +1,18 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.90 (2026-09-22) — additive chosen-load basis and baseline prescriptions
+
+Additive only; the new field is optional.
+
+- `domain/training-session-log.ts`: optional `chosenLoadBasis` on
+  `SetTargetSnapshot` (`row` {weightKg|null, reps, rir, loadIsUserOwned?,
+  fatigueBasis?}, `applied` {weightKg, reps, rir}), so a Workouts resume keeps
+  the authored row behind a chosen-load re-solve. The fatigue-basis object is
+  now also exported as `SetTargetFatigueBasisSchema` (same shape as before).
+- `progression/baseline.ts`: optional `observation.prescribedReps` and
+  `observation.prescribedRir` on `BaselineEntrySchema`, so a history replay can
+  credit a blank-RIR set against its prescription.
+
 ## 0.2.0-alpha.87 (2026-09-19) — additive session provenance + AI audit enums
 
 Additive only; every new field is optional and every enum only gains members.

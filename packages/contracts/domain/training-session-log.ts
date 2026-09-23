@@ -47,6 +47,17 @@ export type SetSignal = z.infer<typeof SetSignalSchema>;
 export const PerceivedEffortSchema = z.enum(["easy", "right", "hard"]);
 export type PerceivedEffort = z.infer<typeof PerceivedEffortSchema>;
 
+/** Original authoring basis of a target row, before cross-exercise fatigue and grid rounding. */
+export const SetTargetFatigueBasisSchema = z.object({
+  schemaVersion: z.literal(1).optional(),
+  /** Capacity context at authoring; absent means a fresh, unfatigued basis. */
+  capacityMultiplier: z.number().finite().min(0.5).max(1).optional(),
+  weightKg: z.number().finite().min(0),
+  reps: z.number().int().min(0),
+  appliedWeightKg: z.number().finite().min(0),
+  appliedReps: z.number().int().min(0),
+});
+
 /**
  * A snapshot of the prescription a set was judged against. Persisted on the set
  * (the target the user actually faced after live adaptation) and on the exercise
@@ -84,15 +95,30 @@ export const SetTargetSnapshotSchema = z.object({
   /** An explicit athlete load choice; automatic fatigue may adjust reps, not this load. */
   loadIsUserOwned: z.boolean().optional(),
   /** Original authoring basis, before cross-exercise fatigue and grid rounding. */
-  fatigueBasis: z.object({
-    schemaVersion: z.literal(1).optional(),
-    /** Capacity context at authoring; absent means a fresh, unfatigued basis. */
-    capacityMultiplier: z.number().finite().min(0.5).max(1).optional(),
-    weightKg: z.number().finite().min(0),
-    reps: z.number().int().min(0),
-    appliedWeightKg: z.number().finite().min(0),
-    appliedReps: z.number().int().min(0),
-  }).optional(),
+  fatigueBasis: SetTargetFatigueBasisSchema.optional(),
+  /**
+   * Session-local, on unconfirmed placeholder targets only: the authored row a
+   * chosen-load re-solve replaced (`row`) and what that re-solve wrote
+   * (`applied`). Every later re-solve starts from `row`, so retyping a load is
+   * idempotent and typing the authored load restores it exactly, across a
+   * resume. Stale once the target no longer equals `applied`.
+   */
+  chosenLoadBasis: z
+    .object({
+      row: z.object({
+        weightKg: z.number().finite().min(0).nullable(),
+        reps: z.number().int().min(0),
+        rir: z.number().int().min(0).max(10),
+        loadIsUserOwned: z.boolean().optional(),
+        fatigueBasis: SetTargetFatigueBasisSchema.optional(),
+      }),
+      applied: z.object({
+        weightKg: z.number().finite().min(0),
+        reps: z.number().int().min(0),
+        rir: z.number().int().min(0).max(10),
+      }),
+    })
+    .optional(),
   /**
    * Superset stamps, mirroring the same three fields on SessionSetSchema. A
    * merged superset's `originalTargets` spine carries them so a cold resume

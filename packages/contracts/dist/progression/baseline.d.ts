@@ -24,6 +24,8 @@ export declare const BaselineEntrySchema: z.ZodObject<{
         rir: z.ZodNullable<z.ZodNumber>;
         capacityMultiplier: z.ZodNumber;
         bodyWeightKg: z.ZodNullable<z.ZodNumber>;
+        prescribedReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        prescribedRir: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     }, z.core.$strip>>;
 }, z.core.$strip>;
 export declare const ProgressionBaselineSchema: z.ZodObject<{
@@ -59,6 +61,8 @@ export declare const ProgressionBaselineSchema: z.ZodObject<{
             rir: z.ZodNullable<z.ZodNumber>;
             capacityMultiplier: z.ZodNumber;
             bodyWeightKg: z.ZodNullable<z.ZodNumber>;
+            prescribedReps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+            prescribedRir: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         }, z.core.$strip>>;
     }, z.core.$strip>>;
     engineState: z.ZodOptional<z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodObject<{
