@@ -23,7 +23,7 @@ const imports = [
   // Workouts CI — pin them at publish time instead.
   ["@hollis-studio/contracts/domain/gym", ["GymProfileSchema", "GymExerciseInstanceSchema"]],
   ["@hollis-studio/contracts/domain/exercise-workouts", ["CanonicalExerciseRecordSchema"]],
-  ["@hollis-studio/contracts/domain/training-session-log", ["ActiveTrainingSessionLogSchema"]],
+  ["@hollis-studio/contracts/domain/training-session-log", ["ActiveTrainingSessionLogSchema", "normalizeSessionTombstones", "encodeLegacySessionTombstones", "SESSION_TOMBSTONES_MAX"]],
   ["@hollis-studio/contracts/domain/workouts-user-profile", ["WorkoutsUserProfileSchema", "WorkoutsUserProfilePutBodySchema"]],
   ["@hollis-studio/contracts/domain/workouts-injuries", ["InjuryRecordBodySchema"]],
   ["@hollis-studio/contracts/domain/workouts-weeks", ["WeekDocumentSchema", "WeekDocumentBodySchema"]],
