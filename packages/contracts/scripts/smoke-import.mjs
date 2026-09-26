@@ -38,6 +38,7 @@ const imports = [
   ["@hollis-studio/contracts/progression/baseline", ["ProgressionBaselineSchema", "CardioBaselineSchema"]],
   ["@hollis-studio/contracts/progression/program", ["ProgramSchema"]],
   ["@hollis-studio/contracts/progression/metrics", ["MetricBasketSnapshotRecordSchema"]],
+  ["@hollis-studio/contracts/progression/engine-state", ["PROGRESSION_ENGINE_TUNING", "deriveLiftingEngineScores", "deriveCardioEngineScores"]],
   ["@hollis-studio/contracts/revenuecat", ["RevenueCatWebhookRequestSchema", "RevenueCatWebhookAckSchema"]],
   ["@hollis-studio/contracts/error-sanitization", ["sanitizeErrorMessage"]],
   ["@hollis-studio/contracts/sentry-sanitization", ["sanitizeSentryEvent"]],

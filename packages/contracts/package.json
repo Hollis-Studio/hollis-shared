@@ -226,6 +226,11 @@
       "import": "./dist/progression/engine.js",
       "default": "./dist/progression/engine.js"
     },
+    "./progression/engine-state": {
+      "types": "./dist/progression/engine-state.d.ts",
+      "import": "./dist/progression/engine-state.js",
+      "default": "./dist/progression/engine-state.js"
+    },
     "./progression/metrics": {
       "types": "./dist/progression/metrics.d.ts",
       "import": "./dist/progression/metrics.js",

@@ -135,6 +135,7 @@ packages/contracts/
 ├── progression/       # Progression and program contracts
 │   ├── index.ts       # Progression barrel (re-exports baseline, metrics, program, training-session-log)
 │   ├── baseline.ts    # Progression baseline entry schemas
+│   ├── engine-state.ts # Engine-state calibration maths (subpath only, not in the barrel)
 │   ├── metrics.ts     # Gated e1RM and metric gate schemas
 │   └── program.ts     # Program structure, set type, and progression mode schemas
 ├── admin/             # Admin-specific contracts

@@ -86,6 +86,7 @@ documented here.
 | `@hollis-studio/contracts/progression/baseline` | Progression baseline entry and e1RM schemas |
 | `@hollis-studio/contracts/progression/metrics` | Gated e1RM sample and metric gate schemas |
 | `@hollis-studio/contracts/progression/program` | Program structure, set type, and progression mode schemas |
+| `@hollis-studio/contracts/progression/engine-state` | Progression engine-state calibration maths (pure functions + PROGRESSION_ENGINE_TUNING); shared by the Workouts app and server. Not in the root barrel. |
 
 Private source paths are not public unless they appear in `exports`. Do not add
 wildcard exports such as `@hollis-studio/contracts/domain/*`; promote narrow subpaths
