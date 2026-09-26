@@ -104,6 +104,8 @@ export declare const AccessTokenClaimsSchema: z.ZodObject<{
     exp: z.ZodNumber;
     mfaVerifiedAt: z.ZodOptional<z.ZodNumber>;
     mfaEnabled: z.ZodOptional<z.ZodBoolean>;
+    email: z.ZodOptional<z.ZodString>;
+    email_verified: z.ZodOptional<z.ZodBoolean>;
     claims: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
 }, z.core.$strip>;
 export type AccessTokenClaims = z.infer<typeof AccessTokenClaimsSchema>;

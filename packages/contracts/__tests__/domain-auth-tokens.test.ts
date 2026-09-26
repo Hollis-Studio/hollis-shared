@@ -1,5 +1,5 @@
 /**
- * @ai-context Access-token claims contract (alpha.91, hollis-workouts#185)
+ * @ai-context Access-token claims contract (alpha.91, hollis-workouts#185, #130)
  *
  * jsonwebtoken checks `exp` only when present, and auth-client trusts this schema for the
  * rest, so an optional `exp` meant a correctly signed token without one never expired.
@@ -32,5 +32,24 @@ describe('AccessTokenClaimsSchema', () => {
 
   it('rejects a non-numeric exp', () => {
     expect(AccessTokenClaimsSchema.safeParse({ ...identityAccessToken, exp: '1765776000' }).success).toBe(false);
+  });
+
+  it('accepts the email claims Identity signs (#130)', () => {
+    const claims = { ...identityAccessToken, email: 'isaac@example.com', email_verified: true };
+    expect(AccessTokenClaimsSchema.parse(claims)).toEqual(claims);
+  });
+
+  it('keeps email claims optional for tokens issued before #130', () => {
+    const parsed = AccessTokenClaimsSchema.parse(identityAccessToken);
+    expect(parsed.email).toBeUndefined();
+    expect(parsed.email_verified).toBeUndefined();
+  });
+
+  it('rejects a malformed email claim', () => {
+    expect(AccessTokenClaimsSchema.safeParse({ ...identityAccessToken, email: 'not-an-email' }).success).toBe(false);
+  });
+
+  it('rejects a non-boolean email_verified claim', () => {
+    expect(AccessTokenClaimsSchema.safeParse({ ...identityAccessToken, email_verified: 'true' }).success).toBe(false);
   });
 });

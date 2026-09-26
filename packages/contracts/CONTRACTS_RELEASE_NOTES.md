@@ -1,8 +1,8 @@
 # @hollis-studio/contracts — Release Notes
 
-## 0.2.0-alpha.91 (2026-09-25) — auth wire, Sunday Review schemas, shared engine-state maths, set tombstones, catalog clock
+## 0.2.0-alpha.91 (2026-09-25) — auth wire, Sunday Review schemas, shared engine-state maths, set tombstones, catalog clock, verified email claim, push installation id
 
-Five changes in one release. Two are **breaking/tightening** (marked below);
+Seven changes in one release. Two are **breaking/tightening** (marked below);
 the rest are additive.
 
 ### Auth (Hollis-Workouts #185, #178, #246, #129, #223)
@@ -30,6 +30,28 @@ Behavior-visible metadata fix: `ROUTE_METADATA[AUTH_ROUTES.LOGOUT].requiresAuth`
 is `false` (#223) in both route registries — neither Identity nor the Health
 server requires a Bearer on logout. New `ROUTE_METADATA` entries for REGISTER,
 ME, ONBOARDING_RESET, ACCOUNT_DELETION_AUTHORIZATION, ACCOUNT.
+
+### Verified email claim, server-owned profile email (Hollis-Workouts #130)
+
+- `AccessTokenClaimsSchema` gains optional `email` (`z.string().email()`) and
+  `email_verified` (boolean). Identity sets both on every access token
+  (requires the matching Identity release). Trust `email` only when
+  `email_verified === true`. Both are as of token issue: after an email
+  change they stay stale until the next refresh.
+- `WorkoutsUserProfilePutBodySchema` no longer declares `email`: the Workouts
+  server takes it from the verified token claim only. The object strips
+  unknown keys, so older clients that still send `email` keep parsing (the
+  value is dropped). `WorkoutsUserProfileSchema` (the GET response) keeps
+  `email`.
+
+### Installation-scoped push registration (Hollis-Workouts #238)
+
+- `WorkoutsUserProfilePutBodySchema` gains optional, nullable
+  `pushInstallationId` (UUID): a random id the app generates once per install,
+  keeps in secure storage and sends together with `fcmDeviceToken`. The server
+  only moves a push token away from another account when that account's
+  registration carries the same installation id (or a legacy null id). Not on
+  the response schema.
 
 ### Workouts Sunday Review schemas single-sourced (#239)
 

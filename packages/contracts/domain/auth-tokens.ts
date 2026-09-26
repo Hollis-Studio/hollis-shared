@@ -128,6 +128,14 @@ export const AccessTokenClaimsSchema = z.object({
   /** Whether MFA is enabled for this user — avoids DB lookup in requireMFA middleware */
   mfaEnabled: z.boolean().optional(),
   /**
+   * Account email (alpha.91, hollis-workouts#130). Identity sets `email` and `email_verified`
+   * on every access token. Trust `email` only when `email_verified === true`. Both are as of
+   * token issue: after an email change they stay stale until the next refresh.
+   */
+  email: z.string().email().optional(),
+  /** Whether Identity has verified `email`. See `email`. */
+  email_verified: z.boolean().optional(),
+  /**
    * Per-app extension namespace. Consumers SHOULD namespace their data under
    * a key matching their app identifier (e.g. `claims.hollisHealth.organizationId`).
    * TODO(W6): Move Health-specific fields (organizationId, tier) under
