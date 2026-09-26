@@ -351,6 +351,11 @@
       "import": "./dist/domain/workouts-account.js",
       "default": "./dist/domain/workouts-account.js"
     },
+    "./domain/identity-auth": {
+      "types": "./dist/domain/identity-auth.d.ts",
+      "import": "./dist/domain/identity-auth.js",
+      "default": "./dist/domain/identity-auth.js"
+    },
     "./public": {
       "types": "./dist/public/index.d.ts",
       "import": "./dist/public/index.js",

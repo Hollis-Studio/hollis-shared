@@ -393,5 +393,9 @@ export * from './workouts-exercise-moderation.js';
 // Workouts account lifecycle - WorkoutsAccountDeletionAckSchema
 export * from './workouts-account.js';
 
+// Hollis Identity session wire (hollis-workouts#246/#223) - IdentityMeResponseSchema,
+// IdentityAccountProviderSchema, IdentityLogoutRequestSchema, IdentityLogoutResponseSchema
+export * from './identity-auth.js';
+
 // Workouts launch pricing (hollis-workouts#89) - LifetimeAvailabilityResponseSchema
 export * from './workouts-pricing.js';

@@ -37,6 +37,10 @@ import { HTTP_METHODS as _HTTP_METHODS } from "./routes/types.js";
 // USER_ROUTES is now defined in the modular ./routes/users.ts.
 // Import here so API_ROUTES.USERS stays intact in the legacy aggregator.
 import { USER_ROUTES } from "./routes/users.js";
+// AUTH_ROUTES is defined in ./routes/auth.ts (the modular source of truth, also the
+// `@hollis-studio/contracts/api/routes/auth` subpath). Imported for API_ROUTES.AUTH and
+// ROUTE_METADATA below; re-exported in the AUTH ROUTES section.
+import { AUTH_ROUTES } from "./routes/auth.js";
 
 /**
  * HTTP methods supported by the API.
@@ -56,46 +60,10 @@ export type RouteMetadata = _RouteMetadata;
 // AUTH ROUTES
 // ============================================================================
 
-/**
- * Authentication API routes.
- * Base path: /auth
- *
- * @group AUTH
- */
-export const AUTH_ROUTES = {
-  /** POST - Email/password login */
-  LOGIN: "/auth/login",
-  /** POST - Create new account with password */
-  SIGNUP: "/auth/signup",
-  /** POST - Refresh access token using refresh token */
-  REFRESH: "/auth/refresh",
-  /** POST - OAuth social sign-in (Apple or Google) with nonce + CSRF state verification */
-  OAUTH_SIGN_IN: "/auth/oauth",
-  /**
-   * POST - OAuth social registration (Apple or Google) during barcode onboarding.
-   * Creates a new account by combining a social identity token with a barcode claim.
-   */
-  OAUTH_REGISTER: "/auth/oauth-register",
-  /** POST - Sign out current session */
-  LOGOUT: "/auth/logout",
-  /** POST - Request password reset email */
-  FORGOT_PASSWORD: "/auth/forgot-password",
-  /** POST - Reset password using token */
-  RESET_PASSWORD: "/auth/reset-password",
-  /** POST - Send or resend email verification link for authenticated user */
-  VERIFY_EMAIL_SEND: "/auth/verify-email/send",
-  /** GET - Confirm email verification token from email link */
-  VERIFY_EMAIL_CONFIRM: "/auth/verify-email/confirm",
-  /** POST - Issue a refresh token to store for biometric login */
-  BIOMETRIC_TOKEN: "/auth/biometric-token",
-  /** POST - Validate a registration barcode */
-  VALIDATE_BARCODE: "/auth/validate-barcode",
-  /** POST - Change password for authenticated user (invalidates all sessions) */
-  CHANGE_PASSWORD: "/auth/change-password",
-} as const;
-
-/** Type for auth route values */
-export type AuthRoute = (typeof AUTH_ROUTES)[keyof typeof AUTH_ROUTES];
+// AUTH_ROUTES / AuthRoute live in ./routes/auth.ts. Re-exported so
+// `@hollis-studio/contracts/api` and the root barrel serve the SAME object as the
+// `api/routes/auth` subpath. Do NOT re-declare it here (hollis-workouts#178).
+export { AUTH_ROUTES, type AuthRoute } from "./routes/auth.js";
 
 // NOTE: USER_ROUTES is defined in ./routes/users.ts (the modular source of truth).
 // It is explicitly re-exported via api/index.ts. Do NOT re-declare it here.
@@ -1112,14 +1080,41 @@ export const ROUTE_METADATA: Record<string, RouteMetadata> = {
     description: "Create new user account with password",
     requiresAuth: false,
   },
+  [AUTH_ROUTES.REGISTER]: {
+    method: "POST",
+    description: "Register an Identity account with email/password",
+    requiresAuth: false,
+  },
   [AUTH_ROUTES.REFRESH]: {
     method: "POST",
     description: "Refresh access token using refresh token",
     requiresAuth: false,
   },
+  // Tokens travel in the body so sign-out works with an expired access token;
+  // neither Identity nor the Health server checks a Bearer here (hollis-workouts#223).
   [AUTH_ROUTES.LOGOUT]: {
     method: "POST",
     description: "Sign out current session",
+    requiresAuth: false,
+  },
+  [AUTH_ROUTES.ME]: {
+    method: "GET",
+    description: "Get the signed-in Identity account",
+    requiresAuth: true,
+  },
+  [AUTH_ROUTES.ONBOARDING_RESET]: {
+    method: "POST",
+    description: "Record a cross-device onboarding reset",
+    requiresAuth: true,
+  },
+  [AUTH_ROUTES.ACCOUNT_DELETION_AUTHORIZATION]: {
+    method: "POST",
+    description: "Exchange a fresh re-auth proof for an account-deletion grant",
+    requiresAuth: true,
+  },
+  [AUTH_ROUTES.ACCOUNT]: {
+    method: "DELETE",
+    description: "Erase the Identity account using a deletion grant",
     requiresAuth: true,
   },
   // Admin routes
