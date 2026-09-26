@@ -78,6 +78,7 @@ documented here.
 | `@hollis-studio/contracts/domain/workouts-account` | Workouts account-deletion acknowledgement (`DELETE /v1/users/me`) |
 | `@hollis-studio/contracts/domain/identity-auth` | Hollis Identity session wire: `GET /auth/me` (`IdentityMeResponseSchema`), `POST /auth/logout` body/ack |
 | `@hollis-studio/contracts/domain/workouts-program-rotation` | Workouts program rotation singleton (`GET/PUT /v1/program-rotation`, `POST /v1/program-rotation/advance`) — calendar windows of program + training phase; server schedules, device transitions |
+| `@hollis-studio/contracts/domain/workouts-sunday-review` | Workouts Sunday Review: slide payload registry (`SlidePayloadSchemas`), the frozen deck stored in a Week's `aiRetrospective` (`SundayReviewDeckSchema`) and the device snapshot stored in its `deterministicSnapshot` (`WeekClientSnapshotSchema`) |
 | `@hollis-studio/contracts/password` | Password policy, reset, and validation contracts |
 | `@hollis-studio/contracts/primitives` | Cross-domain primitives and result helpers |
 | `@hollis-studio/contracts/errors` | Shared error codes and result/error helpers |

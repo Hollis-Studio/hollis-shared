@@ -375,6 +375,10 @@ export * from './workouts-injuries.js';
 // Workouts week documents - WeekDocumentSchema, WeekDocumentBodySchema
 export * from './workouts-weeks.js';
 
+// Workouts Sunday Review (#239) - SlidePayloadSchemas, WeekClientSnapshotSchema,
+// SundayReviewDeckSchema, SUNDAY_REVIEW_SLIDE_TYPES, WORKOUTS_BODY_REGIONS
+export * from './workouts-sunday-review.js';
+
 // Workouts conversation rolling summary - ConversationRollingSummarySchema, etc.
 export * from './workouts-conversation-summary.js';
 

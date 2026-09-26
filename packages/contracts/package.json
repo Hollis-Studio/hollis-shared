@@ -316,6 +316,11 @@
       "types": "./dist/domain/workouts-weeks.d.ts",
       "default": "./dist/domain/workouts-weeks.js"
     },
+    "./domain/workouts-sunday-review": {
+      "import": "./dist/domain/workouts-sunday-review.js",
+      "types": "./dist/domain/workouts-sunday-review.d.ts",
+      "default": "./dist/domain/workouts-sunday-review.js"
+    },
     "./domain/workouts-conversation-summary": {
       "import": "./dist/domain/workouts-conversation-summary.js",
       "types": "./dist/domain/workouts-conversation-summary.d.ts",

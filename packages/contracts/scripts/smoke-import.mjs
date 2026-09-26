@@ -27,6 +27,7 @@ const imports = [
   ["@hollis-studio/contracts/domain/workouts-user-profile", ["WorkoutsUserProfileSchema", "WorkoutsUserProfilePutBodySchema"]],
   ["@hollis-studio/contracts/domain/workouts-injuries", ["InjuryRecordBodySchema"]],
   ["@hollis-studio/contracts/domain/workouts-weeks", ["WeekDocumentSchema", "WeekDocumentBodySchema"]],
+  ["@hollis-studio/contracts/domain/workouts-sunday-review", ["SlidePayloadSchemas", "WeekClientSnapshotSchema", "SundayReviewDeckSchema", "WEEK_CLIENT_SNAPSHOT_SCHEMA_VERSION"]],
   ["@hollis-studio/contracts/domain/workouts-conversation-summary", ["ConversationRollingSummarySchema", "ConversationRollingSummaryBodySchema"]],
   ["@hollis-studio/contracts/domain/workouts-account", ["WorkoutsAccountDeletionAckSchema", "WORKOUTS_ACCOUNT_DELETION_ACK_VERSION"]],
   ["@hollis-studio/contracts/domain/identity-auth", ["IdentityMeResponseSchema", "IdentityLogoutRequestSchema", "IDENTITY_ACCOUNT_PROVIDERS"]],
