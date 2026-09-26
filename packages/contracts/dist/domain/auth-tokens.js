@@ -80,8 +80,14 @@ export const AudienceSchema = z.enum(AUDIENCES);
  *
  * The `claims` field is the per-app extension namespace for app-specific
  * data that does not belong in the top-level claims (e.g. `claims.hollisHealth.organizationId`).
- * Top-level fields like `sub`, `userId`, `type`, `jti`, and `aud` are required
+ * Top-level fields like `sub`, `userId`, `type`, `jti`, `aud`, `iat` and `exp` are required
  * by all consumers regardless of app.
+ *
+ * `iat` and `exp` are REQUIRED (alpha.91, hollis-workouts#185). jsonwebtoken only checks
+ * `exp` when the claim is present, so an optional `exp` let a correctly signed token
+ * without one verify forever. Every Identity signing site sets both (access/mfa_pending 90d,
+ * refresh 365d, rotated refresh explicit), and Identity's `/verify` needs `iat` for its
+ * denylist check.
  */
 export const AccessTokenClaimsSchema = z.object({
     /** Subject — canonical user ID (same as userId) */
@@ -94,14 +100,22 @@ export const AccessTokenClaimsSchema = z.object({
     jti: z.string(),
     /** Audience — list of apps this token is valid for; must contain at least one entry */
     aud: AudienceSchema.array().nonempty(),
-    /** Issued-at Unix timestamp (seconds) */
-    iat: z.number().optional(),
-    /** Expiry Unix timestamp (seconds) */
-    exp: z.number().optional(),
+    /** Issued-at Unix timestamp (seconds). Required: revocation watermarks compare against it. */
+    iat: z.number(),
+    /** Expiry Unix timestamp (seconds). Required: a token without it would never expire. */
+    exp: z.number(),
     /** Unix timestamp (seconds) when MFA was last verified in this session */
     mfaVerifiedAt: z.number().optional(),
     /** Whether MFA is enabled for this user — avoids DB lookup in requireMFA middleware */
     mfaEnabled: z.boolean().optional(),
+    /**
+     * Account email (alpha.91, hollis-workouts#130). Identity sets `email` and `email_verified`
+     * on every access token. Trust `email` only when `email_verified === true`. Both are as of
+     * token issue: after an email change they stay stale until the next refresh.
+     */
+    email: z.string().email().optional(),
+    /** Whether Identity has verified `email`. See `email`. */
+    email_verified: z.boolean().optional(),
     /**
      * Per-app extension namespace. Consumers SHOULD namespace their data under
      * a key matching their app identifier (e.g. `claims.hollisHealth.organizationId`).

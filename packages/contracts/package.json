@@ -1,7 +1,7 @@
 {
   "_comment_BUILD_001": "RESOLVED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Add explicit package.json exports only for currently consumed public subpaths. Do not add wildcard exports or local compatibility barrels. Reviewed: 2026-05-12 (Phase E/F shared extraction cleanup)",
   "name": "@hollis-studio/contracts",
-  "version": "0.2.0-alpha.90",
+  "version": "0.2.0-alpha.91",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -226,6 +226,11 @@
       "import": "./dist/progression/engine.js",
       "default": "./dist/progression/engine.js"
     },
+    "./progression/engine-state": {
+      "types": "./dist/progression/engine-state.d.ts",
+      "import": "./dist/progression/engine-state.js",
+      "default": "./dist/progression/engine-state.js"
+    },
     "./progression/metrics": {
       "types": "./dist/progression/metrics.d.ts",
       "import": "./dist/progression/metrics.js",
@@ -316,6 +321,11 @@
       "types": "./dist/domain/workouts-weeks.d.ts",
       "default": "./dist/domain/workouts-weeks.js"
     },
+    "./domain/workouts-sunday-review": {
+      "import": "./dist/domain/workouts-sunday-review.js",
+      "types": "./dist/domain/workouts-sunday-review.d.ts",
+      "default": "./dist/domain/workouts-sunday-review.js"
+    },
     "./domain/workouts-conversation-summary": {
       "import": "./dist/domain/workouts-conversation-summary.js",
       "types": "./dist/domain/workouts-conversation-summary.d.ts",
@@ -350,6 +360,11 @@
       "types": "./dist/domain/workouts-account.d.ts",
       "import": "./dist/domain/workouts-account.js",
       "default": "./dist/domain/workouts-account.js"
+    },
+    "./domain/identity-auth": {
+      "types": "./dist/domain/identity-auth.d.ts",
+      "import": "./dist/domain/identity-auth.js",
+      "default": "./dist/domain/identity-auth.js"
     },
     "./public": {
       "types": "./dist/public/index.d.ts",

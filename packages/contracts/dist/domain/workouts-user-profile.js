@@ -147,7 +147,7 @@ export const UserSettingsSchema = z.object({
 // ---------------------------------------------------------------------------
 // WorkoutsUserProfileSchema — response shape for GET /v1/profile
 // uid is synthetic (= userId), always present on response.
-// Request body for PUT uses .omit({uid}).
+// Request body for PUT uses .omit({uid, email}) and adds pushInstallationId.
 // Fields nullable because Prisma columns are nullable (AUDIT-2 fix).
 // ---------------------------------------------------------------------------
 export const WorkoutsUserProfileSchema = z.object({
@@ -164,8 +164,18 @@ export const WorkoutsUserProfileSchema = z.object({
     createdAt: z.coerce.date(),
     updatedAt: z.coerce.date().optional(),
 });
-// Request body for PUT /v1/profile (server strips uid + controls updatedAt)
-export const WorkoutsUserProfilePutBodySchema = WorkoutsUserProfileSchema.omit({ uid: true }).extend({
+// Request body for PUT /v1/profile (server strips uid + controls updatedAt).
+// `email` is server-owned (alpha.91, hollis-workouts#130): the server takes it from the
+// verified access-token claim only. The object strips unknown keys, so older clients that
+// still send `email` keep parsing.
+export const WorkoutsUserProfilePutBodySchema = WorkoutsUserProfileSchema.omit({ uid: true, email: true }).extend({
     updatedAt: z.coerce.date().optional(),
+    /**
+     * Installation-scoped push registration (alpha.91, hollis-workouts#238). A random id the
+     * app generates once per install and keeps in secure storage, sent together with
+     * `fcmDeviceToken`. The server only moves a push token away from another account when
+     * that account's registration carries the same installation id (or a legacy null id).
+     */
+    pushInstallationId: z.string().uuid().nullable().optional(),
 });
 //# sourceMappingURL=workouts-user-profile.js.map

@@ -550,6 +550,53 @@ export declare const QuestionnaireResponseSchema: z.ZodObject<{
     bodyWeightKg: z.ZodOptional<z.ZodNumber>;
     dietaryCalories: z.ZodOptional<z.ZodNumber>;
 }, z.core.$strip>;
+/**
+ * Upper bound on each of a session's tombstone arrays (`deletedExerciseSlotIds`,
+ * `deletedSetIds`). Tombstones are append-only, so without a bound a session
+ * row grows with every delete forever. 1000 is far beyond any real workout (a
+ * session rarely holds 100 sets in total) while keeping a worst-case array near
+ * 40 KB. Writers trim with normalizeSessionTombstones, which keeps the NEWEST
+ * entries: the oldest tombstone is the one most likely to have reached every
+ * device already.
+ */
+export declare const SESSION_TOMBSTONES_MAX = 1000;
+/**
+ * Legacy wire encoding of a deleted-set tombstone: `set:<setId>` inside
+ * `deletedExerciseSlotIds`. Written by Workouts builds pinned before
+ * 0.2.0-alpha.91, and echoed back to them by the Workouts server while such
+ * builds are in use (encodeLegacySessionTombstones). Slot ids never start with
+ * it. Readers decode it with normalizeSessionTombstones; new writers never
+ * produce it.
+ */
+export declare const LEGACY_SET_TOMBSTONE_PREFIX = "set:";
+/** Anything that carries session tombstones: a wire session, a stored row, a request body. */
+export interface SessionTombstoneSource {
+    deletedExerciseSlotIds?: readonly string[] | null;
+    deletedSetIds?: readonly string[] | null;
+}
+/** A session's tombstones in canonical form: slot ids only, set ids only, deduped, capped. */
+export interface SessionTombstones {
+    deletedExerciseSlotIds: string[];
+    deletedSetIds: string[];
+}
+/**
+ * The append-only union of every source's tombstones, in canonical form:
+ * legacy `set:<id>` entries of `deletedExerciseSlotIds` move to `deletedSetIds`,
+ * empty ids are dropped, duplicates keep their first position (so the union of
+ * a stored row and an incoming copy lists the stored entries first), and each
+ * array keeps its newest SESSION_TOMBSTONES_MAX entries. Pure and idempotent:
+ * normalizing an already-canonical value returns equal arrays.
+ */
+export declare function normalizeSessionTombstones(...sources: Array<SessionTombstoneSource | null | undefined>): SessionTombstones;
+/**
+ * `deletedExerciseSlotIds` as a pre-0.2.0-alpha.91 reader needs it: every slot
+ * id, then each deleted set as a legacy `set:<id>` entry, within
+ * SESSION_TOMBSTONES_MAX. Slots come first, since an old build has no other
+ * channel for them, then the newest set ids that fit. A server emits this only
+ * while such builds are in use; new readers decode it with
+ * normalizeSessionTombstones.
+ */
+export declare function encodeLegacySessionTombstones(tombstones: SessionTombstones): string[];
 export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
     id: z.ZodString;
     userId: z.ZodString;
@@ -597,6 +644,7 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
     }>>;
     skippedExerciseIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
     deletedExerciseSlotIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    deletedSetIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
     healthSyncedAt: z.ZodOptional<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
     correctedAt: z.ZodOptional<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
     exercises: z.ZodArray<z.ZodObject<{
@@ -915,6 +963,7 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
     }>>;
     skippedExerciseIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
     deletedExerciseSlotIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
+    deletedSetIds: z.ZodOptional<z.ZodArray<z.ZodString>>;
     healthSyncedAt: z.ZodOptional<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
     correctedAt: z.ZodOptional<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
     exercises: z.ZodArray<z.ZodObject<{

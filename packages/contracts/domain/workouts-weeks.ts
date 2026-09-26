@@ -1,10 +1,14 @@
 /**
  * @ai-context Workouts week documents | WeekDocumentSchema, WeekDocumentBodySchema.
  *
- * deterministicSnapshot/aiRetrospective/userAnnotations are kept opaque (unknown)
- * because DeterministicSnapshotSchema imports app-local schemas and is too
- * coupled to the app layer to include in contracts. If wire-level structure
- * validation is needed, promote DeterministicSnapshotSchema to contracts later.
+ * deterministicSnapshot/aiRetrospective/userAnnotations stay opaque (unknown)
+ * at this level on purpose: rows written before their shapes existed hold
+ * other content, the server's single-row read parses every response through
+ * WeekDocumentSchema, and the client's synced collection validates every row
+ * with it — typing the slots here would turn one legacy row into a 500 and a
+ * quarantined week. The real shapes live in ./workouts-sunday-review
+ * (WeekClientSnapshotSchema for deterministicSnapshot, SundayReviewDeckSchema
+ * for aiRetrospective); consumers parse the slot with them where they use it.
  *
  * deps: zod
  * consumers: hollis-workouts server + mobile client

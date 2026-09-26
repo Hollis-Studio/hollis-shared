@@ -76,7 +76,9 @@ documented here.
 | `@hollis-studio/contracts/revenuecat` | RevenueCat server-to-server webhook wire contract |
 | `@hollis-studio/contracts/api/workouts-envelope` | Workouts `{ ok, data \| err }` REST envelope (distinct from the Health/Identity `{ success, data }` envelope) |
 | `@hollis-studio/contracts/domain/workouts-account` | Workouts account-deletion acknowledgement (`DELETE /v1/users/me`) |
+| `@hollis-studio/contracts/domain/identity-auth` | Hollis Identity session wire: `GET /auth/me` (`IdentityMeResponseSchema`), `POST /auth/logout` body/ack |
 | `@hollis-studio/contracts/domain/workouts-program-rotation` | Workouts program rotation singleton (`GET/PUT /v1/program-rotation`, `POST /v1/program-rotation/advance`) — calendar windows of program + training phase; server schedules, device transitions |
+| `@hollis-studio/contracts/domain/workouts-sunday-review` | Workouts Sunday Review: slide payload registry (`SlidePayloadSchemas`), the frozen deck stored in a Week's `aiRetrospective` (`SundayReviewDeckSchema`) and the device snapshot stored in its `deterministicSnapshot` (`WeekClientSnapshotSchema`) |
 | `@hollis-studio/contracts/password` | Password policy, reset, and validation contracts |
 | `@hollis-studio/contracts/primitives` | Cross-domain primitives and result helpers |
 | `@hollis-studio/contracts/errors` | Shared error codes and result/error helpers |
@@ -84,6 +86,7 @@ documented here.
 | `@hollis-studio/contracts/progression/baseline` | Progression baseline entry and e1RM schemas |
 | `@hollis-studio/contracts/progression/metrics` | Gated e1RM sample and metric gate schemas |
 | `@hollis-studio/contracts/progression/program` | Program structure, set type, and progression mode schemas |
+| `@hollis-studio/contracts/progression/engine-state` | Progression engine-state calibration maths (pure functions + PROGRESSION_ENGINE_TUNING); shared by the Workouts app and server. Not in the root barrel. |
 
 Private source paths are not public unless they appear in `exports`. Do not add
 wildcard exports such as `@hollis-studio/contracts/domain/*`; promote narrow subpaths

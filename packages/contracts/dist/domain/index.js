@@ -142,6 +142,9 @@ export * from './workouts-user-profile.js';
 export * from './workouts-injuries.js';
 // Workouts week documents - WeekDocumentSchema, WeekDocumentBodySchema
 export * from './workouts-weeks.js';
+// Workouts Sunday Review (#239) - SlidePayloadSchemas, WeekClientSnapshotSchema,
+// SundayReviewDeckSchema, SUNDAY_REVIEW_SLIDE_TYPES, WORKOUTS_BODY_REGIONS
+export * from './workouts-sunday-review.js';
 // Workouts conversation rolling summary - ConversationRollingSummarySchema, etc.
 export * from './workouts-conversation-summary.js';
 // Workouts AI conversation threads - ConversationThreadSchema, ConversationAppendBodySchema, etc.
@@ -155,6 +158,9 @@ export * from './workouts-program-rotation.js';
 export * from './workouts-exercise-moderation.js';
 // Workouts account lifecycle - WorkoutsAccountDeletionAckSchema
 export * from './workouts-account.js';
+// Hollis Identity session wire (hollis-workouts#246/#223) - IdentityMeResponseSchema,
+// IdentityAccountProviderSchema, IdentityLogoutRequestSchema, IdentityLogoutResponseSchema
+export * from './identity-auth.js';
 // Workouts launch pricing (hollis-workouts#89) - LifetimeAvailabilityResponseSchema
 export * from './workouts-pricing.js';
 //# sourceMappingURL=index.js.map

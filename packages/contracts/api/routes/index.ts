@@ -124,15 +124,22 @@ export const ROUTE_METADATA: Record<string, RouteMetadata> = {
     description: "Create new user account with password",
     requiresAuth: false,
   },
+  [AUTH_ROUTES.REGISTER]: {
+    method: "POST",
+    description: "Register an Identity account with email/password",
+    requiresAuth: false,
+  },
   [AUTH_ROUTES.REFRESH]: {
     method: "POST",
     description: "Refresh access token using refresh token",
     requiresAuth: false,
   },
+  // Tokens travel in the body so sign-out works with an expired access token;
+  // neither Identity nor the Health server checks a Bearer here (hollis-workouts#223).
   [AUTH_ROUTES.LOGOUT]: {
     method: "POST",
     description: "Sign out current session",
-    requiresAuth: true,
+    requiresAuth: false,
   },
   [AUTH_ROUTES.FORGOT_PASSWORD]: {
     method: "POST",
@@ -147,6 +154,26 @@ export const ROUTE_METADATA: Record<string, RouteMetadata> = {
   [AUTH_ROUTES.CHANGE_PASSWORD]: {
     method: "POST",
     description: "Change password for authenticated user",
+    requiresAuth: true,
+  },
+  [AUTH_ROUTES.ME]: {
+    method: "GET",
+    description: "Get the signed-in Identity account",
+    requiresAuth: true,
+  },
+  [AUTH_ROUTES.ONBOARDING_RESET]: {
+    method: "POST",
+    description: "Record a cross-device onboarding reset",
+    requiresAuth: true,
+  },
+  [AUTH_ROUTES.ACCOUNT_DELETION_AUTHORIZATION]: {
+    method: "POST",
+    description: "Exchange a fresh re-auth proof for an account-deletion grant",
+    requiresAuth: true,
+  },
+  [AUTH_ROUTES.ACCOUNT]: {
+    method: "DELETE",
+    description: "Erase the Identity account using a deletion grant",
     requiresAuth: true,
   },
   // Include admin route metadata

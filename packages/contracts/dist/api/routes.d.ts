@@ -28,45 +28,7 @@ export type HttpMethod = _HttpMethod;
  * @deprecated Import from './routes/types' instead
  */
 export type RouteMetadata = _RouteMetadata;
-/**
- * Authentication API routes.
- * Base path: /auth
- *
- * @group AUTH
- */
-export declare const AUTH_ROUTES: {
-    /** POST - Email/password login */
-    readonly LOGIN: "/auth/login";
-    /** POST - Create new account with password */
-    readonly SIGNUP: "/auth/signup";
-    /** POST - Refresh access token using refresh token */
-    readonly REFRESH: "/auth/refresh";
-    /** POST - OAuth social sign-in (Apple or Google) with nonce + CSRF state verification */
-    readonly OAUTH_SIGN_IN: "/auth/oauth";
-    /**
-     * POST - OAuth social registration (Apple or Google) during barcode onboarding.
-     * Creates a new account by combining a social identity token with a barcode claim.
-     */
-    readonly OAUTH_REGISTER: "/auth/oauth-register";
-    /** POST - Sign out current session */
-    readonly LOGOUT: "/auth/logout";
-    /** POST - Request password reset email */
-    readonly FORGOT_PASSWORD: "/auth/forgot-password";
-    /** POST - Reset password using token */
-    readonly RESET_PASSWORD: "/auth/reset-password";
-    /** POST - Send or resend email verification link for authenticated user */
-    readonly VERIFY_EMAIL_SEND: "/auth/verify-email/send";
-    /** GET - Confirm email verification token from email link */
-    readonly VERIFY_EMAIL_CONFIRM: "/auth/verify-email/confirm";
-    /** POST - Issue a refresh token to store for biometric login */
-    readonly BIOMETRIC_TOKEN: "/auth/biometric-token";
-    /** POST - Validate a registration barcode */
-    readonly VALIDATE_BARCODE: "/auth/validate-barcode";
-    /** POST - Change password for authenticated user (invalidates all sessions) */
-    readonly CHANGE_PASSWORD: "/auth/change-password";
-};
-/** Type for auth route values */
-export type AuthRoute = (typeof AUTH_ROUTES)[keyof typeof AUTH_ROUTES];
+export { AUTH_ROUTES, type AuthRoute } from "./routes/auth.js";
 /**
  * Daily metrics API routes.
  * Base path: /users/:userId/daily-metrics
@@ -757,35 +719,25 @@ export type ConsentRoute = (typeof CONSENT_ROUTES)[keyof typeof CONSENT_ROUTES];
  */
 export declare const API_ROUTES: {
     readonly AUTH: {
-        /** POST - Email/password login */
         readonly LOGIN: "/auth/login";
-        /** POST - Create new account with password */
         readonly SIGNUP: "/auth/signup";
-        /** POST - Refresh access token using refresh token */
-        readonly REFRESH: "/auth/refresh";
-        /** POST - OAuth social sign-in (Apple or Google) with nonce + CSRF state verification */
-        readonly OAUTH_SIGN_IN: "/auth/oauth";
-        /**
-         * POST - OAuth social registration (Apple or Google) during barcode onboarding.
-         * Creates a new account by combining a social identity token with a barcode claim.
-         */
-        readonly OAUTH_REGISTER: "/auth/oauth-register";
-        /** POST - Sign out current session */
-        readonly LOGOUT: "/auth/logout";
-        /** POST - Request password reset email */
-        readonly FORGOT_PASSWORD: "/auth/forgot-password";
-        /** POST - Reset password using token */
-        readonly RESET_PASSWORD: "/auth/reset-password";
-        /** POST - Send or resend email verification link for authenticated user */
-        readonly VERIFY_EMAIL_SEND: "/auth/verify-email/send";
-        /** GET - Confirm email verification token from email link */
-        readonly VERIFY_EMAIL_CONFIRM: "/auth/verify-email/confirm";
-        /** POST - Issue a refresh token to store for biometric login */
-        readonly BIOMETRIC_TOKEN: "/auth/biometric-token";
-        /** POST - Validate a registration barcode */
+        readonly REGISTER: "/auth/register";
         readonly VALIDATE_BARCODE: "/auth/validate-barcode";
-        /** POST - Change password for authenticated user (invalidates all sessions) */
+        readonly REFRESH: "/auth/refresh";
+        readonly OAUTH_SIGN_IN: "/auth/oauth";
+        readonly OAUTH_REGISTER: "/auth/oauth-register";
+        readonly LOGOUT: "/auth/logout";
+        readonly ME: "/auth/me";
+        readonly FORGOT_PASSWORD: "/auth/forgot-password";
+        readonly RESET_PASSWORD: "/auth/reset-password";
+        readonly VERIFY_EMAIL_SEND: "/auth/verify-email/send";
+        readonly VERIFY_EMAIL_CONFIRM: "/auth/verify-email/confirm";
         readonly CHANGE_PASSWORD: "/auth/change-password";
+        readonly BIOMETRIC_TOKEN: "/auth/biometric-token";
+        readonly MFA_SESSION_REVERIFY: "/auth/mfa/session-reverify";
+        readonly ONBOARDING_RESET: "/auth/onboarding/reset";
+        readonly ACCOUNT_DELETION_AUTHORIZATION: "/auth/account/deletion-authorization";
+        readonly ACCOUNT: "/auth/account";
     };
     readonly USERS: {
         readonly ME: "/users/me";

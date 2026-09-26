@@ -5,7 +5,7 @@
  * TrackingTypeSchema = REPS|TIME|DISTANCE — the Health-app vocabulary).
  *
  * deps: zod, domain/equipment, domain/muscles, domain/units
- * consumers: hollis-workouts server + mobile client
+ * consumers: hollis-workouts server + mobile client; hollis-health (pick of id/name/modality/equipmentType/trackingMode only)
  */
 import * as z from 'zod';
 import { EquipmentTypeSchema } from './equipment.js';
@@ -237,6 +237,14 @@ export const CanonicalExerciseRecordSchema = z.object({
   isActive: z.boolean(),
   trackingMode: WorkoutsExerciseTrackingModeSchema.nullable(),
   createdAt: z.coerce.date(),
+  /**
+   * Server modification clock (hollis-workouts#225). Every write to the row
+   * moves it: a changed catalog-seed entry, a retirement, a moderation
+   * decision. `GET /v1/exercises?updatedSince=` filters and pages on it, and a
+   * client's catalog watermark is derived from it. Server-stamped; never
+   * client-supplied.
+   */
+  updatedAt: z.coerce.date(),
   // #46 provenance/moderation. Canonical library rows carry the defaults.
   ...ExerciseProvenanceSchema.shape,
 });

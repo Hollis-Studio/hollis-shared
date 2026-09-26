@@ -341,7 +341,6 @@ export declare const WorkoutsUserProfileSchema: z.ZodObject<{
 }, z.core.$strip>;
 export type WorkoutsUserProfile = z.infer<typeof WorkoutsUserProfileSchema>;
 export declare const WorkoutsUserProfilePutBodySchema: z.ZodObject<{
-    email: z.ZodOptional<z.ZodString>;
     createdAt: z.ZodCoercedDate<unknown>;
     userId: z.ZodOptional<z.ZodString>;
     displayName: z.ZodString;
@@ -509,6 +508,7 @@ export declare const WorkoutsUserProfilePutBodySchema: z.ZodObject<{
     fcmDeviceToken: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     lastFcmTokenUpdate: z.ZodOptional<z.ZodNullable<z.ZodCoercedDate<unknown>>>;
     updatedAt: z.ZodOptional<z.ZodCoercedDate<unknown>>;
+    pushInstallationId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
 }, z.core.$strip>;
 export type WorkoutsUserProfilePutBody = z.infer<typeof WorkoutsUserProfilePutBodySchema>;
 //# sourceMappingURL=workouts-user-profile.d.ts.map

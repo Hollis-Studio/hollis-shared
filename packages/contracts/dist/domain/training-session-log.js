@@ -247,6 +247,76 @@ export const QuestionnaireResponseSchema = z.object({
     bodyWeightKg: z.number().optional(),
     dietaryCalories: z.number().optional(),
 });
+/**
+ * Upper bound on each of a session's tombstone arrays (`deletedExerciseSlotIds`,
+ * `deletedSetIds`). Tombstones are append-only, so without a bound a session
+ * row grows with every delete forever. 1000 is far beyond any real workout (a
+ * session rarely holds 100 sets in total) while keeping a worst-case array near
+ * 40 KB. Writers trim with normalizeSessionTombstones, which keeps the NEWEST
+ * entries: the oldest tombstone is the one most likely to have reached every
+ * device already.
+ */
+export const SESSION_TOMBSTONES_MAX = 1000;
+/**
+ * Legacy wire encoding of a deleted-set tombstone: `set:<setId>` inside
+ * `deletedExerciseSlotIds`. Written by Workouts builds pinned before
+ * 0.2.0-alpha.91, and echoed back to them by the Workouts server while such
+ * builds are in use (encodeLegacySessionTombstones). Slot ids never start with
+ * it. Readers decode it with normalizeSessionTombstones; new writers never
+ * produce it.
+ */
+export const LEGACY_SET_TOMBSTONE_PREFIX = "set:";
+function keepNewest(ids) {
+    const all = [...ids];
+    return all.length > SESSION_TOMBSTONES_MAX ? all.slice(all.length - SESSION_TOMBSTONES_MAX) : all;
+}
+/**
+ * The append-only union of every source's tombstones, in canonical form:
+ * legacy `set:<id>` entries of `deletedExerciseSlotIds` move to `deletedSetIds`,
+ * empty ids are dropped, duplicates keep their first position (so the union of
+ * a stored row and an incoming copy lists the stored entries first), and each
+ * array keeps its newest SESSION_TOMBSTONES_MAX entries. Pure and idempotent:
+ * normalizing an already-canonical value returns equal arrays.
+ */
+export function normalizeSessionTombstones(...sources) {
+    const slotIds = new Set();
+    const setIds = new Set();
+    for (const source of sources) {
+        if (!source)
+            continue;
+        for (const entry of source.deletedExerciseSlotIds ?? []) {
+            if (entry.startsWith(LEGACY_SET_TOMBSTONE_PREFIX)) {
+                const setId = entry.slice(LEGACY_SET_TOMBSTONE_PREFIX.length);
+                if (setId.length > 0)
+                    setIds.add(setId);
+            }
+            else if (entry.length > 0) {
+                slotIds.add(entry);
+            }
+        }
+        for (const setId of source.deletedSetIds ?? []) {
+            if (setId.length > 0)
+                setIds.add(setId);
+        }
+    }
+    return { deletedExerciseSlotIds: keepNewest(slotIds), deletedSetIds: keepNewest(setIds) };
+}
+/**
+ * `deletedExerciseSlotIds` as a pre-0.2.0-alpha.91 reader needs it: every slot
+ * id, then each deleted set as a legacy `set:<id>` entry, within
+ * SESSION_TOMBSTONES_MAX. Slots come first, since an old build has no other
+ * channel for them, then the newest set ids that fit. A server emits this only
+ * while such builds are in use; new readers decode it with
+ * normalizeSessionTombstones.
+ */
+export function encodeLegacySessionTombstones(tombstones) {
+    const room = SESSION_TOMBSTONES_MAX - tombstones.deletedExerciseSlotIds.length;
+    const setIds = room > 0 ? tombstones.deletedSetIds.slice(-room) : [];
+    return [
+        ...tombstones.deletedExerciseSlotIds,
+        ...setIds.map((setId) => `${LEGACY_SET_TOMBSTONE_PREFIX}${setId}`),
+    ];
+}
 const TrainingSessionLogBaseSchema = z.object({
     id: z.string().min(1),
     userId: z.string().min(1),
@@ -275,8 +345,25 @@ const TrainingSessionLogBaseSchema = z.object({
      * Merge semantics (client): union both sides' tombstones on every merge
      * branch, and filter tombstoned slots out of the exercise union before any
      * has-logged-work rescue. Absent means "no exercise deletes recorded".
+     *
+     * Holds slot ids only. Entries starting with LEGACY_SET_TOMBSTONE_PREFIX are
+     * the pre-0.2.0-alpha.91 encoding of `deletedSetIds` (written by older
+     * Workouts builds and echoed to them by the server during the transition);
+     * read the pair through normalizeSessionTombstones, never literally. At most
+     * SESSION_TOMBSTONES_MAX entries; writers keep the newest.
      */
-    deletedExerciseSlotIds: z.array(z.string()).optional(),
+    deletedExerciseSlotIds: z.array(z.string()).max(SESSION_TOMBSTONES_MAX).optional(),
+    /**
+     * Append-only tombstone set of SessionSet.setId values the user has deleted
+     * from this session (a logged set removed mid-session or corrected away
+     * afterwards). A merge has no common ancestor, so without it a stale copy that
+     * still holds the set cannot be told apart from "logged on another device"
+     * and the set comes back. Same semantics as deletedExerciseSlotIds: union on
+     * every merge and every server write, never shrink, drop the tombstoned sets
+     * from both copies before any union. Absent means "no set deletes recorded".
+     * At most SESSION_TOMBSTONES_MAX entries; writers keep the newest.
+     */
+    deletedSetIds: z.array(z.string().min(1)).max(SESSION_TOMBSTONES_MAX).optional(),
     /**
      * When this session's completion was successfully written to the platform
      * Health store (Apple Health / Health Connect). Persisted on the synced session
