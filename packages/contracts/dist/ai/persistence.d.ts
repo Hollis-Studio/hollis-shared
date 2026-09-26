@@ -10,13 +10,13 @@ import * as z from 'zod';
 export declare const AI_AUDIT_LOG_SURFACES: readonly ["sunday_review_phase_outlook", "plateau_coaching", "program_critique", "program_edit", "goal_reasoning", "pr_celebration", "anomaly_label", "rest_day_pulse", "smart_program_builder", "smart_gym_setup", "sunday_review_freeform", "smart_notification"];
 export type AiAuditLogSurface = (typeof AI_AUDIT_LOG_SURFACES)[number];
 export declare const AiAuditLogSurfaceSchema: z.ZodEnum<{
+    pr_celebration: "pr_celebration";
     rest_day_pulse: "rest_day_pulse";
     sunday_review_phase_outlook: "sunday_review_phase_outlook";
     plateau_coaching: "plateau_coaching";
     program_critique: "program_critique";
     program_edit: "program_edit";
     goal_reasoning: "goal_reasoning";
-    pr_celebration: "pr_celebration";
     anomaly_label: "anomaly_label";
     smart_program_builder: "smart_program_builder";
     smart_gym_setup: "smart_gym_setup";
@@ -41,13 +41,13 @@ export declare const AiAuditLogActionSchema: z.ZodEnum<{
 }>;
 export declare const AiAuditLogCreateSchema: z.ZodObject<{
     surface: z.ZodEnum<{
+        pr_celebration: "pr_celebration";
         rest_day_pulse: "rest_day_pulse";
         sunday_review_phase_outlook: "sunday_review_phase_outlook";
         plateau_coaching: "plateau_coaching";
         program_critique: "program_critique";
         program_edit: "program_edit";
         goal_reasoning: "goal_reasoning";
-        pr_celebration: "pr_celebration";
         anomaly_label: "anomaly_label";
         smart_program_builder: "smart_program_builder";
         smart_gym_setup: "smart_gym_setup";
@@ -82,25 +82,25 @@ export declare const AiAuditLogEntrySchema: z.ZodObject<{
         user_dismissed: "user_dismissed";
         user_overrode: "user_overrode";
     }>;
+    modelTier: z.ZodEnum<{
+        flash: "flash";
+        pro: "pro";
+        image: "image";
+        deterministic: "deterministic";
+    }>;
     surface: z.ZodEnum<{
+        pr_celebration: "pr_celebration";
         rest_day_pulse: "rest_day_pulse";
         sunday_review_phase_outlook: "sunday_review_phase_outlook";
         plateau_coaching: "plateau_coaching";
         program_critique: "program_critique";
         program_edit: "program_edit";
         goal_reasoning: "goal_reasoning";
-        pr_celebration: "pr_celebration";
         anomaly_label: "anomaly_label";
         smart_program_builder: "smart_program_builder";
         smart_gym_setup: "smart_gym_setup";
         sunday_review_freeform: "sunday_review_freeform";
         smart_notification: "smart_notification";
-    }>;
-    modelTier: z.ZodEnum<{
-        flash: "flash";
-        pro: "pro";
-        image: "image";
-        deterministic: "deterministic";
     }>;
     snapshotRef: z.ZodOptional<z.ZodString>;
     persisted: z.ZodBoolean;

@@ -5,7 +5,7 @@
  * TrackingTypeSchema = REPS|TIME|DISTANCE — the Health-app vocabulary).
  *
  * deps: zod, domain/equipment, domain/muscles, domain/units
- * consumers: hollis-workouts server + mobile client
+ * consumers: hollis-workouts server + mobile client; hollis-health (pick of id/name/modality/equipmentType/trackingMode only)
  */
 import * as z from 'zod';
 export declare const WORKOUTS_TRACKING_MODES: readonly ["weightlifting", "cardio", "stretching"];
@@ -589,6 +589,7 @@ export declare const CanonicalExerciseRecordSchema: z.ZodObject<{
         stretch: "stretch";
     }>>;
     createdAt: z.ZodCoercedDate<unknown>;
+    updatedAt: z.ZodCoercedDate<unknown>;
 }, z.core.$strip>;
 export type CanonicalExerciseRecord = z.infer<typeof CanonicalExerciseRecordSchema>;
 //# sourceMappingURL=exercise-workouts.d.ts.map

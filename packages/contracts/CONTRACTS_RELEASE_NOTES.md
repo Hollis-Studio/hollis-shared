@@ -1,5 +1,96 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.91 (2026-09-25) — auth wire, Sunday Review schemas, shared engine-state maths, set tombstones, catalog clock
+
+Five changes in one release. Two are **breaking/tightening** (marked below);
+the rest are additive.
+
+### Auth (Hollis-Workouts #185, #178, #246, #129, #223)
+
+**Breaking (types + runtime validation):** `AccessTokenClaimsSchema.iat` and
+`.exp` are now required (#185). auth-client validates claims with the
+consumer's installed contracts, so bumping to alpha.91 makes every auth-client
+consumer reject a signed token without `exp` or `iat`. Identity always sets
+both. Code that builds an `AccessTokenClaims` literal must now include them.
+
+Additive:
+- `AUTH_ROUTES.REGISTER` (`/auth/register`, Identity email sign-up), `.ME`,
+  `.ONBOARDING_RESET`, `.ACCOUNT_DELETION_AUTHORIZATION`, `.ACCOUNT` (#178,
+  #246). `SIGNUP` is unchanged — it is the Health server's barcode sign-up;
+  Identity never served it.
+- `AUTH_ROUTES` is now one object: `@hollis-studio/contracts/api` (and the
+  root) re-export the `api/routes/auth` declaration, so `/api` gains
+  `MFA_SESSION_REVERIFY` and the subpath gains `BIOMETRIC_TOKEN`.
+- `domain/identity-auth` (new subpath, also in `domain` and the root):
+  `IdentityMeResponseSchema` (with account-level `provider` and `displayName` —
+  requires the matching Identity release), `IdentityAccountProviderSchema`,
+  `IdentityLogoutRequestSchema`, `IdentityLogoutResponseSchema`.
+
+Behavior-visible metadata fix: `ROUTE_METADATA[AUTH_ROUTES.LOGOUT].requiresAuth`
+is `false` (#223) in both route registries — neither Identity nor the Health
+server requires a Bearer on logout. New `ROUTE_METADATA` entries for REGISTER,
+ME, ONBOARDING_RESET, ACCOUNT_DELETION_AUTHORIZATION, ACCOUNT.
+
+### Workouts Sunday Review schemas single-sourced (#239)
+
+- New subpath `domain/workouts-sunday-review` (also re-exported from `domain`
+  and the root barrel): the 14 Sunday Review slide payload schemas and
+  `SlidePayloadSchemas`, `SUNDAY_REVIEW_SLIDE_TYPES`, `WORKOUTS_BODY_REGIONS`,
+  the week client snapshot (`WeekClientSnapshotSchema`,
+  `WEEK_CLIENT_SNAPSHOT_SCHEMA_VERSION` = 3) and the frozen deck envelope
+  (`SundayReviewDeckSchema`, `SundayReviewPersistedSlideSchema`). These were
+  hand-mirrored in the Workouts server and app; both now import them from here.
+  Shapes are identical to the mirrors.
+- `FreeformPayloadSchema` (the 4-field AI output) and `FreeformSlidePayloadSchema`
+  (the 2-field `{headline, body}` a deck stores) are distinct;
+  `SlidePayloadSchemas.freeform` is the stored form.
+- `WeekDocumentBodySchema` is unchanged: its Json slots stay `z.unknown()`.
+
+### Shared progression engine-state maths (#271)
+
+- New subpath `@hollis-studio/contracts/progression/engine-state`: the
+  Progression Engine V2 calibration maths (`PROGRESSION_ENGINE_TUNING`,
+  `deriveLiftingEngineScores`, `deriveCardioEngineScores`,
+  `deriveCalibrationState`, `layoffDecayMultiplier`, e1RM and cardio
+  workload scorers). Workouts app and server both call it, so a baseline's
+  engine state no longer depends on which side derived it. The behaviour is
+  the app's, moved unchanged (zero-load/zero-rep sets still score 0).
+- Derived `uncertaintyPct` is capped at 1, so every derived state satisfies
+  `ProgressionEngineStateSchema`.
+- Pure functions, no zod at runtime. Deliberately not re-exported from the
+  `progression` barrel or the package root.
+
+### Dedicated deleted-set tombstones, bounded tombstone arrays (#270)
+
+- `domain/training-session-log.ts`: optional `deletedSetIds` (append-only
+  SessionSet.setId tombstones) on TrainingSessionLog / ActiveTrainingSessionLog.
+  Replaces the Workouts `set:<setId>` entries that rode in
+  `deletedExerciseSlotIds`; that prefix is now a documented legacy encoding
+  (`LEGACY_SET_TOMBSTONE_PREFIX`).
+- **Tightening:** `deletedExerciseSlotIds` and `deletedSetIds` are capped at
+  `SESSION_TOMBSTONES_MAX` (1000). A document holding more than 1000 entries in
+  either array no longer parses. Writers must trim with
+  `normalizeSessionTombstones` (keeps the newest). The Workouts server trims
+  stored rows in the same release.
+- New runtime exports: `SESSION_TOMBSTONES_MAX`, `LEGACY_SET_TOMBSTONE_PREFIX`,
+  `normalizeSessionTombstones`, `encodeLegacySessionTombstones`, and types
+  `SessionTombstoneSource`, `SessionTombstones`.
+
+### Canonical exercise modification clock (#225, #173)
+
+One new **required** response field.
+
+- `domain/exercise-workouts.ts`: `CanonicalExerciseRecordSchema.updatedAt`
+  (`z.coerce.date()`), the server modification clock the Workouts catalog
+  delta (`GET /v1/exercises?updatedSince=`) filters, pages and watermarks on.
+  `ExerciseSubmissionRecordSchema` inherits it.
+- Readers are unaffected (unknown keys were already stripped, and `.pick`
+  derivations such as `CoachingExerciseCatalogSchema` and Health's catalog
+  picks do not include it). Producers must emit it: the Workouts server must
+  deploy the `canonical_exercises.updatedAt` migration in the same release as
+  this pin. A client that also validates on-device rows with this schema
+  must relax the field locally (`.extend({ updatedAt: ….optional() })`).
+
 ## 0.2.0-alpha.90 (2026-09-22) — additive chosen-load basis and baseline prescriptions
 
 Additive only; the new field is optional.

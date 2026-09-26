@@ -78,8 +78,14 @@ export declare const AudienceSchema: z.ZodEnum<{
  *
  * The `claims` field is the per-app extension namespace for app-specific
  * data that does not belong in the top-level claims (e.g. `claims.hollisHealth.organizationId`).
- * Top-level fields like `sub`, `userId`, `type`, `jti`, and `aud` are required
+ * Top-level fields like `sub`, `userId`, `type`, `jti`, `aud`, `iat` and `exp` are required
  * by all consumers regardless of app.
+ *
+ * `iat` and `exp` are REQUIRED (alpha.91, hollis-workouts#185). jsonwebtoken only checks
+ * `exp` when the claim is present, so an optional `exp` let a correctly signed token
+ * without one verify forever. Every Identity signing site sets both (access/mfa_pending 90d,
+ * refresh 365d, rotated refresh explicit), and Identity's `/verify` needs `iat` for its
+ * denylist check.
  */
 export declare const AccessTokenClaimsSchema: z.ZodObject<{
     sub: z.ZodString;
@@ -94,8 +100,8 @@ export declare const AccessTokenClaimsSchema: z.ZodObject<{
         "hollis-health": "hollis-health";
         "hollis-workouts": "hollis-workouts";
     }>>;
-    iat: z.ZodOptional<z.ZodNumber>;
-    exp: z.ZodOptional<z.ZodNumber>;
+    iat: z.ZodNumber;
+    exp: z.ZodNumber;
     mfaVerifiedAt: z.ZodOptional<z.ZodNumber>;
     mfaEnabled: z.ZodOptional<z.ZodBoolean>;
     claims: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>;

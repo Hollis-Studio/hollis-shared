@@ -42,17 +42,23 @@ export declare const API_ROUTES: {
     readonly AUTH: {
         readonly LOGIN: "/auth/login";
         readonly SIGNUP: "/auth/signup";
+        readonly REGISTER: "/auth/register";
         readonly VALIDATE_BARCODE: "/auth/validate-barcode";
         readonly REFRESH: "/auth/refresh";
         readonly OAUTH_SIGN_IN: "/auth/oauth";
         readonly OAUTH_REGISTER: "/auth/oauth-register";
         readonly LOGOUT: "/auth/logout";
+        readonly ME: "/auth/me";
         readonly FORGOT_PASSWORD: "/auth/forgot-password";
         readonly RESET_PASSWORD: "/auth/reset-password";
         readonly VERIFY_EMAIL_SEND: "/auth/verify-email/send";
         readonly VERIFY_EMAIL_CONFIRM: "/auth/verify-email/confirm";
         readonly CHANGE_PASSWORD: "/auth/change-password";
+        readonly BIOMETRIC_TOKEN: "/auth/biometric-token";
         readonly MFA_SESSION_REVERIFY: "/auth/mfa/session-reverify";
+        readonly ONBOARDING_RESET: "/auth/onboarding/reset";
+        readonly ACCOUNT_DELETION_AUTHORIZATION: "/auth/account/deletion-authorization";
+        readonly ACCOUNT: "/auth/account";
     };
     readonly USERS: {
         readonly ME: "/users/me";
