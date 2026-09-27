@@ -323,19 +323,26 @@ describe("deriveLiftingEngineScores", () => {
     expect(scores.trainingTargetScore).toBeCloseTo(95.666667, 5);
   });
 
-  it("[new] skips invalid sets, counts zero-load sets as 0 and caps uncertainty at 1", () => {
+  it("[new] skips invalid sets and leaves zero-load sets out of the capacity mean", () => {
     const history = [
       lift({ sessionId: "s1", ago: 3 }),
       lift({ sessionId: "s2", weightKg: 0, reps: 10, ago: 2 }),
       lift({ sessionId: "s3", reps: 4.5, ago: 1 }),
     ];
     const scores = deriveLiftingEngineScores({ history, currentE1RMKg: 100, now: NOW });
-    // adjusted [116.6667, 0] → mean 58.3333; capacity 43.75 + 25 = 68.75; spread 1.414 → 1
+    // adjusted [116.6667] → capacity 87.5 + 25 = 112.5, capped at 103; one value → no spread
     expect(scores.distinctSessionCount).toBe(3);
-    expect(scores.capacityScore).toBeCloseTo(68.75, 6);
-    expect(scores.uncertaintyPct).toBe(1);
+    expect(scores.capacityScore).toBeCloseTo(103, 6);
+    expect(scores.uncertaintyPct).toBeNull();
     expect(scores.calibrationState).toBe("provisional");
-    expect(scores.trainingTargetScore).toBeCloseTo(60.5, 6);
+    expect(scores.trainingTargetScore).toBeCloseTo(90.64, 6);
+  });
+
+  it("[new] keeps a bodyweight lift's capacity on the PR when every set has zero external load", () => {
+    const history = sixLifts(2, { weightKg: 0, reps: 12 });
+    const scores = deriveLiftingEngineScores({ history, currentE1RMKg: 100, now: NOW });
+    expect(scores.capacityScore).toBeCloseTo(100, 6);
+    expect(scores.uncertaintyPct).toBeNull();
   });
 
   it("[new] gives the same scores for ISO-string dates as for Date objects", () => {

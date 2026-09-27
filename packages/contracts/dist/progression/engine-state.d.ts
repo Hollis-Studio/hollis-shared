@@ -162,6 +162,8 @@ export declare function pickDominantCardioMetric(entries: readonly Pick<CardioEn
  *   (or with the metric-basket e1RM when supplied), capped at PR × 1.03 while
  *   calibrating; the training target is capacity × the state's training max ×
  *   the layoff decay. The PR itself never decays.
+ * - Sets scoring 0 (zero external load or zero reps) are left out of the mean
+ *   and the spread, so bodyweight sets never drag capacity toward 0.
  */
 export declare function deriveLiftingEngineScores(input: DeriveLiftingEngineScoresInput): EngineStateScores;
 /**

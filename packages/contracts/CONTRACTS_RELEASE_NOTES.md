@@ -1,5 +1,16 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.92 (2026-09-27) — bodyweight sets no longer drag lifting capacity toward 0
+
+**Behaviour change (runtime only, no type changes):** `deriveLiftingEngineScores`
+leaves sets whose effort-adjusted e1RM is 0 (zero external load or zero reps)
+out of the capacity mean and the spread (Hollis-Workouts #278). Before, a
+pure-bodyweight lift averaged in 0 for every set, so its capacity fell to
+PR × 0.25, and a mix of weighted and unweighted history pushed uncertainty to 1
+and capped the state at `provisional`. `estimateEffortAdjustedE1RM` still scores
+such a set as 0; only the mean skips it. The app and the server must adopt this
+release together, since both derive engine state from it.
+
 ## 0.2.0-alpha.91 (2026-09-25) — auth wire, Sunday Review schemas, shared engine-state maths, set tombstones, catalog clock, verified email claim, push installation id
 
 Seven changes in one release. Two are **breaking/tightening** (marked below);
