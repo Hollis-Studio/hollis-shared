@@ -335,6 +335,8 @@ function boundedUncertainty(spread: number | null): number | null {
  *   (or with the metric-basket e1RM when supplied), capped at PR × 1.03 while
  *   calibrating; the training target is capacity × the state's training max ×
  *   the layoff decay. The PR itself never decays.
+ * - Sets scoring 0 (zero external load or zero reps) are left out of the mean
+ *   and the spread, so bodyweight sets never drag capacity toward 0.
  */
 export function deriveLiftingEngineScores(input: DeriveLiftingEngineScoresInput): EngineStateScores {
   const tuning = PROGRESSION_ENGINE_TUNING;
@@ -363,7 +365,7 @@ export function deriveLiftingEngineScores(input: DeriveLiftingEngineScoresInput)
   const adjustedValues: number[] = [];
   for (const entry of recentHistory) {
     const adjusted = estimateEffortAdjustedE1RM(entry);
-    if (adjusted != null) adjustedValues.push(adjusted.adjustedE1RMKg);
+    if (adjusted != null && adjusted.adjustedE1RMKg > 0) adjustedValues.push(adjusted.adjustedE1RMKg);
   }
 
   const distinctSessionCount = countDistinctSessions(sourceHistory);
