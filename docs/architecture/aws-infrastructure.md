@@ -25,27 +25,27 @@
 
 One cluster, `hollis-prod-cluster`, fronts every backend. All services are
 Fargate (no EC2). **The 2026-06-22 pre-launch scale-down has been reversed for
-Health — nothing here is parked any more** (desired counts verified live
-2026-09-20).
+Health — nothing here is parked any more.** Sizes below reflect the
+**2026-09-27 cost pass** (owner call; ~$35–45/mo saved):
 
-| Service | Task size | Routed host | Desired / running (2026-09-20) | Task def |
-|---|---|---|---|---|
-| `hollis-prod-api` (Health API) | 0.5 vCPU / 1 GB | `api.hollis.health` (ALB default) | 1 / 1 | `:443` |
-| `hollis-prod-web-admin` | 0.5 vCPU / 1 GB | `admin.hollis.health` | 1 / 1 | `:205` |
-| `hollis-identity-prod` | 0.25 vCPU / 1 GB* | `identity.hollis.health` | 1 / 1 | `:22` |
-| `hollis-workouts-server` | 0.25 vCPU / 0.5 GB | `workouts-api.hollis.health` | 1 / 1 | `:150` |
+| Service | Task size | Arch / capacity | Routed host |
+|---|---|---|---|
+| `hollis-prod-api` (Health API) | 0.5 vCPU / 1 GB | ARM64 (Graviton), FARGATE | `api.hollis.health` (ALB default) |
+| `hollis-prod-web-admin` | 0.25 vCPU / 0.5 GB | X86_64, **FARGATE_SPOT** | `admin.hollis.health` |
+| `hollis-identity-prod` | 0.25 vCPU / 1 GB | ARM64 (Graviton), FARGATE | `identity.hollis.health` |
+| `hollis-workouts-server` | 0.25 vCPU / 0.5 GB | ARM64 (Graviton), FARGATE | `workouts-api.hollis.health` |
 
-\* Identity is the one service still in its parked configuration: downsized
-0.5→0.25 vCPU and 2→1 task on 2026-06-22. **Do not "restore" it by pinning
-task-definition revision 11** — that revision carries a June 2026 image and
-pinning it would roll the service back three months of code. See
-[`../operations/aws-cost-scaledown-runbook.md`](../operations/aws-cost-scaledown-runbook.md)
-§5 step 2 for the derive-the-current-revision procedure.
+Each repo's deploy workflow builds `linux/arm64` and stamps `runtimePlatform`
+on the task definition it registers, so image and task arch change together.
+A Terraform-registered revision is only safe to run once its `image_tag`
+names an arm64 image. web-admin stays x86 because Fargate Spot does not run
+ARM64; Spot tasks can be reclaimed with a 2-minute warning (owner-only app).
 
-Also still in the parked configuration cluster-wide: **Container Insights is
-`disabled`**, and 3 of the 7 alarm actions muted on 2026-06-22 are still muted
-(`web-admin-down`, `canary-admin-failed`, `alb-5xx-spike`). Both Synthetics
-canaries are `RUNNING` again.
+Other 2026-09-27 settings: **Container Insights `disabled`**, RDS backup
+retention **7 days** (was 30), RDS Enhanced Monitoring **off** (Performance
+Insights free tier stays on), both Synthetics canaries **hourly**. Public IPv4
+per task (~$3.60/mo each) is deliberately kept: a NAT gateway or VPC
+endpoints cost more.
 
 **ECR repositories (6):** `hollis-prod-api`, `hollis-prod-web-admin`,
 `hollis-identity-prod`, `hollis-workouts-server`, `hollis-dev-api`,
@@ -75,7 +75,7 @@ it is served by CloudFront distribution `E2M0GWKOQ8UJQF` from the
 
 ### RDS — one shared Postgres instance
 - **Instance:** `hollis-prod-postgres`, `db.t3.micro`, **single-AZ**
-- **Storage:** 50 GB gp3, 3000 IOPS; **30-day** backup retention
+- **Storage:** 50 GB gp3, 3000 IOPS; **7-day** backup retention (30 until 2026-09-27)
 - **Network:** VPC `vpc-0abe755c07479d64a`, security group `sg-072f4e44c43356914`
 - **Three logical databases on the one instance**, each with its own DB user:
 
