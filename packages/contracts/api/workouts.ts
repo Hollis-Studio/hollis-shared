@@ -4,6 +4,11 @@ import { CardioTargetsSchema } from '../progression/program.js';
 const id = z.string().min(1).max(200);
 export const SocialTokenSchema = z.string().regex(/^[A-Za-z0-9_-]{24,64}$/);
 export const CreatorCodeSchema = z.string().trim().toUpperCase().regex(/^[A-Z0-9][A-Z0-9_-]{2,23}$/);
+/** Codes that could pass for Hollis staff. The server answers 409 `creator_code_reserved` for these and any HOLLIS* code. */
+export const RESERVED_CREATOR_CODES = ['ADMIN', 'SUPPORT', 'OFFICIAL', 'STAFF', 'HELP', 'TEAM', 'COACH', 'HOLLISHEALTH', 'MOD', 'MODERATOR'] as const;
+export function isReservedCreatorCode(code: string): boolean { const value = code.trim().toUpperCase(); return value.startsWith('HOLLIS') || (RESERVED_CREATOR_CODES as readonly string[]).includes(value); }
+/** `details.reason` on social 409 responses, so clients can show specific copy. */
+export const SocialConflictReasonSchema = z.enum(['creator_code_taken', 'creator_code_reserved', 'creator_code_retired', 'creator_code_permanent', 'imported_program']);
 export const SocialProfileSchema = z.object({ userId: id, displayName: z.string().trim().min(1).max(40) });
 export const SocialProfileBodySchema = SocialProfileSchema.omit({ userId: true });
 export const CreateChallengeBodySchema = z.object({
@@ -22,19 +27,28 @@ export const SocialChallengeSchema = z.object({
   status: z.enum(['waiting', 'active', 'completed', 'left']), inviteToken: SocialTokenSchema, inviteUrl: z.string().url(),
   participants: z.array(SocialParticipantSchema), encouragements: z.array(SocialEncouragementSchema),
 });
-export const ChallengePreviewSchema = z.object({ token: SocialTokenSchema, title: z.string(), hostName: z.string(), mode: z.enum(['compete', 'together']), weeklyTarget: z.number().int(), timeZone: z.string(), available: z.boolean() });
+/** open: waiting for a partner; active: under way; completed: past endDate; closed: withdrawn (public previews answer 404 for this instead). */
+export const ChallengePreviewStateSchema = z.enum(['open', 'active', 'completed', 'closed']);
+/** `endDate` is exclusive: the last counted day is the day before it. `available` stays true only while `state` is open. */
+export const ChallengePreviewSchema = z.object({ token: SocialTokenSchema, title: z.string(), hostName: z.string(), mode: z.enum(['compete', 'together']), weeklyTarget: z.number().int(), timeZone: z.string(), available: z.boolean(), state: ChallengePreviewStateSchema, endDate: z.string().nullable().default(null) });
 export const SharedExercisePreviewSchema = z.object({ name: z.string(), sets: z.number().int(), reps: z.number().int().nullable(), durationSeconds: z.number().nullable(), prescriptionSets: z.array(z.object({ reps: z.number().int().nullable(), durationSeconds: z.number().nullable() })).optional(), restSeconds: z.number().nullable().optional(), tempo: z.string().nullable().optional(), cardioDurationSeconds: z.number().nullable().optional(), cardioTargets: CardioTargetsSchema.nullable().optional() });
 export const SharedProgramSchema = z.object({
   token: SocialTokenSchema, url: z.string().url(), imageUrl: z.string().url(), name: z.string(), description: z.string(), durationWeeks: z.number().int(),
   creatorName: z.string(), creatorCode: z.string().nullable(), days: z.array(z.object({ name: z.string(), exercises: z.array(SharedExercisePreviewSchema) })),
   createdAt: z.string().datetime(), revokedAt: z.string().datetime().nullable(), importCount: z.number().int(), viewCount: z.number().int(),
+  /** Owner serialization only: the source program this link was published from. */
+  programId: id.optional(),
 });
 export const PublishProgramBodySchema = z.object({ programId: id, creatorCode: CreatorCodeSchema.optional() });
 export const CreatorProfileBodySchema = z.object({ code: CreatorCodeSchema, displayName: z.string().trim().min(1).max(60) });
 export const CreatorProfileSchema = CreatorProfileBodySchema.extend({ imports: z.number().int(), attributedUsers: z.number().int(), activatedUsers: z.number().int(), retainedUsers: z.number().int() });
 export const CreatorAttributionBodySchema = z.object({ code: CreatorCodeSchema });
 export const CreatorCatalogSchema = z.object({ code: z.string(), displayName: z.string(), programs: z.array(SharedProgramSchema) });
-export const SocialDashboardSchema = z.object({ profile: SocialProfileSchema.nullable(), friends: z.array(SocialProfileSchema), challenges: z.array(SocialChallengeSchema), sharedPrograms: z.array(SharedProgramSchema), creator: CreatorProfileSchema.nullable() });
+/** People the viewer blocked. Unblocking does not restore the friendship. */
+export const SocialBlockedUserSchema = z.object({ userId: id, displayName: z.string() });
+/** Programs the viewer saved from another member's link; these cannot be republished (409 `imported_program`). */
+export const SocialProgramImportSummarySchema = z.object({ token: SocialTokenSchema, programId: id, creatorName: z.string() });
+export const SocialDashboardSchema = z.object({ profile: SocialProfileSchema.nullable(), friends: z.array(SocialProfileSchema), challenges: z.array(SocialChallengeSchema), sharedPrograms: z.array(SharedProgramSchema), creator: CreatorProfileSchema.nullable(), blocked: z.array(SocialBlockedUserSchema).default([]), imports: z.array(SocialProgramImportSummarySchema).optional() });
 /** HTML/SVG public documents are rendered only from validated public DTOs. */
 export const WorkoutsPublicDocumentSchema = z.string().min(1);
 export const SocialAckSchema = z.object({ success: z.literal(true) });
@@ -44,9 +58,13 @@ export const WORKOUTS_SOCIAL_ROUTES = {
   challenge: (value: string) => `/v1/social/challenges/${encodeURIComponent(value)}`,
   joinChallenge: (token: string) => `/v1/social/challenges/join/${encodeURIComponent(token)}`,
   leaveChallenge: (value: string) => `/v1/social/challenges/${encodeURIComponent(value)}/leave`,
+  /** Completed challenges only: removes it from the caller's dashboard without touching the partner's. */
+  hideChallenge: (value: string) => `/v1/social/challenges/${encodeURIComponent(value)}/hide`,
   encourage: (value: string) => `/v1/social/challenges/${encodeURIComponent(value)}/encourage`,
   friend: (value: string) => `/v1/social/friends/${encodeURIComponent(value)}`,
   block: (value: string) => `/v1/social/blocks/${encodeURIComponent(value)}`,
+  /** DELETE; same path as `block`. */
+  unblock: (value: string) => `/v1/social/blocks/${encodeURIComponent(value)}`,
   programs: '/v1/social/programs', revokeProgram: (token: string) => `/v1/social/programs/${encodeURIComponent(token)}`,
   importProgram: (token: string) => `/v1/social/programs/${encodeURIComponent(token)}/import`,
   creatorCatalog: (code: string) => `/share/creator/${encodeURIComponent(code)}/data`,
@@ -61,6 +79,10 @@ export type SocialWeek = z.infer<typeof SocialWeekSchema>;
 export type SocialParticipant = z.infer<typeof SocialParticipantSchema>;
 export type SocialChallenge = z.infer<typeof SocialChallengeSchema>;
 export type ChallengePreview = z.infer<typeof ChallengePreviewSchema>;
+export type ChallengePreviewState = z.infer<typeof ChallengePreviewStateSchema>;
+export type SocialBlockedUser = z.infer<typeof SocialBlockedUserSchema>;
+export type SocialProgramImportSummary = z.infer<typeof SocialProgramImportSummarySchema>;
+export type SocialConflictReason = z.infer<typeof SocialConflictReasonSchema>;
 export type EncourageBody = z.infer<typeof EncourageBodySchema>;
 export type SharedProgram = z.infer<typeof SharedProgramSchema>;
 export type PublishProgramBody = z.infer<typeof PublishProgramBodySchema>;

@@ -1,6 +1,6 @@
 # @hollis-studio/contracts — Release Notes
 
-## 0.2.0-alpha.94 (2026-09-30) — narrow entrypoints for cold-start imports
+## 0.2.0-alpha.95 (2026-09-30) — narrow entrypoints for cold-start imports
 
 **Additive (exports only, no schema or runtime changes):** four new subpaths,
 `./domain/pagination`, `./domain/coaching`, `./domain/mfa` and
@@ -10,8 +10,25 @@ schemas. On Hollis Workouts that cost about 450 ms of a 1 s Android cold start.
 Workouts now imports these names from the narrow subpaths. `@hollis-studio/utils`
 0.1.0-alpha.5 reads `UNIT_CONVERSION` from `./constants` for the same reason.
 
-Also the first published build of alpha.93's Workouts social API contracts
-(`./api/workouts`), which was never tagged on its own.
+The first release built from git that includes alpha.93 and alpha.94. Both were
+published directly from a laptop. alpha.94's `./api/workouts` source is restored
+here, and its build is byte-identical to the published alpha.94 dist.
+
+## 0.2.0-alpha.94 (2026-09-30) — Workouts social API additions
+
+Additive, in `./api/workouts`:
+- `RESERVED_CREATOR_CODES` and `isReservedCreatorCode`
+- `SocialConflictReasonSchema` (409 `details.reason`)
+- `ChallengePreviewStateSchema`, plus `state` and `endDate` on `ChallengePreviewSchema`
+- `programId` (owner only) on `SharedProgramSchema`
+- `SocialBlockedUserSchema` and `SocialProgramImportSummarySchema`, surfaced as
+  the dashboard's `blocked` and `imports`
+- `hideChallenge` and `unblock` routes
+
+## 0.2.0-alpha.93 (2026-09-30) — Workouts social API contracts
+
+New `./api/workouts` subpath: social profile, challenges, shared programs,
+creator codes and their routes.
 
 ## 0.2.0-alpha.92 (2026-09-27) — bodyweight sets no longer drag lifting capacity toward 0
 
