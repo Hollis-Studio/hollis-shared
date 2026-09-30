@@ -1,5 +1,15 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.97 (2026-09-30) — configurable Social groups and member analytics
+
+In `./api/workouts`: challenges support 1–52 weeks (default four) and up to five
+participants. The member-stats route returns a privacy-filtered latest workout,
+seven-day consistency and muscle volume. Optional `shareWorkoutDetails` records
+explicit group-sharing consent; legacy challenges remain progress-only.
+
+The Workouts app and API must adopt this release together and apply the group
+membership migration before enabling the new endpoints.
+
 ## 0.2.0-alpha.96 (2026-09-30) — per-app password reset links
 
 Additive, in `./domain/identity-auth` (Identity's own forgot/reset wire; the Health
