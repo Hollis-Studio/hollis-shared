@@ -1,5 +1,18 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.94 (2026-09-30) — narrow entrypoints for cold-start imports
+
+**Additive (exports only, no schema or runtime changes):** four new subpaths,
+`./domain/pagination`, `./domain/coaching`, `./domain/mfa` and
+`./api/routes/mfa`. Importing any runtime value from the root or `./domain`
+barrel evaluates every contract module behind it, which builds all of their zod
+schemas. On Hollis Workouts that cost about 450 ms of a 1 s Android cold start.
+Workouts now imports these names from the narrow subpaths. `@hollis-studio/utils`
+0.1.0-alpha.5 reads `UNIT_CONVERSION` from `./constants` for the same reason.
+
+Also the first published build of alpha.93's Workouts social API contracts
+(`./api/workouts`), which was never tagged on its own.
+
 ## 0.2.0-alpha.92 (2026-09-27) — bodyweight sets no longer drag lifting capacity toward 0
 
 **Behaviour change (runtime only, no type changes):** `deriveLiftingEngineScores`
