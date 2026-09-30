@@ -1,7 +1,7 @@
 {
   "_comment_BUILD_001": "RESOLVED: BUILD-001 Deep sub-path imports bypass package.json exports field — Decision: Add explicit package.json exports only for currently consumed public subpaths. Do not add wildcard exports or local compatibility barrels. Reviewed: 2026-05-12 (Phase E/F shared extraction cleanup)",
   "name": "@hollis-studio/contracts",
-  "version": "0.2.0-alpha.93",
+  "version": "0.2.0-alpha.94",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
@@ -415,6 +415,26 @@
       "types": "./dist/api/workouts.d.ts",
       "import": "./dist/api/workouts.js",
       "default": "./dist/api/workouts.js"
+    },
+    "./domain/pagination": {
+      "types": "./dist/domain/pagination.d.ts",
+      "import": "./dist/domain/pagination.js",
+      "default": "./dist/domain/pagination.js"
+    },
+    "./domain/coaching": {
+      "types": "./dist/domain/coaching.d.ts",
+      "import": "./dist/domain/coaching.js",
+      "default": "./dist/domain/coaching.js"
+    },
+    "./domain/mfa": {
+      "types": "./dist/domain/mfa.d.ts",
+      "import": "./dist/domain/mfa.js",
+      "default": "./dist/domain/mfa.js"
+    },
+    "./api/routes/mfa": {
+      "types": "./dist/api/routes/mfa.d.ts",
+      "import": "./dist/api/routes/mfa.js",
+      "default": "./dist/api/routes/mfa.js"
     }
   },
   "scripts": {

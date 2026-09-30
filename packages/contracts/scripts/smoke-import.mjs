@@ -42,6 +42,12 @@ const imports = [
   ["@hollis-studio/contracts/revenuecat", ["RevenueCatWebhookRequestSchema", "RevenueCatWebhookAckSchema"]],
   ["@hollis-studio/contracts/error-sanitization", ["sanitizeErrorMessage"]],
   ["@hollis-studio/contracts/sentry-sanitization", ["sanitizeSentryEvent"]],
+  // Narrow entrypoints Workouts imports instead of the root/domain barrels,
+  // which build every contract's zod schemas at import time (cold-start cost).
+  ["@hollis-studio/contracts/domain/pagination", ["createPaginatedListSchema"]],
+  ["@hollis-studio/contracts/domain/coaching", ["CoachingActiveAssignmentSchema", "CoachingAppAccessGrantResponseSchema", "CoachingLinkCodeSchema"]],
+  ["@hollis-studio/contracts/domain/mfa", ["mfaLoginPendingResponseSchema"]],
+  ["@hollis-studio/contracts/api/routes/mfa", ["MFA_ROUTES"]],
 ];
 
 for (const [specifier, expectedExports] of imports) {
