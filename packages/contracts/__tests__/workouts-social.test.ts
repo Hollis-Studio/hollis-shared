@@ -23,9 +23,10 @@ describe('Workouts social contracts', () => {
     const preview = { token: 'a'.repeat(24), title: 'Fall', hostName: 'Avery', mode: 'together', weeklyTarget: 3, timeZone: 'UTC', available: false };
     expect(ChallengePreviewSchema.safeParse(preview).success).toBe(false);
     expect(ChallengePreviewSchema.parse({ ...preview, state: 'completed', endDate: '2026-10-12' }).state).toBe('completed');
-    expect(ChallengePreviewSchema.parse({ ...preview, state: 'open' }).endDate).toBeNull();
+    expect(ChallengePreviewSchema.parse({ ...preview, available: true, state: 'open' }).endDate).toBeNull();
     expect(SocialDashboardSchema.parse({ profile: null, friends: [], challenges: [], sharedPrograms: [], creator: null }).blocked).toEqual([]);
     expect(WORKOUTS_SOCIAL_ROUTES.hideChallenge('c1')).toBe('/v1/social/challenges/c1/hide');
+    expect(WORKOUTS_SOCIAL_ROUTES.unblock('u1')).toBe('/v1/social/blocks/u1');
     expect(WORKOUTS_SOCIAL_ROUTES.unblock('u1')).toBe(WORKOUTS_SOCIAL_ROUTES.block('u1'));
   });
 });
