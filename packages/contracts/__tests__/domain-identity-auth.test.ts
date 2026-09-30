@@ -1,13 +1,16 @@
 /**
  * @ai-context Hollis Identity GET /auth/me + POST /auth/logout wire (alpha.91,
- * hollis-workouts#246/#129/#223)
+ * hollis-workouts#246/#129/#223), forgot/reset password wire (alpha.96)
  */
 
 import {
   IDENTITY_ACCOUNT_PROVIDERS,
+  IdentityForgotPasswordRequestSchema,
   IdentityLogoutRequestSchema,
   IdentityLogoutResponseSchema,
   IdentityMeResponseSchema,
+  IdentityResetPasswordRequestSchema,
+  IdentityResetPasswordResponseSchema,
 } from '../domain/identity-auth';
 
 const me = {
@@ -69,5 +72,59 @@ describe('IdentityLogout wire', () => {
   it('acknowledges with ok: true', () => {
     expect(IdentityLogoutResponseSchema.parse({ ok: true })).toEqual({ ok: true });
     expect(IdentityLogoutResponseSchema.safeParse({ ok: false }).success).toBe(false);
+  });
+});
+
+describe('IdentityForgotPasswordRequestSchema', () => {
+  it('accepts an e-mail alone, as Hollis Health sends it', () => {
+    expect(IdentityForgotPasswordRequestSchema.parse({ email: 'sam@example.com' })).toEqual({
+      email: 'sam@example.com',
+    });
+  });
+
+  it('accepts and trims a source app', () => {
+    expect(
+      IdentityForgotPasswordRequestSchema.parse({ email: 'sam@example.com', sourceApp: ' workouts ' })
+        .sourceApp,
+    ).toBe('workouts');
+  });
+
+  it('rejects a blank or oversized source app and a malformed e-mail', () => {
+    expect(
+      IdentityForgotPasswordRequestSchema.safeParse({ email: 'sam@example.com', sourceApp: ' ' })
+        .success,
+    ).toBe(false);
+    expect(
+      IdentityForgotPasswordRequestSchema.safeParse({
+        email: 'sam@example.com',
+        sourceApp: 'x'.repeat(65),
+      }).success,
+    ).toBe(false);
+    expect(IdentityForgotPasswordRequestSchema.safeParse({ email: 'not-an-email' }).success).toBe(
+      false,
+    );
+  });
+});
+
+describe('IdentityResetPassword wire', () => {
+  const token = 'a'.repeat(43);
+
+  it('accepts a token and a policy-length password', () => {
+    expect(
+      IdentityResetPasswordRequestSchema.parse({ token, newPassword: 'correct horse battery' }),
+    ).toEqual({ token, newPassword: 'correct horse battery' });
+  });
+
+  it('rejects a token outside 20..512 characters and a short password', () => {
+    const parse = (body: unknown) => IdentityResetPasswordRequestSchema.safeParse(body).success;
+    expect(parse({ token: 'a'.repeat(19), newPassword: 'correct horse battery' })).toBe(false);
+    expect(parse({ token: 'a'.repeat(513), newPassword: 'correct horse battery' })).toBe(false);
+    expect(parse({ token, newPassword: 'short' })).toBe(false);
+  });
+
+  it('acknowledges with ok: true and the account e-mail', () => {
+    const ack = { ok: true, email: 'sam@example.com' };
+    expect(IdentityResetPasswordResponseSchema.parse(ack)).toEqual(ack);
+    expect(IdentityResetPasswordResponseSchema.safeParse({ ok: true }).success).toBe(false);
   });
 });

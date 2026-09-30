@@ -1,5 +1,18 @@
 # @hollis-studio/contracts — Release Notes
 
+## 0.2.0-alpha.96 (2026-09-30) — per-app password reset links
+
+Additive, in `./domain/identity-auth` (Identity's own forgot/reset wire; the Health
+server's `forgotPasswordBodySchema` in `./api` is unchanged):
+- `IdentitySourceAppSchema`, and `IdentityForgotPasswordRequestSchema` with an
+  optional `sourceApp`. Identity sends a `"workouts"` request a reset link on the
+  Workouts host, so it opens Hollis Workouts instead of Hollis Health. Requests
+  without it keep the suite link.
+- `IdentityResetTokenSchema` and `IdentityResetPasswordRequestSchema`.
+- `IdentityResetPasswordResponseSchema`: `{ ok: true, email }`. The token holder
+  gets the account address back so the app can sign in with the new password
+  through the normal login route, MFA included.
+
 ## 0.2.0-alpha.95 (2026-09-30) — narrow entrypoints for cold-start imports
 
 **Additive (exports only, no schema or runtime changes):** four new subpaths,

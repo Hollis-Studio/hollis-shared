@@ -1,8 +1,9 @@
 /**
- * @ai-context Hollis Identity session wire shapes | `GET /auth/me` and `POST /auth/logout`
- * on the Identity Service (`https://identity.hollis.health/v1`).
+ * @ai-context Hollis Identity session wire shapes | `GET /auth/me`, `POST /auth/logout`,
+ * `POST /auth/forgot-password` and `POST /auth/reset-password` on the Identity Service
+ * (`https://identity.hollis.health/v1`).
  *
- * Both routes answer inside Identity's `{ success: true, data }` envelope; these schemas
+ * These routes answer inside Identity's `{ success: true, data }` envelope; these schemas
  * describe `data`. Objects are non-strict (unknown keys are stripped) so Identity can add a
  * field without failing an older client's parse.
  *
@@ -12,12 +13,18 @@
  * provider-gated client UI asks (Change Password, account-deletion re-auth, signup-method
  * telemetry) — hollis-workouts#129/#246.
  *
- * deps: zod, ../constants (OAUTH_PROVIDERS), ./user (UserRoleSchema)
- * consumers: hollis-identity (`src/routes/auth.ts` GET /me, POST /logout) + hollis-workouts
- *            mobile client (`src/services/auth/sessionRestore.ts`, `identityApi.ts`)
+ * `sourceApp` names the suite app that asked for an e-mail. Identity uses it to pick the
+ * link host, so a Workouts user's reset link opens Hollis Workouts rather than Hollis Health.
+ * Absent means the suite default.
+ *
+ * deps: zod, ../constants (OAUTH_PROVIDERS), ../password (passwordSchema), ./user (UserRoleSchema)
+ * consumers: hollis-identity (`src/routes/auth.ts` GET /me, POST /logout, forgot/reset
+ *            password) + hollis-workouts mobile client (`src/services/auth/sessionRestore.ts`,
+ *            `identityApi.ts`)
  */
 import * as z from "zod";
 import { OAUTH_PROVIDERS } from "../constants/index.js";
+import { passwordSchema } from "../password/index.js";
 import { UserRoleSchema } from "./user.js";
 /** How an Identity account signs in: its password, else its linked OAuth provider. */
 export const IDENTITY_ACCOUNT_PROVIDERS = ["password", ...OAUTH_PROVIDERS];
@@ -48,4 +55,27 @@ export const IdentityLogoutRequestSchema = z.object({
 });
 /** `POST /auth/logout` success `data`. */
 export const IdentityLogoutResponseSchema = z.object({ ok: z.literal(true) });
+/** Suite app that asked Identity for an e-mail link (`"workouts"`, …). */
+export const IdentitySourceAppSchema = z.string().trim().min(1).max(64);
+/** `POST /auth/forgot-password` body. Identity always answers `{ ok: true }` (anti-enumeration). */
+export const IdentityForgotPasswordRequestSchema = z.object({
+    email: z.string().email(),
+    sourceApp: IdentitySourceAppSchema.optional(),
+});
+/** Bounds of the single-use reset token Identity e-mails (URL-safe base64). */
+export const IdentityResetTokenSchema = z.string().min(20).max(512);
+/** `POST /auth/reset-password` body. No Bearer header: the token is the credential. */
+export const IdentityResetPasswordRequestSchema = z.object({
+    token: IdentityResetTokenSchema,
+    newPassword: passwordSchema,
+});
+/**
+ * `POST /auth/reset-password` success `data`. `email` is the account's address, so the client
+ * that holds the token can sign in with the new password through the normal login route (and
+ * its MFA challenge) instead of asking for the address again. The reset revokes every session.
+ */
+export const IdentityResetPasswordResponseSchema = z.object({
+    ok: z.literal(true),
+    email: z.string().min(1),
+});
 //# sourceMappingURL=identity-auth.js.map
