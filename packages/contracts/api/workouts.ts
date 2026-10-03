@@ -46,6 +46,8 @@ export const ChallengePreviewSchema = z.object({ token: SocialTokenSchema, title
 export const SocialWorkoutSchema = TrainingSessionLogSchema.omit({ questionnaire: true, gymProfileId: true, aiOutlierLabel: true, healthSyncedAt: true });
 /** Private group-member detail; authorized only while the viewer shares a non-withdrawn challenge. */
 export const SocialMemberStatsSchema = SocialProfileSchema.extend({
+  /** Member account gender selects their body SVG; optional for older servers. */
+  gender: z.enum(['male', 'female']).optional(),
   latestWorkout: SocialWorkoutSchema.nullable(),
   exerciseNames: z.record(z.string(), z.string()).default({}),
   /** Last seven calendar days, including today, in the challenge time zone. */

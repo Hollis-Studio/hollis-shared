@@ -30,6 +30,10 @@ describe('Workouts social contracts', () => {
   it('validates private member analytics and encodes both identifiers', () => {
     const stats = { userId: 'u1', displayName: 'Alex', latestWorkout: null, weeklyConsistency: { completedDays: 3, workoutCount: 4, target: 3, percent: 100 }, muscleVolumes: [{ muscleGroup: 'chest', volumeKg: 2000, setCount: 8 }] };
     expect(SocialMemberStatsSchema.parse(stats).exerciseNames).toEqual({});
+    expect(SocialMemberStatsSchema.parse({ ...stats, gender: 'female' }).gender).toBe('female');
+    expect(SocialMemberStatsSchema.parse({ ...stats, gender: 'male' }).gender).toBe('male');
+    expect(SocialMemberStatsSchema.parse(stats).gender).toBeUndefined();
+    expect(SocialMemberStatsSchema.safeParse({ ...stats, gender: 'invalid' }).success).toBe(false);
     expect(SocialMemberStatsSchema.safeParse({ ...stats, muscleVolumes: [{ muscleGroup: 'chest', volumeKg: -1, setCount: 8 }] }).success).toBe(false);
     expect(SocialMemberStatsSchema.safeParse({ ...stats, weeklyConsistency: { ...stats.weeklyConsistency, completedDays: 8 } }).success).toBe(false);
     expect(WORKOUTS_SOCIAL_ROUTES.memberStats('c/1', 'u/2')).toBe('/v1/social/challenges/c%2F1/members/u%2F2');
