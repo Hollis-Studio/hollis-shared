@@ -4,6 +4,25 @@ import { CardioTargetsSchema } from '../progression/program.js';
 import { MuscleGroupSchema } from '../domain/muscles.js';
 import { TrainingSessionLogSchema } from '../domain/training-session-log.js';
 const id = z.string().min(1).max(200);
+/** Avatars are bounded JPEG bytes, never caller-supplied remote URLs. */
+export const AVATAR_SIZE_PX = 512;
+export const AVATAR_MAX_BYTES = 512 * 1024;
+export const AvatarUploadBodySchema = z.object({
+  imageBase64: z.string().min(4).max(4 * Math.ceil(AVATAR_MAX_BYTES / 3))
+    .regex(/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/),
+}).strict();
+export const AvatarImageSchema = z.object({
+  imageBase64: AvatarUploadBodySchema.shape.imageBase64,
+  mimeType: z.literal('image/jpeg'),
+  version: z.string().min(1).max(64),
+});
+export const AvatarResponseSchema = z.object({ avatar: AvatarImageSchema.nullable() });
+export type AvatarImage = z.infer<typeof AvatarImageSchema>;
+export const WORKOUTS_AVATAR_ROUTES = {
+  own: '/v1/profile/avatar',
+  member: (challengeId: string, memberUserId: string) =>
+    `/v1/social/challenges/${encodeURIComponent(challengeId)}/members/${encodeURIComponent(memberUserId)}/avatar`,
+} as const;
 export const SocialTokenSchema = z.string().regex(/^[A-Za-z0-9_-]{24,64}$/);
 export const CreatorCodeSchema = z.string().trim().toUpperCase().regex(/^[A-Z0-9][A-Z0-9_-]{2,23}$/);
 /** Codes that could pass for Hollis staff. The server answers 409 `creator_code_reserved` for these and any HOLLIS* code. */
