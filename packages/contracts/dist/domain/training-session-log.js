@@ -76,6 +76,8 @@ export const SetTargetSnapshotSchema = z.object({
     steps: z.number().min(0).nullable().optional(),
     jumps: z.number().min(0).nullable().optional(),
     isWarmup: z.boolean(),
+    /** AI-authored target stays authoritative until this row is explicitly edited. */
+    aiAuthoritative: z.boolean().optional(),
     /** An explicit athlete load choice; automatic fatigue may adjust reps, not this load. */
     loadIsUserOwned: z.boolean().optional(),
     /** Original authoring basis, before cross-exercise fatigue and grid rounding. */

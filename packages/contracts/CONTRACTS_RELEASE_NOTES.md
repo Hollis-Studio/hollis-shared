@@ -1,3 +1,8 @@
+## 0.2.0-alpha.100 — Freestyle Smart Planner
+
+- Adds SmartPlannerRequest/Response schemas using the exact exporter JSON and complete canonical catalog, with bounded targets for every tracking mode.
+- Adds optional aiAuthoritative to durable set target snapshots, preserving old clients.
+
 # @hollis-studio/contracts — Release Notes
 
 ## 0.2.0-alpha.97 (2026-09-30) — configurable Social groups and member analytics

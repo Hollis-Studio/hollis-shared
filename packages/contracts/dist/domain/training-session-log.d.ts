@@ -79,6 +79,7 @@ export declare const SetTargetSnapshotSchema: z.ZodObject<{
     steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
     isWarmup: z.ZodBoolean;
+    aiAuthoritative: z.ZodOptional<z.ZodBoolean>;
     loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
     fatigueBasis: z.ZodOptional<z.ZodObject<{
         schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
@@ -182,6 +183,7 @@ export declare const SessionSetSchema: z.ZodObject<{
         steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isWarmup: z.ZodBoolean;
+        aiAuthoritative: z.ZodOptional<z.ZodBoolean>;
         loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
         fatigueBasis: z.ZodOptional<z.ZodObject<{
             schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
@@ -340,6 +342,7 @@ export declare const SessionExerciseSchema: z.ZodObject<{
             steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
+            aiAuthoritative: z.ZodOptional<z.ZodBoolean>;
             loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
             fatigueBasis: z.ZodOptional<z.ZodObject<{
                 schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
@@ -480,6 +483,7 @@ export declare const SessionExerciseSchema: z.ZodObject<{
         steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isWarmup: z.ZodBoolean;
+        aiAuthoritative: z.ZodOptional<z.ZodBoolean>;
         loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
         fatigueBasis: z.ZodOptional<z.ZodObject<{
             schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
@@ -722,6 +726,7 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
                 steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 isWarmup: z.ZodBoolean;
+                aiAuthoritative: z.ZodOptional<z.ZodBoolean>;
                 loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
                 fatigueBasis: z.ZodOptional<z.ZodObject<{
                     schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
@@ -862,6 +867,7 @@ export declare const ActiveTrainingSessionLogSchema: z.ZodObject<{
             steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
+            aiAuthoritative: z.ZodOptional<z.ZodBoolean>;
             loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
             fatigueBasis: z.ZodOptional<z.ZodObject<{
                 schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
@@ -1041,6 +1047,7 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
                 steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
                 isWarmup: z.ZodBoolean;
+                aiAuthoritative: z.ZodOptional<z.ZodBoolean>;
                 loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
                 fatigueBasis: z.ZodOptional<z.ZodObject<{
                     schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;
@@ -1181,6 +1188,7 @@ export declare const TrainingSessionLogSchema: z.ZodObject<{
             steps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             jumps: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
             isWarmup: z.ZodBoolean;
+            aiAuthoritative: z.ZodOptional<z.ZodBoolean>;
             loadIsUserOwned: z.ZodOptional<z.ZodBoolean>;
             fatigueBasis: z.ZodOptional<z.ZodObject<{
                 schemaVersion: z.ZodOptional<z.ZodLiteral<1>>;

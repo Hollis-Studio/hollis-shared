@@ -27,6 +27,7 @@
 import * as z from "zod";
 import { ProgramExerciseGuidanceSchema } from "../progression/program.js";
 import { MuscleGroupSchema } from "../domain/muscles.js";
+import { CanonicalExerciseRecordSchema, WorkoutsExerciseTrackingModeSchema } from "../domain/exercise-workouts.js";
 import { LocaleTagSchema } from "../domain/common.js";
 import {
   PrescriptionActionSchema,
@@ -1347,3 +1348,38 @@ export const SmartNotificationSendResponseSchema =
 export type SmartNotificationSendResponse = z.infer<
   typeof SmartNotificationSendResponseSchema
 >;
+
+// Freestyle Smart Planner sends the exact portable exporter JSON and the entire
+// canonical catalog. Keep unknown catalog fields for forward-compatible context.
+export const SmartPlannerRequestSchema = z.object({
+  sessionId: z.string().min(1).max(200),
+  exportedDataJson: z.string().min(1).max(8_000_000),
+  exerciseLibrary: z.array(CanonicalExerciseRecordSchema.partial({ updatedAt: true }).passthrough()).min(1).max(10_000),
+  today: z.iso.datetime(),
+  locale: AiOutputLocaleSchema.optional(),
+});
+export type SmartPlannerRequest = z.infer<typeof SmartPlannerRequestSchema>;
+
+export const SmartPlannerSetSchema = z.object({
+  weightKg: z.number().finite().min(0).max(1000).nullable(),
+  reps: z.number().int().min(0).max(200),
+  rir: z.number().int().min(0).max(10),
+  isWarmup: z.boolean(),
+  durationSeconds: z.number().finite().min(0).max(86400).nullable().optional(),
+  distanceKm: z.number().finite().min(0).max(1000).nullable().optional(),
+  paceSecondsPerKm: z.number().finite().min(0).max(10000).nullable().optional(),
+  floors: z.number().int().min(0).max(10000).nullable().optional(),
+  steps: z.number().int().min(0).max(1000000).nullable().optional(),
+  jumps: z.number().int().min(0).max(1000000).nullable().optional(),
+});
+export type SmartPlannerSet = z.infer<typeof SmartPlannerSetSchema>;
+export const SmartPlannerResponseSchema = z.object({
+  name: z.string().min(1).max(100),
+  reasoning: z.string().min(1).max(2000),
+  exercises: z.array(z.object({
+    canonicalExerciseId: z.string().min(1).max(200),
+    trackingMode: WorkoutsExerciseTrackingModeSchema,
+    sets: z.array(SmartPlannerSetSchema).min(1).max(20),
+  })).min(1).max(30),
+});
+export type SmartPlannerResponse = z.infer<typeof SmartPlannerResponseSchema>;
