@@ -76,6 +76,7 @@ documented here.
 | `@hollis-studio/contracts/revenuecat` | RevenueCat server-to-server webhook wire contract |
 | `@hollis-studio/contracts/api/workouts-envelope` | Workouts `{ ok, data \| err }` REST envelope (distinct from the Health/Identity `{ success, data }` envelope) |
 | `@hollis-studio/contracts/domain/workouts-account` | Workouts account-deletion acknowledgement (`DELETE /v1/users/me`) |
+| `@hollis-studio/contracts/domain/workouts-feedback` | Workouts feedback board: submission (`POST /v1/feedback`, diagnostics, screenshot), own/public/admin post views, votes, moderation and triage decisions, triage suggestions, audit events, `WORKOUTS_FEEDBACK_ROUTES` |
 | `@hollis-studio/contracts/domain/identity-auth` | Hollis Identity session wire: `GET /auth/me` (`IdentityMeResponseSchema`), `POST /auth/logout` body/ack, `POST /auth/forgot-password` body (`sourceApp`), `POST /auth/reset-password` body/ack (ack carries the account `email`) |
 | `@hollis-studio/contracts/domain/workouts-program-rotation` | Workouts program rotation singleton (`GET/PUT /v1/program-rotation`, `POST /v1/program-rotation/advance`) — calendar windows of program + training phase; server schedules, device transitions |
 | `@hollis-studio/contracts/domain/workouts-sunday-review` | Workouts Sunday Review: slide payload registry (`SlidePayloadSchemas`), the frozen deck stored in a Week's `aiRetrospective` (`SundayReviewDeckSchema`) and the device snapshot stored in its `deterministicSnapshot` (`WeekClientSnapshotSchema`) |

@@ -77,6 +77,7 @@ export * from './workouts-session-analysis.js';
 export * from './workouts-program-rotation.js';
 export * from './workouts-exercise-moderation.js';
 export * from './workouts-account.js';
+export * from './workouts-feedback.js';
 export * from './identity-auth.js';
 export * from './workouts-pricing.js';
 //# sourceMappingURL=index.d.ts.map

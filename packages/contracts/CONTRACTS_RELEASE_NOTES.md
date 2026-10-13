@@ -1,3 +1,26 @@
+## 0.2.0-alpha.101 (2026-10-13) — Workouts feedback board
+
+Additive. New subpath `./domain/workouts-feedback` (also re-exported from
+`./domain`) for the public, moderated bug and feature board:
+
+- Enums: kinds, sources, products, moderation states, public statuses, entry
+  points, platforms, sorts, moderation actions and audit-event actions.
+- Limits: title 4–120, body 10–4000, screenshot 1,200,000 decoded bytes and
+  2048 px long edge, 5 similar results, labels 32 chars × 8, list limit 20/50.
+- Submission: `FeedbackCreateSchema` with optional `FeedbackDiagnosticsSchema`
+  (every field optional and bounded, no free text) and base64 screenshot.
+- Views: `FeedbackOwnPostSchema` (submitter), `FeedbackPublicPostSchema` (no
+  user fields, submitter text or diagnostics; parsing strips them) and
+  `FeedbackAdminPostSchema` (diagnostics, latest triage suggestion, history),
+  with cursor-paginated list envelopes.
+- Moderation and triage: `FeedbackModerationDecisionSchema` (discriminated on
+  `action`: publish, reject, merge, update), `FeedbackTriageDecisionSchema`
+  (same union), `FeedbackTriageSuggestionSchema`, `FeedbackModerationEventSchema`.
+- Queries for the public list/board, similar search, own posts and the queues;
+  `FeedbackVoteAckSchema`, `FeedbackScreenshotResponseSchema`.
+- `WORKOUTS_FEEDBACK_ROUTES` grouped by surface (`public`, `user`,
+  `moderation`, `triage`), `/v1`-prefixed like the other Workouts route maps.
+
 ## 0.2.0-alpha.100 — Freestyle Smart Planner
 
 - Adds SmartPlannerRequest/Response schemas using the exact exporter JSON and complete canonical catalog, with bounded targets for every tracking mode.

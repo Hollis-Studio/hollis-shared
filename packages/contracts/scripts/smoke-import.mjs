@@ -30,6 +30,7 @@ const imports = [
   ["@hollis-studio/contracts/domain/workouts-sunday-review", ["SlidePayloadSchemas", "WeekClientSnapshotSchema", "SundayReviewDeckSchema", "WEEK_CLIENT_SNAPSHOT_SCHEMA_VERSION"]],
   ["@hollis-studio/contracts/domain/workouts-conversation-summary", ["ConversationRollingSummarySchema", "ConversationRollingSummaryBodySchema"]],
   ["@hollis-studio/contracts/domain/workouts-account", ["WorkoutsAccountDeletionAckSchema", "WORKOUTS_ACCOUNT_DELETION_ACK_VERSION"]],
+  ["@hollis-studio/contracts/domain/workouts-feedback", ["FeedbackCreateSchema", "FeedbackPublicPostSchema", "FeedbackModerationDecisionSchema", "WORKOUTS_FEEDBACK_ROUTES"]],
   ["@hollis-studio/contracts/domain/identity-auth", ["IdentityMeResponseSchema", "IdentityLogoutRequestSchema", "IDENTITY_ACCOUNT_PROVIDERS"]],
   ["@hollis-studio/contracts/domain/workouts-pricing", ["LifetimeAvailabilityResponseSchema"]],
   ["@hollis-studio/contracts/ai/persistence", ["AiAuditLogEntrySchema", "AiAuditLogCreateSchema"]],
