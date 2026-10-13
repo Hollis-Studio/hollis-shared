@@ -397,6 +397,10 @@ export * from './workouts-exercise-moderation.js';
 // Workouts account lifecycle - WorkoutsAccountDeletionAckSchema
 export * from './workouts-account.js';
 
+// Workouts feedback board - FeedbackCreateSchema, FeedbackPublicPostSchema,
+// FeedbackModerationDecisionSchema, WORKOUTS_FEEDBACK_ROUTES, etc.
+export * from './workouts-feedback.js';
+
 // Hollis Identity session wire (hollis-workouts#246/#223) - IdentityMeResponseSchema,
 // IdentityAccountProviderSchema, IdentityLogoutRequestSchema, IdentityLogoutResponseSchema
 export * from './identity-auth.js';
