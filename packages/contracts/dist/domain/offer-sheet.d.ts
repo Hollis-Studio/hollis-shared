@@ -117,7 +117,7 @@ export type OfferPolicySet = z.infer<typeof OfferPolicySetSchema>;
  * Elected at enrollment, only with the 4-month term at Essentials/Core/
  * Concierge. It is billed at the regular 4-month monthly rate (same Stripe
  * price, no discount) and IS month 1 of that 4-month term. The member may
- * cancel by written notice received before day `windowDays` with no early
+ * cancel by written notice received on or before day `windowDays` with no early
  * termination amount; otherwise the membership simply continues as the
  * 4-month term. Any sponsored biomarker panel is issued only after the window
  * ends without cancellation.
@@ -279,8 +279,9 @@ export declare function isIntroMonthEligible(tier: UserTier, months: number): bo
  * arithmetic), counting the Start Date as day 1: Start Date + windowDays − 1.
  * Example: Start Date 2026-10-17 → 2026-11-15 (day 30).
  *
- * An intro-month cancellation must be RECEIVED before this date to avoid the
- * early termination amount, and the sponsored biomarker panel may be issued
+ * This is the Intro Window end date: an intro-month cancellation RECEIVED on
+ * or before this date (through the end of the day) avoids the early
+ * termination amount, and the sponsored biomarker panel may be issued
  * on or after it if no such cancellation was received.
  */
 export declare function getIntroWindowEndDate(startDateIso: string): string;

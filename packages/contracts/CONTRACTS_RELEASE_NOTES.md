@@ -1,3 +1,15 @@
+## 0.2.0-alpha.103 (2026-10-14) — intro window wording
+
+Membership Agreement 2.8.1 (contentHash `bdf46057`), offer sheet 3.5.1. Text
+only; no API change from alpha.102. Section 3.5(c)/(d): the Intro Window runs
+from the Start Date through the end of day 30 (Start Date = day one), and a
+cancellation is timely if Company receives it ON OR BEFORE the Intro Window end
+date stated in Exhibit A (`getIntroWindowEndDate`, unchanged). A second monthly
+payment already charged when a timely cancellation arrives is refunded (covers
+short months where the second Billing Date precedes day 30). Exhibit A, the
+offer-sheet `introMonth` summary/policy and doc comments now say "on or before"
+instead of "before day 30". Panel deferral is unchanged.
+
 ## 0.2.0-alpha.102 (2026-10-14) — Hollis Training tier and intro month
 
 Offer sheet 3.5.0 and Membership Agreement 2.8.0 (contentHash `9d9d916b`).

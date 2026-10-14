@@ -281,7 +281,7 @@ export const SubscriptionSchema = z.object({
     introMonthElected: z.boolean().optional(),
     /**
      * Day 30 of the intro month (see `getIntroWindowEndDate`): an intro-month
-     * cancellation must be received before this date. Null/absent when no
+     * cancellation is timely if received on or before this date. Null/absent when no
      * intro month was elected.
      */
     introWindowEndsAt: z.string().nullable().optional(),

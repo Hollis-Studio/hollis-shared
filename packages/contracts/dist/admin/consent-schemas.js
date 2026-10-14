@@ -184,7 +184,7 @@ const EnrollmentSummaryObjectSchema = z.object({
     isMonthToMonth: z.boolean().optional(),
     /** Whether the optional Intro Month was elected (4-month term at ESSENTIALS/CORE/CONCIERGE only). */
     introMonthElected: z.boolean().optional(),
-    /** Day 30 of the Intro Month (ISO date); cancellation must be received before it. */
+    /** Day 30 of the Intro Month (ISO date): Intro Window end date; cancellation is timely if received on or before it. */
     introWindowEndsAt: z.string().nullable().optional(),
     /** Monthly membership rate in cents (integer, no floats). */
     monthlyRateCents: z.number().int().nonnegative(),

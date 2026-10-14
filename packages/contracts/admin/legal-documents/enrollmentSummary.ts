@@ -79,8 +79,8 @@ export interface EnrollmentSummaryData {
   /** Whether the optional Intro Month was elected (Membership Agreement Section 3.5). */
   introMonthElected: boolean;
   /**
-   * Day 30 of the Intro Month (ISO date); a cancellation must be received
-   * before this date. Null when no Intro Month was elected.
+   * Day 30 of the Intro Month (ISO date): the Intro Window end date. A
+   * cancellation is timely if received on or before this date. Null when no Intro Month was elected.
    */
   introWindowEndsAt: string | null;
   /** Included services comparison rows drawn from the offer sheet */
@@ -249,7 +249,7 @@ The benefit has no cash value and is not refundable, creditable, or exchangeable
   const introMonthNote = summary.introMonthElected
     ? `## Intro Month
 
-Member elected the Intro Month under Membership Agreement Section 3.5. The Intro Month is month 1 of Member's ${summary.contractDurationMonths}-month term and is billed at the regular monthly rate shown above, with no discount. Member may cancel by written notice that Company receives before ${summary.introWindowEndsAt} (day ${MASTER_OFFER_INTRO_MONTH.windowDays}, counting the Start Date as day one); the cancellation takes effect at the end of the Intro Month and no early termination amount is due. If no timely cancellation is received, the membership continues for the remainder of the ${summary.contractDurationMonths}-month term.
+Member elected the Intro Month under Membership Agreement Section 3.5. The Intro Month is month 1 of Member's ${summary.contractDurationMonths}-month term and is billed at the regular monthly rate shown above, with no discount. The Intro Window ends at the end of ${summary.introWindowEndsAt} (day ${MASTER_OFFER_INTRO_MONTH.windowDays}, counting the Start Date as day one). Member may cancel by written notice that Company receives on or before ${summary.introWindowEndsAt}; a timely cancellation takes effect at the end of the Intro Month, no early termination amount is due, and any second monthly payment already charged is refunded. If no timely cancellation is received, the membership continues for the remainder of the ${summary.contractDurationMonths}-month term.
 
 ---
 
@@ -266,7 +266,7 @@ Member elected the Intro Month under Membership Agreement Section 3.5. The Intro
     ? `| First Billing Period Ends | ${summary.endDate} (no fixed End Date) |`
     : `| End Date | ${summary.endDate} |`;
   const introMonthValue = summary.introMonthElected
-    ? `Elected — cancellation must be received before ${summary.introWindowEndsAt}`
+    ? `Elected — Intro Window ends ${summary.introWindowEndsAt}; cancellation must be received on or before that date`
     : "Not elected";
 
   return `# Exhibit A — Enrollment Summary and Service Schedule

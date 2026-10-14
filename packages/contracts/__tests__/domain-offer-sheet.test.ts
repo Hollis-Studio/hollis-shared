@@ -125,6 +125,12 @@ describe("intro month", () => {
     expect(isIntroMonthEligibleForDuration("TRAINING", "MONTH_1")).toBe(false);
   });
 
+  it("states the window as on-or-before day 30, never 'before day 30'", () => {
+    const text = JSON.stringify(MASTER_OFFER_INTRO_MONTH);
+    expect(text).toContain("on or before that date");
+    expect(text).not.toMatch(/before day 30|before the 30th/);
+  });
+
   it("computes day 30 of the intro month counting the Start Date as day 1", () => {
     expect(getIntroWindowEndDate("2026-10-17")).toBe("2026-11-15");
     expect(getIntroWindowEndDate("2026-12-15")).toBe("2027-01-13");

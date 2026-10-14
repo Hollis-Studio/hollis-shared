@@ -21,6 +21,11 @@
  * Training tier, the optional Intro Month (Section 3.5), stretch/mobility-only
  * recovery (Section 2.6), and the per-year biomarker wording (Section 2.4).
  * Shipped before counsel review by owner decision.
+ *
+ * v2.8.1 (2026-10-14): Section 3.5(c)/(d) — an Intro Month cancellation is
+ * timely if received ON OR BEFORE the Intro Window end date in Exhibit A
+ * (day 30, Start Date = day one); the Intro Window runs through the end of
+ * that day; a second monthly payment already charged is refunded.
  */
 
 import {
@@ -239,9 +244,9 @@ If Member checked the Intro Month election in Section 3.1, the following terms a
 
 (b) **Price.** The Intro Month is billed at the regular monthly rate for Member's tier on the 4-Month Term shown in Section 3.2 and Exhibit A. No discount, credit, or reduced rate applies.
 
-(c) **Cancellation within the Intro Window.** Member may cancel this Agreement by written notice under Section 6.6 that Company receives before the thirtieth (30th) day of the Intro Month, counting the Start Date as day one. The period from the Start Date until that thirtieth day is the "Intro Window." The date on which the Intro Window ends is stated in Exhibit A. Notwithstanding the seven-day notice requirement in Section 6.6, a cancellation received within the Intro Window takes effect at the end of the Intro Month; no early termination amount under Section 6.4 is due, and no further monthly payment will be charged. The Intro Month payment is not refundable except as required by applicable law or as provided in Section 5.1, 6.2, 6.3, or 6.5.
+(c) **Cancellation within the Intro Window.** The "Intro Window" is the period beginning on the Start Date and ending at the end of the thirtieth (30th) day of the Intro Month, counting the Start Date as day one. The date on which the Intro Window ends is stated in Exhibit A. Member may cancel this Agreement by written notice under Section 6.6, and the cancellation is timely if Company receives it on or before the Intro Window end date stated in Exhibit A. Notwithstanding the seven-day notice requirement in Section 6.6, a timely cancellation takes effect at the end of the Intro Month; no early termination amount under Section 6.4 is due, and no further monthly payment will be charged. If a second monthly payment has already been charged when Company receives a timely cancellation, Company will refund that payment in full. The Intro Month payment is not refundable except as required by applicable law or as provided in Section 5.1, 6.2, 6.3, or 6.5.
 
-(d) **Continuation.** If Company does not receive Member's written cancellation within the Intro Window, Member's membership continues for the remainder of the 4-Month Term on all terms of this Agreement, including Sections 3.4 and 6.4.
+(d) **Continuation.** If Company does not receive Member's written cancellation on or before the Intro Window end date stated in Exhibit A, Member's membership continues for the remainder of the 4-Month Term on all terms of this Agreement, including Sections 3.4 and 6.4.
 
 (e) **Sponsored testing benefit.** Where Member's tier includes the Company-sponsored third-party testing program described in Section 2.4, Company does not pay for, issue, or arrange that benefit during the Intro Window. It becomes available only after the Intro Window ends without a timely cancellation by Member.
 
@@ -486,7 +491,7 @@ Title: ______________________________________
 
 export const meta = {
   title: "Membership Agreement",
-  version: "2.8.0",
+  version: "2.8.1",
   effectiveDate: "2026-10-14",
   /**
    * sha256 of the fully-rendered `content` export, first 8 hex chars.
@@ -495,7 +500,7 @@ export const meta = {
    * verifiable — scripts/check-legal-doc-versions.js in hollis-health-app
    * evaluates the built module and compares.
    */
-  contentHash: "9d9d916b",
+  contentHash: "bdf46057",
 };
 
 /**

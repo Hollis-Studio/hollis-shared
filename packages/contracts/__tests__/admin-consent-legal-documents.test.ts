@@ -39,7 +39,7 @@ const contentHashOf = (content: string): string =>
  * hash edit that forgets the version bump fails here.
  */
 const EXPECTED_DOCUMENT_FINGERPRINTS = {
-  MEMBERSHIP_AGREEMENT: { version: "2.8.0", contentHash: "9d9d916b" },
+  MEMBERSHIP_AGREEMENT: { version: "2.8.1", contentHash: "bdf46057" },
   LIABILITY_WAIVER: { version: "1.5.0", contentHash: "c6481b3d" },
   INFORMED_CONSENT: { version: "2.2.0", contentHash: "b6d1d077" },
   ELECTRONIC_COMMS_CONSENT: { version: "1.4.0", contentHash: "0eb4cd16" },
@@ -183,7 +183,7 @@ describe("admin consent legal document contracts", () => {
   });
 });
 
-describe("membership agreement — Hollis Training and Intro Month (v2.8.0)", () => {
+describe("membership agreement — Hollis Training and Intro Month (v2.8.1)", () => {
   const agreement = DOCUMENT_REGISTRY.MEMBERSHIP_AGREEMENT;
 
   function renderFor(
@@ -235,13 +235,23 @@ describe("membership agreement — Hollis Training and Intro Month (v2.8.0)", ()
     const rendered = renderFor("CORE", 4, true);
     expect(rendered).toContain("[x] **4-Month Term**");
     expect(rendered).toContain("[x] **Member elects the Intro Month described in Section 3.5**");
-    expect(rendered).toContain("| Intro Month | Elected — cancellation must be received before 2026-11-15 |");
+    expect(rendered).toContain(
+      "| Intro Month | Elected — Intro Window ends 2026-11-15; cancellation must be received on or before that date |",
+    );
+    expect(rendered).toContain("Company receives on or before 2026-11-15");
     expect(rendered).toContain("## Intro Month");
     expect(rendered).toContain("does not pay for, issue, or arrange this benefit until the Intro Window ends");
   });
 
   it("contains the intro-month, month-to-month, and early-termination carve-out clauses", () => {
     expect(agreement.content).toContain("### 3.5 Intro Month");
+    expect(agreement.content).toContain(
+      "ending at the end of the thirtieth (30th) day of the Intro Month, counting the Start Date as day one",
+    );
+    expect(agreement.content).toContain(
+      "the cancellation is timely if Company receives it on or before the Intro Window end date stated in Exhibit A",
+    );
+    expect(agreement.content).not.toMatch(/receives before the thirtieth/);
     expect(agreement.content).toContain("It is not an additional month, and Member's total commitment");
     expect(agreement.content).toContain("no early termination amount under Section 6.4 is due");
     expect(agreement.content).toContain(

@@ -1,6 +1,6 @@
 {
     "meta": {
-        "version": "3.5.0",
+        "version": "3.5.1",
         "effectiveDate": "2026-10-14",
         "status": "active"
     },
@@ -55,8 +55,8 @@
         "windowDays": 30,
         "countsAsFirstMonthOfTerm": true,
         "sponsoredPanelDeferredUntilWindowEnds": true,
-        "summary": "Optional at enrollment for the 4-month Essentials, Core, or Concierge term. Your first month is billed at the regular 4-month monthly rate and counts as month 1 of the 4-month term. Cancel in writing before day 30 and no early termination amount applies; otherwise the membership continues as the 4-month term.",
-        "policy": "The intro month is an optional election available at enrollment only with the 4-month term at the Essentials, Core, or Concierge tier; it is not available with the 8- or 12-month term or with Hollis Training. The intro month is billed at the regular 4-month monthly rate with no discount, and it is month 1 of the 4-month term, so the total commitment is four months from the Start Date. The member may cancel by written notice received before day 30 of the intro month, counting the Start Date as day 1; the cancellation takes effect at the end of the intro month, no early termination amount is due, and no further monthly payment is charged. The intro-month payment itself is not refunded except as required by law. If the member does not cancel before the 30th day, the membership continues for the remainder of the 4-month term on the terms of the signed Membership Agreement. Where the tier includes the sponsored blood biomarker panel membership, Hollis Health does not pay for or issue it until the intro window has ended without cancellation."
+        "summary": "Optional at enrollment for the 4-month Essentials, Core, or Concierge term. Your first month is billed at the regular 4-month monthly rate and counts as month 1 of the 4-month term. Cancel in writing by the end of day 30 (counting your start date as day 1) and no early termination amount applies; otherwise the membership continues as the 4-month term.",
+        "policy": "The intro month is an optional election available at enrollment only with the 4-month term at the Essentials, Core, or Concierge tier; it is not available with the 8- or 12-month term or with Hollis Training. The intro month is billed at the regular 4-month monthly rate with no discount, and it is month 1 of the 4-month term, so the total commitment is four months from the Start Date. The intro window runs from the Start Date through the end of day 30, counting the Start Date as day 1, and its end date is stated in the signed Enrollment Summary. A cancellation is timely if Hollis Health receives written notice on or before that date; a timely cancellation takes effect at the end of the intro month, no early termination amount is due, no further monthly payment is charged, and any second monthly payment already charged is refunded. The intro-month payment itself is not refunded except as required by law. If no timely cancellation is received, the membership continues for the remainder of the 4-month term on the terms of the signed Membership Agreement. Where the tier includes the sponsored blood biomarker panel membership, Hollis Health does not pay for or issue it until the intro window has ended without cancellation."
     },
     "policies": {
         "enrollmentScheduleControl": "The signed Enrollment Summary and Service Schedule controls the selected tier, term, any intro month election, monthly rate, exact Hollis-provided services, Hollis-billed add-ons, and any separately billed third-party items.",
