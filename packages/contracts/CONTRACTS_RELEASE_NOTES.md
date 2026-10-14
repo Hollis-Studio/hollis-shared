@@ -1,3 +1,25 @@
+## 0.2.0-alpha.105 (2026-10-14) — no referral network, supplements, or removed modalities
+
+Owner decisions: Hollis has one referral partner (never "referral network");
+no supplements; no infrared sauna, cold plunge / ice bath, or red light.
+
+- Membership Agreement 2.8.3 (contentHash `55c211c3`): Section 2.3 clinical
+  services come from independent providers of Member's choosing, which may
+  include a provider Company refers Member to at Member's request; supplement
+  references removed from 2.2, 8.1 and 8.3.
+- Liability Waiver 1.6.0 (contentHash `0b576288`): infrared sauna, cold water
+  immersion / ice bath and red light risk sections and initials removed; the
+  waiver now requires only `exercise` and `release_covenant` initials. Former
+  2.5 is 2.2. `LIABILITY_INITIALS` keeps the three old keys as deprecated so
+  v1.5.0 ConsentRecords still type-check. Server consumers that derive required
+  initials from `initialsSections` pick this up automatically.
+- Informed Consent 2.2.1 (contentHash `bcbfb19c`): supplement tracking
+  references removed.
+- Offer sheet 3.5.2: partner-facility disclosure says "providers of their
+  choosing, which may include a provider Hollis Health refers them to"; the
+  physical-products line says Hollis does not sell supplements or other
+  physical products. Exhibit A row reads "Not sold by Company".
+
 ## 0.2.0-alpha.104 (2026-10-14) — session rollover and member upload categories
 
 Membership Agreement 2.8.2 (contentHash `6022d69c`). Section 2.5 now matches

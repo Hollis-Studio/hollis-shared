@@ -291,7 +291,7 @@ ${totalContractRow}
 | Start Date | ${summary.startDate} |
 ${endDateRow}
 | Initial Program Location | To be confirmed at enrollment |
-| Supplements and Other Physical Products | Currently unavailable; not included or available as add-ons |
+| Supplements and Other Physical Products | Not sold by Company; not included or available as add-ons |
 | Included Non-Clinical Assessment Allowance | None unless separately listed |
 | Sponsored Third-Party Testing Membership | ${sponsoredTestingValue} |
 | Add-On Services | None unless separately listed |

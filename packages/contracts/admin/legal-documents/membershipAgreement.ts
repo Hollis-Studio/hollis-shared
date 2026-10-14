@@ -33,6 +33,12 @@
  * value and end with no refund when the membership ends. Section 2.1 Hollis
  * Training wording changed from "per calendar month" to "per month" to match
  * billing-period grants.
+ *
+ * v2.8.3 (2026-10-14): Section 2.3 — clinical services come from independent
+ * providers of Member's choosing, which may include a provider Company refers
+ * Member to (no "referral network"; Company has one referral partner).
+ * Sections 2.2, 8.1, 8.3 — supplement references removed; Company does not
+ * sell supplements or any other physical products.
  */
 
 import {
@@ -169,7 +175,7 @@ The specific commercial and operational details of Member's selected membership 
 - Whether Member elected the Intro Month described in Section 3.5;
 - Monthly rate;
 - Start Date and End Date;
-- Confirmation that supplements and all other physical products are currently unavailable from Company and are not included in Membership or available as add-ons;
+- Confirmation that Company does not sell supplements or any other physical products, and that none is included in Membership or available as an add-on;
 - Any included non-clinical screening or assessment allowance;
 - Whether Member's tier includes the Company-sponsored third-party testing program subscription described in Section 2.4;
 - Any add-on services;
@@ -178,7 +184,7 @@ The specific commercial and operational details of Member's selected membership 
 
 ### 2.3 Third-Party Clinical Services and Pass-Through Charges
 
-Member acknowledges that Hollis Health LLC is a wellness company and not a hospital, clinic, physician practice, or licensed medical provider. Hollis Health does not practice medicine and does not bill for or sell medical services. Medical care, clinical evaluations, laboratory services, imaging, prescriptions, and other clinical services are furnished only by independent licensed providers chosen by Member, including providers in Company's referral network. Those third-party charges are **not** included in Membership fees and may be billed separately by the applicable provider. Referrals are initiated at Member's request; Company provides the name and contact information of independent providers and does not order, select, schedule, coordinate, or interpret any clinical service.
+Member acknowledges that Hollis Health LLC is a wellness company and not a hospital, clinic, physician practice, or licensed medical provider. Hollis Health does not practice medicine and does not bill for or sell medical services. Medical care, clinical evaluations, laboratory services, imaging, prescriptions, and other clinical services are furnished only by independent licensed providers of Member's choosing, which may include a provider Company refers Member to at Member's request. Those third-party charges are **not** included in Membership fees and may be billed separately by the applicable provider. Referrals are initiated at Member's request; Company provides the name and contact information of independent providers and does not order, select, schedule, coordinate, or interpret any clinical service.
 
 The following items are billed separately unless the signed Enrollment Summary and Service Schedule expressly lists them as included:
 
@@ -373,7 +379,7 @@ Member's Initials Acknowledging Assumption of Risk and Release: {{INITIALS_ASSUM
 
 ### 8.1 Direct Member Data
 
-Member acknowledges that information provided directly to Company, including account information, payment information, scheduling history, training information, wellness questionnaires, supplement preferences, and non-clinical communications, is governed by Company's Privacy Policy and related member-facing privacy notices.
+Member acknowledges that information provided directly to Company, including account information, payment information, scheduling history, training information, wellness questionnaires, and non-clinical communications, is governed by Company's Privacy Policy and related member-facing privacy notices.
 
 ### 8.2 Clinical Information and Independent Providers
 
@@ -385,7 +391,7 @@ Company does not request, obtain, or receive Member's clinical information from 
 
 Company shares Member's information with an independent clinician or other provider only at Member's request and direction. Where Member asks Company to help arrange a referral, Member authorizes Company to disclose the limited information reasonably necessary for that purpose — ordinarily Member's name and contact information and the nature of the referral — to the independent provider Member identifies. Company does not transmit clinical history, test results, or clinical findings to any provider except to the extent Member expressly directs in a signed written authorization.
 
-Company does not share Member's wellness-program information, training data, screening data, supplement usage records, or any health information with any provider absent Member's request and written authorization, except as required by law.
+Company does not share Member's wellness-program information, training data, screening data, or any health information with any provider absent Member's request and written authorization, except as required by law.
 
 Member may withdraw any authorization given under this Section 8.3 at any time by written notice to admin@hollis.health, except as to disclosures already made in reliance on it.
 
@@ -502,7 +508,7 @@ Title: ______________________________________
 
 export const meta = {
   title: "Membership Agreement",
-  version: "2.8.2",
+  version: "2.8.3",
   effectiveDate: "2026-10-14",
   /**
    * sha256 of the fully-rendered `content` export, first 8 hex chars.
@@ -511,7 +517,7 @@ export const meta = {
    * verifiable — scripts/check-legal-doc-versions.js in hollis-health-app
    * evaluates the built module and compares.
    */
-  contentHash: "6022d69c",
+  contentHash: "55c211c3",
 };
 
 /**

@@ -39,9 +39,9 @@ const contentHashOf = (content: string): string =>
  * hash edit that forgets the version bump fails here.
  */
 const EXPECTED_DOCUMENT_FINGERPRINTS = {
-  MEMBERSHIP_AGREEMENT: { version: "2.8.2", contentHash: "6022d69c" },
-  LIABILITY_WAIVER: { version: "1.5.0", contentHash: "c6481b3d" },
-  INFORMED_CONSENT: { version: "2.2.0", contentHash: "b6d1d077" },
+  MEMBERSHIP_AGREEMENT: { version: "2.8.3", contentHash: "55c211c3" },
+  LIABILITY_WAIVER: { version: "1.6.0", contentHash: "0b576288" },
+  INFORMED_CONSENT: { version: "2.2.1", contentHash: "bcbfb19c" },
   ELECTRONIC_COMMS_CONSENT: { version: "1.4.0", contentHash: "0eb4cd16" },
   PHOTO_VIDEO_RELEASE: { version: "1.3.0", contentHash: "a63c032b" },
   HIPAA_NPP: { version: "1.3.0", contentHash: "6aa28428" },
@@ -138,11 +138,11 @@ describe("admin consent legal document contracts", () => {
         "Jane Member",
       );
       expect(agreement.content).toContain(
-        "Supplements and all other physical products are currently unavailable",
+        "Hollis Health does not sell supplements or any other physical products",
       );
       expect(agreement.content).not.toContain("supplement purchases");
       expect(exhibit).toContain(
-        "| Supplements and Other Physical Products | Currently unavailable; not included or available as add-ons |",
+        "| Supplements and Other Physical Products | Not sold by Company; not included or available as add-ons |",
       );
       expect(exhibit).not.toContain("Included Supplement Allowance");
       expect(agreement.meta.contentHash).toBe(
@@ -183,7 +183,7 @@ describe("admin consent legal document contracts", () => {
   });
 });
 
-describe("membership agreement — Hollis Training, Intro Month and session rollover (v2.8.2)", () => {
+describe("membership agreement — Hollis Training, Intro Month and session rollover (v2.8.3)", () => {
   const agreement = DOCUMENT_REGISTRY.MEMBERSHIP_AGREEMENT;
 
   function renderFor(
@@ -241,6 +241,23 @@ describe("membership agreement — Hollis Training, Intro Month and session roll
     expect(rendered).toContain("Company receives on or before 2026-11-15");
     expect(rendered).toContain("## Intro Month");
     expect(rendered).toContain("does not pay for, issue, or arrange this benefit until the Intro Window ends");
+  });
+
+  it("has no referral-network, supplement-tracking, or removed-modality remnants in any signed document", () => {
+    for (const [type, doc] of Object.entries(DOCUMENT_REGISTRY)) {
+      expect([type, doc.content]).not.toEqual([type, expect.stringMatching(/referral network/i)]);
+      expect([type, doc.content]).not.toEqual([
+        type,
+        expect.stringMatching(/supplement (preferences|usage|purchases)|supplement-related/i),
+      ]);
+    }
+    const waiver = DOCUMENT_REGISTRY.LIABILITY_WAIVER;
+    expect(waiver.content).not.toMatch(/infrared|sauna|cold water|ice bath|red light/i);
+    expect(waiver.content).not.toMatch(/INITIALS_(INFRARED_SAUNA|COLD_WATER|RED_LIGHT)/);
+    expect(waiver.initialsSections.map((s) => s.key)).toEqual(["exercise", "release_covenant"]);
+    expect(agreement.content).toContain(
+      "independent licensed providers of Member's choosing, which may include a provider Company refers Member to at Member's request",
+    );
   });
 
   it("rolls unused sessions over while active and ends them with the membership (Section 2.5)", () => {

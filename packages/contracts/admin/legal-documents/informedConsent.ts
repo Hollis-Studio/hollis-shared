@@ -4,13 +4,16 @@
  * Source: docs/09-Legal/HH Legal/internal/informed-consent.mdx
  * The docMeta block has been extracted into `meta`. Blank field placeholders
  * replaced by template tokens.
+ *
+ * v2.2.1 (2026-10-14): supplement references removed from Sections 1 and 5.1
+ * (Company does not sell supplements or track supplement use).
  */
 
 export const meta = {
   title: "Informed Consent for Health Services",
-  version: "2.2.0",
-  effectiveDate: "2026-09-17",
-  contentHash: "b6d1d077",
+  version: "2.2.1",
+  effectiveDate: "2026-10-14",
+  contentHash: "bcbfb19c",
 };
 
 export const content = `# Informed Consent for Health Services
@@ -27,7 +30,7 @@ This Informed Consent for Health Services ("Consent") describes certain health-r
 
 This Consent is intended to address two distinct categories of information and services:
 
-- **Company-facilitated wellness services**, such as body composition assessments (BIA), training-related screenings, supplement-related program tracking, and coordination support; and
+- **Company-facilitated wellness services**, such as body composition assessments (BIA), training-related screenings, and coordination support; and
 - **Records and referrals related to independent clinical care**, meaning health records or test results you obtain on your own, through your own independent licensed physician, laboratory, imaging provider, or other third-party provider — including a third-party testing company whose membership fee Company pays on your behalf as a membership benefit — which you may voluntarily choose to share with Company for display and organization in your member dashboard, or for which you may request Company's assistance in coordinating a referral. Company does not order, select, schedule, coordinate, or interpret any such testing or clinical care, whether or not Company has paid the fee for the program through which you obtained it.
 
 By signing this Consent, you confirm that you have had a reasonable opportunity to review its contents, ask questions, and seek independent advice before signing. You are not required to sign this Consent in order to access basic non-clinical membership services; however, certain enhanced health-related services described below may not be available unless you sign it.
@@ -130,7 +133,7 @@ Company does not initiate, request, or receive clinical oversight of your care o
 - Wellness screening findings;
 - Health history and questionnaire responses you provide to Company;
 - Training participation, attendance, and progress notes;
-- Supplement usage records and related wellness-program information; and
+- Other wellness-program information; and
 - Other information reasonably necessary to support a referral coordination you request.
 
 ### 5.2 Acknowledgment Regarding Third-Party Clinical Providers

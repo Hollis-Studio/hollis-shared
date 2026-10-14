@@ -58,12 +58,21 @@ export declare const MEMBERSHIP_INITIALS: {
 };
 export type MembershipInitialsKey = (typeof MEMBERSHIP_INITIALS)[keyof typeof MEMBERSHIP_INITIALS];
 /**
- * Section keys for initials required in the Liability Waiver.
+ * Section keys for initials in the Liability Waiver.
+ *
+ * The current waiver (v1.6.0+) requires only EXERCISE and RELEASE_COVENANT;
+ * the required set comes from `liabilityWaiver.initialsSections`.
+ * INFRARED_SAUNA, COLD_WATER and RED_LIGHT are legacy keys kept only so
+ * ConsentRecords signed against v1.5.0 and earlier still type-check; Company
+ * no longer offers those modalities.
  */
 export declare const LIABILITY_INITIALS: {
     readonly EXERCISE: "exercise";
+    /** @deprecated Legacy v1.5.0 key; not required by the current waiver. */
     readonly INFRARED_SAUNA: "infrared_sauna";
+    /** @deprecated Legacy v1.5.0 key; not required by the current waiver. */
     readonly COLD_WATER: "cold_water";
+    /** @deprecated Legacy v1.5.0 key; not required by the current waiver. */
     readonly RED_LIGHT: "red_light";
     readonly RELEASE_COVENANT: "release_covenant";
 };
