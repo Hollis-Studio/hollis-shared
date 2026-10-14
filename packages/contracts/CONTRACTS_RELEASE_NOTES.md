@@ -1,3 +1,12 @@
+## 0.2.0-alpha.106 (2026-10-14) — Liability Waiver restored to 1.5.0
+
+Owner decision: the Liability Waiver stays unchanged. alpha.106 restores
+Liability Waiver 1.5.0 (contentHash `c6481b3d`, five initials including
+infrared_sauna, cold_water, red_light) and the original `LIABILITY_INITIALS`
+exactly as published in alpha.104. Do not use alpha.105, whose waiver 1.6.0
+was withdrawn. Everything else from alpha.105 is kept: Membership Agreement
+2.8.3 (`55c211c3`), Informed Consent 2.2.1 (`bcbfb19c`), offer sheet 3.5.2.
+
 ## 0.2.0-alpha.105 (2026-10-14) — no referral network, supplements, or removed modalities
 
 Owner decisions: Hollis has one referral partner (never "referral network");

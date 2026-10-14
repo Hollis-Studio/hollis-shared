@@ -4,19 +4,13 @@
  * Source: docs/09-Legal/HH Legal/internal/liability-waiver.mdx
  * The docMeta block has been extracted into `meta`. Blank field placeholders
  * replaced by template tokens.
- *
- * v1.6.0 (2026-10-14): Company offers no infrared sauna, cold water immersion /
- * ice bath, or red light therapy. Their risk sections (former 2.2-2.4), activity
- * initials (former 3.2(b)-(d)) and initials keys are removed; recovery is
- * stretching and mobility work inside coaching sessions. Former 2.5 is now 2.2.
- * Stored ConsentRecords for v1.5.0 keep their original initials.
  */
 
 export const meta = {
   title: "Liability Waiver and Assumption of Risk Agreement",
-  version: "1.6.0",
-  effectiveDate: "2026-10-14",
-  contentHash: "0b576288",
+  version: "1.5.0",
+  effectiveDate: "2026-09-17",
+  contentHash: "c6481b3d",
 };
 
 export const content = `# Liability Waiver and Assumption of Risk Agreement
@@ -47,7 +41,7 @@ This Liability Waiver and Assumption of Risk Agreement ("Waiver") is entered int
 | Email Address | {{EMAIL}} |
 | Phone Number | {{PHONE}} |
 
-This Waiver applies to Participant's participation in physical training, movement, recovery, and related wellness activities made available by Company at a Hollis Health location or other Company-approved location ("Activities"), including private coaching sessions, conditioning programs, stretching and mobility work, non-diagnostic body composition assessments, and related wellness activities. The Activities do not include, and Company does not provide, any medical, laboratory, testing, imaging, or other clinical service (see Sections 5.4 and 5.5).
+This Waiver applies to Participant's participation in physical training, movement, recovery, and related wellness activities made available by Company at a Hollis Health location or other Company-approved location ("Activities"), including private coaching sessions, conditioning programs, infrared sauna use, cold water immersion, red light therapy, non-diagnostic body composition assessments, and related wellness activities. The Activities do not include, and Company does not provide, any medical, laboratory, testing, imaging, or other clinical service (see Sections 5.4 and 5.5).
 
 Unless Company expressly approves a separate minor-participant process in writing, this Waiver is intended for adult participants only.
 
@@ -61,9 +55,21 @@ Participant acknowledges that the Activities involve inherent risks of physical 
 
 Participation in exercise programs, resistance training, cardiovascular conditioning, mobility work, and related fitness activities carries risks including muscle strains, sprains, tears, fractures, dislocations, herniated discs, falls, equipment misuse, rhabdomyolysis, heat illness, cardiovascular events, stroke, arrhythmia, and death.
 
-### 2.2 Facility and Equipment Risks
+### 2.2 Infrared Sauna Risks
 
-Participation at a training location carries additional risks including slipping on wet surfaces, tripping, collisions, equipment malfunction, electrical hazards, and injuries caused by misuse of equipment by Participant or others.
+Infrared sauna use carries risks including dehydration, electrolyte imbalance, hyperthermia, heat exhaustion, heat stroke, burns, syncope, hypotension, cardiovascular stress, adverse medication interactions, exacerbation of pre-existing health conditions, and death.
+
+### 2.3 Cold Water Immersion and Ice Bath Risks
+
+Cold water immersion and ice bath use carry risks including cold shock response, hyperventilation, arrhythmia, myocardial infarction, sudden cardiac arrest, hypothermia, frostbite, loss of consciousness, drowning or near-drowning, worsening of circulatory conditions, and death.
+
+### 2.4 Red Light Therapy Risks
+
+Red light therapy may involve risks including photosensitivity reactions, eye injury, retinal damage, skin irritation, burns, worsening of photosensitive conditions, and adverse interaction with medications or implanted devices.
+
+### 2.5 Facility and Equipment Risks
+
+Participation at a training or recovery location carries additional risks including slipping on wet surfaces, tripping, collisions, equipment malfunction, electrical hazards, and injuries caused by misuse of equipment by Participant or others.
 
 ---
 
@@ -80,6 +86,18 @@ Participant specifically assumes all risks associated with the following activit
 (a) **Exercise and Personal Training**
 
 Participant's Initials: {{INITIALS_EXERCISE}}
+
+(b) **Infrared Sauna**
+
+Participant's Initials: {{INITIALS_INFRARED_SAUNA}}
+
+(c) **Cold Water Immersion / Ice Bath**
+
+Participant's Initials: {{INITIALS_COLD_WATER}}
+
+(d) **Red Light Therapy**
+
+Participant's Initials: {{INITIALS_RED_LIGHT}}
 
 ---
 
@@ -103,7 +121,7 @@ Nothing in this Waiver releases or limits claims based on gross negligence, will
 
 ### 5.1 Disclosure Duty
 
-Participant represents and warrants that Participant has disclosed to Company, in writing before participating, all material information reasonably relevant to safe participation in the Activities, including cardiovascular conditions, metabolic disorders, musculoskeletal injuries, neurological conditions, respiratory conditions, pregnancy-related considerations, circulatory disorders, medications, allergies, and physician-imposed restrictions.
+Participant represents and warrants that Participant has disclosed to Company, in writing before participating, all material information reasonably relevant to safe participation in the Activities, including cardiovascular conditions, metabolic disorders, musculoskeletal injuries, neurological conditions, respiratory conditions, pregnancy-related considerations, photosensitive conditions, circulatory disorders, medications, allergies, and physician-imposed restrictions.
 
 ### 5.2 Physician Guidance Attestation
 
@@ -171,6 +189,9 @@ Date of Birth: {{DATE_OF_BIRTH}}
 | Section | Description | Initials |
 |---|---|---|
 | Section 3.2(a) | Assumption of Risk — Exercise | {{INITIALS_EXERCISE}} |
+| Section 3.2(b) | Assumption of Risk — Infrared Sauna | {{INITIALS_INFRARED_SAUNA}} |
+| Section 3.2(c) | Assumption of Risk — Cold Water Immersion | {{INITIALS_COLD_WATER}} |
+| Section 3.2(d) | Assumption of Risk — Red Light Therapy | {{INITIALS_RED_LIGHT}} |
 | Section 4 | Release and Covenant Not to Sue | {{INITIALS_RELEASE_COVENANT}} |
 
 ---
@@ -194,6 +215,24 @@ export const initialsSections = [
     title: "Assumption of Risk — Exercise and Personal Training (Section 3.2a)",
     excerpt:
       "You acknowledge the inherent risks of exercise programs including muscle strains, cardiovascular events, rhabdomyolysis, and death, and voluntarily assume all such risks.",
+  },
+  {
+    key: "infrared_sauna",
+    title: "Assumption of Risk — Infrared Sauna (Section 3.2b)",
+    excerpt:
+      "You acknowledge the risks of infrared sauna use including dehydration, hyperthermia, cardiovascular stress, and death, and voluntarily assume all such risks.",
+  },
+  {
+    key: "cold_water",
+    title: "Assumption of Risk — Cold Water Immersion / Ice Bath (Section 3.2c)",
+    excerpt:
+      "You acknowledge the risks of cold water immersion including cold shock, arrhythmia, sudden cardiac arrest, hypothermia, and death, and voluntarily assume all such risks.",
+  },
+  {
+    key: "red_light",
+    title: "Assumption of Risk — Red Light Therapy (Section 3.2d)",
+    excerpt:
+      "You acknowledge the risks of red light therapy including photosensitivity reactions, eye injury, retinal damage, and adverse medication interactions, and voluntarily assume all such risks.",
   },
   {
     key: "release_covenant",

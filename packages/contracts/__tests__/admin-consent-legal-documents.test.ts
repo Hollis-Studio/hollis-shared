@@ -40,7 +40,7 @@ const contentHashOf = (content: string): string =>
  */
 const EXPECTED_DOCUMENT_FINGERPRINTS = {
   MEMBERSHIP_AGREEMENT: { version: "2.8.3", contentHash: "55c211c3" },
-  LIABILITY_WAIVER: { version: "1.6.0", contentHash: "0b576288" },
+  LIABILITY_WAIVER: { version: "1.5.0", contentHash: "c6481b3d" },
   INFORMED_CONSENT: { version: "2.2.1", contentHash: "bcbfb19c" },
   ELECTRONIC_COMMS_CONSENT: { version: "1.4.0", contentHash: "0eb4cd16" },
   PHOTO_VIDEO_RELEASE: { version: "1.3.0", contentHash: "a63c032b" },
@@ -243,7 +243,7 @@ describe("membership agreement — Hollis Training, Intro Month and session roll
     expect(rendered).toContain("does not pay for, issue, or arrange this benefit until the Intro Window ends");
   });
 
-  it("has no referral-network, supplement-tracking, or removed-modality remnants in any signed document", () => {
+  it("has no referral-network or supplement-tracking remnants in any signed document", () => {
     for (const [type, doc] of Object.entries(DOCUMENT_REGISTRY)) {
       expect([type, doc.content]).not.toEqual([type, expect.stringMatching(/referral network/i)]);
       expect([type, doc.content]).not.toEqual([
@@ -251,10 +251,9 @@ describe("membership agreement — Hollis Training, Intro Month and session roll
         expect.stringMatching(/supplement (preferences|usage|purchases)|supplement-related/i),
       ]);
     }
-    const waiver = DOCUMENT_REGISTRY.LIABILITY_WAIVER;
-    expect(waiver.content).not.toMatch(/infrared|sauna|cold water|ice bath|red light/i);
-    expect(waiver.content).not.toMatch(/INITIALS_(INFRARED_SAUNA|COLD_WATER|RED_LIGHT)/);
-    expect(waiver.initialsSections.map((s) => s.key)).toEqual(["exercise", "release_covenant"]);
+    // The Liability Waiver deliberately stays at v1.5.0 (owner decision
+    // 2026-10-14): covering sauna / cold water / red light risks for activities
+    // Company does not offer does no harm and avoids a counsel re-review.
     expect(agreement.content).toContain(
       "independent licensed providers of Member's choosing, which may include a provider Company refers Member to at Member's request",
     );
