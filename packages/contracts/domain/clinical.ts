@@ -455,7 +455,10 @@ export const PatientSchema = z.object({
   role: z
     .enum(["ADMIN", "CLINICIAN", "TRAINER", "CLIENT"])
     .default("CLIENT"),
-  tier: z.enum(["ESSENTIALS", "CORE", "CONCIERGE"]).optional(),
+  // Literal, not USER_TIERS: user.ts imports this module, so importing it
+  // back would be a load-order cycle. Keep in sync with USER_TIERS
+  // (pinned by __tests__/domain-user.test.ts).
+  tier: z.enum(["TRAINING", "ESSENTIALS", "CORE", "CONCIERGE"]).optional(),
   // Staff assignments
   assignedClinicianId: z.string().nullable().optional(),
   assignedTrainerId: z.string().nullable().optional(),

@@ -8,28 +8,40 @@
  *
  * Usage:
  *   const summary = generateEnrollmentSummary("CORE", 8);
+ *   const intro = generateEnrollmentSummary("CORE", 4, "2026-10-17", { introMonth: true });
+ *   const training = generateEnrollmentSummary("TRAINING", 1);
  *   const markdown = renderEnrollmentSummaryMarkdown(summary, "Jane Smith");
+ *
+ * Throws on a tier + term the offer sheet does not offer (e.g. TRAINING with
+ * 4 months, CORE with 1 month) and on an ineligible intro-month election.
  */
 
 import {
   MASTER_OFFER_SHEET,
+  MASTER_OFFER_INTRO_MONTH,
+  MONTH_TO_MONTH_TERM_MONTHS,
+  allowedTermMonthsForTier,
   getDiscountedMonthlyPriceDollars,
+  getIntroWindowEndDate,
   formatUsd,
+  isIntroMonthEligible,
+  isTermAllowedForTier,
 } from "../../domain/offer-sheet.js";
 import {
   CONTRACT_DURATION_MONTHS,
   CONTRACT_DURATION_DISCOUNTS,
   type ContractDuration,
 } from "../../stripe/subscription.js";
-import type { UserTier } from "../../domain/user.js";
+import { isSponsoredPanelTier, type UserTier } from "../../domain/user.js";
 
-/**
- * Tiers at which Membership includes Company's payment of an independent
- * third-party health-testing company's membership/subscription fee on the
- * member's behalf. ESSENTIALS is deliberately excluded — see Membership
- * Agreement Section 2.3.
- */
-const SPONSORED_TESTING_TIERS: readonly UserTier[] = ["CORE", "CONCIERGE"];
+/** Options for generateEnrollmentSummary. */
+export interface EnrollmentSummaryOptions {
+  /**
+   * Elect the optional Intro Month (Membership Agreement Section 3.5).
+   * Valid only with the 4-month term at ESSENTIALS/CORE/CONCIERGE.
+   */
+  introMonth?: boolean;
+}
 
 // ---------------------------------------------------------------------------
 // Types
@@ -40,7 +52,7 @@ export interface EnrollmentSummaryData {
   tier: UserTier;
   /** Display name for the tier, e.g. "Core" */
   tierDisplayName: string;
-  /** Contract duration key, e.g. "MONTH_8" */
+  /** Contract duration key, e.g. "MONTH_8" ("MONTH_1" = month-to-month Hollis Training) */
   contractDuration: ContractDuration;
   /** Contract duration in months, e.g. 8 */
   contractDurationMonths: number;
@@ -56,13 +68,26 @@ export interface EnrollmentSummaryData {
   totalContractFormatted: string;
   /** ISO date string for contract start (populated at signing time) */
   startDate: string;
-  /** ISO date string for contract end (calculated from start + duration) */
+  /**
+   * ISO date string for contract end (calculated from start + duration). For
+   * month-to-month enrollment there is no fixed end: this is the last day of
+   * the first monthly billing period (Membership Agreement Section 3.3).
+   */
   endDate: string;
+  /** True for month-to-month enrollment (Hollis Training): no fixed term, no early termination amount. */
+  isMonthToMonth: boolean;
+  /** Whether the optional Intro Month was elected (Membership Agreement Section 3.5). */
+  introMonthElected: boolean;
+  /**
+   * Day 30 of the Intro Month (ISO date); a cancellation must be received
+   * before this date. Null when no Intro Month was elected.
+   */
+  introWindowEndsAt: string | null;
   /** Included services comparison rows drawn from the offer sheet */
   includedServices: Array<{ label: string; value: string }>;
   /**
    * Whether this tier includes the Company-sponsored third-party testing
-   * membership (CORE and CONCIERGE only; never ESSENTIALS).
+   * membership (CORE and CONCIERGE only; never TRAINING or ESSENTIALS).
    */
   sponsoredTestingIncluded: boolean;
   /** Standard third-party billing disclosure items from the offer sheet */
@@ -109,16 +134,30 @@ function addMonthsToIso(isoDate: string, months: number): string {
  * Generates a fully populated EnrollmentSummaryData object from tier + duration.
  *
  * @param tier - UserTier key, e.g. "CORE"
- * @param contractDurationMonths - Number of months: 4, 8, or 12
+ * @param contractDurationMonths - Number of months: 1 (TRAINING only) or 4, 8, 12 (other tiers)
  * @param startDateIso - ISO date string for the contract start date (defaults to today)
+ * @param options - `{ introMonth: true }` to elect the Intro Month (4-month term only)
+ * @throws if the tier is not offered on that term, or the intro month is ineligible
  */
 export function generateEnrollmentSummary(
   tier: UserTier,
   contractDurationMonths: number,
   startDateIso?: string,
+  options: EnrollmentSummaryOptions = {},
 ): EnrollmentSummaryData {
   const tierData = MASTER_OFFER_SHEET.tiers[tier];
   const contractDuration = monthsToContractDuration(contractDurationMonths);
+  if (!isTermAllowedForTier(tier, contractDurationMonths)) {
+    throw new Error(
+      `${tierData.displayName} is not offered on a ${contractDurationMonths}-month term. Valid terms are ${allowedTermMonthsForTier(tier).join(", ")} months.`,
+    );
+  }
+  const introMonthElected = options.introMonth === true;
+  if (introMonthElected && !isIntroMonthEligible(tier, contractDurationMonths)) {
+    throw new Error(
+      `The intro month is available only with the ${MASTER_OFFER_INTRO_MONTH.termMonths}-month term at ${MASTER_OFFER_INTRO_MONTH.eligibleTiers.join(", ")}.`,
+    );
+  }
   const discountPercent = CONTRACT_DURATION_DISCOUNTS[contractDuration];
 
   const monthlyRateDollars = getDiscountedMonthlyPriceDollars(
@@ -152,8 +191,11 @@ export function generateEnrollmentSummary(
     totalContractFormatted: formatUsd(totalContractDollars),
     startDate,
     endDate,
+    isMonthToMonth: contractDurationMonths === MONTH_TO_MONTH_TERM_MONTHS,
+    introMonthElected,
+    introWindowEndsAt: introMonthElected ? getIntroWindowEndDate(startDate) : null,
     includedServices,
-    sponsoredTestingIncluded: SPONSORED_TESTING_TIERS.includes(tier),
+    sponsoredTestingIncluded: isSponsoredPanelTier(tier),
     separatelyBilledItems: MASTER_OFFER_SHEET.separatelyBilledThirdPartyItems,
   };
 }
@@ -197,12 +239,35 @@ Membership at the ${summary.tierDisplayName} tier includes Company's payment of 
 
 The account is Member's — established in Member's name and governed by that company's own terms and privacy practices. That company and its own independent licensed providers order, arrange, and perform any testing and are solely responsible for interpretation of results and clinical follow-up. Company does not select Member's test panel, does not arrange or schedule Member's specimen collection, does not receive Member's results from that company, and has no access to Member's account with that company. Company's payment of a subscription fee on Member's behalf does not make Company the provider of, or responsible for, any testing, laboratory, or clinical service.
 
-The benefit has no cash value and is not refundable, creditable, or exchangeable if declined or unused. Specimen collection fees, additional or add-on panels, and clinical consultation charges are not covered and are billed separately. See Membership Agreement Section 2.3.
+The benefit has no cash value and is not refundable, creditable, or exchangeable if declined or unused. Specimen collection fees, additional or add-on panels, and clinical consultation charges are not covered and are billed separately.${summary.introMonthElected ? " Because Member elected the Intro Month, Company does not pay for, issue, or arrange this benefit until the Intro Window ends without a timely cancellation by Member." : ""} See Membership Agreement Sections 2.3 and 2.4.
 
 ---
 
 `
     : "";
+
+  const introMonthNote = summary.introMonthElected
+    ? `## Intro Month
+
+Member elected the Intro Month under Membership Agreement Section 3.5. The Intro Month is month 1 of Member's ${summary.contractDurationMonths}-month term and is billed at the regular monthly rate shown above, with no discount. Member may cancel by written notice that Company receives before ${summary.introWindowEndsAt} (day ${MASTER_OFFER_INTRO_MONTH.windowDays}, counting the Start Date as day one); the cancellation takes effect at the end of the Intro Month and no early termination amount is due. If no timely cancellation is received, the membership continues for the remainder of the ${summary.contractDurationMonths}-month term.
+
+---
+
+`
+    : "";
+
+  const contractTermValue = summary.isMonthToMonth
+    ? "Month-to-month (no fixed term)"
+    : `${summary.contractDurationMonths} months`;
+  const totalContractRow = summary.isMonthToMonth
+    ? "| Total Contract Value | Not applicable — month-to-month; no early termination amount |"
+    : `| Total Contract Value | ${summary.totalContractFormatted} |`;
+  const endDateRow = summary.isMonthToMonth
+    ? `| First Billing Period Ends | ${summary.endDate} (no fixed End Date) |`
+    : `| End Date | ${summary.endDate} |`;
+  const introMonthValue = summary.introMonthElected
+    ? `Elected — cancellation must be received before ${summary.introWindowEndsAt}`
+    : "Not elected";
 
   return `# Exhibit A — Enrollment Summary and Service Schedule
 
@@ -218,12 +283,13 @@ Home Office: 818 Knights Cross Dr, Suite 5104, San Antonio, TX 78258
 |---|---|
 | Member Name | ${clientName} |
 | Selected Tier | ${summary.tierDisplayName} |
-| Contract Term | ${summary.contractDurationMonths} months |
+| Contract Term | ${contractTermValue} |
+| Intro Month | ${introMonthValue} |
 | Discount | ${discountLabel} |
 | Monthly Rate | ${summary.monthlyRateFormatted} |
-| Total Contract Value | ${summary.totalContractFormatted} |
+${totalContractRow}
 | Start Date | ${summary.startDate} |
-| End Date | ${summary.endDate} |
+${endDateRow}
 | Initial Program Location | To be confirmed at enrollment |
 | Supplements and Other Physical Products | Currently unavailable; not included or available as add-ons |
 | Included Non-Clinical Assessment Allowance | None unless separately listed |
@@ -240,7 +306,7 @@ ${includedServicesRows}
 
 ---
 
-${sponsoredTestingNote}## Separately Billed Third-Party Items
+${introMonthNote}${sponsoredTestingNote}## Separately Billed Third-Party Items
 
 The following are **not** included in Membership fees unless this Exhibit A expressly lists them as included:
 

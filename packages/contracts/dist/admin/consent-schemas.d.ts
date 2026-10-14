@@ -144,15 +144,18 @@ export declare const SigningClientInfoSchema: z.ZodObject<{
     endDate: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     memberId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     selectedTier: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
     }>>>;
     contractDurationMonths: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+    introMonthElected: z.ZodOptional<z.ZodNullable<z.ZodBoolean>>;
 }, z.core.$strip>;
 export type SigningClientInfo = z.infer<typeof SigningClientInfoSchema>;
 export declare const EnrollmentSummarySchema: z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodObject<{
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -162,6 +165,9 @@ export declare const EnrollmentSummarySchema: z.ZodPipe<z.ZodTransform<unknown, 
     contractDurationMonths: z.ZodOptional<z.ZodNumber>;
     startDate: z.ZodString;
     endDate: z.ZodString;
+    isMonthToMonth: z.ZodOptional<z.ZodBoolean>;
+    introMonthElected: z.ZodOptional<z.ZodBoolean>;
+    introWindowEndsAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     monthlyRateCents: z.ZodNumber;
     monthlyRateDollars: z.ZodOptional<z.ZodNumber>;
     monthlyRateFormatted: z.ZodOptional<z.ZodString>;
@@ -214,14 +220,17 @@ export declare const SubmitConsentRequestSchema: z.ZodObject<{
         endDate: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         memberId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         selectedTier: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+            TRAINING: "TRAINING";
             ESSENTIALS: "ESSENTIALS";
             CORE: "CORE";
             CONCIERGE: "CONCIERGE";
         }>>>;
         contractDurationMonths: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
+        introMonthElected: z.ZodOptional<z.ZodNullable<z.ZodBoolean>>;
     }, z.core.$strip>;
     enrollmentSummary: z.ZodPipe<z.ZodTransform<unknown, unknown>, z.ZodObject<{
         tier: z.ZodEnum<{
+            TRAINING: "TRAINING";
             ESSENTIALS: "ESSENTIALS";
             CORE: "CORE";
             CONCIERGE: "CONCIERGE";
@@ -231,6 +240,9 @@ export declare const SubmitConsentRequestSchema: z.ZodObject<{
         contractDurationMonths: z.ZodOptional<z.ZodNumber>;
         startDate: z.ZodString;
         endDate: z.ZodString;
+        isMonthToMonth: z.ZodOptional<z.ZodBoolean>;
+        introMonthElected: z.ZodOptional<z.ZodBoolean>;
+        introWindowEndsAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         monthlyRateCents: z.ZodNumber;
         monthlyRateDollars: z.ZodOptional<z.ZodNumber>;
         monthlyRateFormatted: z.ZodOptional<z.ZodString>;

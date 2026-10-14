@@ -8,8 +8,12 @@
  */
 
 import * as z from "zod";
-import { MASTER_OFFER_TERMS } from "../domain/offer-sheet.js";
-import { USER_TIERS } from "../domain/user.js";
+import {
+  MASTER_OFFER_TERMS,
+  isIntroMonthEligible,
+  isTermAllowedForTier,
+} from "../domain/offer-sheet.js";
+import { USER_TIERS, type UserTier } from "../domain/user.js";
 import { emailSchema } from "../schemas/index.js";
 
 // ============================================================================
@@ -186,13 +190,26 @@ export const STRIPE_SCHEDULE_STATUS = {
 // CONTRACT DURATION
 // ============================================================================
 
-export const CONTRACT_DURATIONS = ["MONTH_4", "MONTH_8", "MONTH_12"] as const;
+/**
+ * Contract durations. MONTH_1 is the month-to-month Hollis Training plan
+ * (contracts 0.2.0-alpha.102): no fixed term and no early termination amount.
+ * Which tier may use which duration is offer-sheet data — use
+ * `allowedContractDurationsForTier` / `isContractDurationAllowedForTier`
+ * rather than accepting any member of this list for any tier.
+ */
+export const CONTRACT_DURATIONS = [
+  "MONTH_1",
+  "MONTH_4",
+  "MONTH_8",
+  "MONTH_12",
+] as const;
 
 export const ContractDurationSchema = z.enum(CONTRACT_DURATIONS);
 export type ContractDuration = z.infer<typeof ContractDurationSchema>;
 
 /** Map duration to months */
 export const CONTRACT_DURATION_MONTHS: Record<ContractDuration, number> = {
+  MONTH_1: 1,
   MONTH_4: 4,
   MONTH_8: 8,
   MONTH_12: 12,
@@ -238,10 +255,36 @@ export const CONTRACT_DURATION_DISCOUNTS: Record<ContractDuration, number> =
 
 /** Constant object for contract duration comparisons (avoids magic strings) */
 export const CONTRACT_DURATION = {
+  MONTH_1: "MONTH_1",
   MONTH_4: "MONTH_4",
   MONTH_8: "MONTH_8",
   MONTH_12: "MONTH_12",
 } as const satisfies Record<ContractDuration, ContractDuration>;
+
+/** Contract durations a tier may enrol on (TRAINING → MONTH_1 only). */
+export function allowedContractDurationsForTier(
+  tier: UserTier,
+): ContractDuration[] {
+  return CONTRACT_DURATIONS.filter((duration) =>
+    isTermAllowedForTier(tier, CONTRACT_DURATION_MONTHS[duration]),
+  );
+}
+
+/** Whether a tier may enrol on a contract duration. */
+export function isContractDurationAllowedForTier(
+  tier: UserTier,
+  duration: ContractDuration,
+): boolean {
+  return isTermAllowedForTier(tier, CONTRACT_DURATION_MONTHS[duration]);
+}
+
+/** Whether the optional intro month may be elected with this tier + duration (4-month fixed tiers only). */
+export function isIntroMonthEligibleForDuration(
+  tier: UserTier,
+  duration: ContractDuration,
+): boolean {
+  return isIntroMonthEligible(tier, CONTRACT_DURATION_MONTHS[duration]);
+}
 
 // ============================================================================
 // BILLING SOURCE
@@ -298,6 +341,17 @@ export const SubscriptionSchema = z.object({
   cancelEffectiveDate: z.string().nullable(),
   scheduledTierChange: z.enum(USER_TIERS).nullable(),
   tierChangeEffectiveDate: z.string().nullable(),
+  /**
+   * Whether the member elected the optional intro month (4-month term at
+   * ESSENTIALS/CORE/CONCIERGE only). Optional so pre-alpha.102 servers validate.
+   */
+  introMonthElected: z.boolean().optional(),
+  /**
+   * Day 30 of the intro month (see `getIntroWindowEndDate`): an intro-month
+   * cancellation must be received before this date. Null/absent when no
+   * intro month was elected.
+   */
+  introWindowEndsAt: z.string().nullable().optional(),
   signedContractKey: z.string().nullable(),
   failedPaymentCount: z.number().int().default(0),
   cancelReason: z.string().nullable().optional(),
@@ -375,6 +429,14 @@ export const CreateSubscriptionRequestSchema = z.object({
   userId: z.string().min(1),
   tier: z.enum(USER_TIERS),
   contractDuration: ContractDurationSchema,
+  /**
+   * Elect the optional intro month. Valid only when
+   * `isIntroMonthEligibleForDuration(tier, contractDuration)` — servers must
+   * reject it otherwise (and must reject a duration the tier may not use; see
+   * `isContractDurationAllowedForTier`). Not refined here because consumers
+   * `.extend()` this schema. Billed at the same price as the 4-month term.
+   */
+  introMonth: z.boolean().optional(),
   billingSource: BillingSourceSchema.optional().default("DIRECT"),
   billingOrganizationId: z.string().uuid().optional(),
   paymentMethodId: z.string().optional(),

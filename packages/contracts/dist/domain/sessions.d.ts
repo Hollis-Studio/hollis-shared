@@ -3,7 +3,7 @@
  *
  * Session types currently offered by Hollis Health:
  * - FITNESS_SESSION: 1:1 private coaching sessions
- * - RECOVERY_SESSION: Sauna, ice bath, red light therapy
+ * - RECOVERY_SESSION: Guided stretch and mobility recovery work (tracked)
  * - MOBILE_SESSION: Mobile/on-location sessions (CONCIERGE only)
  *
  * Retired session types (LABWORK, CLINICIAN_INITIAL, CLINICIAN_FOLLOWUP,
@@ -104,6 +104,7 @@ export type SessionBalanceItemContract = z.infer<typeof SessionBalanceItemSchema
 export declare const UserSessionBalanceSchema: z.ZodObject<{
     userId: z.ZodString;
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -160,6 +161,7 @@ export declare const SessionAllocationSchema: z.ZodObject<{
 export type SessionAllocationContract = z.infer<typeof SessionAllocationSchema>;
 export declare const TierSessionAllocationsSchema: z.ZodObject<{
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -206,6 +208,16 @@ export declare const FREE_MAX_ROLLOVER = 4;
  * be an entitlement the company cannot and must not fulfil, so they are absent
  * from every tier. The SessionType enum values themselves are retained for
  * historical usage/balance rows.
+ *
+ * Recovery is guided stretch and mobility work delivered inside coaching
+ * sessions at every tier (offer sheet v3.5.0; cold plunge, red light and
+ * cupping are no longer offered). The unlimited RECOVERY_SESSION allocation is
+ * kept identically on every tier so recovery logged against a session stays
+ * tracked without ever consuming a paid coaching credit.
+ *
+ * TRAINING ("Hollis Training", month-to-month):
+ * - 4x Fitness Sessions/mo (same monthly allocation/reset as other tiers)
+ * - Unlimited Recovery (tracked)
  *
  * ESSENTIALS:
  * - 8x Fitness Sessions/mo
@@ -347,6 +359,7 @@ export declare const SessionAdjustmentPayloadSchema: z.ZodObject<{
 export type SessionAdjustmentPayload = z.infer<typeof SessionAdjustmentPayloadSchema>;
 export declare const TierChangePayloadSchema: z.ZodObject<{
     newTier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";

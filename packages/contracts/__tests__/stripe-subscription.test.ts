@@ -191,11 +191,12 @@ describe("Stripe Subscription Contracts", () => {
 
   describe("ContractDuration", () => {
     describe("tuple values", () => {
-      it("should contain exactly 3 durations", () => {
-        expect(CONTRACT_DURATIONS).toHaveLength(3);
+      it("should contain exactly 4 durations", () => {
+        expect(CONTRACT_DURATIONS).toHaveLength(4);
       });
 
       it("should contain all expected values", () => {
+        expect(CONTRACT_DURATIONS).toContain("MONTH_1");
         expect(CONTRACT_DURATIONS).toContain("MONTH_4");
         expect(CONTRACT_DURATIONS).toContain("MONTH_8");
         expect(CONTRACT_DURATIONS).toContain("MONTH_12");
@@ -209,7 +210,7 @@ describe("Stripe Subscription Contracts", () => {
       });
 
       it("should reject invalid values", () => {
-        expect(ContractDurationSchema.safeParse("MONTH_1").success).toBe(false);
+        expect(ContractDurationSchema.safeParse("MONTH_2").success).toBe(false);
         expect(ContractDurationSchema.safeParse("MONTH_6").success).toBe(false);
         expect(ContractDurationSchema.safeParse("invalid").success).toBe(false);
         expect(ContractDurationSchema.safeParse(null).success).toBe(false);

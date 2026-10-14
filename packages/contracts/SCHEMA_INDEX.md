@@ -169,7 +169,7 @@ explicitly listed in [Public Package Exports](#public-package-exports).
 | Schema                         | Purpose                                                            |
 | ------------------------------ | ------------------------------------------------------------------ |
 | `UserRoleSchema`               | ADMIN, CLINICIAN, TRAINER, CLIENT                                  |
-| `UserTierSchema`               | ESSENTIALS, CORE, CONCIERGE                                        |
+| `UserTierSchema`               | TRAINING, ESSENTIALS, CORE, CONCIERGE                              |
 | `BiologicalSexSchema`          | female, male, non_binary, intersex, prefer_not_to_say              |
 | `ActivityLevelSchema`          | sedentary, lightly_active, moderately_active, very_active, athlete |
 | `PrimaryGoalSchema`            | lose_weight, gain_muscle, maintain, improve_health                 |

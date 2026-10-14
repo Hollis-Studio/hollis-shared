@@ -11,7 +11,9 @@ import {
 } from "../admin/legal-documents";
 import {
   CONSENT_DOCUMENT_TYPES,
+  EnrollmentSummarySchema,
   SignedDocumentPayloadSchema,
+  SigningClientInfoSchema,
 } from "../admin/consent-schemas";
 import { PHI_RESOURCE } from "../domain/phi-audit";
 
@@ -37,7 +39,7 @@ const contentHashOf = (content: string): string =>
  * hash edit that forgets the version bump fails here.
  */
 const EXPECTED_DOCUMENT_FINGERPRINTS = {
-  MEMBERSHIP_AGREEMENT: { version: "2.7.0", contentHash: "ee78df0f" },
+  MEMBERSHIP_AGREEMENT: { version: "2.8.0", contentHash: "9d9d916b" },
   LIABILITY_WAIVER: { version: "1.5.0", contentHash: "c6481b3d" },
   INFORMED_CONSENT: { version: "2.2.0", contentHash: "b6d1d077" },
   ELECTRONIC_COMMS_CONSENT: { version: "1.4.0", contentHash: "0eb4cd16" },
@@ -178,5 +180,133 @@ describe("admin consent legal document contracts", () => {
         displayedContentHash: "not-a-sha",
       }).success,
     ).toBe(false);
+  });
+});
+
+describe("membership agreement — Hollis Training and Intro Month (v2.8.0)", () => {
+  const agreement = DOCUMENT_REGISTRY.MEMBERSHIP_AGREEMENT;
+
+  function renderFor(
+    tier: "TRAINING" | "ESSENTIALS" | "CORE" | "CONCIERGE",
+    months: number,
+    introMonth = false,
+  ): string {
+    const summary = generateEnrollmentSummary(tier, months, "2026-10-17", {
+      introMonth,
+    });
+    const exhibitA = renderEnrollmentSummaryMarkdown(summary, "Jane Member");
+    return renderSignedDocumentContent(
+      `${agreement.content}\n\n${exhibitA}`,
+      {
+        name: "Jane Member",
+        email: "jane@example.com",
+        selectedTier: tier,
+        contractDurationMonths: months,
+        introMonthElected: introMonth,
+        startDate: summary.startDate,
+        endDate: summary.endDate,
+      },
+      "October 17, 2026",
+    );
+  }
+
+  it("offers Hollis Training month-to-month with its own tier and term boxes", () => {
+    expect(agreement.content).toContain("{{CHECK_TIER_TRAINING}} **Hollis Training**");
+    expect(agreement.content).toContain("{{CHECK_TERM_1MO}} **Month-to-Month**");
+    expect(agreement.content).toContain("{{CHECK_INTRO_MONTH}}");
+    expect(agreement.content).toContain("| Hollis Training | $399 | Not offered | Not offered | Not offered |");
+    expect(agreement.content).toContain("| Private coaching sessions | 4 / month | 2 / week | 4 / week | 6 / week |");
+  });
+
+  it("renders a Training enrollment with no fixed term and no early termination amount", () => {
+    const rendered = renderFor("TRAINING", 1);
+    expect(rendered).toContain("[x] **Hollis Training**");
+    expect(rendered).toContain("[x] **Month-to-Month**");
+    expect(rendered).toContain("[ ] **4-Month Term**");
+    expect(rendered).toContain("[ ] **Member elects the Intro Month");
+    expect(rendered).toContain("| Contract Term | Month-to-month (no fixed term) |");
+    expect(rendered).toContain("| First Billing Period Ends | 2026-11-16 (no fixed End Date) |");
+    expect(rendered).toContain("Not applicable — month-to-month; no early termination amount");
+    expect(rendered).toContain("| Sponsored Third-Party Testing Membership | Not included at this tier |");
+    expect(rendered).not.toMatch(/\{\{[A-Z_]+\}\}/);
+  });
+
+  it("renders the Intro Month election, window date, and deferred panel", () => {
+    const rendered = renderFor("CORE", 4, true);
+    expect(rendered).toContain("[x] **4-Month Term**");
+    expect(rendered).toContain("[x] **Member elects the Intro Month described in Section 3.5**");
+    expect(rendered).toContain("| Intro Month | Elected — cancellation must be received before 2026-11-15 |");
+    expect(rendered).toContain("## Intro Month");
+    expect(rendered).toContain("does not pay for, issue, or arrange this benefit until the Intro Window ends");
+  });
+
+  it("contains the intro-month, month-to-month, and early-termination carve-out clauses", () => {
+    expect(agreement.content).toContain("### 3.5 Intro Month");
+    expect(agreement.content).toContain("It is not an additional month, and Member's total commitment");
+    expect(agreement.content).toContain("no early termination amount under Section 6.4 is due");
+    expect(agreement.content).toContain(
+      "This Section 6.4 applies only to a Fixed Term. It does not apply to Month-to-Month enrollment in Hollis Training",
+    );
+    expect(agreement.content).toContain("This benefit is not included at the Hollis Training or Essentials tiers.");
+    expect(agreement.content).toContain("160+ biomarkers per year across two blood draws");
+    expect(agreement.content).not.toMatch(/twice-yearly|twice yearly/i);
+  });
+
+  it("limits recovery to stretch and mobility work inside sessions", () => {
+    expect(agreement.content).toContain("### 2.6 Recovery\n");
+    expect(agreement.content).toContain(
+      "\"recovery\" under this Agreement means guided stretching and mobility work",
+    );
+    expect(agreement.content).not.toMatch(/RECOVERY MODALITIES|recovery modality access/i);
+    const table = agreement.content.slice(
+      agreement.content.indexOf("### 2.1"),
+      agreement.content.indexOf("### 2.2"),
+    );
+    expect(table).not.toMatch(/cold plunge|red light|cupping/i);
+  });
+
+  it("refuses tier + term combinations the offer sheet does not sell", () => {
+    expect(() => generateEnrollmentSummary("TRAINING", 4)).toThrow(/not offered/);
+    expect(() => generateEnrollmentSummary("CORE", 1)).toThrow(/not offered/);
+    expect(() =>
+      generateEnrollmentSummary("CORE", 8, "2026-10-17", { introMonth: true }),
+    ).toThrow(/intro month/i);
+    expect(() =>
+      generateEnrollmentSummary("TRAINING", 1, "2026-10-17", { introMonth: true }),
+    ).toThrow(/intro month/i);
+  });
+
+  it("leaves the intro box unchecked for an ineligible election", () => {
+    const rendered = renderSignedDocumentContent(
+      agreement.content,
+      {
+        name: "Jane Member",
+        email: "jane@example.com",
+        selectedTier: "CORE",
+        contractDurationMonths: 8,
+        introMonthElected: true,
+      },
+      "October 17, 2026",
+    );
+    expect(rendered).toContain("[ ] **Member elects the Intro Month");
+  });
+
+  it("carries intro-month fields through the consent payload schemas", () => {
+    const summary = generateEnrollmentSummary("ESSENTIALS", 4, "2026-10-17", {
+      introMonth: true,
+    });
+    const parsed = EnrollmentSummarySchema.parse(summary);
+    expect(parsed.introMonthElected).toBe(true);
+    expect(parsed.introWindowEndsAt).toBe("2026-11-15");
+    expect(parsed.isMonthToMonth).toBe(false);
+    expect(
+      SigningClientInfoSchema.parse({
+        name: "Jane",
+        email: "jane@example.com",
+        selectedTier: "TRAINING",
+        contractDurationMonths: 1,
+        introMonthElected: false,
+      }).selectedTier,
+    ).toBe("TRAINING");
   });
 });

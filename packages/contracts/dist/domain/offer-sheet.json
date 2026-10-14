@@ -1,55 +1,98 @@
 {
     "meta": {
-        "version": "3.4.0",
-        "effectiveDate": "2026-09-19",
+        "version": "3.5.0",
+        "effectiveDate": "2026-10-14",
         "status": "active"
     },
     "terms": [
         {
+            "months": 1,
+            "discountPercent": 0,
+            "label": "Month-to-month (Hollis Training only)",
+            "eligibleTiers": [
+                "TRAINING"
+            ]
+        },
+        {
             "months": 4,
             "discountPercent": 0,
-            "label": "4 months"
+            "label": "4 months",
+            "eligibleTiers": [
+                "ESSENTIALS",
+                "CORE",
+                "CONCIERGE"
+            ]
         },
         {
             "months": 8,
             "discountPercent": 5,
-            "label": "8 months"
+            "label": "8 months",
+            "eligibleTiers": [
+                "ESSENTIALS",
+                "CORE",
+                "CONCIERGE"
+            ]
         },
         {
             "months": 12,
             "discountPercent": 10,
-            "label": "12 months"
+            "label": "12 months",
+            "eligibleTiers": [
+                "ESSENTIALS",
+                "CORE",
+                "CONCIERGE"
+            ]
         }
     ],
+    "introMonth": {
+        "label": "Intro month",
+        "eligibleTiers": [
+            "ESSENTIALS",
+            "CORE",
+            "CONCIERGE"
+        ],
+        "termMonths": 4,
+        "windowDays": 30,
+        "countsAsFirstMonthOfTerm": true,
+        "sponsoredPanelDeferredUntilWindowEnds": true,
+        "summary": "Optional at enrollment for the 4-month Essentials, Core, or Concierge term. Your first month is billed at the regular 4-month monthly rate and counts as month 1 of the 4-month term. Cancel in writing before day 30 and no early termination amount applies; otherwise the membership continues as the 4-month term.",
+        "policy": "The intro month is an optional election available at enrollment only with the 4-month term at the Essentials, Core, or Concierge tier; it is not available with the 8- or 12-month term or with Hollis Training. The intro month is billed at the regular 4-month monthly rate with no discount, and it is month 1 of the 4-month term, so the total commitment is four months from the Start Date. The member may cancel by written notice received before day 30 of the intro month, counting the Start Date as day 1; the cancellation takes effect at the end of the intro month, no early termination amount is due, and no further monthly payment is charged. The intro-month payment itself is not refunded except as required by law. If the member does not cancel before the 30th day, the membership continues for the remainder of the 4-month term on the terms of the signed Membership Agreement. Where the tier includes the sponsored blood biomarker panel membership, Hollis Health does not pay for or issue it until the intro window has ended without cancellation."
+    },
     "policies": {
-        "enrollmentScheduleControl": "The signed Enrollment Summary and Service Schedule controls the selected tier, term, monthly rate, exact Hollis-provided services, Hollis-billed add-ons, and any separately billed third-party items.",
-        "autoRenewal": "After the initial term, membership converts to month-to-month unless either party gives written notice of non-renewal: at least 7 days' notice from the member, at least 30 days' notice from Hollis Health.",
+        "enrollmentScheduleControl": "The signed Enrollment Summary and Service Schedule controls the selected tier, term, any intro month election, monthly rate, exact Hollis-provided services, Hollis-billed add-ons, and any separately billed third-party items.",
+        "autoRenewal": "Hollis Training is month-to-month from the Start Date and has no initial term. For Essentials, Core, and Concierge, after the initial term, membership converts to month-to-month unless either party gives written notice of non-renewal: at least 7 days' notice from the member, at least 30 days' notice from Hollis Health.",
         "noticePeriod": "Member: at least 7 days' written notice before the next billing date (matching the cancellation window enforced in the app). Hollis Health: 30 days' written notice.",
         "pauseRights": "Only if expressly permitted in the signed Membership Agreement or an approved written addendum; the signed agreement controls duration, billing effect, and term-extension effect.",
-        "earlyTermination": "If the member terminates early other than an approved or legally required cancellation, an early termination amount equal to 50% of the remaining discounted contract value through the end date is due, calculated at the discounted monthly rate actually selected with any partial month counted as a whole month, as stated in the signed Membership Agreement.",
+        "earlyTermination": "Applies only to the fixed 4-, 8-, and 12-month terms at Essentials, Core, and Concierge; it does not apply to month-to-month Hollis Training, to month-to-month continuation after a term ends, or to an intro-month cancellation received within the intro window. If the member terminates a fixed term early other than an approved or legally required cancellation, an early termination amount equal to 50% of the remaining discounted contract value through the end date is due, calculated at the discounted monthly rate actually selected with any partial month counted as a whole month, as stated in the signed Membership Agreement.",
         "thirdPartyDisclosure": "Independent physician, laboratory, imaging, pharmacy, and other third-party clinical charges are excluded from Hollis Health membership fees and may be billed separately by the applicable independent provider. Where Hollis Health sponsors a third-party testing membership as a membership benefit, Hollis Health pays that subscription fee on the member's behalf; the member holds the account directly with that company under its own terms, and that company and its independent licensed providers remain solely responsible for ordering, performing, and interpreting any testing.",
         "partnerFacilityDisclosure": "Hollis Health is not a medical provider, does not practice medicine, and does not bill for or sell medical services. Members receive medical care from independent licensed providers of their choosing, including providers in the Hollis referral network.",
-        "sponsoredTestingBenefit": "The sponsored blood biomarker panel membership is included at the CORE and CONCIERGE tiers only. It is a standard membership with an independent third-party testing company, and testing cadence — twice yearly — along with panel contents, scheduling, and all clinical aspects are governed by that company's own terms and conditions, not by Hollis Health. Hollis Health is not the provider of any testing, does not select the panel, does not schedule collection, does not receive results, and does not interpret or monitor results. The benefit is not refundable, creditable, or exchangeable if declined or unused, and it does not renew once the member's Hollis membership lapses or moves to a tier at which it is not included. The member's account with the testing company is the member's own and must be cancelled by the member."
+        "sponsoredTestingBenefit": "The sponsored blood biomarker panel membership is included at the CORE and CONCIERGE tiers only; it is not included at Hollis Training or Essentials. It is a standard membership with an independent third-party testing company which, as that company currently offers it, covers 160+ biomarkers per year across two blood draws (approximately 100 at the first draw and approximately 60 at the follow-up draw). Testing cadence, panel contents, scheduling, and all clinical aspects are governed by that company's own terms and conditions, not by Hollis Health. Hollis Health is not the provider of any testing, does not select the panel, does not schedule collection, does not receive results, and does not interpret or monitor results. Where the member elects the intro month, Hollis Health pays for and issues the sponsored membership only after the 30-day intro window ends without cancellation. The benefit is not refundable, creditable, or exchangeable if declined or unused, and it does not renew once the member's Hollis membership lapses or moves to a tier at which it is not included. The member's account with the testing company is the member's own and must be cancelled by the member."
     },
     "tiers": {
+        "TRAINING": {
+            "displayName": "Hollis Training",
+            "baseMonthlyPriceDollars": 399,
+            "tagline": "Private coaching, month to month",
+            "publicDescription": "Four private coaching sessions per month, billed month to month, with a personalized training plan, basic progress tracking in the member app, nutrition support, and stretch and mobility recovery work in every session."
+        },
         "ESSENTIALS": {
             "displayName": "Essentials",
             "baseMonthlyPriceDollars": 749,
             "tagline": "Accountability + wellness baseline",
-            "publicDescription": "A foundational wellness membership with two private coaching sessions per week, recovery access, care coordination support, and full access to your health progress dashboard."
+            "publicDescription": "A foundational wellness membership with two private coaching sessions per week, stretch and mobility recovery work in every session, care coordination support, and full access to your health progress dashboard."
         },
         "CORE": {
             "displayName": "Core",
             "baseMonthlyPriceDollars": 1349,
             "tagline": "Higher frequency, deeper insight",
-            "publicDescription": "Four private coaching sessions per week with recovery access, coach-led week-by-week macro and micronutrient progression, priority care coordination, a Hollis-sponsored 160+ biomarker blood panel membership, and biomarker-informed planning when results are shared with consent.",
+            "publicDescription": "Four private coaching sessions per week with stretch and mobility recovery work in every session, coach-led week-by-week macro and micronutrient progression, priority care coordination, a Hollis-sponsored blood biomarker panel membership (160+ biomarkers per year across two draws), and biomarker-informed planning when results are shared with consent.",
             "isPopular": true
         },
         "CONCIERGE": {
             "displayName": "Concierge",
             "baseMonthlyPriceDollars": 1949,
             "tagline": "Full-spectrum coaching and coordination",
-            "publicDescription": "Our most comprehensive membership: six private coaching sessions per week, dedicated care coordination support, recovery access, a Hollis-sponsored 160+ biomarker blood panel membership, and dashboard integration for outside medical data shared with consent."
+            "publicDescription": "Our most comprehensive membership: six private coaching sessions per week, dedicated care coordination support, stretch and mobility recovery work in every session, a Hollis-sponsored blood biomarker panel membership (160+ biomarkers per year across two draws), and dashboard integration for outside medical data shared with consent."
         }
     },
     "comparisonRows": [
@@ -58,26 +101,40 @@
             "category": "Fitness",
             "label": "Private coaching sessions",
             "values": {
+                "TRAINING": "4 / month",
                 "ESSENTIALS": "2 / week",
                 "CORE": "4 / week",
                 "CONCIERGE": "6 / week"
             }
         },
         {
+            "key": "trainingPlan",
+            "category": "Fitness",
+            "label": "Personalized training plan",
+            "values": {
+                "TRAINING": "Included",
+                "ESSENTIALS": "Included",
+                "CORE": "Included",
+                "CONCIERGE": "Included"
+            }
+        },
+        {
             "key": "recoveryAccess",
             "category": "Fitness",
-            "label": "Recovery modality access",
+            "label": "Recovery (guided stretch and mobility work)",
             "values": {
-                "ESSENTIALS": "Cold plunge, red light, dry static cupping",
-                "CORE": "Cold plunge, red light, dry static cupping",
-                "CONCIERGE": "Cold plunge, red light, dry static cupping"
+                "TRAINING": "Within coaching sessions",
+                "ESSENTIALS": "Within coaching sessions",
+                "CORE": "Within coaching sessions",
+                "CONCIERGE": "Within coaching sessions"
             }
         },
         {
             "key": "nutritionCoaching",
             "category": "Nutrition",
-            "label": "Week-by-week macro and micronutrient coaching",
+            "label": "Nutrition support and coaching",
             "values": {
+                "TRAINING": "General nutrition support",
                 "ESSENTIALS": "Coach-led macro and micronutrient targets",
                 "CORE": "Coach-led week-by-week progression",
                 "CONCIERGE": "High-touch week-by-week progression"
@@ -86,8 +143,9 @@
         {
             "key": "sponsoredBiomarkerPanel",
             "category": "Health data",
-            "label": "Sponsored blood biomarker panel (160+ biomarkers, twice yearly)",
+            "label": "Sponsored blood biomarker panel (160+ biomarkers per year across two draws)",
             "values": {
+                "TRAINING": "Not included",
                 "ESSENTIALS": "Not included",
                 "CORE": "Included — sponsored by Hollis",
                 "CONCIERGE": "Included — sponsored by Hollis"
@@ -96,8 +154,9 @@
         {
             "key": "dashboardAccess",
             "category": "Technology",
-            "label": "Health progress dashboard",
+            "label": "Member app and health progress dashboard",
             "values": {
+                "TRAINING": "Basic progress tracking",
                 "ESSENTIALS": "Included",
                 "CORE": "Included",
                 "CONCIERGE": "Included"
@@ -108,6 +167,7 @@
             "category": "Coordination",
             "label": "Member coordination and scheduling support",
             "values": {
+                "TRAINING": "Standard",
                 "ESSENTIALS": "Standard",
                 "CORE": "Priority",
                 "CONCIERGE": "Dedicated"

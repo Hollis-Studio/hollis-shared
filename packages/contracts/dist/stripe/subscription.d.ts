@@ -7,6 +7,7 @@
  * deps: zod, domain/user | consumers: server routes, web-admin
  */
 import * as z from "zod";
+import { type UserTier } from "../domain/user.js";
 export declare const SUBSCRIPTION_STATUSES: readonly ["PENDING", "TRIAL", "ACTIVE", "PAUSED", "PAST_DUE", "CANCELED", "TERMINATED", "SUSPENDED"];
 export declare const SubscriptionStatusSchema: z.ZodEnum<{
     ACTIVE: "ACTIVE";
@@ -123,8 +124,16 @@ export declare const STRIPE_SCHEDULE_STATUS: {
     readonly RELEASED: "released";
     readonly CANCELED: "canceled";
 };
-export declare const CONTRACT_DURATIONS: readonly ["MONTH_4", "MONTH_8", "MONTH_12"];
+/**
+ * Contract durations. MONTH_1 is the month-to-month Hollis Training plan
+ * (contracts 0.2.0-alpha.102): no fixed term and no early termination amount.
+ * Which tier may use which duration is offer-sheet data — use
+ * `allowedContractDurationsForTier` / `isContractDurationAllowedForTier`
+ * rather than accepting any member of this list for any tier.
+ */
+export declare const CONTRACT_DURATIONS: readonly ["MONTH_1", "MONTH_4", "MONTH_8", "MONTH_12"];
 export declare const ContractDurationSchema: z.ZodEnum<{
+    MONTH_1: "MONTH_1";
     MONTH_4: "MONTH_4";
     MONTH_8: "MONTH_8";
     MONTH_12: "MONTH_12";
@@ -143,10 +152,17 @@ export declare const CONTRACT_DURATION_MONTHS: Record<ContractDuration, number>;
 export declare const CONTRACT_DURATION_DISCOUNTS: Record<ContractDuration, number>;
 /** Constant object for contract duration comparisons (avoids magic strings) */
 export declare const CONTRACT_DURATION: {
+    readonly MONTH_1: "MONTH_1";
     readonly MONTH_4: "MONTH_4";
     readonly MONTH_8: "MONTH_8";
     readonly MONTH_12: "MONTH_12";
 };
+/** Contract durations a tier may enrol on (TRAINING → MONTH_1 only). */
+export declare function allowedContractDurationsForTier(tier: UserTier): ContractDuration[];
+/** Whether a tier may enrol on a contract duration. */
+export declare function isContractDurationAllowedForTier(tier: UserTier, duration: ContractDuration): boolean;
+/** Whether the optional intro month may be elected with this tier + duration (4-month fixed tiers only). */
+export declare function isIntroMonthEligibleForDuration(tier: UserTier, duration: ContractDuration): boolean;
 export declare const BILLING_SOURCES: readonly ["DIRECT", "ORGANIZATION"];
 export declare const BillingSourceSchema: z.ZodEnum<{
     DIRECT: "DIRECT";
@@ -165,6 +181,7 @@ export declare const SubscriptionSchema: z.ZodObject<{
     stripeCustomerId: z.ZodString;
     stripePriceId: z.ZodString;
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -180,6 +197,7 @@ export declare const SubscriptionSchema: z.ZodObject<{
         SUSPENDED: "SUSPENDED";
     }>;
     contractDuration: z.ZodEnum<{
+        MONTH_1: "MONTH_1";
         MONTH_4: "MONTH_4";
         MONTH_8: "MONTH_8";
         MONTH_12: "MONTH_12";
@@ -207,11 +225,14 @@ export declare const SubscriptionSchema: z.ZodObject<{
     canceledAt: z.ZodNullable<z.ZodString>;
     cancelEffectiveDate: z.ZodNullable<z.ZodString>;
     scheduledTierChange: z.ZodNullable<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
     }>>;
     tierChangeEffectiveDate: z.ZodNullable<z.ZodString>;
+    introMonthElected: z.ZodOptional<z.ZodBoolean>;
+    introWindowEndsAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     signedContractKey: z.ZodNullable<z.ZodString>;
     failedPaymentCount: z.ZodDefault<z.ZodNumber>;
     cancelReason: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -258,6 +279,7 @@ export declare const AdminSubscriptionCreateResponseSchema: z.ZodObject<{
     stripeCustomerId: z.ZodString;
     stripePriceId: z.ZodString;
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -273,6 +295,7 @@ export declare const AdminSubscriptionCreateResponseSchema: z.ZodObject<{
         SUSPENDED: "SUSPENDED";
     }>;
     contractDuration: z.ZodEnum<{
+        MONTH_1: "MONTH_1";
         MONTH_4: "MONTH_4";
         MONTH_8: "MONTH_8";
         MONTH_12: "MONTH_12";
@@ -300,11 +323,14 @@ export declare const AdminSubscriptionCreateResponseSchema: z.ZodObject<{
     canceledAt: z.ZodNullable<z.ZodString>;
     cancelEffectiveDate: z.ZodNullable<z.ZodString>;
     scheduledTierChange: z.ZodNullable<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
     }>>;
     tierChangeEffectiveDate: z.ZodNullable<z.ZodString>;
+    introMonthElected: z.ZodOptional<z.ZodBoolean>;
+    introWindowEndsAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     signedContractKey: z.ZodNullable<z.ZodString>;
     failedPaymentCount: z.ZodDefault<z.ZodNumber>;
     cancelReason: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -328,6 +354,7 @@ export declare const AdminSubscriptionRetryResponseSchema: z.ZodObject<{
     stripeCustomerId: z.ZodString;
     stripePriceId: z.ZodString;
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -343,6 +370,7 @@ export declare const AdminSubscriptionRetryResponseSchema: z.ZodObject<{
         SUSPENDED: "SUSPENDED";
     }>;
     contractDuration: z.ZodEnum<{
+        MONTH_1: "MONTH_1";
         MONTH_4: "MONTH_4";
         MONTH_8: "MONTH_8";
         MONTH_12: "MONTH_12";
@@ -370,11 +398,14 @@ export declare const AdminSubscriptionRetryResponseSchema: z.ZodObject<{
     canceledAt: z.ZodNullable<z.ZodString>;
     cancelEffectiveDate: z.ZodNullable<z.ZodString>;
     scheduledTierChange: z.ZodNullable<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
     }>>;
     tierChangeEffectiveDate: z.ZodNullable<z.ZodString>;
+    introMonthElected: z.ZodOptional<z.ZodBoolean>;
+    introWindowEndsAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     signedContractKey: z.ZodNullable<z.ZodString>;
     failedPaymentCount: z.ZodDefault<z.ZodNumber>;
     cancelReason: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -393,15 +424,18 @@ export type AdminSubscriptionRetryResponse = AdminSubscriptionCreateResponse;
 export declare const CreateSubscriptionRequestSchema: z.ZodObject<{
     userId: z.ZodString;
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
     }>;
     contractDuration: z.ZodEnum<{
+        MONTH_1: "MONTH_1";
         MONTH_4: "MONTH_4";
         MONTH_8: "MONTH_8";
         MONTH_12: "MONTH_12";
     }>;
+    introMonth: z.ZodOptional<z.ZodBoolean>;
     billingSource: z.ZodDefault<z.ZodOptional<z.ZodEnum<{
         DIRECT: "DIRECT";
         ORGANIZATION: "ORGANIZATION";
@@ -443,6 +477,7 @@ export declare const ResumeSubscriptionResponseSchema: z.ZodObject<{
 export type ResumeSubscriptionResponse = z.infer<typeof ResumeSubscriptionResponseSchema>;
 export declare const TierChangeRequestSchema: z.ZodObject<{
     newTier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -487,6 +522,7 @@ export declare const SubscriptionListItemSchema: z.ZodObject<{
     stripeCustomerId: z.ZodString;
     stripePriceId: z.ZodString;
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -502,6 +538,7 @@ export declare const SubscriptionListItemSchema: z.ZodObject<{
         SUSPENDED: "SUSPENDED";
     }>;
     contractDuration: z.ZodEnum<{
+        MONTH_1: "MONTH_1";
         MONTH_4: "MONTH_4";
         MONTH_8: "MONTH_8";
         MONTH_12: "MONTH_12";
@@ -529,11 +566,14 @@ export declare const SubscriptionListItemSchema: z.ZodObject<{
     canceledAt: z.ZodNullable<z.ZodString>;
     cancelEffectiveDate: z.ZodNullable<z.ZodString>;
     scheduledTierChange: z.ZodNullable<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
     }>>;
     tierChangeEffectiveDate: z.ZodNullable<z.ZodString>;
+    introMonthElected: z.ZodOptional<z.ZodBoolean>;
+    introWindowEndsAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     signedContractKey: z.ZodNullable<z.ZodString>;
     failedPaymentCount: z.ZodDefault<z.ZodNumber>;
     cancelReason: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -556,6 +596,7 @@ export declare const SubscriptionListResponseSchema: z.ZodObject<{
         stripeCustomerId: z.ZodString;
         stripePriceId: z.ZodString;
         tier: z.ZodEnum<{
+            TRAINING: "TRAINING";
             ESSENTIALS: "ESSENTIALS";
             CORE: "CORE";
             CONCIERGE: "CONCIERGE";
@@ -571,6 +612,7 @@ export declare const SubscriptionListResponseSchema: z.ZodObject<{
             SUSPENDED: "SUSPENDED";
         }>;
         contractDuration: z.ZodEnum<{
+            MONTH_1: "MONTH_1";
             MONTH_4: "MONTH_4";
             MONTH_8: "MONTH_8";
             MONTH_12: "MONTH_12";
@@ -598,11 +640,14 @@ export declare const SubscriptionListResponseSchema: z.ZodObject<{
         canceledAt: z.ZodNullable<z.ZodString>;
         cancelEffectiveDate: z.ZodNullable<z.ZodString>;
         scheduledTierChange: z.ZodNullable<z.ZodEnum<{
+            TRAINING: "TRAINING";
             ESSENTIALS: "ESSENTIALS";
             CORE: "CORE";
             CONCIERGE: "CONCIERGE";
         }>>;
         tierChangeEffectiveDate: z.ZodNullable<z.ZodString>;
+        introMonthElected: z.ZodOptional<z.ZodBoolean>;
+        introWindowEndsAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
         signedContractKey: z.ZodNullable<z.ZodString>;
         failedPaymentCount: z.ZodDefault<z.ZodNumber>;
         cancelReason: z.ZodOptional<z.ZodNullable<z.ZodString>>;

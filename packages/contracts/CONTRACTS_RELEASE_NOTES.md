@@ -1,3 +1,51 @@
+## 0.2.0-alpha.102 (2026-10-14) — Hollis Training tier and intro month
+
+Offer sheet 3.5.0 and Membership Agreement 2.8.0 (contentHash `9d9d916b`).
+The agreement ships before counsel review by owner decision.
+
+- **New tier `TRAINING`** ("Hollis Training", $399/month), first in
+  `USER_TIERS` (order is lowest → highest; `DEFAULT_USER_TIER` stays
+  ESSENTIALS). Four private coaching sessions per month (`DEFAULT_TIER_ALLOCATIONS`:
+  4 FITNESS_SESSION monthly + unlimited tracked recovery), month-to-month only,
+  no sponsored biomarker panel (`SPONSORED_PANEL_TIERS`/`PREMIUM_TIERS`
+  unchanged). Every `Record<UserTier, …>` (compliance, churn thresholds, labels,
+  prices, offer tier/value maps) now has a TRAINING entry; the literal tier
+  enums in `ComplianceEngine*Schema`, `PatientSchema` and `ContactFormSchema`
+  accept it.
+- **New contract duration `MONTH_1`** (month-to-month, 0%). `OfferTermMonths`
+  adds `1`; each offer-sheet term now carries required `eligibleTiers`.
+  Helpers: `getTermsForTier`, `allowedTermMonthsForTier`, `isTermAllowedForTier`,
+  `isMonthToMonthTier`, `MONTH_TO_MONTH_TERM_MONTHS`,
+  `allowedContractDurationsForTier`, `isContractDurationAllowedForTier`.
+  TRAINING → MONTH_1 only; other tiers → MONTH_4/8/12 only.
+- **Intro month**: `MASTER_OFFER_SHEET.introMonth` / `MASTER_OFFER_INTRO_MONTH`
+  (`OfferIntroMonthSchema`): 4-month term at ESSENTIALS/CORE/CONCIERGE, 30-day
+  window, same price as the 4-month term, counts as month 1, sponsored panel
+  deferred until the window ends. Helpers `isIntroMonthEligible`,
+  `isIntroMonthEligibleForDuration`, `getIntroWindowEndDate` (day 30, Start
+  Date = day 1). Optional `introMonth` on `CreateSubscriptionRequestSchema`;
+  optional `introMonthElected`/`introWindowEndsAt` on `SubscriptionSchema`,
+  `introMonthElected` on `SigningClientInfoSchema`, and `isMonthToMonth`/
+  `introMonthElected`/`introWindowEndsAt` on `EnrollmentSummarySchema`.
+- **Legal**: new placeholders `{{CHECK_TIER_TRAINING}}`, `{{CHECK_TERM_1MO}}`,
+  `{{CHECK_INTRO_MONTH}}` (checked only when elected and eligible). New
+  Section 3.5 Intro Month; 3.3/3.4 month-to-month terms; 6.4 limited to fixed
+  terms; 2.4 panel excluded at Training/Essentials and deferred during the
+  intro window; 2.6 recovery is stretch/mobility inside sessions only.
+  Liability Waiver unchanged.
+- **Breaking-ish for consumers**: `generateEnrollmentSummary(tier, months,
+  start?, { introMonth? })` now throws for a tier/term the offer sheet does not
+  sell (e.g. TRAINING+4, CORE+1) and for an ineligible intro election;
+  `EnrollmentSummaryData` gains required `isMonthToMonth`, `introMonthElected`,
+  `introWindowEndsAt`, and Exhibit A adds an "Intro Month" row (web-admin and
+  server must bump together so rendered hashes match). Servers must validate
+  tier/duration/intro combinations themselves — `CreateSubscriptionRequestSchema`
+  is not refined because consumers `.extend()` it.
+- **Copy**: cold plunge, red light and cupping removed from the offer sheet and
+  agreement; biomarker panel described as "160+ biomarkers per year across two
+  draws"; `getTierCardHighlights` prints the sponsored-testing paragraph only
+  for panel tiers and adds a month-to-month billing line for Training.
+
 ## 0.2.0-alpha.101 (2026-10-13) — Workouts feedback board
 
 Additive. New subpath `./domain/workouts-feedback` (also re-exported from

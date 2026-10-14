@@ -14,6 +14,7 @@ import { type SubscriptionContract } from "./subscription.js";
 export declare const CustomerSubscriptionSchema: z.ZodObject<{
     id: z.ZodString;
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -29,6 +30,7 @@ export declare const CustomerSubscriptionSchema: z.ZodObject<{
         SUSPENDED: "SUSPENDED";
     }>;
     contractDuration: z.ZodEnum<{
+        MONTH_1: "MONTH_1";
         MONTH_4: "MONTH_4";
         MONTH_8: "MONTH_8";
         MONTH_12: "MONTH_12";

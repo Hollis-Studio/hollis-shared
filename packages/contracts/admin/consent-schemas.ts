@@ -190,6 +190,8 @@ export const SigningClientInfoSchema = z.object({
   memberId: z.string().max(128).nullable().optional(),
   selectedTier: UserTierSchema.nullable().optional(),
   contractDurationMonths: z.number().int().positive().nullable().optional(),
+  /** Optional Intro Month election (Membership Agreement Section 3.5). */
+  introMonthElected: z.boolean().nullable().optional(),
 });
 export type SigningClientInfo = z.infer<typeof SigningClientInfoSchema>;
 
@@ -206,7 +208,7 @@ const EnrollmentSummaryObjectSchema = z.object({
   tier: UserTierSchema,
   /** Display label for the selected tier used in Exhibit A. */
   tierDisplayName: z.string().min(1).optional(),
-  /** Contract commitment length in months (4, 8, or 12). */
+  /** Contract commitment length in months (1 = month-to-month Hollis Training; 4, 8, or 12). */
   contractDuration: z.number().int().positive(),
   /** Contract commitment length in months using the shared legal-doc render shape. */
   contractDurationMonths: z.number().int().positive().optional(),
@@ -214,6 +216,12 @@ const EnrollmentSummaryObjectSchema = z.object({
   startDate: z.string().min(1),
   /** ISO date string for the calculated end date (startDate + contractDuration months). */
   endDate: z.string().min(1),
+  /** Month-to-month enrollment (Hollis Training); endDate is then the end of the first billing period. */
+  isMonthToMonth: z.boolean().optional(),
+  /** Whether the optional Intro Month was elected (4-month term at ESSENTIALS/CORE/CONCIERGE only). */
+  introMonthElected: z.boolean().optional(),
+  /** Day 30 of the Intro Month (ISO date); cancellation must be received before it. */
+  introWindowEndsAt: z.string().nullable().optional(),
   /** Monthly membership rate in cents (integer, no floats). */
   monthlyRateCents: z.number().int().nonnegative(),
   /** Monthly membership rate in dollars, rounded to two decimals for Exhibit A. */

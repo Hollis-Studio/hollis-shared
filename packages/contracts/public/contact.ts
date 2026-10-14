@@ -9,6 +9,7 @@
  */
 
 import * as z from "zod";
+import { USER_TIERS } from "../domain/user.js";
 
 // ============================================================================
 // CONTACT FORM TYPES
@@ -98,7 +99,7 @@ export const ContactFormSchema = z.object({
   referralInfo: z.string().max(200).optional(),
 
   /** Which membership tier are they interested in? */
-  interestedTier: z.enum(["ESSENTIALS", "CORE", "CONCIERGE"]).optional(),
+  interestedTier: z.enum(USER_TIERS).optional(),
 });
 
 export type ContactFormInput = z.infer<typeof ContactFormSchema>;

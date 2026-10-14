@@ -329,6 +329,7 @@ export declare const authSessionProfileSchema: z.ZodObject<{
         CLIENT: "CLIENT";
     }>;
     tier: z.ZodOptional<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";

@@ -103,12 +103,15 @@ import {
     isClinicalRole,
     isPremiumTier,
     isSiteAdminRole,
+    isSponsoredPanelTier,
+    SPONSORED_PANEL_TIERS,
     isTrainerRole,
     mapAccountStatusToFlags,
     normalizeAccountStatusFlags,
     normalizeNotificationPreferences,
     notificationPreferencesUpdateSchema,
 } from "../domain/user";
+import { PatientSchema } from "../domain/clinical";
 
 // ============================================================================
 // HELPERS
@@ -394,11 +397,24 @@ describe("User Domain Contracts", () => {
 
   describe("UserTier", () => {
     describe("tuple values", () => {
-      it("should contain exactly 3 tiers", () => {
-        expect(USER_TIERS).toHaveLength(3);
+      it("should contain exactly 4 tiers", () => {
+        expect(USER_TIERS).toHaveLength(4);
+      });
+
+      it("orders tiers lowest to highest with TRAINING first", () => {
+        // web-admin uses USER_TIERS.indexOf to tell an upgrade from a downgrade.
+        expect([...USER_TIERS]).toEqual([
+          "TRAINING",
+          "ESSENTIALS",
+          "CORE",
+          "CONCIERGE",
+        ]);
+        const prices = USER_TIERS.map((tier) => USER_TIER_PRICES_DOLLARS[tier]);
+        expect([...prices].sort((a, b) => a - b)).toEqual(prices);
       });
 
       it("should contain all expected tiers", () => {
+        expect(USER_TIERS).toContain("TRAINING");
         expect(USER_TIERS).toContain("ESSENTIALS");
         expect(USER_TIERS).toContain("CORE");
         expect(USER_TIERS).toContain("CONCIERGE");
@@ -428,7 +444,7 @@ describe("User Domain Contracts", () => {
 
       it("should have all values present in tuple", () => {
         const constantValues = Object.values(USER_TIER);
-        expect(constantValues).toHaveLength(3);
+        expect(constantValues).toHaveLength(4);
         for (const value of constantValues) {
           expect(USER_TIERS).toContain(value);
         }
@@ -444,6 +460,7 @@ describe("User Domain Contracts", () => {
       });
 
       it("should have correct labels", () => {
+        expect(USER_TIER_LABELS.TRAINING).toBe("Hollis Training");
         expect(USER_TIER_LABELS.ESSENTIALS).toBe("Essentials");
         expect(USER_TIER_LABELS.CORE).toBe("Core");
         expect(USER_TIER_LABELS.CONCIERGE).toBe("Concierge");
@@ -466,6 +483,7 @@ describe("User Domain Contracts", () => {
       });
 
       it("should have correct prices", () => {
+        expect(USER_TIER_PRICES_DOLLARS.TRAINING).toBe(399);
         expect(USER_TIER_PRICES_DOLLARS.ESSENTIALS).toBe(749);
         expect(USER_TIER_PRICES_DOLLARS.CORE).toBe(1349);
         expect(USER_TIER_PRICES_DOLLARS.CONCIERGE).toBe(1949);
@@ -515,8 +533,26 @@ describe("User Domain Contracts", () => {
         expect(isPremiumTier("CONCIERGE")).toBe(true);
       });
 
-      it("should return false for ESSENTIALS", () => {
+      it("should return false for TRAINING and ESSENTIALS", () => {
+        expect(isPremiumTier("TRAINING")).toBe(false);
         expect(isPremiumTier("ESSENTIALS")).toBe(false);
+      });
+    });
+
+    describe("TRAINING tier boundaries", () => {
+      it("never receives the sponsored biomarker panel", () => {
+        expect(isSponsoredPanelTier("TRAINING")).toBe(false);
+        expect(SPONSORED_PANEL_TIERS).toEqual(["CORE", "CONCIERGE"]);
+      });
+
+      it("does not become the default tier", () => {
+        expect(DEFAULT_USER_TIER).toBe("ESSENTIALS");
+        expect(USER_TIERS[0]).toBe("TRAINING");
+      });
+
+      it("keeps the cycle-avoiding literal tier enums in sync with USER_TIERS", () => {
+        // domain/clinical.ts cannot import USER_TIERS (user.ts imports it).
+        expect(PatientSchema.shape.tier.unwrap().options).toEqual([...USER_TIERS]);
       });
 
       it("should return false for null/undefined", () => {

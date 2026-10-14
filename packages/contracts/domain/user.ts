@@ -3,7 +3,7 @@
  *
  * This module provides the canonical definitions for user-related constants:
  * - User roles (ADMIN, CLINICIAN, CLIENT)
- * - Membership tiers (ESSENTIALS, CORE, CONCIERGE)
+ * - Membership tiers (TRAINING, ESSENTIALS, CORE, CONCIERGE)
  * - Biological sex, activity levels, goals, experience levels
  * - Notification frequencies, weekdays
  *
@@ -269,26 +269,39 @@ export function getRoleBadge(
 // ============================================================================
 
 /**
- * Membership tiers for Hollis Health.
+ * Membership tiers for Hollis Health, ordered lowest to highest. Consumers rely
+ * on this order (e.g. `USER_TIERS.indexOf` to tell an upgrade from a downgrade),
+ * so a new tier must be inserted at its price position, never appended blindly.
+ * - TRAINING ($399/mo, "Hollis Training"): 4 fitness sessions per month,
+ *   month-to-month only, no sponsored biomarker panel (offer sheet v3.5.0)
  * - ESSENTIALS ($749/mo): 8 fitness sessions
  * - CORE ($1349/mo): 16 fitness sessions
  * - CONCIERGE ($1949/mo): 24 fitness sessions
+ *
+ * Prices come from `offer-sheet.json`; see USER_TIER_PRICES_DOLLARS.
  */
-export const USER_TIERS = ["ESSENTIALS", "CORE", "CONCIERGE"] as const;
+export const USER_TIERS = ["TRAINING", "ESSENTIALS", "CORE", "CONCIERGE"] as const;
 
 export const UserTierSchema = z.enum(USER_TIERS);
 export type UserTier = z.infer<typeof UserTierSchema>;
 
 export const USER_TIER = {
+  TRAINING: "TRAINING",
   ESSENTIALS: "ESSENTIALS",
   CORE: "CORE",
   CONCIERGE: "CONCIERGE",
 } as const satisfies Record<UserTier, UserTier>;
 
+/**
+ * Default tier for records created without an explicit tier. Deliberately NOT
+ * `USER_TIERS[0]`: adding TRAINING ahead of ESSENTIALS must not silently move
+ * existing defaults onto the month-to-month tier.
+ */
 export const DEFAULT_USER_TIER: UserTier = USER_TIER.ESSENTIALS;
 
 /** Human-readable labels for membership tiers */
 export const USER_TIER_LABELS: Record<UserTier, string> = {
+  TRAINING: "Hollis Training",
   ESSENTIALS: "Essentials",
   CORE: "Core",
   CONCIERGE: "Concierge",
@@ -356,6 +369,7 @@ export function isSponsoredPanelTier(tier: UserTier): boolean {
  * USER_TIER_PRICES_DOLLARS.ESSENTIALS * 100 // 74900 cents for Stripe
  */
 export const USER_TIER_PRICES_DOLLARS: Record<UserTier, number> = {
+  TRAINING: offerSheetData.tiers.TRAINING.baseMonthlyPriceDollars,
   ESSENTIALS: offerSheetData.tiers.ESSENTIALS.baseMonthlyPriceDollars,
   CORE: offerSheetData.tiers.CORE.baseMonthlyPriceDollars,
   CONCIERGE: offerSheetData.tiers.CONCIERGE.baseMonthlyPriceDollars,

@@ -454,6 +454,8 @@ export const CHURN_RISK_LEVEL = {
  *
  * Concierge clients train 5x/week so gaps are more concerning
  * Essentials clients train 1x/week so longer gaps are expected
+ * Hollis Training clients have 4 sessions/month (~1/week) and no fixed term,
+ * so thresholds sit just beyond Essentials
  */
 export const TIER_CHURN_THRESHOLDS = {
     CONCIERGE: {
@@ -470,6 +472,11 @@ export const TIER_CHURN_THRESHOLDS = {
         MEDIUM: 7, // >7 days = medium risk (missed expected weekly session)
         HIGH: 14, // >14 days = high risk
         CRITICAL: 21, // >21 days = critical (3 weeks without activity)
+    },
+    TRAINING: {
+        MEDIUM: 10, // >10 days = medium risk (missed a roughly weekly session)
+        HIGH: 17, // >17 days = high risk (two missed sessions)
+        CRITICAL: 24, // >24 days = critical (most of a billing month unused)
     },
 };
 /**

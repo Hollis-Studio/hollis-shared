@@ -16,10 +16,17 @@
  *
  * Exhibit A is omitted here — it is generated dynamically by
  * enrollmentSummary.ts and injected at render time.
+ *
+ * v2.8.0 (2026-10-14, offer sheet v3.5.0): adds the month-to-month Hollis
+ * Training tier, the optional Intro Month (Section 3.5), stretch/mobility-only
+ * recovery (Section 2.6), and the per-year biomarker wording (Section 2.4).
+ * Shipped before counsel review by owner decision.
  */
 
 import {
   MASTER_OFFER_SHEET,
+  MASTER_OFFER_TIER_ORDER,
+  MONTH_TO_MONTH_TERM_MONTHS,
   getDiscountedMonthlyPriceDollars,
   formatUsd,
 } from "../../domain/offer-sheet.js";
@@ -28,7 +35,7 @@ import {
 // Dynamic section generators (from MASTER_OFFER_SHEET)
 // ---------------------------------------------------------------------------
 
-const TIER_ORDER = ["ESSENTIALS", "CORE", "CONCIERGE"] as const;
+const TIER_ORDER = MASTER_OFFER_TIER_ORDER;
 
 function generateComparisonTable(): string {
   const headers = [
@@ -54,8 +61,10 @@ function generateSeparatelyBilledItems(): string {
 function generatePricingGrid(): string {
   const headers = [
     "Tier",
-    ...MASTER_OFFER_SHEET.terms.map(
-      (term) => `${term.months}-Month (${term.discountPercent}% off)`,
+    ...MASTER_OFFER_SHEET.terms.map((term) =>
+      term.months === MONTH_TO_MONTH_TERM_MONTHS
+        ? "Month-to-Month"
+        : `${term.months}-Month (${term.discountPercent}% off)`,
     ),
   ];
   const headerRow = `| ${headers.join(" | ")} |`;
@@ -63,12 +72,14 @@ function generatePricingGrid(): string {
   const bodyRows = TIER_ORDER.map((tier) => {
     const tierData = MASTER_OFFER_SHEET.tiers[tier];
     const prices = MASTER_OFFER_SHEET.terms.map((term) =>
-      formatUsd(
-        getDiscountedMonthlyPriceDollars(
-          tierData.baseMonthlyPriceDollars,
-          term.discountPercent,
-        ),
-      ),
+      term.eligibleTiers.includes(tier)
+        ? formatUsd(
+            getDiscountedMonthlyPriceDollars(
+              tierData.baseMonthlyPriceDollars,
+              term.discountPercent,
+            ),
+          )
+        : "Not offered",
     );
     return `| ${tierData.displayName} | ${prices.join(" | ")} |`;
   });
@@ -120,6 +131,7 @@ PLEASE READ THIS AGREEMENT CAREFULLY BEFORE SIGNING. THIS AGREEMENT CONTAINS A B
 
 Member hereby selects the following membership tier (check one):
 
+- {{CHECK_TIER_TRAINING}} **Hollis Training**
 - {{CHECK_TIER_ESSENTIALS}} **Essentials**
 - {{CHECK_TIER_CORE}} **Core**
 - {{CHECK_TIER_CONCIERGE}} **Concierge**
@@ -132,6 +144,8 @@ ${generateComparisonTable()}
 
 In addition to the services listed above, Members at the **Core** and **Concierge** tiers receive the Company-sponsored third-party testing program benefit described in Section 2.4.
 
+**Hollis Training** includes four (4) private coaching sessions per calendar month, a training plan, basic progress tracking in the member app, general nutrition support, and the recovery work described in Section 2.6. Hollis Training is offered only on a month-to-month basis under Section 3 and does not include the Company-sponsored third-party testing program described in Section 2.4.
+
 For clarity, "member coordination and scheduling support" in the table above means non-clinical member support: scheduling assistance, organizing records Member chooses to share with Company, and providing the name and contact information of independent providers at Member's request. It does not mean clinical care coordination. Company does not direct, manage, supervise, or participate in Member's medical care.
 
 ### 2.2 Enrollment Summary and Service Schedule
@@ -139,7 +153,8 @@ For clarity, "member coordination and scheduling support" in the table above mea
 The specific commercial and operational details of Member's selected membership are set forth in the **Enrollment Summary and Service Schedule** attached as **Exhibit A** and incorporated herein by reference. Exhibit A is intended to capture the individualized details of Member's enrollment, including:
 
 - Selected tier;
-- Selected contract term;
+- Selected contract term, or month-to-month enrollment for Hollis Training;
+- Whether Member elected the Intro Month described in Section 3.5;
 - Monthly rate;
 - Start Date and End Date;
 - Confirmation that supplements and all other physical products are currently unavailable from Company and are not included in Membership or available as add-ons;
@@ -161,7 +176,7 @@ Where Member's tier includes it, Company pays a third-party health-testing compa
 
 ### 2.4 Company-Sponsored Third-Party Testing Program
 
-As a benefit of the **Core** and **Concierge** tiers, Company pays for, or reimburses the cost of, a membership or subscription with an independent third-party health-testing company on Member's behalf. This benefit is not included at the Essentials tier.
+As a benefit of the **Core** and **Concierge** tiers, Company pays for, or reimburses the cost of, a membership or subscription with an independent third-party health-testing company on Member's behalf. This benefit is not included at the Hollis Training or Essentials tiers. If Member elects the Intro Month under Section 3.5, Company does not pay for, issue, or arrange the benefit until the Intro Window described in Section 3.5 has ended without a timely cancellation by Member.
 
 Where Company does so, **the account is Member's**. Member establishes that account directly with the third-party company, in Member's own name and email address, and it is governed by that company's own terms of service and privacy practices, not by this Agreement. Company does not create or administer that account and does not transmit Member's name, email address, or any other information about Member to that company. That company and its own independent licensed providers order, arrange, and perform any testing, and are solely responsible for the interpretation of results and for any clinical follow-up.
 
@@ -169,7 +184,7 @@ Company does not select Member's test panel, does not arrange or schedule Member
 
 Member is not required to enroll in or use the program. Declining does not affect Member's other membership services, and no portion of the Membership fee is refundable, creditable, or exchangeable if Member declines, does not enroll, or does not use the program. Availability of the benefit depends on the third-party company's own eligibility requirements, terms, and continued operation, all of which are outside Company's control. Company may change the third-party company it sponsors, or substitute a comparable benefit, on written notice to Member.
 
-The sponsored membership is a standard membership with that company, providing testing on a twice-yearly cadence. **Testing frequency, panel contents, scheduling windows, and all clinical aspects of the program are governed by that company's terms and conditions, not by this Agreement.** Company makes no representation or guarantee as to testing cadence, panel composition, availability, or turnaround, and any change that company makes to its own program is not a change to this Agreement or a reduction in Membership services. The benefit does not continue after Member's Membership lapses, terminates, or converts to a tier at which it is not included, and Member remains responsible for cancelling or otherwise managing Member's own account with the third-party company after that time. Any charge that company or any provider imposes beyond the sponsored membership or subscription fee — including specimen collection fees, additional or add-on panels, and clinical consultation charges — is Member's responsibility and is billed separately.
+The sponsored membership is a standard membership with that company which, as that company currently offers it, provides testing of 160+ biomarkers per year across two blood draws (approximately 100 biomarkers at the first draw and approximately 60 at the follow-up draw). **Testing frequency, panel contents, scheduling windows, and all clinical aspects of the program are governed by that company's terms and conditions, not by this Agreement.** Company makes no representation or guarantee as to testing cadence, panel composition, availability, or turnaround, and any change that company makes to its own program is not a change to this Agreement or a reduction in Membership services. The benefit does not continue after Member's Membership lapses, terminates, or converts to a tier at which it is not included, and Member remains responsible for cancelling or otherwise managing Member's own account with the third-party company after that time. Any charge that company or any provider imposes beyond the sponsored membership or subscription fee — including specimen collection fees, additional or add-on panels, and clinical consultation charges — is Member's responsibility and is billed separately.
 
 Any results Member obtains through the program are delivered to Member by that third-party company. They reach Company only if Member chooses to share them with Company under a signed Informed Consent for Health Services, in which case Company displays and organizes them in Member's dashboard and uses them as non-clinical context for fitness, nutrition, and wellness programming only. Company does not review or monitor shared records for urgent, abnormal, or otherwise clinically significant findings and has no duty to identify, flag, or notify Member of any such findings.
 
@@ -177,9 +192,9 @@ Any results Member obtains through the program are delivered to Member by that t
 
 Unused private coaching sessions do not roll over from month to month unless expressly authorized in writing by Company. Sessions not used within the applicable calendar month are forfeited without credit or refund.
 
-### 2.6 Recovery Modalities
+### 2.6 Recovery
 
-Access to recovery modalities, where made available by Company, is subject to posted operating rules, safety screening, the separately executed Liability Waiver, and the separately executed Informed Consent for Health Services where applicable. Member is responsible for obtaining physician guidance regarding any contraindication or restriction relevant to recovery modality use.
+At every tier, "recovery" under this Agreement means guided stretching and mobility work delivered by Company's coaches within Member's private coaching sessions. Recovery work is not a separate service, does not carry a separate session allowance, and is not billed separately. Company does not offer cold plunge, red light, cupping, or any other recovery modality or equipment as part of Membership, and none is included in Membership fees. Recovery work is subject to safety screening, the separately executed Liability Waiver, and the separately executed Informed Consent for Health Services where applicable. Member is responsible for obtaining physician guidance regarding any contraindication or restriction relevant to stretching or mobility work.
 
 ---
 
@@ -189,9 +204,16 @@ Access to recovery modalities, where made available by Company, is subject to po
 
 Member selects the following contract term (check one):
 
+- {{CHECK_TERM_1MO}} **Month-to-Month** — Hollis Training only; no fixed term; no discount
 - {{CHECK_TERM_4MO}} **4-Month Term** — No discount
 - {{CHECK_TERM_8MO}} **8-Month Term** — 5% discount
 - {{CHECK_TERM_12MO}} **12-Month Term** — 10% discount
+
+Month-to-Month is available only with Hollis Training, and Hollis Training is available only Month-to-Month. The 4-, 8-, and 12-Month Terms (each a "Fixed Term") are available only with the Essentials, Core, and Concierge tiers.
+
+Optional Intro Month election (available only with the 4-Month Term at the Essentials, Core, or Concierge tier):
+
+- {{CHECK_INTRO_MONTH}} **Member elects the Intro Month described in Section 3.5**
 
 ### 3.2 Discounted Monthly Rates by Tier and Term
 
@@ -201,11 +223,27 @@ Amounts are rounded to the nearest cent. If Exhibit A lists a different monthly 
 
 ### 3.3 Term Commencement and Expiration
 
-The contract term shall commence on {{START_DATE}} ("Start Date") and expire on {{END_DATE}} ("End Date"), unless earlier terminated in accordance with Section 6.
+The contract term shall commence on {{START_DATE}} ("Start Date") and expire on {{END_DATE}} ("End Date"), unless earlier terminated in accordance with Section 3.5 or Section 6. If Member selected Month-to-Month, there is no fixed term and no End Date for purposes of Sections 3.4 and 6.4: the date shown above and in Exhibit A is the last day of the first monthly billing period, and this Agreement continues from month to month after it until terminated under Section 3.4 or Section 6.
 
 ### 3.4 Auto-Renewal
 
-Unless either Party gives written notice of non-renewal before the End Date, this Agreement will automatically convert to a month-to-month arrangement at the then-current standard monthly rate for the selected tier, plus any continuing add-ons then in effect, to the extent permitted by applicable law. Member's notice of non-renewal must be given at least seven (7) days before the End Date; Company's notice of non-renewal must be given at least thirty (30) days before the End Date. During month-to-month continuation, Member may terminate on at least seven (7) days' written notice given before the next Billing Date, and Company may terminate on thirty (30) days' written notice.
+This paragraph applies to a Fixed Term. Unless either Party gives written notice of non-renewal before the End Date, this Agreement will automatically convert to a month-to-month arrangement at the then-current standard monthly rate for the selected tier, plus any continuing add-ons then in effect, to the extent permitted by applicable law. Member's notice of non-renewal must be given at least seven (7) days before the End Date; Company's notice of non-renewal must be given at least thirty (30) days before the End Date. During month-to-month continuation, Member may terminate on at least seven (7) days' written notice given before the next Billing Date, and Company may terminate on thirty (30) days' written notice.
+
+If Member selected Month-to-Month (Hollis Training), this Agreement renews automatically each month at the then-current standard monthly rate for Hollis Training until terminated. Member may terminate on at least seven (7) days' written notice given before the next Billing Date, and Company may terminate on thirty (30) days' written notice. No early termination amount applies to Month-to-Month enrollment.
+
+### 3.5 Intro Month
+
+If Member checked the Intro Month election in Section 3.1, the following terms apply. The Intro Month is available only with the 4-Month Term at the Essentials, Core, or Concierge tier; an election made with any other tier or term is of no effect, and the selected tier and term apply without it.
+
+(a) **Month 1 of the term.** The Intro Month is the first month of Member's 4-Month Term, beginning on the Start Date. It is not an additional month, and Member's total commitment, if Member does not cancel under paragraph (c), is four (4) months from the Start Date.
+
+(b) **Price.** The Intro Month is billed at the regular monthly rate for Member's tier on the 4-Month Term shown in Section 3.2 and Exhibit A. No discount, credit, or reduced rate applies.
+
+(c) **Cancellation within the Intro Window.** Member may cancel this Agreement by written notice under Section 6.6 that Company receives before the thirtieth (30th) day of the Intro Month, counting the Start Date as day one. The period from the Start Date until that thirtieth day is the "Intro Window." The date on which the Intro Window ends is stated in Exhibit A. Notwithstanding the seven-day notice requirement in Section 6.6, a cancellation received within the Intro Window takes effect at the end of the Intro Month; no early termination amount under Section 6.4 is due, and no further monthly payment will be charged. The Intro Month payment is not refundable except as required by applicable law or as provided in Section 5.1, 6.2, 6.3, or 6.5.
+
+(d) **Continuation.** If Company does not receive Member's written cancellation within the Intro Window, Member's membership continues for the remainder of the 4-Month Term on all terms of this Agreement, including Sections 3.4 and 6.4.
+
+(e) **Sponsored testing benefit.** Where Member's tier includes the Company-sponsored third-party testing program described in Section 2.4, Company does not pay for, issue, or arrange that benefit during the Intro Window. It becomes available only after the Intro Window ends without a timely cancellation by Member.
 
 ---
 
@@ -281,6 +319,8 @@ If Member permanently relocates the Member's primary residence to a location mat
 
 ### 6.4 Early Termination for Convenience
 
+This Section 6.4 applies only to a Fixed Term. It does not apply to Month-to-Month enrollment in Hollis Training, to month-to-month continuation under Section 3.4, or to a cancellation received within the Intro Window under Section 3.5.
+
 If Member elects to terminate this Agreement before the End Date for any reason other than an approved or legally required cancellation under Sections 6.2 or 6.3, Member owes an early termination amount equal to **fifty percent (50%) of the remaining discounted contract value** through the End Date. The remaining discounted contract value is the discounted monthly rate actually selected under Section 3.2, or reflected in Exhibit A, multiplied by the number of months remaining between the termination date and the End Date, with any partial month counted as a whole month. Any fraction of a cent in the resulting amount is rounded down in Member's favor. The Parties acknowledge that the selected term discount is offered in reliance on Member's commitment to the full term and that this early termination amount is intended to preserve that bargain, not to impose a penalty.
 
 ### 6.5 Company Termination
@@ -303,7 +343,7 @@ MEMBER ACKNOWLEDGES AND AGREES THAT THE SEPARATELY EXECUTED LIABILITY WAIVER AND
 
 ### 7.2 Acknowledgment of Risk
 
-MEMBER ACKNOWLEDGES THAT PHYSICAL TRAINING, RECOVERY MODALITIES, AND OTHER WELLNESS ACTIVITIES OFFERED THROUGH COMPANY INVOLVE INHERENT RISKS OF PHYSICAL INJURY, ILLNESS, DISABILITY, AND DEATH. MEMBER VOLUNTARILY ASSUMES THOSE RISKS TO THE FULLEST EXTENT PERMITTED BY LAW.
+MEMBER ACKNOWLEDGES THAT PHYSICAL TRAINING, STRETCHING AND MOBILITY WORK, AND OTHER WELLNESS ACTIVITIES OFFERED THROUGH COMPANY INVOLVE INHERENT RISKS OF PHYSICAL INJURY, ILLNESS, DISABILITY, AND DEATH. MEMBER VOLUNTARILY ASSUMES THOSE RISKS TO THE FULLEST EXTENT PERMITTED BY LAW.
 
 ### 7.3 Release
 
@@ -446,8 +486,8 @@ Title: ______________________________________
 
 export const meta = {
   title: "Membership Agreement",
-  version: "2.7.0",
-  effectiveDate: "2026-09-19",
+  version: "2.8.0",
+  effectiveDate: "2026-10-14",
   /**
    * sha256 of the fully-rendered `content` export, first 8 hex chars.
    * `content` is deterministic at module load (it interpolates
@@ -455,7 +495,7 @@ export const meta = {
    * verifiable — scripts/check-legal-doc-versions.js in hollis-health-app
    * evaluates the built module and compares.
    */
-  contentHash: "ee78df0f",
+  contentHash: "9d9d916b",
 };
 
 /**
@@ -474,7 +514,7 @@ export const initialsSections = [
     key: "assumption_of_risk",
     title: "Assumption of Risk and Release (Section 7)",
     excerpt:
-      "You acknowledge that physical training, recovery modalities, and other wellness activities involve inherent risks of physical injury, illness, disability, and death, and you voluntarily assume those risks.",
+      "You acknowledge that physical training, stretching and mobility work, and other wellness activities involve inherent risks of physical injury, illness, disability, and death, and you voluntarily assume those risks.",
   },
   {
     key: "binding_arbitration",
@@ -492,7 +532,7 @@ export const initialsSections = [
     key: "early_termination",
     title: "Early Termination Obligation (Section 6.4)",
     excerpt:
-      "If you terminate before the End Date for reasons other than an approved or legally required cancellation, you owe an early termination amount equal to 50% of the remaining discounted contract value.",
+      "If you terminate a fixed 4-, 8-, or 12-month term before the End Date for reasons other than an approved or legally required cancellation or a cancellation within the intro month window, you owe an early termination amount equal to 50% of the remaining discounted contract value. Month-to-month Hollis Training has no early termination amount.",
   },
 ] as const;
 

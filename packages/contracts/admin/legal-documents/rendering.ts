@@ -1,3 +1,4 @@
+import { isIntroMonthEligible } from "../../domain/offer-sheet.js";
 import type { UserTier } from "../../domain/user.js";
 
 export interface SignedDocumentRenderClientInfo {
@@ -12,6 +13,13 @@ export interface SignedDocumentRenderClientInfo {
   emergencyContactPhone?: string | null;
   selectedTier?: UserTier | null;
   contractDurationMonths?: number | null;
+  /**
+   * Whether the member elected the optional Intro Month (Membership Agreement
+   * Section 3.5). Renders {{CHECK_INTRO_MONTH}} as checked only when the
+   * selected tier + term is eligible (4-month term at ESSENTIALS/CORE/
+   * CONCIERGE); callers should still reject an ineligible election upstream.
+   */
+  introMonthElected?: boolean | null;
   startDate?: string | null;
   endDate?: string | null;
 }
@@ -75,12 +83,23 @@ export function renderSignedDocumentContent(
       /\{\{END_DATE\}\}/g,
       clientInfo.endDate ? formatDateForDocument(clientInfo.endDate) : "See Exhibit A",
     )
+    .replace(/\{\{CHECK_TIER_TRAINING\}\}/g, checkbox(tier === "TRAINING"))
     .replace(/\{\{CHECK_TIER_ESSENTIALS\}\}/g, checkbox(tier === "ESSENTIALS"))
     .replace(/\{\{CHECK_TIER_CORE\}\}/g, checkbox(tier === "CORE"))
     .replace(/\{\{CHECK_TIER_CONCIERGE\}\}/g, checkbox(tier === "CONCIERGE"))
+    .replace(/\{\{CHECK_TERM_1MO\}\}/g, checkbox(durationMonths === 1))
     .replace(/\{\{CHECK_TERM_4MO\}\}/g, checkbox(durationMonths === 4))
     .replace(/\{\{CHECK_TERM_8MO\}\}/g, checkbox(durationMonths === 8))
     .replace(/\{\{CHECK_TERM_12MO\}\}/g, checkbox(durationMonths === 12))
+    .replace(
+      /\{\{CHECK_INTRO_MONTH\}\}/g,
+      checkbox(
+        clientInfo.introMonthElected === true &&
+          clientInfo.selectedTier != null &&
+          durationMonths != null &&
+          isIntroMonthEligible(clientInfo.selectedTier, durationMonths),
+      ),
+    )
     .replace(/\{\{SIGNATURE\}\}/g, "[Signed electronically below]")
     .replace(/\{\{INITIALS_[A-Z_]+\}\}/g, "[Initialed below]")
     .replace(/\{\{OPT_IN_([A-Z_]+)\}\}/g, (_match, token: string) =>

@@ -66,6 +66,7 @@ export declare const patientSummarySchema: z.ZodObject<{
     email: z.ZodString;
     name: z.ZodString;
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -96,6 +97,7 @@ export declare const patientListResponseSchema: z.ZodObject<{
         email: z.ZodString;
         name: z.ZodString;
         tier: z.ZodEnum<{
+            TRAINING: "TRAINING";
             ESSENTIALS: "ESSENTIALS";
             CORE: "CORE";
             CONCIERGE: "CONCIERGE";
@@ -144,6 +146,7 @@ export type PatientDocumentSummary = z.infer<typeof patientDocumentSummarySchema
 export declare const patientMembershipSummarySchema: z.ZodObject<{
     id: z.ZodString;
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -330,6 +333,7 @@ export type PatientGoalsUpdatePayload = z.infer<typeof patientGoalsUpdatePayload
  */
 export declare const patientAdminControlsPayloadSchema: z.ZodObject<{
     tier: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -370,6 +374,7 @@ export declare const sponsoredPanelPayloadSchema: z.ZodObject<{
     enrolledAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     renewalDate: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     tierAtEnrollment: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -388,12 +393,14 @@ export declare const sponsoredPanelRecordSchema: z.ZodObject<{
     enrolledAt: z.ZodNullable<z.ZodString>;
     renewalDate: z.ZodNullable<z.ZodString>;
     tierAtEnrollment: z.ZodNullable<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
     }>>;
     notes: z.ZodNullable<z.ZodString>;
     currentTier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -513,6 +520,7 @@ export declare const registeredUserSchema: z.ZodObject<{
     barcode: z.ZodString;
     prefilledEmail: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     prefilledTier: z.ZodOptional<z.ZodNullable<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -564,6 +572,7 @@ export type RegisteredUser = z.infer<typeof registeredUserSchema>;
 export declare const createRegistrationPayloadSchema: z.ZodObject<{
     email: z.ZodOptional<z.ZodString>;
     tier: z.ZodOptional<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";

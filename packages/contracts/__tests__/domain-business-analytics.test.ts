@@ -925,6 +925,16 @@ describe('Business Analytics Domain Contracts', () => {
       });
     });
 
+    it('gives TRAINING (4 sessions/month) the most lenient thresholds', () => {
+      expect(calculateChurnRiskLevel('TRAINING', 10)).toBe('LOW');
+      expect(calculateChurnRiskLevel('TRAINING', 11)).toBe('MEDIUM');
+      expect(calculateChurnRiskLevel('TRAINING', 18)).toBe('HIGH');
+      expect(calculateChurnRiskLevel('TRAINING', 25)).toBe('CRITICAL');
+      expect(TIER_CHURN_THRESHOLDS.TRAINING.CRITICAL).toBeGreaterThan(
+        TIER_CHURN_THRESHOLDS.ESSENTIALS.CRITICAL,
+      );
+    });
+
     it('TIER_CHURN_THRESHOLDS should have stricter thresholds for CONCIERGE than ESSENTIALS', () => {
       expect(TIER_CHURN_THRESHOLDS.CONCIERGE.CRITICAL).toBeLessThan(TIER_CHURN_THRESHOLDS.ESSENTIALS.CRITICAL);
     });

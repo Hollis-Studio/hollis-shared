@@ -88,6 +88,7 @@ export declare const ContactFormSchema: z.ZodObject<{
     }>>;
     referralInfo: z.ZodOptional<z.ZodString>;
     interestedTier: z.ZodOptional<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -116,6 +117,7 @@ export declare const ContactInquirySchema: z.ZodObject<{
     }>>;
     referralInfo: z.ZodOptional<z.ZodString>;
     interestedTier: z.ZodOptional<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";

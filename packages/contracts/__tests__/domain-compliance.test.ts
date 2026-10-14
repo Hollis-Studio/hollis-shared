@@ -293,6 +293,12 @@ describe('Compliance Domain Contracts', () => {
         .toBeGreaterThan(TIER_COMPLIANCE_REQUIREMENTS.CORE.foodLogsPerWeek);
     });
 
+    it('TRAINING should carry the same minimal expectations as ESSENTIALS', () => {
+      expect(TIER_COMPLIANCE_REQUIREMENTS.TRAINING).toEqual(
+        TIER_COMPLIANCE_REQUIREMENTS.ESSENTIALS,
+      );
+    });
+
     it('ESSENTIALS should have zero food logs requirement', () => {
       expect(TIER_COMPLIANCE_REQUIREMENTS.ESSENTIALS.foodLogsPerWeek).toBe(0);
     });

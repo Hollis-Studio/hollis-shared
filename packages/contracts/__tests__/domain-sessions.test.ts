@@ -504,6 +504,36 @@ describe('Session Domain Contracts', () => {
       }
     });
 
+    describe('TRAINING tier', () => {
+      it('should have 4 fitness sessions per month with a monthly reset', () => {
+        const fitness = DEFAULT_TIER_ALLOCATIONS.TRAINING.find(
+          (a) => a.sessionType === 'FITNESS_SESSION',
+        );
+        expect(fitness).toBeDefined();
+        expect(fitness!.quantity).toBe(4);
+        expect(fitness!.resetFrequency).toBe('MONTHLY');
+      });
+
+      it('should track recovery exactly like the other tiers', () => {
+        const recovery = DEFAULT_TIER_ALLOCATIONS.TRAINING.find(
+          (a) => a.sessionType === 'RECOVERY_SESSION',
+        );
+        expect(recovery).toEqual(
+          DEFAULT_TIER_ALLOCATIONS.ESSENTIALS.find(
+            (a) => a.sessionType === 'RECOVERY_SESSION',
+          ),
+        );
+      });
+
+      it('should NOT include MOBILE_SESSION', () => {
+        expect(
+          DEFAULT_TIER_ALLOCATIONS.TRAINING.find(
+            (a) => a.sessionType === 'MOBILE_SESSION',
+          ),
+        ).toBeUndefined();
+      });
+    });
+
     describe('ESSENTIALS tier', () => {
       it('should have 8 fitness sessions per month', () => {
         const fitness = DEFAULT_TIER_ALLOCATIONS.ESSENTIALS.find(
@@ -590,6 +620,7 @@ describe('Session Domain Contracts', () => {
           (a) => a.sessionType === 'FITNESS_SESSION',
         )!.quantity;
 
+      expect(getFitness('TRAINING')).toBeLessThan(getFitness('ESSENTIALS'));
       expect(getFitness('ESSENTIALS')).toBeLessThan(getFitness('CORE'));
       expect(getFitness('CORE')).toBeLessThan(getFitness('CONCIERGE'));
     });

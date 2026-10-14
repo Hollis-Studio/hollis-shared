@@ -14,6 +14,7 @@
  * deps: zod | consumers: server/src/services/*, web-admin/services/*
  */
 import * as z from "zod";
+import type { UserTier } from "./user.js";
 /** Tuple of valid lab order status values (source of truth) */
 export declare const LAB_ORDER_STATUSES: readonly ["ORDERED", "KIT_SENT", "SAMPLE_RECEIVED", "RESULTS_PENDING", "RESULTS_REVIEWED", "RESULTS_PUBLISHED"];
 /** Zod schema for lab order status - derived from tuple */
@@ -765,6 +766,8 @@ export declare const CHURN_RISK_LEVEL: {
  *
  * Concierge clients train 5x/week so gaps are more concerning
  * Essentials clients train 1x/week so longer gaps are expected
+ * Hollis Training clients have 4 sessions/month (~1/week) and no fixed term,
+ * so thresholds sit just beyond Essentials
  */
 export declare const TIER_CHURN_THRESHOLDS: {
     readonly CONCIERGE: {
@@ -782,6 +785,11 @@ export declare const TIER_CHURN_THRESHOLDS: {
         readonly HIGH: 14;
         readonly CRITICAL: 21;
     };
+    readonly TRAINING: {
+        readonly MEDIUM: 10;
+        readonly HIGH: 17;
+        readonly CRITICAL: 24;
+    };
 };
 export type TierChurnThresholds = typeof TIER_CHURN_THRESHOLDS;
 /**
@@ -790,7 +798,7 @@ export type TierChurnThresholds = typeof TIER_CHURN_THRESHOLDS;
  * @param daysInactive - Days since last activity
  * @returns ChurnRiskLevel
  */
-export declare function calculateChurnRiskLevel(tier: "ESSENTIALS" | "CORE" | "CONCIERGE", daysInactive: number): ChurnRiskLevel;
+export declare function calculateChurnRiskLevel(tier: UserTier, daysInactive: number): ChurnRiskLevel;
 /**
  * Schema for retention cohort data
  * Tracks user retention over time by signup month

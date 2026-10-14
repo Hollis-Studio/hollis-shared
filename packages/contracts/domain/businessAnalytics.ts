@@ -17,6 +17,7 @@
 import * as z from "zod";
 import { emailSchema } from "../schemas/index.js";
 import { createPaginatedListSchema } from "./pagination.js";
+import type { UserTier } from "./user.js";
 
 // ============================================================================
 // LAB ORDER STATUS (Domain Constants Pattern)
@@ -551,6 +552,8 @@ export const CHURN_RISK_LEVEL = {
  *
  * Concierge clients train 5x/week so gaps are more concerning
  * Essentials clients train 1x/week so longer gaps are expected
+ * Hollis Training clients have 4 sessions/month (~1/week) and no fixed term,
+ * so thresholds sit just beyond Essentials
  */
 export const TIER_CHURN_THRESHOLDS = {
   CONCIERGE: {
@@ -568,7 +571,15 @@ export const TIER_CHURN_THRESHOLDS = {
     HIGH: 14, // >14 days = high risk
     CRITICAL: 21, // >21 days = critical (3 weeks without activity)
   },
-} as const;
+  TRAINING: {
+    MEDIUM: 10, // >10 days = medium risk (missed a roughly weekly session)
+    HIGH: 17, // >17 days = high risk (two missed sessions)
+    CRITICAL: 24, // >24 days = critical (most of a billing month unused)
+  },
+} as const satisfies Record<
+  UserTier,
+  { MEDIUM: number; HIGH: number; CRITICAL: number }
+>;
 
 export type TierChurnThresholds = typeof TIER_CHURN_THRESHOLDS;
 
@@ -579,7 +590,7 @@ export type TierChurnThresholds = typeof TIER_CHURN_THRESHOLDS;
  * @returns ChurnRiskLevel
  */
 export function calculateChurnRiskLevel(
-  tier: "ESSENTIALS" | "CORE" | "CONCIERGE",
+  tier: UserTier,
   daysInactive: number,
 ): ChurnRiskLevel {
   const thresholds = TIER_CHURN_THRESHOLDS[tier];

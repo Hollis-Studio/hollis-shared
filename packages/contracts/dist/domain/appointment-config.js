@@ -16,7 +16,7 @@ export const APPOINTMENT_DURATIONS = {
     CONSULTATION: 60,
     TRAINING_SESSION: 60,
     ONBOARDING: 45,
-    RECOVERY_SESSION: 60, // Sauna, ice bath, red light
+    RECOVERY_SESSION: 60, // Guided stretch and mobility recovery
     LABWORK: 30, // Blood draw
     DXA_SCAN: 30, // Body composition scan
     SLEEP_SCREENING: 15, // Device pickup/dropoff

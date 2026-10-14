@@ -3,7 +3,7 @@
  *
  * This module provides the canonical definitions for user-related constants:
  * - User roles (ADMIN, CLINICIAN, CLIENT)
- * - Membership tiers (ESSENTIALS, CORE, CONCIERGE)
+ * - Membership tiers (TRAINING, ESSENTIALS, CORE, CONCIERGE)
  * - Biological sex, activity levels, goals, experience levels
  * - Notification frequencies, weekdays
  *
@@ -130,23 +130,36 @@ export declare const ROLE_BADGE_CONFIG: Record<UserRole, RoleBadge>;
  */
 export declare function getRoleBadge(role: string | undefined | null): RoleBadge | null;
 /**
- * Membership tiers for Hollis Health.
+ * Membership tiers for Hollis Health, ordered lowest to highest. Consumers rely
+ * on this order (e.g. `USER_TIERS.indexOf` to tell an upgrade from a downgrade),
+ * so a new tier must be inserted at its price position, never appended blindly.
+ * - TRAINING ($399/mo, "Hollis Training"): 4 fitness sessions per month,
+ *   month-to-month only, no sponsored biomarker panel (offer sheet v3.5.0)
  * - ESSENTIALS ($749/mo): 8 fitness sessions
  * - CORE ($1349/mo): 16 fitness sessions
  * - CONCIERGE ($1949/mo): 24 fitness sessions
+ *
+ * Prices come from `offer-sheet.json`; see USER_TIER_PRICES_DOLLARS.
  */
-export declare const USER_TIERS: readonly ["ESSENTIALS", "CORE", "CONCIERGE"];
+export declare const USER_TIERS: readonly ["TRAINING", "ESSENTIALS", "CORE", "CONCIERGE"];
 export declare const UserTierSchema: z.ZodEnum<{
+    TRAINING: "TRAINING";
     ESSENTIALS: "ESSENTIALS";
     CORE: "CORE";
     CONCIERGE: "CONCIERGE";
 }>;
 export type UserTier = z.infer<typeof UserTierSchema>;
 export declare const USER_TIER: {
+    readonly TRAINING: "TRAINING";
     readonly ESSENTIALS: "ESSENTIALS";
     readonly CORE: "CORE";
     readonly CONCIERGE: "CONCIERGE";
 };
+/**
+ * Default tier for records created without an explicit tier. Deliberately NOT
+ * `USER_TIERS[0]`: adding TRAINING ahead of ESSENTIALS must not silently move
+ * existing defaults onto the month-to-month tier.
+ */
 export declare const DEFAULT_USER_TIER: UserTier;
 /** Human-readable labels for membership tiers */
 export declare const USER_TIER_LABELS: Record<UserTier, string>;
@@ -198,7 +211,7 @@ export declare const USER_TIER_PRICES_DOLLARS: Record<UserTier, number>;
  * @deprecated Use USER_TIER_PRICES_DOLLARS instead for clarity about units.
  * This alias is maintained for backwards compatibility but will be removed in a future version.
  */
-export declare const USER_TIER_PRICES: Record<"ESSENTIALS" | "CORE" | "CONCIERGE", number>;
+export declare const USER_TIER_PRICES: Record<"TRAINING" | "ESSENTIALS" | "CORE" | "CONCIERGE", number>;
 /** Tiers that include premium features (CORE and CONCIERGE) */
 export declare const PREMIUM_TIERS: readonly UserTier[];
 /** Check if a tier has premium features (CORE or CONCIERGE) */
@@ -213,6 +226,7 @@ export declare const MembershipContractSchema: z.ZodObject<{
     id: z.ZodString;
     userId: z.ZodString;
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -573,6 +587,7 @@ export declare const UserProfileSchema: z.ZodObject<{
         CLIENT: "CLIENT";
     }>>;
     tier: z.ZodOptional<z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -1350,6 +1365,7 @@ export declare const UserAccountSchema: z.ZodObject<{
             CLIENT: "CLIENT";
         }>>;
         tier: z.ZodOptional<z.ZodEnum<{
+            TRAINING: "TRAINING";
             ESSENTIALS: "ESSENTIALS";
             CORE: "CORE";
             CONCIERGE: "CONCIERGE";

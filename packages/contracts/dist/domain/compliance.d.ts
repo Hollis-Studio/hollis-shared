@@ -82,6 +82,7 @@ export type TierComplianceRequirements = z.infer<typeof TierComplianceRequiremen
  * Tier-specific compliance requirements (weekly cadence).
  * Used by calculateTierAwareCompliance and the canonical compliance engine.
  *
+ * TRAINING:   basic progress tracking — same minimal expectations as ESSENTIALS (4 sessions/month)
  * ESSENTIALS: minimal tracking expectations — 1 check-in/wk, no food logging required, 1 workout/wk
  * CORE:       moderate engagement — bi-weekly check-ins, 4 food logs/wk, 3 workouts/wk
  * CONCIERGE:  full engagement — daily check-ins, daily food logs, 5 workouts/wk
@@ -108,6 +109,7 @@ export declare const CANONICAL_COMPLIANCE_WEIGHTS: {
  * All values represent expected counts over a 30-day window.
  *
  * Wearable sync values represent expected days with synced biometric data:
+ * - TRAINING:   sync at least half the days (basic progress tracking)
  * - ESSENTIALS: sync at least half the days (low-commitment tier)
  * - CORE:       sync most days (~2/3 of days)
  * - CONCIERGE:  near-continuous sync (expected ~daily)
@@ -127,6 +129,7 @@ export declare const TIER_COMPLIANCE_THRESHOLDS: Record<UserTier, {
  */
 export declare const ComplianceEngineInputSchema: z.ZodObject<{
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -152,6 +155,7 @@ export declare const ComplianceEngineResultSchema: z.ZodObject<{
         "non-compliant": "non-compliant";
     }>;
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
@@ -214,6 +218,7 @@ export declare const TierAwareComplianceResultSchema: z.ZodObject<{
     }>;
     score: z.ZodNumber;
     tier: z.ZodEnum<{
+        TRAINING: "TRAINING";
         ESSENTIALS: "ESSENTIALS";
         CORE: "CORE";
         CONCIERGE: "CONCIERGE";
