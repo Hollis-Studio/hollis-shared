@@ -1,3 +1,25 @@
+## 0.2.0-alpha.104 (2026-10-14) — session rollover and member upload categories
+
+Membership Agreement 2.8.2 (contentHash `6022d69c`). Section 2.5 now matches
+the owner decision and the server's per-paid-invoice rollover: each billing
+period's sessions are added when that period's payment is received, unused
+sessions carry forward with no cap while the membership is active and paid,
+they have no cash value, and they end with no refund when the membership ends
+(pro-rata fee refunds under 6.2/6.3/6.5 unaffected). Section 2.1 Hollis
+Training wording "per calendar month" became "per month". Offer sheet
+unchanged (3.5.1).
+
+New `MEMBER_UPLOAD_DOCUMENT_CATEGORIES` (`PROGRESS_PHOTO`, `ID_DOCUMENT`,
+`OTHER`) and `MemberUploadDocumentCategory` for the member app upload picker.
+Additive only: `DOCUMENT_CATEGORIES` / `DocumentCategorySchema` still accept
+every legacy value so existing records, admin uploads and lab/DXA ingest keep
+validating.
+
+`CustomerSubscriptionSchema` gains optional `introMonthElected` and nullable
+optional `introWindowEndsAt`; `toCustomerSubscription` passes them through
+(`false` / `null` when absent). Optional so responses from older servers still
+parse.
+
 ## 0.2.0-alpha.103 (2026-10-14) — intro window wording
 
 Membership Agreement 2.8.1 (contentHash `bdf46057`), offer sheet 3.5.1. Text

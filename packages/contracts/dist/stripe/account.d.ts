@@ -56,6 +56,8 @@ export declare const CustomerSubscriptionSchema: z.ZodObject<{
     cancelEffectiveDate: z.ZodNullable<z.ZodString>;
     scheduledTierChange: z.ZodNullable<z.ZodString>;
     tierChangeEffectiveDate: z.ZodNullable<z.ZodString>;
+    introMonthElected: z.ZodOptional<z.ZodBoolean>;
+    introWindowEndsAt: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     createdAt: z.ZodString;
 }, z.core.$strip>;
 export type CustomerSubscriptionContract = z.infer<typeof CustomerSubscriptionSchema>;

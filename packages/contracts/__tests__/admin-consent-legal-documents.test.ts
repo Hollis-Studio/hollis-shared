@@ -39,7 +39,7 @@ const contentHashOf = (content: string): string =>
  * hash edit that forgets the version bump fails here.
  */
 const EXPECTED_DOCUMENT_FINGERPRINTS = {
-  MEMBERSHIP_AGREEMENT: { version: "2.8.1", contentHash: "bdf46057" },
+  MEMBERSHIP_AGREEMENT: { version: "2.8.2", contentHash: "6022d69c" },
   LIABILITY_WAIVER: { version: "1.5.0", contentHash: "c6481b3d" },
   INFORMED_CONSENT: { version: "2.2.0", contentHash: "b6d1d077" },
   ELECTRONIC_COMMS_CONSENT: { version: "1.4.0", contentHash: "0eb4cd16" },
@@ -183,7 +183,7 @@ describe("admin consent legal document contracts", () => {
   });
 });
 
-describe("membership agreement — Hollis Training and Intro Month (v2.8.1)", () => {
+describe("membership agreement — Hollis Training, Intro Month and session rollover (v2.8.2)", () => {
   const agreement = DOCUMENT_REGISTRY.MEMBERSHIP_AGREEMENT;
 
   function renderFor(
@@ -241,6 +241,19 @@ describe("membership agreement — Hollis Training and Intro Month (v2.8.1)", ()
     expect(rendered).toContain("Company receives on or before 2026-11-15");
     expect(rendered).toContain("## Intro Month");
     expect(rendered).toContain("does not pay for, issue, or arrange this benefit until the Intro Window ends");
+  });
+
+  it("rolls unused sessions over while active and ends them with the membership (Section 2.5)", () => {
+    expect(agreement.content).toContain("### 2.5 Unused Sessions Roll Over");
+    expect(agreement.content).toContain(
+      "carry forward to later months for as long as Member's membership remains active and paid",
+    );
+    expect(agreement.content).toContain("Unused sessions have no cash value.");
+    expect(agreement.content).toContain(
+      "Any unused sessions end when Member's membership ends for any reason",
+    );
+    expect(agreement.content).not.toMatch(/forfeit/i);
+    expect(agreement.content).not.toMatch(/calendar month/i);
   });
 
   it("contains the intro-month, month-to-month, and early-termination carve-out clauses", () => {

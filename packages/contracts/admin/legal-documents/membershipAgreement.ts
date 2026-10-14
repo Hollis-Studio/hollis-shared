@@ -26,6 +26,13 @@
  * timely if received ON OR BEFORE the Intro Window end date in Exhibit A
  * (day 30, Start Date = day one); the Intro Window runs through the end of
  * that day; a second monthly payment already charged is refunded.
+ *
+ * v2.8.2 (2026-10-14): Section 2.5 — unused private coaching sessions carry
+ * forward with no cap while the membership is active and paid (owner
+ * decision; matches the server's per-paid-invoice rollover). They have no cash
+ * value and end with no refund when the membership ends. Section 2.1 Hollis
+ * Training wording changed from "per calendar month" to "per month" to match
+ * billing-period grants.
  */
 
 import {
@@ -149,7 +156,7 @@ ${generateComparisonTable()}
 
 In addition to the services listed above, Members at the **Core** and **Concierge** tiers receive the Company-sponsored third-party testing program benefit described in Section 2.4.
 
-**Hollis Training** includes four (4) private coaching sessions per calendar month, a training plan, basic progress tracking in the member app, general nutrition support, and the recovery work described in Section 2.6. Hollis Training is offered only on a month-to-month basis under Section 3 and does not include the Company-sponsored third-party testing program described in Section 2.4.
+**Hollis Training** includes four (4) private coaching sessions per month, a training plan, basic progress tracking in the member app, general nutrition support, and the recovery work described in Section 2.6. Hollis Training is offered only on a month-to-month basis under Section 3 and does not include the Company-sponsored third-party testing program described in Section 2.4.
 
 For clarity, "member coordination and scheduling support" in the table above means non-clinical member support: scheduling assistance, organizing records Member chooses to share with Company, and providing the name and contact information of independent providers at Member's request. It does not mean clinical care coordination. Company does not direct, manage, supervise, or participate in Member's medical care.
 
@@ -193,9 +200,13 @@ The sponsored membership is a standard membership with that company which, as th
 
 Any results Member obtains through the program are delivered to Member by that third-party company. They reach Company only if Member chooses to share them with Company under a signed Informed Consent for Health Services, in which case Company displays and organizes them in Member's dashboard and uses them as non-clinical context for fitness, nutrition, and wellness programming only. Company does not review or monitor shared records for urgent, abnormal, or otherwise clinically significant findings and has no duty to identify, flag, or notify Member of any such findings.
 
-### 2.5 Session Rollovers
+### 2.5 Unused Sessions Roll Over
 
-Unused private coaching sessions do not roll over from month to month unless expressly authorized in writing by Company. Sessions not used within the applicable calendar month are forfeited without credit or refund.
+Member's private coaching sessions for each monthly billing period are added to Member's account when Company receives that period's Membership payment. Sessions Member does not use carry forward to later months for as long as Member's membership remains active and paid. There is no limit on how many unused sessions may carry forward.
+
+Unused sessions have no cash value. They cannot be sold, transferred, or exchanged for cash, credit, or a refund.
+
+Any unused sessions end when Member's membership ends for any reason, including cancellation, expiration, non-renewal, or termination. No refund or credit is owed for sessions that end this way. This paragraph does not limit any pro-rata refund of prepaid fees under Section 6.2, 6.3, or 6.5, or any refund required by applicable law.
 
 ### 2.6 Recovery
 
@@ -491,7 +502,7 @@ Title: ______________________________________
 
 export const meta = {
   title: "Membership Agreement",
-  version: "2.8.1",
+  version: "2.8.2",
   effectiveDate: "2026-10-14",
   /**
    * sha256 of the fully-rendered `content` export, first 8 hex chars.
@@ -500,7 +511,7 @@ export const meta = {
    * verifiable — scripts/check-legal-doc-versions.js in hollis-health-app
    * evaluates the built module and compares.
    */
-  contentHash: "bdf46057",
+  contentHash: "6022d69c",
 };
 
 /**

@@ -66,6 +66,19 @@ export const DOCUMENT_CATEGORY_LABELS = {
     OTHER: "Other",
 };
 /**
+ * Categories a member may pick when uploading a document in the member app.
+ *
+ * Hollis is not a medical provider, so the member upload picker offers only
+ * non-clinical categories. This is a picker subset, not a validation rule:
+ * DOCUMENT_CATEGORIES (and DocumentCategorySchema) still accept every value so
+ * existing records, admin uploads, and lab/DXA ingest keep validating.
+ */
+export const MEMBER_UPLOAD_DOCUMENT_CATEGORIES = [
+    "PROGRESS_PHOTO",
+    "ID_DOCUMENT",
+    "OTHER",
+];
+/**
  * Type guard to check if a string is a valid document category
  */
 export function isDocumentCategory(value) {

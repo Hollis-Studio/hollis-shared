@@ -38,6 +38,14 @@ export const CustomerSubscriptionSchema = z.object({
     cancelEffectiveDate: z.string().nullable(),
     scheduledTierChange: z.string().nullable(),
     tierChangeEffectiveDate: z.string().nullable(),
+    /** Whether the optional Intro Month was elected (Membership Agreement Section 3.5). Optional for older servers. */
+    introMonthElected: z.boolean().optional(),
+    /**
+     * Intro Window end date (ISO date, day 30 counting the Start Date as day
+     * one). A cancellation is timely if received on or before this date. Null
+     * when no Intro Month was elected; absent from older servers.
+     */
+    introWindowEndsAt: z.string().nullable().optional(),
     createdAt: z.string(),
 });
 // ============================================================================
@@ -103,6 +111,8 @@ export function toCustomerSubscription(sub) {
         cancelEffectiveDate: sub.cancelEffectiveDate,
         scheduledTierChange: sub.scheduledTierChange,
         tierChangeEffectiveDate: sub.tierChangeEffectiveDate,
+        introMonthElected: sub.introMonthElected ?? false,
+        introWindowEndsAt: sub.introWindowEndsAt ?? null,
         createdAt: sub.createdAt,
     };
 }
