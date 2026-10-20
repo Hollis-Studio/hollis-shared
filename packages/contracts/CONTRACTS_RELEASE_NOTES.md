@@ -1,3 +1,12 @@
+## 0.2.0-alpha.107 (2026-10-20) — Training cancellation before billing
+
+Owner-confirmed policy: Hollis Training cancellation may be received in writing
+anytime before the next billing date, effective at the end of the current billing
+period. Other tiers retain their existing notice and intro-month rules. Prices
+are unchanged. Membership Agreement 2.8.4 (`0f48c317`) aligns Sections 3.4 and 6.6;
+offer sheet 3.5.3 distinguishes Training from the other tiers. Health consumers
+must upgrade together after the registry release has been verified.
+
 ## 0.2.0-alpha.106 (2026-10-14) — Liability Waiver restored to 1.5.0
 
 Owner decision: the Liability Waiver stays unchanged. alpha.106 restores

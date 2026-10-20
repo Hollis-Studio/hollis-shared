@@ -39,7 +39,7 @@ const contentHashOf = (content: string): string =>
  * hash edit that forgets the version bump fails here.
  */
 const EXPECTED_DOCUMENT_FINGERPRINTS = {
-  MEMBERSHIP_AGREEMENT: { version: "2.8.3", contentHash: "55c211c3" },
+  MEMBERSHIP_AGREEMENT: { version: "2.8.4", contentHash: "0f48c317" },
   LIABILITY_WAIVER: { version: "1.5.0", contentHash: "c6481b3d" },
   INFORMED_CONSENT: { version: "2.2.1", contentHash: "bcbfb19c" },
   ELECTRONIC_COMMS_CONSENT: { version: "1.4.0", contentHash: "0eb4cd16" },
@@ -51,6 +51,16 @@ const EXPECTED_DOCUMENT_FINGERPRINTS = {
 >;
 
 describe("admin consent legal document contracts", () => {
+  it("gives Training its approved cancellation window without waiving other tier notice", () => {
+    const content = DOCUMENT_REGISTRY.MEMBERSHIP_AGREEMENT.content;
+    expect(content).toContain(
+      "For Hollis Training, a written cancellation request received anytime before Member's next Billing Date",
+    );
+    expect(content).toContain(
+      "For Essentials, Core, and Concierge, to take effect at the end of the then-current billing period, a cancellation request must be received at least seven (7) days",
+    );
+  });
+
   it("exports consent records as a PHI resource in the typed contract", () => {
     expect(PHI_RESOURCE.CONSENT_RECORD).toBe("consent_record");
   });

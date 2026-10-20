@@ -39,6 +39,10 @@
  * Member to (no "referral network"; Company has one referral partner).
  * Sections 2.2, 8.1, 8.3 — supplement references removed; Company does not
  * sell supplements or any other physical products.
+ *
+ * v2.8.4 (2026-10-20): Owner-confirmed Hollis Training cancellation may be
+ * received anytime before the next Billing Date. Other tiers retain their
+ * existing notice requirements.
  */
 
 import {
@@ -251,7 +255,7 @@ The contract term shall commence on {{START_DATE}} ("Start Date") and expire on 
 
 This paragraph applies to a Fixed Term. Unless either Party gives written notice of non-renewal before the End Date, this Agreement will automatically convert to a month-to-month arrangement at the then-current standard monthly rate for the selected tier, plus any continuing add-ons then in effect, to the extent permitted by applicable law. Member's notice of non-renewal must be given at least seven (7) days before the End Date; Company's notice of non-renewal must be given at least thirty (30) days before the End Date. During month-to-month continuation, Member may terminate on at least seven (7) days' written notice given before the next Billing Date, and Company may terminate on thirty (30) days' written notice.
 
-If Member selected Month-to-Month (Hollis Training), this Agreement renews automatically each month at the then-current standard monthly rate for Hollis Training until terminated. Member may terminate on at least seven (7) days' written notice given before the next Billing Date, and Company may terminate on thirty (30) days' written notice. No early termination amount applies to Month-to-Month enrollment.
+If Member selected Month-to-Month (Hollis Training), this Agreement renews automatically each month at the then-current standard monthly rate for Hollis Training until terminated. Member may terminate by written notice received anytime before the next Billing Date, effective at the end of the then-current billing period, and Company may terminate on thirty (30) days' written notice. No early termination amount applies to Month-to-Month enrollment.
 
 ### 3.5 Intro Month
 
@@ -353,7 +357,7 @@ Company may suspend or terminate this Agreement for material breach, non-payment
 
 Cancellation requests must be submitted in writing to admin@hollis.health or delivered by certified mail to the home office listed in Section 5.2. Oral cancellations are not effective.
 
-To take effect at the end of the then-current billing period, a cancellation request must be received at least seven (7) days before Member's next Billing Date. A request received fewer than seven (7) days before the next Billing Date takes effect at the end of the following billing period, and the intervening monthly payment remains due. Nothing in this Section limits any non-waivable cancellation right Member has under applicable law.
+For Hollis Training, a written cancellation request received anytime before Member's next Billing Date takes effect at the end of the then-current billing period. For Essentials, Core, and Concierge, to take effect at the end of the then-current billing period, a cancellation request must be received at least seven (7) days before Member's next Billing Date. For those tiers, a request received fewer than seven (7) days before the next Billing Date takes effect at the end of the following billing period, and the intervening monthly payment remains due. Nothing in this Section limits the Intro Month cancellation right in Section 3.5 or any non-waivable cancellation right Member has under applicable law.
 
 ---
 
@@ -508,8 +512,8 @@ Title: ______________________________________
 
 export const meta = {
   title: "Membership Agreement",
-  version: "2.8.3",
-  effectiveDate: "2026-10-14",
+  version: "2.8.4",
+  effectiveDate: "2026-10-20",
   /**
    * sha256 of the fully-rendered `content` export, first 8 hex chars.
    * `content` is deterministic at module load (it interpolates
@@ -517,7 +521,7 @@ export const meta = {
    * verifiable — scripts/check-legal-doc-versions.js in hollis-health-app
    * evaluates the built module and compares.
    */
-  contentHash: "55c211c3",
+  contentHash: "0f48c317",
 };
 
 /**

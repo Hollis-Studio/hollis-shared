@@ -23,6 +23,15 @@ import {
 } from "@hollis-studio/contracts";
 
 describe("master offer sheet", () => {
+  it("distinguishes Training's next-billing-date cancellation from other tier notice", () => {
+    expect(MASTER_OFFER_SHEET.policies.noticePeriod).toContain(
+      "Hollis Training: written cancellation anytime before the next billing date",
+    );
+    expect(MASTER_OFFER_SHEET.policies.noticePeriod).toContain(
+      "Essentials, Core, and Concierge: at least 7 days' written notice",
+    );
+  });
+
   it("keeps user tier prices aligned with the master offer sheet", () => {
     expect(USER_TIER_PRICES_DOLLARS.ESSENTIALS).toBe(
       MASTER_OFFER_SHEET.tiers.ESSENTIALS.baseMonthlyPriceDollars,
