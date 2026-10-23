@@ -89,7 +89,7 @@ permissions:
   packages: write
 
 env:
-  NODE_VERSION: 22
+  NODE_VERSION: 22.23.4
   REGISTRY: https://npm.pkg.github.com
 
 concurrency:
@@ -191,10 +191,16 @@ jobs:
       # ---------------------------------------------------------------------
       # The same gate ci.yml runs — publishing never bypasses it
       # ---------------------------------------------------------------------
+      - name: Scan tracked files for secrets
+        run: bash scripts/security/scan-secrets.sh
+
       - name: Install dependencies
         run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Audit all production and build dependencies
+        run: npm audit --audit-level=moderate
 
       - name: Build, typecheck, smoke-import
         run: npm run check

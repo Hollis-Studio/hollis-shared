@@ -245,7 +245,7 @@ describe('checkPasswordBreached', () => {
 
   it('should return breached=true for breached password', async () => {
     // We need to know what the SHA-1 suffix would be for "password"
-    // SHA-1 of "password" = 5BAA61E4C9B93F3F0682250B6CF8331B7EE68FD8
+    // SHA-1 of "password" = 5BAA61E4C9B93F3F0682250B6CF8331B7EE68FD8 // gitleaks:allow -- public SHA-1 known-answer fixture
     // Prefix: 5BAA6, Suffix: 1E4C9B93F3F0682250B6CF8331B7EE68FD8
     mockFetch.mockResolvedValueOnce({
       ok: true,
