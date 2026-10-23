@@ -89,7 +89,7 @@ permissions:
   packages: write
 
 env:
-  NODE_VERSION: 22
+  NODE_VERSION: 22.23.4
   REGISTRY: https://npm.pkg.github.com
 
 concurrency:
@@ -195,6 +195,9 @@ jobs:
         run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Audit all production and build dependencies
+        run: npm audit --audit-level=moderate
 
       - name: Build, typecheck, smoke-import
         run: npm run check

@@ -17,7 +17,7 @@ permissions:
   packages: read
 
 env:
-  NODE_VERSION: 22
+  NODE_VERSION: 22.23.4
 
 jobs:
   check:
@@ -38,6 +38,9 @@ jobs:
         env:
           # packages/utils resolves @hollis-studio/contracts from GitHub Packages
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Audit all production and build dependencies
+        run: npm audit --audit-level=moderate
 
       - name: Build, typecheck, smoke-import
         run: npm run check
