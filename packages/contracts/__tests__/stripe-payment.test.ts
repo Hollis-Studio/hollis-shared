@@ -210,7 +210,7 @@ describe('Stripe Payment Contracts', () => {
     describe('valid objects', () => {
       it('should accept a valid setup intent', () => {
         const result = SetupIntentSchema.safeParse({
-          clientSecret: 'seti_1234567890_secret_abc',
+          clientSecret: 'seti_1234567890_secret_abc', // gitleaks:allow -- synthetic Stripe schema fixture
           customerId: 'cus_1234567890',
         });
         expect(result.success).toBe(true);
@@ -239,7 +239,7 @@ describe('Stripe Payment Contracts', () => {
 
       it('should reject missing customerId', () => {
         const result = SetupIntentSchema.safeParse({
-          clientSecret: 'seti_1234567890_secret_abc',
+          clientSecret: 'seti_1234567890_secret_abc', // gitleaks:allow -- synthetic Stripe schema fixture
         });
         expect(result.success).toBe(false);
       });
@@ -728,7 +728,7 @@ describe('Stripe Payment Contracts', () => {
     describe('valid objects', () => {
       it('should accept valid config', () => {
         const result = StripeConfigSchema.safeParse({
-          publishableKey: 'pk_test_1234567890',
+          publishableKey: 'pk_test_1234567890', // gitleaks:allow -- synthetic Stripe schema fixture
         });
         expect(result.success).toBe(true);
         if (result.success) {

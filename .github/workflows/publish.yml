@@ -191,6 +191,9 @@ jobs:
       # ---------------------------------------------------------------------
       # The same gate ci.yml runs — publishing never bypasses it
       # ---------------------------------------------------------------------
+      - name: Scan tracked files for secrets
+        run: bash scripts/security/scan-secrets.sh
+
       - name: Install dependencies
         run: npm ci
         env:
